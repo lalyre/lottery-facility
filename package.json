@@ -1,0 +1,35 @@
+{
+  "name": "@claudelalyre/lottery-facility",
+  "version": "0.0.0",
+  "description": "Some APIs for designing lottery cracking systems.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lalyre/lottery-facility.git"
+  },
+  "keywords": [
+    "lottery",
+    "gambling",
+    "fdj",
+    "wheeling",
+    "combination",
+    "euromillions",
+    "lotto",
+    "keno",
+    "jackpot",
+    "fortune",
+    "chance"
+  ],
+  "author": "Claude Lalyre",
+  "contributors": [
+    "Claude Lalyre <claude.lalyre@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lalyre/lottery-facility/issues"
+  },
+  "homepage": "https://github.com/lalyre/lottery-facility#readme"
+}
