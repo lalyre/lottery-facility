@@ -52,6 +52,9 @@ npm init --scope=claudelalyre
 publish publicly a user-scoped NPM package.
 
 
+npm view
+npm ls
+npm version major
 npm publish --access public
 
 
@@ -88,5 +91,4 @@ npm test
 ## Contributors
 
  * [All Contributors](./AUTHORS)
- 
  
