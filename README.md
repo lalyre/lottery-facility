@@ -2,6 +2,33 @@
 Some APIs for designing lottery cracking systems.
 
 
+- [Overview](#overview)
+- [Install](#install)
+
+
+## Overview
+
+Features:
+
+* Full SOAP Client capability and mock-up SOAP server capability
+* Handles both RPC and Document styles
+* Handles both SOAP 1.1 and SOAP 1.2 Fault
+* APIs to parse XML into JSON and JSON into XML
+* API to describe WSDL document
+* Support for both synchronous and asynchronous method handlers
+* WS-Security (currently only UsernameToken and PasswordText encoding is supported)
+
+## Install
+
+Node.js version 10, 12, and 14 are officially supported. We dropped version 8
+support in 3.0.0.
+
+Install with [npm](http://github.com/isaacs/npm):
+
+```sh
+npm install strong-soap
+```
+
 
 
 
