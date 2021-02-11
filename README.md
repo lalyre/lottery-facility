@@ -87,6 +87,6 @@ npm test
 
 ## Contributors
 
- * [All Contributors](AUTHORS)
+ * [All Contributors](./AUTHORS)
  
  
