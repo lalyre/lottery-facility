@@ -34,6 +34,33 @@ npm install strong-soap
 ## Usage
 
 
+npm publish
+prepublishOnly
+prepare
+prepublish
+publish
+postpublish
+
+npm pack
+prepack
+postpack
+
+
+npm install
+preinstall
+install
+postinstall
+
+
+npm start
+npm run start
+prestart
+start
+poststart
+
+
+
+
 
 https://medium.com/cameron-nokes/the-30-second-guide-to-publishing-a-typescript-package-to-npm-89d93ff7bccd
 https://github.com/ccnokes/dom-event-utils
@@ -98,6 +125,10 @@ $ npm test
 
 $ git add .
 $ git commit -m "description"
+
+
+npm pack
+
 
 
 Update version in package.json according to Semver
