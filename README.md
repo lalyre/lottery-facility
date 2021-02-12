@@ -45,6 +45,20 @@ https://github.com/ccnokes/dom-event-utils
 npm login
 
 
+npmjs.com
+claudelalyre
+
+
+lib/ is intended for code that can run as-is
+src/ is intended for code that needs to be manipulated before it can be used
+build/ is for any scripts or tooling needed to build your project
+dist/ is for compiled modules that can be used with other systems.
+bin/ is for any executable scripts, or compiled binaries used with, or built from your module.
+test/ is for all of your project/module's test scripts
+unit/ is a sub-directory for unit tests
+integration/ is a sub-directory for integration tests
+env/ is for any environment that's needed for testing
+
 
 
 npm init --scope=claudelalyre
@@ -53,13 +67,6 @@ npm init --scope=claudelalyre
 
 
 
-publish publicly a user-scoped NPM package.
-
-
-npm view
-npm ls
-npm version major
-npm publish --access public
 
 
 npm install my-package
@@ -87,13 +94,55 @@ Run tests (if there are any)
 $ npm test
 
 Update version in package.json according to Semver
+npm view
+npm ls
 $ npm version patch|minor|major
+
+1.2.3 => 2.0.0-alpha.0
+npm version premajor --preid alpha
+
+
+npm --no-git-tag-version version
+
+2.0.0-alpha.0 => 2.0.0-beta.0
+npm version prerelease --preid=beta
+npm version prerelease --preid=alpha
+npm version patch
+npm version minor
+npm version major
+
+
+npm version prerelease --preid=next
+npm --no-git-tag-version version
+
+npm version [<newversion> | major | minor | patch | premajor | preminor | prepatch | prerelease [--preid=<prerelease-id>] | from-git]
+
+'npm [-v | --version]' to print npm version
+'npm view <pkg> version' to view a package's published version
+'npm ls' to inspect current package/dependency versions
+
+
+
 
 Create a git tag according to Semver
 Push the package to Github
 $ git push --tags
 
+
+Go to pacakge root
+npm link 
+
+Go to test directory
+npm link fullpath/my-package
+or
+npm install fullpath/my-package
+
+
 Push the package to npm
+publish publicly a user-scoped NPM package.
+npm publish --access public
+
+
 Create release notes for every update
 
 
