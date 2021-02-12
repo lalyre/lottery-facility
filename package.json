@@ -3,8 +3,14 @@
   "version": "0.0.0",
   "description": "Some APIs for designing lottery cracking systems.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "engines": {
     "node": ">=12.0.0"
+  },
+  "directories": {
+	"lib": "lib",
+    "doc": "doc",
+    "test": "test"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,7 +34,7 @@
     "fortune",
     "chance"
   ],
-  "author": "Claude Lalyre",
+  "author": "Claude Lalyre <claude.lalyre@gmail.com>",
   "contributors": [
     "Claude Lalyre <claude.lalyre@gmail.com>"
   ],

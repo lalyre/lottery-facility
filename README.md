@@ -34,6 +34,9 @@ npm install strong-soap
 
 
 
+https://medium.com/cameron-nokes/the-30-second-guide-to-publishing-a-typescript-package-to-npm-89d93ff7bccd
+https://github.com/ccnokes/dom-event-utils
+
 
 
 1) NPM account on https://www.npmjs.com/signup
@@ -77,14 +80,22 @@ v2.6.0-beta.2
 v2.6.0-beta.3 
 
 
+Run build
+Commit changes
 Run tests (if there are any)
+$ npm test
+
 Update version in package.json according to Semver
+$ npm version patch|minor|major
+
 Create a git tag according to Semver
 Push the package to Github
+$ git push --tags
+
 Push the package to npm
 Create release notes for every update
 
-npm test
+
 
 
 
