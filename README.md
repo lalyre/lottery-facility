@@ -89,9 +89,16 @@ v2.6.0-beta.3
 
 
 Run build
+$ npm run build
+
 Commit changes
 Run tests (if there are any)
 $ npm test
+
+
+$ git add .
+$ git commit -m "description"
+
 
 Update version in package.json according to Semver
 npm view
@@ -123,10 +130,11 @@ npm version [<newversion> | major | minor | patch | premajor | preminor | prepat
 
 
 
-
+<!--
 Create a git tag according to Semver
 Push the package to Github
 $ git push --tags
+-->
 
 
 Go to pacakge root
