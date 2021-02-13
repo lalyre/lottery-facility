@@ -5,7 +5,7 @@ Some APIs for designing lottery cracking systems.
 <!-- TOC -->
 - [Overview](#overview)
 - [Install](#install)
-- [Publishing](#publish a version)
+- [Publishing](#publish-a-version)
 
 
 ## Overview
