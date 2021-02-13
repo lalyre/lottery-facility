@@ -9,9 +9,9 @@
     "node": ">=12.0.0"
   },
   "directories": {
-    "lib": "lib",
-    "doc": "doc",
-    "test": "test"
+    "lib": "./lib",
+    "doc": "./doc",
+    "test": "./test"
   },
   "scripts": {
     "copy-files": "copyfiles -f src/**/*.json src/**/*.txt ./dist",
@@ -20,7 +20,7 @@
 
     "clean": "rimraf build dist lib",
 
-    "prebuild": "npm run clean && exit 0",
+    "prebuild": "npm run clean && npm run lint:ts",
     "build": "tsc",
     "postbuild": "npm run copy-files",
 

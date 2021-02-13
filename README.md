@@ -14,6 +14,7 @@ Features:
 
 * Random numbers generator
 * Draws statistics
+* Draws prediction algorithms
 
 
 ## Install
@@ -54,7 +55,7 @@ npm run build
 npm run test
 ```
 
-You can see what files will be embedded in the new release with that command
+You can see what files will be embedded in the new release with that command. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package.
 ```sh
 npm pack
 ```
@@ -63,6 +64,7 @@ Update the package version with one of the following commands. If inside a Git d
 ```sh
 npm version prerelease --preid=alpha
 npm version prerelease --preid=beta
+npm version prerelease --preid=rc
 npm version patch
 npm version minor
 npm version major
