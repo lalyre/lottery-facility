@@ -1,36 +1,34 @@
-// Copyright (c) 2020 Claude Lalyre, Inc.
-// 2020/07/18 22:23:10
+// Copyright (c) 2021 Claude Lalyre, Inc.
+// 2021/02/14 22:28:10
 //
 
 'use strict';
-const fs = require('fs');
-const crypto = require('crypto');
-const version = require('./version.json');
+import * as crypto from 'crypto';
 
 
-const randomNumber = function () {
-	var length = 4;
-	var randomBytes1 = crypto.randomBytes(length);
-	var randomBytes2 = crypto.randomBytes(length);
-	var rand1 = 0;
-	var rand2 = 0;
-	for (var i = 0; i < length; i++) {
+export function randomNumber(void): number {
+	const length = 4;
+	const randomBytes1 = crypto.randomBytes(length);
+	const randomBytes2 = crypto.randomBytes(length);
+	let rand1 = 0;
+	let rand2 = 0;
+	for (let i = 0; i < length; i++) {
 		if (i > 0) {
 			rand1 <<= 8;
 			rand2 <<= 8;
 		}
-		rand1 |= randomBytes1.readInt8(i);	
-		rand2 |= randomBytes2.readInt8(i);	
+		rand1 |= randomBytes1.readInt8(i);
+		rand2 |= randomBytes2.readInt8(i);
 	}
 	return rand1 * rand2;
 }
 
 
-const randomNumberRange = function (a, b) {
-	var min = (a < b) ? a : b;
-	var max = (a >= b) ? a : b;
-	var spread = max - min + 1;
-	var rand = randomNumber() % spread;
+export function randomNumberRange(a: number, b: number): number {
+	const min = (a < b) ? a : b;
+	const max = (a >= b) ? a : b;
+	const spread = max - min + 1;
+	const rand = randomNumber() % spread;
 	return min + Math.abs(rand);
 }
 
