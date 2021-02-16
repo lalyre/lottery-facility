@@ -22,7 +22,7 @@ Features:
 Install with npm:
 
 ```sh
-npm install lottery-facility
+npm install @claudelalyre/lottery-facility
 ```
 
 
@@ -55,7 +55,7 @@ npm run build
 npm run test
 ```
 
-You can see what files will be embedded in the new release with that command. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package.
+You can see what files will be embedded in the new release with the command below. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package.
 ```sh
 npm pack
 ```
