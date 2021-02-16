@@ -1,12 +1,8 @@
-// Copyright (c) 2021 Claude Lalyre, Inc.
-// 2021/02/14 22:28:10
-//
-
 'use strict';
 import * as crypto from 'crypto';
 
 
-export function randomNumber(void): number {
+function randomNumber(): number {
 	const length = 4;
 	const randomBytes1 = crypto.randomBytes(length);
 	const randomBytes2 = crypto.randomBytes(length);
@@ -32,7 +28,7 @@ export function randomNumberRange(a: number, b: number): number {
 	return min + Math.abs(rand);
 }
 
-
+/*
 const swapBalls = function (balls, a, b) {
 	if (!Array.isArray(balls)) return;
 	if (typeof a != "number") return;
@@ -46,9 +42,9 @@ const swapBalls = function (balls, a, b) {
 	var aux = balls[a-1];
 	balls[a-1] = balls[b-1];
 	balls[b-1] = aux;
-}
+}*/
 
-
+/*
 const shuffleBalls = function (balls, nb_swap) {
 	if (!Array.isArray(balls)) return;
 	if (typeof nb_swap != "number") return;
@@ -60,24 +56,15 @@ const shuffleBalls = function (balls, nb_swap) {
 		var b = randomNumberRange(1, len);
 		swapBalls(balls, a, b);
 	}
-}
+}*/
 
 
 // Return an array of integers of len size
 // containing numbers from 1 to len
 // in random order
-const flashBalls = function (len) {
+/*const flashBalls = function (len) {
 	var balls = Array(len).fill().map((x,i)=>(i+1).toString().padStart(2, 0));
 	shuffleBalls(balls, 3*balls.length);
 	return balls;
 }
-
-
-// Exports
-module.exports = {
-    randomNumber,
-	randomNumberRange,
-	swapBalls,
-	shuffleBalls,
-	flashBalls,
-}
+*/
