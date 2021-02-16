@@ -1,6 +1,11 @@
 .vscode/
+coverage/
 node_modules/
 build/
 src/
 test/
 doc/
+AUTHORS
+tslint.json
+jest.config.ts
+lib/**/*.map

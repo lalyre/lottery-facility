@@ -33,12 +33,10 @@ const swapBalls = function (balls, a, b) {
 	if (!Array.isArray(balls)) return;
 	if (typeof a != "number") return;
 	if (typeof b != "number") return;
-	
 	var len = balls.length;
 	if (a <= 0 || a > len) return;
 	if (b <= 0 || b > len) return;
 	if (a == b) return;
-
 	var aux = balls[a-1];
 	balls[a-1] = balls[b-1];
 	balls[b-1] = aux;
@@ -49,7 +47,6 @@ const shuffleBalls = function (balls, nb_swap) {
 	if (!Array.isArray(balls)) return;
 	if (typeof nb_swap != "number") return;
 	if (nb_swap <= 0) return;
-	
 	var len = balls.length;
 	for (var i = 0; i < nb_swap; i++) {
 		var a = randomNumberRange(1, len);
