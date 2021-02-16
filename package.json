@@ -1,6 +1,6 @@
 {
   "name": "@claudelalyre/lottery-facility",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "description": "Some APIs for designing lottery cracking systems.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,7 +21,6 @@
     "prebuild": "npm run clean && npm run lint:ts",
     "build": "tsc",
     "postbuild": "npm run copy-files",
-
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",
     "test0": "echo \"Error: no test specified\" && exit 1"
   },
