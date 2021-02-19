@@ -6,16 +6,13 @@ import { randomNumberRange } from './random';
  * Return an ordered array of integers
  * containing lottery balls from 1 to len.
  * 1 <= len <= 99
+ * 
+ * PS:
+ * do not consider the item at index 0
  */
 export function flashBalls(len:number): string[] {
 	if (len < 1 || len > 99) throw new Error('Invalid len parameter');
-	//var balls = new Array(len).map((x,i) => (i+1).toString().padStart(2, "0"));
-
-	var balls = Array<number>(len).map((x,i) => (i+1).toString());
-
-	//const someNumbers = [...new Array(len)].map((x,i) => (i+1).toString().padStart(2, "0"));
-
-
+	let balls = Array.from({ length: len+1 }, (_, i) => i.toString().padStart(2, "0"));
 	return balls;
 }
 
@@ -24,7 +21,7 @@ export function flashBalls(len:number): string[] {
  * Shuffle an array of lottery balls.
  */
 export function shuffleBalls(balls:string[], nbSwap:number): void {
-	let len = balls.length;
+	let len = balls.length - 1;
 	for (let i = 0; i < nbSwap; i++) {
 		var a = randomNumberRange(1, len);
 		var b = randomNumberRange(1, len);

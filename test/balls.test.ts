@@ -1,5 +1,5 @@
 'use strict';
-import { flashBalls } from '../src';
+import { flashBalls, shuffleBalls, } from '../src';
 
 
 describe('Balls module', () => {
@@ -10,19 +10,10 @@ describe('Balls module', () => {
 
 
     test('flashBalls test', () => {
-        const a = flashBalls(10);
-		console.log(JSON.stringify(a));
-		
-		
-        //const b = randomNumberRange(10, 20);
-        //console.log("a: " + a);
-        //console.log("b: " + b);
-
-        //expect(a).toBeGreaterThanOrEqual(10);
-        //expect(a).toBeLessThanOrEqual(20);
-
-        //expect(b).toBeGreaterThanOrEqual(10);
-        //expect(b).toBeLessThanOrEqual(20);
+        const a = flashBalls(99);
+		//console.log(JSON.stringify(a));
+        expect(a.length).toBeGreaterThanOrEqual(99);
+        expect(() => { flashBalls(200); }).toThrow(Error);
     });
 
 });
