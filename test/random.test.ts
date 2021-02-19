@@ -9,16 +9,16 @@ describe('Random module', () => {
 
 
     test('randomNumberRange test', () => {
-        const a = randomNumberRange(10, 20);
-        const b = randomNumberRange(10, 20);
+        const a = randomNumberRange(1, 2000);
+        const b = randomNumberRange(1, 2000);
         //console.log("a: " + a);
         //console.log("b: " + b);
 
-        expect(a).toBeGreaterThanOrEqual(10);
-        expect(a).toBeLessThanOrEqual(20);
+        expect(a).toBeGreaterThanOrEqual(1);
+        expect(a).toBeLessThanOrEqual(2000);
 
-        expect(b).toBeGreaterThanOrEqual(10);
-        expect(b).toBeLessThanOrEqual(20);
+        expect(b).toBeGreaterThanOrEqual(1);
+        expect(b).toBeLessThanOrEqual(2000);
     });
 
 });
