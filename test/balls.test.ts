@@ -1,5 +1,5 @@
 'use strict';
-import { flashBalls, shuffleBalls, } from '../src';
+import { lotteryBalls, shuffleBalls, } from '../src';
 
 
 describe('Balls module', () => {
@@ -9,11 +9,11 @@ describe('Balls module', () => {
     });
 
 
-    test('flashBalls test', () => {
-        const a = flashBalls(99);
+    test('lotteryBalls test', () => {
+        const a = lotteryBalls(99);
 		//console.log(JSON.stringify(a));
         expect(a.length).toBeGreaterThanOrEqual(99);
-        expect(() => { flashBalls(200); }).toThrow(Error);
+        expect(() => { lotteryBalls(200); }).toThrow(Error);
     });
 
 });

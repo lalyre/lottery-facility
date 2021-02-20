@@ -10,7 +10,7 @@ import { randomNumberRange } from './random';
  * PS:
  * do not consider the item at index 0
  */
-export function flashBalls(len:number): string[] {
+export function lotteryBalls(len:number): string[] {
 	if (len < 1 || len > 99) throw new Error('Invalid len parameter');
 	let balls = Array.from({ length: len+1 }, (_, i) => i.toString().padStart(2, "0"));
 	return balls;
