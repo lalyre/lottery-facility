@@ -3,12 +3,12 @@ import { randomNumberRange } from './random';
 
 
 /**
- * Return an ordered array of integers
+ * Returns an ordered array of integers
  * containing lottery balls from 1 to len.
  * 1 <= len <= 99
  * 
  * PS:
- * do not consider the item at index 0
+ * do not consider the item at index 0.
  */
 export function lotteryBalls(len:number): string[] {
 	if (len < 1 || len > 99) throw new Error('Invalid len parameter');
@@ -18,7 +18,7 @@ export function lotteryBalls(len:number): string[] {
 
 
 /**
- * Shuffle an array of lottery balls.
+ * Shuffles an array of lottery balls.
  */
 export function shuffleBalls(balls:string[], nbSwap:number): void {
 	let len = balls.length - 1;

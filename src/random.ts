@@ -2,6 +2,18 @@
 import * as crypto from 'crypto';
 
 
+/**
+ * Returns a random number between an intervall range of integers.
+ */
+export function randomNumberRange(a: number, b: number): number {
+	const min = (a < b) ? a : b;
+	const max = (a >= b) ? a : b;
+	const spread = max - min + 1;
+	const rand = randomNumber() % spread;
+	return min + Math.abs(rand);
+}
+
+
 function randomNumber(): number {
 	const length = 4;
 	const randomBytes1:Buffer = crypto.randomBytes(length);
@@ -19,14 +31,5 @@ function randomNumber(): number {
 		rand2 |= r2;
 	}
 	return rand1 * rand2;
-}
-
-
-export function randomNumberRange(a: number, b: number): number {
-	const min = (a < b) ? a : b;
-	const max = (a >= b) ? a : b;
-	const spread = max - min + 1;
-	const rand = randomNumber() % spread;
-	return min + Math.abs(rand);
 }
 
