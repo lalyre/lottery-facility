@@ -11,7 +11,7 @@ describe('Balls module', () => {
 
     test('lotteryBalls test', () => {
         const a = lotteryBalls(99);
-		//console.log(JSON.stringify(a));
+        //console.log(JSON.stringify(a));
         expect(a.length).toBeGreaterThanOrEqual(99);
         expect(() => { lotteryBalls(200); }).toThrow(Error);
     });
