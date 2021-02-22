@@ -17,7 +17,7 @@ export function randomNumberRange(a: number, b: number): number {
 function randomNumber(): number {
 	const length = 4;
 	const randomBytes1:Buffer = crypto.randomBytes(length);
-	const randomBytes2:Buffer = crypto.randomBytes(length);	
+	const randomBytes2:Buffer = crypto.randomBytes(length);
 	let rand1:number = 0;
 	let rand2:number = 0;
 	for (let i = 0; i < length; i++) {
@@ -25,8 +25,8 @@ function randomNumber(): number {
 			rand1 <<= 8;
 			rand2 <<= 8;
 		}
-		let r1:number = randomBytes1.readInt8(i);
-		let r2:number = randomBytes2.readInt8(i)
+		const r1:number = randomBytes1.readInt8(i);
+		const r2:number = randomBytes2.readInt8(i)
 		rand1 |= r1;
 		rand2 |= r2;
 	}
