@@ -9,4 +9,4 @@ AUTHORS
 tslint.json
 jest.config.ts
 lib/**/*.map
-
+dist/**/*.map
