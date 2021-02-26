@@ -6,7 +6,9 @@ src/
 test/
 doc/
 AUTHORS
+tsconfig.json
 tslint.json
 jest.config.ts
+webpack.config.js
 lib/**/*.map
 dist/**/*.map
