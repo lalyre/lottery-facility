@@ -21,6 +21,10 @@
     "prebuild": "npm run clean && npm run lint:ts",
     "build": "tsc",
     "postbuild": "webpack && npm run copy-files",
+	
+    "bundle": "browserify index.js -s Provable -o dist/provable.js",
+    "bundle-min": "browserify -g uglifyify ./index.js -s Provable -o dist/provable.min.js"
+	
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",
     "test0": "echo \"Error: no test specified\" && exit 1"
   },
@@ -31,6 +35,7 @@
   "keywords": [
     "lottery",
     "gambling",
+    "betting",
     "fdj",
     "wheeling",
     "combination",
@@ -41,7 +46,12 @@
     "cash",
     "money",
     "fortune",
-    "chance"
+    "chance",
+    "random",
+    "random generator",
+    "random engine",
+    "bookmaker",
+    "roulette"
   ],
   "author": "Claude Lalyre <claude.lalyre@gmail.com>",
   "contributors": [
