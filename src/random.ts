@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 
 
 /**
- * Returns a random number between an intervall range of integers.
+ * Returns a random number within a range of integers
  */
 export function randomNumberRange(a: number, b: number): number {
 	const min = (a < b) ? a : b;
