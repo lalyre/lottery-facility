@@ -16,7 +16,7 @@ module.exports = {
             "stream": false,
             "crypto": false,
             "crypto-browserify": require.resolve('crypto-browserify'), //if you want to use this module also don't forget npm i crypto-browserify 
-        } 
+        },
     },
     entry: {
         "bundle": "./lib/index.js",
@@ -28,11 +28,12 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lottery-facility-[name].js",
+        library: 'LotteryFacility',
     },
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
             include: /\.min\.js$/
         })],
-    }
+    },
 };
