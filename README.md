@@ -153,6 +153,7 @@ sha256.arrayBuffer(''); // ArrayBuffer
 
 Build and test the project with these commands
 ```sh
+npm install
 npm run build
 npm run test
 ```
