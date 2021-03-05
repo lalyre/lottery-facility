@@ -1,3 +1,8 @@
+2021-03-04, Version 0.0.1-alpha.1
+==================================
+* Writing a quick start documentation
+
+
 2021-02-16, Version 0.0.1-alpha.0
 ==================================
 * Publication on NPM registry, thus taking the NPM package name

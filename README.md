@@ -25,6 +25,46 @@ Install with npm:
 npm install @claudelalyre/lottery-facility
 ```
 
+## Quick Start
+
+import in your NodeJS project:
+
+```js
+const lottery = require('@claudelalyre/lottery-facility');
+
+const balls = lottery.lotteryBalls(70);
+lottery.shuffleBalls(balls, 30);
+console.log(balls);
+```
+
+Or get it from a CDN:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lottery-facility from CDN</title>
+</head>
+<body>
+
+  <!-- Load lottery-facility library -->
+  <script src="https://unpkg.com/filepond/dist/filepond.js"></script>
+
+  <!-- Turn all file input elements into ponds -->
+  <script>
+  const balls = lotteryBalls(70);
+  shuffleBalls(balls, 30);
+  document.write(balls);
+  </script>
+
+</body>
+</html>
+```
+
+
+https://unpkg.com/browse/@claudelalyre/lottery-facility@0.0.1-alpha.0/lib/
+
+
 
 ## Usage
 
