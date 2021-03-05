@@ -5,13 +5,13 @@ Some APIs for designing lottery cracking systems.
 <!-- TOC -->
 - [Overview](#overview)
 - [Install](#install)
+- [Quick start](#quick-start)
 - [Publishing](#publish-a-version)
 
 
 ## Overview
 
 Features:
-
 * Random numbers generator
 * Draws statistics
 * Draws prediction algorithms
@@ -25,7 +25,8 @@ Install with npm:
 npm install @claudelalyre/lottery-facility
 ```
 
-## Quick Start
+
+## Quick start
 
 import in your NodeJS project:
 
@@ -48,7 +49,7 @@ Or get it from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="lottery-facility-bundle.js"></script>
+  <script src="https://unpkg.com/@claudelalyre/lottery-facility@0.0.1-alpha.1/dist/lottery-facility-bundle.min.js"></script>
 
   <script>
   const balls = LotteryFacility.lotteryBalls(70);
