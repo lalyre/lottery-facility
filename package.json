@@ -23,10 +23,8 @@
     "prebuild": "npm run clean && npm run lint:ts",
     "build": "tsc",
     "postbuild": "webpack && npm run copy-files",
-	
     "bundle": "browserify index.js -s Provable -o dist/provable.js",
     "bundle-min": "browserify -g uglifyify ./index.js -s Provable -o dist/provable.min.js",
-	
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",
     "test0": "echo \"Error: no test specified\" && exit 1"
   },
@@ -49,7 +47,7 @@
     "money",
     "fortune",
     "chance",
-	"luck",
+    "luck",
     "random",
     "random generator",
     "random engine",
@@ -67,6 +65,7 @@
   "homepage": "https://github.com/lalyre/lottery-facility#readme",
   "devDependencies": {
     "@types/jest": "^26.0.20",
+    "buffer": "^6.0.3",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
