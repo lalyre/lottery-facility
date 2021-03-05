@@ -30,10 +30,10 @@ npm install @claudelalyre/lottery-facility
 import in your NodeJS project:
 
 ```js
-const lottery = require('@claudelalyre/lottery-facility');
+const lotteryFacility = require('@claudelalyre/lottery-facility');
 
-const balls = lottery.lotteryBalls(70);
-lottery.shuffleBalls(balls, 30);
+const balls = lotteryFacility.lotteryBalls(70);
+lotteryFacility.shuffleBalls(balls, 30);
 console.log(balls);
 ```
 
@@ -50,11 +50,10 @@ Or get it from a CDN:
   <!-- Load lottery-facility library -->
   <script src="lottery-facility-bundle.js"></script>
 
-  <!-- Turn all file input elements into ponds -->
   <script>
   const balls = LotteryFacility.lotteryBalls(70);
   LotteryFacility.shuffleBalls(balls, 30);
-  document.write(balls);
+  document.write(balls.slice(1, 11));
   </script>
 
 </body>
