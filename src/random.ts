@@ -25,10 +25,8 @@ function randomNumber(): number {
 			rand1 <<= 8;
 			rand2 <<= 8;
 		}
-		const r1:number = randomBytes1[i];
-		const r2:number = randomBytes2[i];
-		rand1 |= r1;
-		rand2 |= r2;
+		rand1 |= randomBytes1[i];
+		rand2 |= randomBytes2[i];
 	}
 	return rand1 * rand2;
 }
@@ -38,10 +36,7 @@ function randomBytes(len:number): Int8Array {
 	if (len < 1 || len > 32) throw new Error('Invalid len parameter');
 	const rand = Date.now() * Math.random();
 	const hash = sha256.array(rand.toString());
-	const arr:Int8Array = new Int8Array(len);
-	for (let i = 0; i < len; i++) {
-		arr[i] = hash[i];
-	}
+	const arr:Int8Array = new Int8Array(hash.slice(0, len));
 	return arr;
 }
 

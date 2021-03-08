@@ -16,4 +16,12 @@ describe('Balls module', () => {
         expect(() => { lotteryBalls(200); }).toThrow(Error);
     });
 
+    test('shuffleBalls test', () => {
+        const a = lotteryBalls(99);
+        shuffleBalls(a, 40);
+        const b = (a[1] !== "01") && (a[2] !== "02") && (a[3] !== "03")
+        expect(b).not.toBe(true);
+        expect(() => { lotteryBalls(200); }).toThrow(Error);
+    });
+
 });
