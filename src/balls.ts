@@ -1,4 +1,5 @@
 'use strict';
+import { union, } from 'lodash';
 import { randomNumberRange } from './random';
 
 
@@ -35,5 +36,40 @@ function swapBalls(balls:string[], a:number, b:number): void {
 	const aux = balls[a];
 	balls[a] = balls[b];
 	balls[b] = aux;
+}
+
+
+/**
+ * Display a lottery combination
+ */
+function displayCombination(numbers:number[]): string {
+	const arr = numbers.sort((a, b) => {return a - b;});
+	const display = arr.map (x => x.toString().padStart(2, '0')).join(' ');
+	return display;
+}
+
+
+/**
+ * Compute the number of collisions between 2 lottery combinations
+ */
+function collisionsCount(arr1:number[], arr2:number[]): number {
+	const merge = union(arr1, arr2);
+	const n1 = arr1.length + arr2.length;
+	const n2 = merge.length;
+	return (n1 - n2);
+}
+
+
+/**
+ * Compute the complement combination of a lottery combination relatively to maximum number value
+ */
+function complementCombination(max:number, numbers:number[]): number[] {
+	const complement:number[] = [];
+	complement.length = numbers.length;
+
+	for (let j = 0; j < numbers.length; j++) {
+		complement[j] = (max+1 - numbers[j]);
+	}
+	return complement;
 }
 

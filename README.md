@@ -22,7 +22,7 @@ Features:
 Install with npm:
 
 ```sh
-npm install @claudelalyre/lottery-facility
+npm install lottery-facility
 ```
 
 
@@ -31,7 +31,7 @@ npm install @claudelalyre/lottery-facility
 Import in your NodeJS project:
 
 ```js
-const lotteryFacility = require('@claudelalyre/lottery-facility');
+const lotteryFacility = require('lottery-facility');
 
 const balls = lotteryFacility.lotteryBalls(70);
 lotteryFacility.shuffleBalls(balls, 30);
@@ -49,7 +49,7 @@ Or get it from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="https://unpkg.com/@claudelalyre/lottery-facility@0.0.1-alpha.1/dist/lottery-facility-bundle.min.js"></script>
+  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.1/dist/lottery-facility-bundle.min.js"></script>
 
   <script>
   const balls = LotteryFacility.lotteryBalls(70);

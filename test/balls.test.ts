@@ -24,4 +24,15 @@ describe('Balls module', () => {
         expect(() => { lotteryBalls(200); }).toThrow(Error);
     });
 
+    test('displayCombination test', () => {
+		fail('need to write a test');
+    });
+
+    test('collisionsCount test', () => {
+		fail('need to write a test');
+    });
+
+    test('complementCombination test', () => {
+		fail('need to write a test');
+    });
 });
