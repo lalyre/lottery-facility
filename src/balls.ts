@@ -61,6 +61,14 @@ function collisionsCount(arr1:number[], arr2:number[]): number {
 
 
 /**
+ * Give the collisions between 2 lottery combinations
+ */
+function collisions(arr1:number[], arr2:number[]): number {
+	return union(arr1, arr2);
+}
+
+
+/**
  * Compute the complement combination of a lottery combination relatively to maximum number value
  */
 function complementCombination(max:number, numbers:number[]): number[] {

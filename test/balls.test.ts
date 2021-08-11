@@ -31,6 +31,10 @@ describe('Balls module', () => {
     test('collisionsCount test', () => {
 		fail('need to write a test');
     });
+	
+    test('collisions test', () => {
+		fail('need to write a test');
+    });
 
     test('complementCombination test', () => {
 		fail('need to write a test');
