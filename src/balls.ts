@@ -1,5 +1,5 @@
 'use strict';
-import { union, } from 'lodash';
+//import { union, } from 'lodash';
 import { randomNumberRange } from './random';
 
 
@@ -53,7 +53,7 @@ function displayCombination(numbers:number[]): string {
  * Compute the number of collisions between 2 lottery combinations
  */
 function collisionsCount(arr1:number[], arr2:number[]): number {
-	const merge = union(arr1, arr2);
+	const merge = collisions(arr1, arr2);
 	const n1 = arr1.length + arr2.length;
 	const n2 = merge.length;
 	return (n1 - n2);
@@ -63,8 +63,10 @@ function collisionsCount(arr1:number[], arr2:number[]): number {
 /**
  * Give the collisions between 2 lottery combinations
  */
-function collisions(arr1:number[], arr2:number[]): number {
-	return union(arr1, arr2);
+function collisions(arr1:number[], arr2:number[]): number[] {
+	let union1 = [...arr1, ...arr1];	
+	let union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
+	return union2;
 }
 
 
