@@ -64,7 +64,7 @@ function collisionsCount(arr1:number[], arr2:number[]): number {
  * Give the collisions between 2 lottery combinations
  */
 function collisions(arr1:number[], arr2:number[]): number[] {
-	let union1 = [...arr1, ...arr1];	
+	let union1 = [...arr1, ...arr2];	
 	let union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
 	return union2;
 }
