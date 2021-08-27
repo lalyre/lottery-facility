@@ -21,18 +21,8 @@ const generalConfig = {
         },
 		extensions: ['.tsx', '.ts', '.js'],
     },
-    /*entry: {
-        "bundle": "./lib/index.js",
-        "bundle.min": "./lib/index.js",
-    },*/
     mode: 'production',
     devtool: "source-map",
-    //target: 'web',		    // 'web' or 'node'
-    /*output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: "lottery-facility-[name].js",
-        library: 'LotteryFacility',
-    },*/
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
@@ -43,19 +33,12 @@ const generalConfig = {
 
 
 const nodeConfig = {
-	//entry: './src/node.ts',
     entry: {
         "node-bundle": "./lib/node.js",
         "node-bundle.min": "./lib/node.js",
     },
 	target: 'node',
 	externals: [nodeExternals()],
-	/*output: {
-		path: path.resolve(__dirname, './dist'),
-		filename: 'node.js',
-		libraryTarget: 'umd',
-		libraryExport: 'default',
-	},*/
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lottery-facility-[name].js",

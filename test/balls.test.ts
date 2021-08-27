@@ -1,5 +1,5 @@
 'use strict';
-import { lotteryBalls, shuffleBalls, } from '../src';
+import { lotteryBalls, shuffleBalls, } from '../src/node.ts';
 
 
 describe('Balls module', () => {
