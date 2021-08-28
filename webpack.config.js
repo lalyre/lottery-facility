@@ -41,7 +41,7 @@ const nodeConfig = {
 	externals: [nodeExternals()],
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: "lottery-facility-[name].js",
+        filename: "lotteryfacility-[name].js",
         //library: 'LotteryFacility',
     },
 };
@@ -55,11 +55,11 @@ const browserConfig = {
 	target: 'web',
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: "lottery-facility-[name].js",
-		libraryTarget: 'umd',
-		globalObject: 'this',
-		libraryExport: 'default',
-		umdNamedDefine: true,
+        filename: "lotteryfacility-[name].js",
+		//libraryTarget: 'umd',
+		//globalObject: 'this',
+		//libraryExport: 'default',
+		//umdNamedDefine: true,
         library: 'LotteryFacility',
     },
 };

@@ -19,14 +19,14 @@
     "test": "./test"
   },
   "scripts": {
-    "copy-files": "copyfiles -f src/**/*.json src/**/*.txt ./lib",
+    "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.html src/**/*.css ./lib",
     "lint:ts": "tslint -c tslint.json -p ./tsconfig.json \"src/**/*.ts\" -t stylish -e \"node_modules/**/*.ts\" -e \"**/*.d.ts\"",
     "tsc": "tsc",
     "clean": "rimraf build dist lib coverage",
     "prebuild": "npm run clean && npm run lint:ts",
     "start:dev": "webpack --mode=development --watch --progress",
     "build": "tsc",
-    "postbuild": "webpack --mode=production && npm run copy-files",
+    "postbuild": "npm run copy-files && webpack --mode=production",
     "bundle": "browserify index.js -s Provable -o dist/provable.js",
     "bundle-min": "browserify -g uglifyify ./index.js -s Provable -o dist/provable.min.js",
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",

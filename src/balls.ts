@@ -1,5 +1,5 @@
 'use strict';
-//import { union, } from 'lodash';
+// import { union, } from 'lodash';
 import { randomNumberRange } from './random';
 
 
@@ -42,7 +42,7 @@ function swapBalls(balls:string[], a:number, b:number): void {
 /**
  * Display a lottery combination
  */
-function displayCombination(numbers:number[]): string {
+export function displayCombination(numbers:number[]): string {
 	const arr = numbers.sort((a, b) => {return a - b;});
 	const display = arr.map (x => x.toString().padStart(2, '0')).join(' ');
 	return display;
@@ -52,7 +52,7 @@ function displayCombination(numbers:number[]): string {
 /**
  * Compute the number of collisions between 2 lottery combinations
  */
-function collisionsCount(arr1:number[], arr2:number[]): number {
+export function collisionsCount(arr1:number[], arr2:number[]): number {
 	const merge = collisions(arr1, arr2);
 	const n1 = arr1.length + arr2.length;
 	const n2 = merge.length;
@@ -63,9 +63,9 @@ function collisionsCount(arr1:number[], arr2:number[]): number {
 /**
  * Give the collisions between 2 lottery combinations
  */
-function collisions(arr1:number[], arr2:number[]): number[] {
-	let union1 = [...arr1, ...arr2];	
-	let union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
+export function collisions(arr1:number[], arr2:number[]): number[] {
+	const union1 = [...arr1, ...arr2];
+	const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
 	return union2;
 }
 
@@ -73,7 +73,7 @@ function collisions(arr1:number[], arr2:number[]): number[] {
 /**
  * Compute the complement combination of a lottery combination relatively to maximum number value
  */
-function complementCombination(max:number, numbers:number[]): number[] {
+export function complementCombination(max:number, numbers:number[]): number[] {
 	const complement:number[] = [];
 	complement.length = numbers.length;
 
