@@ -21,4 +21,9 @@ describe('Random module', () => {
         expect(b).toBeLessThanOrEqual(2000);
     });
 
+
+    test('randomNumber test', () => {
+		fail('need to write a test');
+    });
+
 });

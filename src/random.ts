@@ -14,7 +14,10 @@ export function randomNumberRange(a: number, b: number): number {
 }
 
 
-function randomNumber(): number {
+/**
+ * Returns a random number
+ */
+export function randomNumber(): number {
 	const length = 4;
 	const randomBytes1:Int8Array = randomBytes(length);
 	const randomBytes2:Int8Array = randomBytes(length);

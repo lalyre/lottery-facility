@@ -34,33 +34,34 @@ const generalConfig = {
 
 const nodeConfig = {
     entry: {
-        "node": "./lib/node.js",
-        "node.min": "./lib/node.js",
+        "nodebundle": "./lib/node.js",
+        "nodebundle.min": "./lib/node.js",
     },
 	target: 'node',
 	externals: [nodeExternals()],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lotteryfacility-[name].js",
-        library: 'LotteryFacility',
+        library: {
+			type: 'umd',
+		},
     },
 };
 
 
 const browserConfig = {
     entry: {
-        "web": "./lib/browser.js",
-        "web.min": "./lib/browser.js",
+        "webbundle": "./lib/browser.js",
+        "webbundle.min": "./lib/browser.js",
     },
 	target: 'web',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lotteryfacility-[name].js",
-		//libraryTarget: 'umd',
-		//globalObject: 'this',
-		//libraryExport: 'default',
-		//umdNamedDefine: true,
-        library: 'LotteryFacility',
+        library: {
+			name: 'LotteryFacility',
+			type: 'commonjs',
+		},
     },
 };
 
