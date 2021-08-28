@@ -34,27 +34,27 @@ const generalConfig = {
 
 const nodeConfig = {
     entry: {
-        "node-bundle": "./lib/node.js",
-        "node-bundle.min": "./lib/node.js",
+        "node": "./lib/node.js",
+        "node.min": "./lib/node.js",
     },
 	target: 'node',
 	externals: [nodeExternals()],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lotteryfacility-[name].js",
-        //library: 'LotteryFacility',
+        library: 'LotteryFacility',
     },
 };
 
 
 const browserConfig = {
     entry: {
-        "web-bundle": "./lib/browser.js",
-        "web-bundle.min": "./lib/browser.js",
+        "web": "./lib/browser.js",
+        "web.min": "./lib/browser.js",
     },
 	target: 'web',
     output: {
-        path: path.resolve(__dirname, './dist'),
+        path: path.resolve(__dirname, 'dist'),
         filename: "lotteryfacility-[name].js",
 		//libraryTarget: 'umd',
 		//globalObject: 'this',
@@ -79,3 +79,4 @@ module.exports = (env, argv) => {
 
 	return [nodeConfig, browserConfig];
 };
+

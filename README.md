@@ -31,7 +31,9 @@ npm install lottery-facility
 Import in your NodeJS project:
 
 ```js
-const lotteryFacility = require('lottery-facility');
+const lotteryFacility = require('lotteryfacility-web');
+or
+const lotteryFacility = require('lotteryfacility-node');
 
 const balls = lotteryFacility.lotteryBalls(70);
 lotteryFacility.shuffleBalls(balls, 30);
@@ -49,7 +51,7 @@ Or get it from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.1/dist/lottery-facility-bundle.min.js"></script>
+  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.2/dist/lotteryfacility-web.min.js"></script>
 
   <script>
   const balls = LotteryFacility.lotteryBalls(70);
