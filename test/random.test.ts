@@ -1,4 +1,4 @@
-import { randomNumberRange } from '../src';
+import { randomNumberRange } from '../src/random';
 
 
 describe('Random module', () => {
