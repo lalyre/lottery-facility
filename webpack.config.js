@@ -19,10 +19,12 @@ const generalConfig = {
             "crypto": false,
             "crypto-browserify": require.resolve('crypto-browserify'), //if you want to use this module also don't forget npm i crypto-browserify 
         },
+		modules: [path.resolve('./src'), "node_modules"],
 		extensions: ['.tsx', '.ts', '.js'],
     },
-    mode: 'production',
-    devtool: "source-map",
+	context: path.resolve(__dirname),
+    mode: 'production',		// or 'development',
+    devtool: 'source-map',	// or 'inline-source-map'
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
@@ -38,7 +40,13 @@ const nodeConfig = {
         "nodebundle.min": "./lib/node.js",
     },
 	target: 'node',
-	externals: [nodeExternals()],
+	node: {
+		__filename: true,
+		__dirname: true,
+	},
+	externals: [
+		nodeExternals(),	// in order to ignore all modules in node_modules folder
+	],
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: "lotteryfacility-[name].js",
