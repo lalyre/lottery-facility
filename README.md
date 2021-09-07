@@ -31,9 +31,7 @@ npm install lottery-facility
 Import in your NodeJS project:
 
 ```js
-const lotteryFacility = require('lotteryfacility-webbundle');
-or
-const lotteryFacility = require('lotteryfacility-nodebundle');
+const lotteryFacility = require('lottery-facility');
 
 const balls = lotteryFacility.lotteryBalls(70);
 lotteryFacility.shuffleBalls(balls, 30);

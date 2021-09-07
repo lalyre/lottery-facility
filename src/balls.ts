@@ -75,10 +75,7 @@ export function collisions(arr1:number[], arr2:number[]): number[] {
 export function complementCombination(max:number, numbers:number[]): number[] {
 	const complement:number[] = [];
 	complement.length = numbers.length;
-
-	for (let j = 0; j < numbers.length; j++) {
-		complement[j] = (max+1 - numbers[j]);
-	}
+	for (let j = 0; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
 	return complement;
 }
 
