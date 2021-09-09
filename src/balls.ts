@@ -10,9 +10,9 @@ import { randomNumberRange } from './random';
  * PS:
  * do not consider the item at index 0.
  */
-export function lotteryBalls(len:number): string[] {
+export function lotteryBalls(len:number): number[] {
 	if (len < 1 || len > 99) throw new Error('Invalid len parameter');
-	const balls = Array.from({ length: len+1 }, (_, i) => i.toString().padStart(2, '0'));
+	const balls = Array.from({ length: len+1 }, (_, i) => i);
 	return balls;
 }
 
@@ -20,7 +20,7 @@ export function lotteryBalls(len:number): string[] {
 /**
  * Shuffles an array of lottery balls.
  */
-export function shuffleBalls(balls:string[], nbSwap:number): void {
+export function shuffleBalls(balls:number[], nbSwap:number): void {
 	const len = balls.length - 1;
 	for (let i = 0; i < nbSwap; i++) {
 		const a = randomNumberRange(1, len);
@@ -30,7 +30,7 @@ export function shuffleBalls(balls:string[], nbSwap:number): void {
 }
 
 
-function swapBalls(balls:string[], a:number, b:number): void {
+function swapBalls(balls:number[], a:number, b:number): void {
 	if (a === b) return;
 	const aux = balls[a];
 	balls[a] = balls[b];
@@ -43,7 +43,7 @@ function swapBalls(balls:string[], a:number, b:number): void {
  */
 export function displayCombination(numbers:number[]): string {
 	const arr = numbers.sort((a, b) => {return a - b;});
-	const display = arr.map (x => x.toString().padStart(2, '0')).join(' ');
+	const display = arr.map(x => x.toString().padStart(2, '0')).join(' ');
 	return display;
 }
 

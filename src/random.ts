@@ -24,10 +24,8 @@ export function randomNumber(): number {
 	let rand1:number = 0;
 	let rand2:number = 0;
 	for (let i = 0; i < length; i++) {
-		if (i > 0) {
-			rand1 <<= 8;
-			rand2 <<= 8;
-		}
+		rand1 <<= 8;
+		rand2 <<= 8;
 		rand1 |= randomBytes1[i];
 		rand2 |= randomBytes2[i];
 	}
