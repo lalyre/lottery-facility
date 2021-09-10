@@ -27,6 +27,10 @@ describe('Balls module', () => {
     test('displayCombination test', () => {
 		  fail('need to write a test');
     });
+	
+    test('displayCanonicalCombination test', () => {
+		  fail('need to write a test');
+    });
 
     test('collisionsCount test', () => {
 		  fail('need to write a test');
