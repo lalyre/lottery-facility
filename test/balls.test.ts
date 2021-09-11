@@ -24,11 +24,11 @@ describe('Balls module', () => {
         expect(() => { lotteryBalls(200); }).toThrow(Error);
     });
 
-    test('displayCombination test', () => {
+    test('combinationString test', () => {
 		  fail('need to write a test');
     });
 	
-    test('displayCanonicalCombination test', () => {
+    test('canonicalCombinationString test', () => {
 		  fail('need to write a test');
     });
 

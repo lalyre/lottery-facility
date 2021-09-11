@@ -39,18 +39,18 @@ function swapBalls(balls:number[], a:number, b:number): void {
 
 
 /**
- * Display a lottery combination
+ * Get lottery combination string
  */
-export function displayCombination(numbers:number[]): string {
+export function combinationString(numbers:number[]): string {
 	const display = numbers.map(x => x.toString().padStart(2, '0')).join(' ');
 	return display;
 }
 
 
 /**
- * Display a canonical (ordered) lottery combination
+ * Get canonical (ordered) lottery combination string
  */
-export function displayCanonicalCombination(numbers:number[]): string {
+export function canonicalCombinationString(numbers:number[]): string {
 	const arr = numbers.sort((a, b) => {return a - b;});
 	const display = arr.map(x => x.toString().padStart(2, '0')).join(' ');
 	return display;

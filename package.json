@@ -20,7 +20,7 @@
     "test": "./test"
   },
   "scripts": {
-    "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.html src/**/*.css ./lib",
+    "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
     "lint:ts": "tslint -c tslint.json -p ./tsconfig.json \"src/**/*.ts\" -t stylish -e \"node_modules/**/*.ts\" -e \"**/*.d.ts\"",
     "tsc": "tsc",
     "clean": "rimraf build dist lib coverage",
