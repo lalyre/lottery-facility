@@ -36,7 +36,8 @@
     "test0": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "flash": "./bin/flash-cli.js"
+    "flash": "./bin/flash-cli.js",
+    "translate": "./bin/translate-cli.js"
   },
   "repository": {
     "type": "git",
