@@ -8,9 +8,10 @@
     "dist/**.js",
     "dist/**.min.js"
   ],
+  "type": "mmmmmmmmmmmmmodule",
   "private": false,
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.9.1"
   },
   "directories": {
     "dist": "./dist",
@@ -33,6 +34,9 @@
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",
     "test:watch": "jest --watch",
     "test0": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "flash": "./bin/flash-cli.js"
   },
   "repository": {
     "type": "git",
@@ -76,7 +80,6 @@
     "buffer": "^6.0.3",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "crypto-browserify": "^3.12.0",
     "jest": "^26.6.3",
     "js-sha256": "^0.9.0",
     "rimraf": "^3.0.2",
@@ -87,5 +90,8 @@
     "webpack": "^5.24.3",
     "webpack-cli": "^4.5.0",
     "webpack-node-externals": "^3.0.0"
+  },
+  "dependencies": {
+    "meow": "^7.1.0"
   }
 }

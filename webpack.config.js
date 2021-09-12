@@ -3,6 +3,17 @@ const webpack = require("webpack");
 const nodeExternals = require('webpack-node-externals');
 const TerserPlugin = require("terser-webpack-plugin");
 
+// import path from 'path';
+// import webpack from 'webpack';
+// import nodeExternals from 'webpack-node-externals';
+// import TerserPlugin from 'terser-webpack-plugin';
+
+// import { fileURLToPath } from 'url';
+// import { dirname } from 'path';
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+// const __dirname = path.resolve();
+
 
 const generalConfig = {
 	resolve: {
@@ -17,7 +28,6 @@ const generalConfig = {
 			"stream": false,
 			"buffer": false,
 			"crypto": false,
-			"crypto-browserify": require.resolve('crypto-browserify'), //if you want to use this module also don't forget npm i crypto-browserify 
 		},
 		modules: [path.resolve('./src'), "node_modules"],
 		extensions: ['.tsx', '.ts', '.js'],

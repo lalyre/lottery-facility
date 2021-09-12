@@ -152,6 +152,17 @@ sha256.arrayBuffer(''); // ArrayBuffer
 
 
 
+https://github.com/rmariuzzo/markdown-swagger/blob/master/index.js
+https://github.com/rmariuzzo/php-array-to-json/blob/master/package.json
+https://github.com/yargs/yargs
+https://github.com/chalk/chalk
+https://github.com/sindresorhus/meow
+https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
+
+
+
+
+
 
 
 

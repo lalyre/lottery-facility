@@ -1,3 +1,8 @@
+2021-09-12, Version 0.0.1-alpha.3
+==================================
+* Adding flash CLI utility.
+
+
 2021-08-28, Version 0.0.1-alpha.2
 ==================================
 * Compilation of both nodeJS and Web versions of the library.
