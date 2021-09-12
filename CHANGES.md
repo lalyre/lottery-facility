@@ -1,3 +1,7 @@
+2021-09-12, Version 0.0.1-alpha.4
+==================================
+* Adding translate CLI utility.
+
 2021-09-12, Version 0.0.1-alpha.3
 ==================================
 * Adding flash CLI utility.

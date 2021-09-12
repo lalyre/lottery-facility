@@ -13,9 +13,11 @@ const cli = meow(`
 	  --size, -s   Size of generated combinations
 	  --sort       Display ordered combinations
 	  --nb         Number of generated combinations
+	  --nbSwap     Number of shuffle operations
 	  
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
+	The optional parameter 'sort' sorts combinations items in ascending order.
 `, {
 	flags: {
 		total: {
@@ -36,6 +38,10 @@ const cli = meow(`
 			type: 'number',
 			default: 1,
 		},
+		nbSwap: {
+			type: 'number',
+			default: 35,
+		},
 	}
 });
 
@@ -49,19 +55,17 @@ if (cli.flags.total < cli.flags.size) {
 	process.exit(1);
 }
 
-//console.log("hello world");
-//console.log("cli.flags" + JSON.stringify(cli.flags));
-//console.log("cli.input" + JSON.stringify(cli.input));
 
 let total = cli.flags.total;
 let size = cli.flags.size;
 let nb = cli.flags.nb;
+let nbSwap = cli.flags.nbSwap;
 let balls = lotteryFacility.lotteryBalls(total);
 let cb = null;
 let str = null;
 
 for (let i = 0; i < nb; i++) {
-	lotteryFacility.shuffleBalls(balls, 50);
+	lotteryFacility.shuffleBalls(balls, nbSwap);
 	cb = balls.slice(1, size+1);
 	str = (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(cb, " ") : lotteryFacility.combinationString(cb, " ");
 	console.log(str);

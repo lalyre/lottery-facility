@@ -1,4 +1,4 @@
-import { randomNumberRange } from '../src/random';
+import { randomNumber, randomNumberRange } from '../src/random';
 
 
 describe('Random module', () => {
@@ -23,7 +23,8 @@ describe('Random module', () => {
 
 
     test('randomNumber test', () => {
-		  fail('need to write a test');
+        const a = randomNumber();
+        //console.log("a: " + a);
     });
 
 });

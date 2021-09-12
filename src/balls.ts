@@ -61,20 +61,28 @@ export function canonicalCombinationString(numbers:number[], sep:string): string
  * Compute the number of collisions between 2 lottery combinations
  */
 export function collisionsCount(arr1:number[], arr2:number[]): number {
-	const merge = collisions(arr1, arr2);
-	const n1 = arr1.length + arr2.length;
-	const n2 = merge.length;
-	return (n1 - n2);
+	const merge = intersection(arr1, arr2);
+	return merge.length;
 }
 
 
 /**
- * Give the collisions between 2 lottery combinations
+ * Give the union between 2 lottery combinations
  */
-export function collisions(arr1:number[], arr2:number[]): number[] {
+export function union(arr1:number[], arr2:number[]): number[] {
 	const union1 = [...arr1, ...arr2];
 	const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
 	return union2;
+}
+
+
+/**
+ * Give the intersection between 2 lottery combinations
+ */
+export function intersection(arr1:number[], arr2:number[]): number[] {
+	const union1 = arr1.filter((item, pos) => arr1.indexOf(item) === pos);
+	const intersec = union1.filter((item, pos) => arr2.indexOf(item) != -1);
+	return intersec;
 }
 
 
