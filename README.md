@@ -49,7 +49,7 @@ Or get it from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.2/dist/lotteryfacility-webbundle.min.js"></script>
+  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.3/dist/lotteryfacility-webbundle.min.js"></script>
 
   <script>
   const balls = LotteryFacility.lotteryBalls(70);
