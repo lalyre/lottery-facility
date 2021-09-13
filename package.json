@@ -93,6 +93,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "chalk": "^4.1.2",
     "meow": "^7.1.0"
   }
 }

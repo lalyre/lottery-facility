@@ -8,7 +8,7 @@ const cli = meow(`
 	Usage
 	  $ flash
 
-	Usage
+	Parameters
 	  --total, -t  Total number of lottery balls
 	  --size, -s   Size of generated combinations
 	  --sort       Display ordered combinations

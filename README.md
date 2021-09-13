@@ -28,7 +28,7 @@ npm install lottery-facility
 
 ## Quick start
 
-Import in your NodeJS project:
+Import in your NodeJS project with CommonJS:
 
 ```js
 const lotteryFacility = require('lottery-facility');
@@ -198,7 +198,7 @@ Push the new Git tag to remote origin
 git push --tags
 ```
 
-Go to the root of the project, and publish publicly the new package version to the NPM registry. Once published a version can be deprecated, but it cannot be deleted and re-used.
+Go to the root of the project, and publish publicly the new package version to the NPM registry. Once published a version can be deprecated, but it cannot be deleted nor re-used.
 ```sh
 npm publish --access public
 ```

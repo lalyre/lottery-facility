@@ -84,7 +84,7 @@ export function union(arr1:number[], arr2:number[]): number[] {
  */
 export function intersection(arr1:number[], arr2:number[]): number[] {
 	const union1 = arr1.filter((item, pos) => arr1.indexOf(item) === pos);
-	const intersec = union1.filter((item, pos) => arr2.indexOf(item) != -1);
+	const intersec = union1.filter((item, pos) => arr2.indexOf(item) !== -1);
 	return intersec;
 }
 
