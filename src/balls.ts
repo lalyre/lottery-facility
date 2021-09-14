@@ -19,9 +19,9 @@ export function lotteryBalls(len:number): number[] {
 
 /**
  * Shuffles an array of lottery balls.
- * @param balls		array of lottery balls
- * @param nbSwap	number of shuffle operations
- * @return 			array with shuffled items
+ * @param balls     array of lottery balls
+ * @param nbSwap    number of shuffle operations
+ * @return          array with shuffled items
  */
 export function shuffleBalls(balls:number[], nbSwap:number): void {
 	const len = balls.length - 1;
