@@ -1,5 +1,14 @@
 'use strict';
-import { lotteryBalls, shuffleBalls, combinationString, canonicalCombinationString, collisionsCount, union, intersection, complementCombination, } from '../src/node';
+import {
+     lotteryBalls,
+     shuffleBalls,
+     combinationString,
+     canonicalCombinationString,
+     collisionsCount,
+     union,
+     intersection,
+     complementCombination,
+} from '../src/node';
 
 
 describe('Balls module', () => {
