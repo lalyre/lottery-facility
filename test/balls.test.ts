@@ -67,6 +67,9 @@ describe('Balls module', () => {
          let d = intersection(b, a);
          let s2 = canonicalCombinationString(d, " ");
          expect(s2).toBe("01 03 06");
+
+         let e = intersection([1, 2], [3, 4]);
+         expect(e.length).toBe(0);
     });
 
 

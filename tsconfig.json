@@ -83,6 +83,7 @@
     "src/**/*.tsx",
     "src/**/*.json",
     "src/**/*.txt",
+    "src/**/*.csv",
   ],
   "exclude": [
     "node_modules",

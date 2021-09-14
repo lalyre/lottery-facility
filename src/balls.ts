@@ -83,8 +83,7 @@ export function union(arr1:number[], arr2:number[]): number[] {
  * Give the intersection between 2 lottery combinations
  */
 export function intersection(arr1:number[], arr2:number[]): number[] {
-	const union1 = arr1.filter((item, pos) => arr1.indexOf(item) === pos);
-	const intersec = union1.filter((item, pos) => arr2.indexOf(item) !== -1);
+	const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1);
 	return intersec;
 }
 
