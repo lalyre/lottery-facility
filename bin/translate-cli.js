@@ -10,15 +10,20 @@ const cli = meow(`
 	  $ translate
 
 	Parameters
-	  --total, -t  Total number of lottery balls
-	  --size, -s   Size of generated combinations
-	  --sort       Display ordered combinations
-	  --nb         Number of generated combinations
-	  --nbSwap     Number of shuffle operations
+	  --file, -f    A file containing one combination per line
+	  --originnum   Items of combinations separated by '|' that are used in combinations of <file> file
+	  --originfile  File containing one item per line that are used in combinations of <file> file
+	  --targetnum   Items of combinations used for the translation of <file> file
+	  --targetfile  File containing one item per line used for the translation <file> file
 	  
 	Description
-	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
-	The optional parameter 'sort' sorts combinations items in ascending order.
+	This script takes an input file <file> containing one combination per line, combinations
+	written with the <origin> alphabet and translated into <target> alphabet.
+	Items of <origin> alphabet are translated to <target> alphabet relatively to
+	their corresponding order of declaration.
+
+	The <origin> alphabet can be declared either with <originnum> or <originfile> parameters.
+	The <target> alphabet can be declared either with <targetnum> or <targetfile> parameters.
 `, {
 	flags: {
 		originfile: {
@@ -97,10 +102,7 @@ if (origin_alphabet.length > target_alphabet.length) {
 }
 
 
-
-/*
-
-var fileStream = fs.createReadStream(filename);
+var fileStream = fs.createReadStream(cli.flags.file);
 var rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity
@@ -114,11 +116,11 @@ rl.on('line', (line) => {
 	//console.log("res1 " + res1);
 	
 	var res2 = res1.map(o => {
-		var id = from_numbers.findIndex(obj => obj == o);
+		var id = origin_alphabet.findIndex(obj => obj == o);
 		if (id == -1) {
 			return `>>>${o}<<<`;
 		}
-		return to_numbers[id];
+		return target_alphabet[id];
 	});
 	//console.log("res2 " + res2);
 	
@@ -129,8 +131,5 @@ rl.on('line', (line) => {
 	//console.log('Have a great day!');
 	//process.exit(0);
 });
-
-
-*/
 
 
