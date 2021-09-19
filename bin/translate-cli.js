@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 const fs = require('fs');
+const readline = require('readline');
 const meow = require('meow');
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle');
 
@@ -29,7 +30,7 @@ const cli = meow(`
 		originfile: {
 			type: 'string',
 			isRequired: (input, flags) => {
-				if (flags.originnum) {
+				if (input.originnum) {
 					return false;
 				}
 				return true;
@@ -44,7 +45,7 @@ const cli = meow(`
 		targetfile: {
 			type: 'string',
 			isRequired: (input, flags) => {
-				if (flags.targetnum) {
+				if (input.targetnum) {
 					return false;
 				}
 				return true;
