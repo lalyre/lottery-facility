@@ -103,7 +103,8 @@ export function complementCombination(max:number, numbers:number[]): number[] {
 	if (!numbers) return [];
 	const complement:number[] = [];
 	complement.length = numbers.length;
-	for (let j = 0; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
+	complement[0] = 0;
+	for (let j = 1; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
 	return complement;
 }
 
