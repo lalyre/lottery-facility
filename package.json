@@ -37,7 +37,8 @@
   },
   "bin": {
     "flash": "./bin/flash-cli.js",
-    "translate": "./bin/translate-cli.js"
+    "translate": "./bin/translate-cli.js",
+    "euromillions_draws": "./bin/euromillions_draws-cli.js"
   },
   "repository": {
     "type": "git",
