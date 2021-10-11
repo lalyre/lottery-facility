@@ -2,6 +2,7 @@
 ==================================
 * Adding translate CLI utility.
 * Adding euromillions_draws CLI utility.
+* Adding kenoFR_draws CLI utility.
 
 
 2021-09-12, Version 0.0.1-alpha.3

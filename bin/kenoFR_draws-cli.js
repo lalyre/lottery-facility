@@ -129,3 +129,113 @@ rp({
 	console.log("error:");
 	console.log(err);
 });
+
+
+
+
+if (process.argv.length <= 2
+|| (process.argv[2] == '-h' || process.argv[2] == '--help')) {
+	console.log("keno_lastdraws.js [Version " + version.api_version + "]")
+	console.log("(c) 2020 Claude Lalyre Corporation. Tous droits reserves.")
+	console.log("Usage:");
+	console.log("keno_lastdraws.js --help");
+	console.log("keno_lastdraws.js --version");
+	console.log("keno_lastdraws.js -n <number of last draws> [-head <number of lines>] [-date]");
+	console.log("\t");
+	console.log("");
+	console.log("This script gives last draws of Keno lottery.");
+	console.log("The -n <num> parameter gives the last <num> draws of Keno lottery.")
+	console.log("The optional [-date] parameter also displays date and time.");
+	console.log("The optional [-head <num>] gives only the first <num> draws.")
+	process.exit(0);
+}
+if (process.argv[2] == '-v' || process.argv[2] == '-V' || process.argv[2] == '--version') {
+	console.log(`v${version.api_version}`);
+	process.exit(0);
+}
+
+
+var num = undefined;
+var head = undefined;
+var display_date = false;
+process.argv.forEach((val, index) => {
+	if (val == '-n') {
+		if (index + 1 == process.argv.length) {
+			console.error("Missing argument on command line");
+			process.exit(1);
+		}
+		val = process.argv[index+1].trim();
+		num = parseInt(val, 10);
+	}
+	if (val == '-date') {
+		display_date = true;
+	}
+	if (val == '-head') {
+		if (index + 1 == process.argv.length) {
+			console.error("Missing argument on command line");
+			process.exit(1);
+		}
+		val = process.argv[index+1].trim();
+		head = parseInt(val, 10);
+	}
+});
+
+
+// Download from https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
+//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_199309.zip';
+//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201302.zip';
+//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201811.zip';
+const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_202010.zip';
+rp({
+	method: "GET",
+	url: kenoArchive,
+	encoding: null,		// <- this one is important !
+})
+.then((data) => {
+	return JSZip.loadAsync(data);	
+})
+.then((zipContent) => {
+	//return zipContent.file("keno_201811.csv").async("string");
+	return zipContent.file("keno_202010.csv").async("string");
+})
+.then((text) => {
+	var lines = text.split(/\r?\n/);
+	
+	//annee_numero_de_tirage0, date_de_tirage1, heure_de_tirage2, date_de_forclusion3, boule1 4,boule2 5,boule3 6,boule4 7,boule5 8,boule6 9,boule7 10,
+	//boule8 11,boule9 12,boule10 13,boule11 14,boule12 15,boule13 16,boule14 17,boule15 18,boule16 19,boule17 20,boule18 21,boule19 22,boule20 23,
+	//multiplicateur 94,numero_jokerplus 95,devise 96,
+	
+	if (num > lines.length-1) {
+		console.error("Too many draws required !");
+		process.exit(1);
+	}
+
+	var count = 0;
+	for (let i = num; i > 0; i--) {
+		if (head && count == head) {
+			break;
+		}
+		var current_line = lines[i];
+		if (!current_line) {
+			continue;
+		}
+		
+		++count;
+		var values = current_line.split(';');
+		var date = values[1];
+		var hour = values[2];
+		var balls = values.slice(4, 24);
+		var multiplicator = values[94];
+		
+		if (display_date) {
+			console.log(date + "; " + hour + "; " + balls.map (x => x.toString().padStart(2, 0)).join(" "));
+		} else {
+			console.log(balls.map (x => x.toString().padStart(2, 0)).join(" "));
+		}
+	}
+})
+.catch((err) => {
+	console.log("error:");
+	console.log(err);
+});
+
