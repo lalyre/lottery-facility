@@ -13,12 +13,12 @@ const cli = meow(`
 
 	Parameters
 	  --num, -n     It retrieves the last <num> draws of Euromillions lottery in ascending order
-	  --date		Displays the date
-	  --stars		Displays the stars
-	  --head		Gives only the first <head> lines instead of the whole required draws in ascending order
+	  --date        Displays the date
+	  --stars       Displays the stars
+	  --head        Gives only the first <head> lines instead of the whole required draws in ascending order
 	  
 	Description
-	This script gives last draws of Euromillions lottery.
+	This script gives last draws of Euromillions lottery in ascending order.
 `, {
 	flags: {
 		num: {
