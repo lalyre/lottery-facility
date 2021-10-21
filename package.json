@@ -4,6 +4,7 @@
   "description": "Some APIs for designing lottery cracking systems.",
   "main": "dist/lotteryfacility-nodebundle.js",
   "files": [
+    "bin/",
     "dist/**.txt",
     "dist/**.js",
     "dist/**.min.js"
