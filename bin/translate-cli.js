@@ -75,7 +75,7 @@ if (!fs.existsSync(cli.flags.file)) {
 
 let origin_alphabet = null;
 if (cli.flags.originnum) {
-	origin_alphabet = cli.flags.originnum.trim().split(/\|/);
+	origin_alphabet = cli.flags.originnum.trim().split(/[\| ]/);
 } else {
 	if (!fs.existsSync(cli.flags.originfile)) {
 		console.error(`File ${cli.flags.originfile} does not exist`);
@@ -87,7 +87,7 @@ if (cli.flags.originnum) {
 
 let target_alphabet = null;
 if (cli.flags.targetnum) {
-	target_alphabet = cli.flags.targetnum.trim().split(/\|/);
+	target_alphabet = cli.flags.targetnum.trim().split(/[\| ]/);
 } else {
 	if (!fs.existsSync(cli.flags.targetfile)) {
 		console.error(`File ${cli.flags.targetfile} does not exist`);
