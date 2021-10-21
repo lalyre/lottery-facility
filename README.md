@@ -16,11 +16,13 @@ Features:
 * Draws statistics
 * Draws prediction algorithms
 
-Utilities:
+CLI Utilities:
 * flash
 * translate
 * euromillions_draws
 * kenoFR_draws
+* combination
+* filter
 
 
 ## Install
