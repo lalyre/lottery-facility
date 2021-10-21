@@ -34,12 +34,12 @@ export function shuffleBalls(balls:number[], nbSwap:number): void {
 }
 
 
-function swapBalls(balls:number[], a:number, b:number): void {
-	if (!balls) return;
+function swapBalls(numbers:number[], a:number, b:number): void {
+	if (!numbers) return;
 	if (a === b) return;
-	const aux = balls[a];
-	balls[a] = balls[b];
-	balls[b] = aux;
+	const aux = numbers[a];
+	numbers[a] = numbers[b];
+	numbers[b] = aux;
 }
 
 
@@ -103,8 +103,7 @@ export function complementCombination(max:number, numbers:number[]): number[] {
 	if (!numbers) return [];
 	const complement:number[] = [];
 	complement.length = numbers.length;
-	complement[0] = 0;
-	for (let j = 1; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
+	for (let j = 0; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
 	return complement;
 }
 
