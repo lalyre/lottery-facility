@@ -16,6 +16,12 @@ Features:
 * Draws statistics
 * Draws prediction algorithms
 
+Utilities:
+* flash
+* translate
+* euromillions_draws
+* kenoFR_draws
+
 
 ## Install
 

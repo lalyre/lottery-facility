@@ -1,4 +1,4 @@
-2021-xx-xx, Version 0.0.1-alpha.4
+2021-10-21, Version 0.0.1-alpha.4
 ==================================
 * Adding translate CLI utility.
 * Adding euromillions_draws CLI utility.
