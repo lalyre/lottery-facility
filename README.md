@@ -16,7 +16,7 @@ Features:
 * Draws statistics
 * Draws prediction algorithms
 
-CLI Utilities:
+CLI utilities:
 * flash
 * translate
 * euromillions_draws
