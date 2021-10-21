@@ -12,7 +12,7 @@
   "type": "mmmmmmmmmmmmmodule",
   "private": false,
   "engines": {
-    "node": ">=16.9.1"
+    "node": ">=12.19.0"
   },
   "directories": {
     "dist": "./dist",
