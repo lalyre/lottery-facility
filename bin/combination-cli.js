@@ -14,12 +14,12 @@ const cli = meow(`
 	  --total, -t     Total number of lottery balls
 	  --size, -s      Size of generated combinations
 	  --file, -f      A file containing one item of combination per line
-	  --numbers, -n   Items of combinations separated by '|', or ' '.
+	  --numbers, -n   Items of combinations separated by '|', or ' '
 
 	Description
 	This script generates combinations of items taken in <file> or <numbers>, of size <size>
 	implementing choice of <size> items among <total> items.
-    Only the first <total> items of <file> or <numbers> are used to build combinations.
+	Only the first <total> items of <file> or <numbers> are used to build combinations.
 `, {
 	flags: {
 		total: {
