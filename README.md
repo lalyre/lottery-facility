@@ -19,10 +19,10 @@ Features:
 CLI utilities:
 * flash
 * translate
-* euromillions_draws
-* kenoFR_draws
 * combination
 * filter
+* euromillions_draws
+* kenoFR_draws
 
 
 ## Install
