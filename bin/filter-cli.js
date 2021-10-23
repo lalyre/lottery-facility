@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 'use strict';
-const _ = require('lodash');
+//const _ = require('lodash');
 const fs = require('fs');
 const readline = require('readline');
-const version = require('./version.json');
+//const version = require('./version.json');
 
 
 if (process.argv.length <= 2
 || (process.argv[2] == '-h' || process.argv[2] == '--help')) {
-	console.log("filter.js [Version " + version.api_version + "]")
+	//console.log("filter.js [Version " + version.api_version + "]")
 	console.log("(c) 2020 Claude Lalyre Corporation. Tous droits reserves.")
 	console.log("Usage:");
 	console.log("filter.js --help");
-	console.log("filter.js --version");
+	//console.log("filter.js --version");
 	console.log("filter.js    --level <level> --filter <filter file> --file <file game> [--nb_hits <nb_hits>] [--printhits]");
 	console.log("filter.js --minlevel <level> --filter <filter file> --file <file game> [--nb_hits <nb_hits>] [--printhits]");
 	console.log("filter.js --maxlevel <level> --filter <filter file> --file <file game> [--nb_hits <nb_hits>] [--printhits]");
@@ -43,10 +43,10 @@ if (process.argv.length <= 2
 	console.log("");
 	process.exit(0);
 }
-if (process.argv[2] == '-v' || process.argv[2] == '-V' || process.argv[2] == '--version') {
+/*if (process.argv[2] == '-v' || process.argv[2] == '-V' || process.argv[2] == '--version') {
 	console.log(`v${version.api_version}`);
 	process.exit(0);
-}
+}*/
 
 
 const filterModes = {
