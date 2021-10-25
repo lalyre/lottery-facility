@@ -8,7 +8,9 @@
   },
   "typesVersions": {
     "*": {
-      "*": ["dist/*"]
+      "*": [
+        "dist/*"
+      ]
     }
   },
   "files": [
@@ -106,6 +108,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "js-sha256": "^0.9.0",
     "chalk": "^4.1.2",
     "fs": "^0.0.1-security",
     "jszip": "^3.7.1",
