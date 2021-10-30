@@ -27,9 +27,8 @@ export function shuffleBalls(balls:number[], nbSwap:number): void {
 	if (!balls) return;
 	const len = balls.length - 1;
 	for (let i = 0; i < nbSwap; i++) {
-		const a = randomNumberRange(1, len);
 		const b = randomNumberRange(1, len);
-		swapBalls(balls, a, b);
+		swapBalls(balls, (i+1)%(len+1), b);
 	}
 }
 

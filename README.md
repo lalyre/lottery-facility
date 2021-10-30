@@ -21,7 +21,6 @@ CLI utilities:
 * translate
 * combination
 * filter
-* balancer
 * euromillions_draws
 * kenoFR_draws
 
