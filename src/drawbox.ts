@@ -2,44 +2,62 @@
 import { randomNumberRange } from './random';
 
 
-/**
- * Returns an ordered array of integers
- * containing lottery balls from 1 to len.
- * 1 <= len <= 99
- *
- * PS:
- * do not consider the item at index 0.
- */
-export function lotteryBalls(len:number): number[] {
-	if (len < 1 || len > 99) throw new Error('Invalid len parameter');
-	const balls = Array.from({ length: len+1 }, (_, i) => i);
-	return balls;
-}
-
-
-/**
- * Shuffles an array of lottery balls.
- * @param balls     array of lottery balls
- * @param nbSwap    number of shuffle operations
- * @return          array with shuffled items
- */
-export function shuffleBalls(balls:number[], nbSwap:number): void {
-	if (!balls) return;
-	const len = balls.length - 1;
-	for (let i = 0; i < nbSwap; i++) {
-		const b = randomNumberRange(1, len);
-		swapBalls(balls, (i+1)%(len+1), b);
+export class DrawBox {
+	private readonly _count: number;
+	private readonly _balls: number[];
+	
+	
+	/**
+	 * Builds a draw box of lottery balls from 1 to len
+	 * 1 <= len <= 99
+	 *
+	 * PS:
+	 * do not consider the item at index 0.
+	 */
+	constructor(count: number) {
+		super();
+		
+		if (count < 1 || count > 99) throw new Error('Invalid count parameter');
+		this._count = count;
+		this._balls = Array.from({ length: count+1 }, (_, i) => i);
+	}
+	
+	
+	get Count(): number {
+		return this._count;
+	}
+	
+	
+	get Balls(): number[] {
+		return this._balls;
+	}
+	
+	
+	/**
+	 * Shuffles the balls in the draw box.
+	 * @param nbSwap    number of shuffle operations
+	 * @return          none
+	 */
+	public shuffle(nbSwap:number): void {
+		const len = _balls.length - 1;
+		for (let i = 0; i < nbSwap; i++) {
+			const a = randomNumberRange(1, len);
+			swapBalls((i+1)%(len+1), a);
+		}
+	}
+	
+	
+	private swapBalls(a:number, b:number): void {
+		if (a === b) return;
+		const aux = _balls[a];
+		_balls[a] = _balls[b];
+		_balls[b] = aux;
 	}
 }
 
 
-function swapBalls(numbers:number[], a:number, b:number): void {
-	if (!numbers) return;
-	if (a === b) return;
-	const aux = numbers[a];
-	numbers[a] = numbers[b];
-	numbers[b] = aux;
-}
+
+
 
 
 /**
