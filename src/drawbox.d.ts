@@ -1,9 +1,4 @@
-/*namespace lotteryfacilityLib {
-	export class DrawBox {
-		private readonly _count: number;
-		
-		constructor(count: number);
-		get Count(): number;
-	}
+declare class DrawBox {
+	constructor(count: number);
+	public draw(size:number, nbSwap?:number): number[];
 }
-*/

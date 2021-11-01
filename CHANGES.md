@@ -2,6 +2,8 @@
 ==================================
 * Package fix.
 * Adding balancer CLI utility.
+* Adding Random class.
+* Adding DrawBox class.
 
 
 2021-10-23, Version 0.0.1-alpha.5

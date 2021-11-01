@@ -41,8 +41,8 @@ Import in your NodeJS project with CommonJS:
 ```js
 const lotteryFacility = require('lottery-facility');
 
-const balls = lotteryFacility.lotteryBalls(70);
-lotteryFacility.shuffleBalls(balls, 30);
+const box = new lotteryFacility.DrawBox(70);
+const balls = box.draw(20);
 console.log(balls);
 ```
 
@@ -60,8 +60,8 @@ Or get it from a CDN:
   <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.6/dist/lotteryfacility-webbundle.min.js"></script>
 
   <script>
-  const balls = LotteryFacility.lotteryBalls(70);
-  LotteryFacility.shuffleBalls(balls, 30);
+  const box = new LotteryFacility.DrawBox(70);
+  const balls = box.draw(20);
   document.write(balls.slice(1, 11));
   </script>
 

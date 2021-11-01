@@ -1,7 +1,7 @@
 'use strict';
 import {
-     lotteryBalls,
-     shuffleBalls,
+     Random,
+     DrawBox,
      combinationString,
      canonicalCombinationString,
      collisionsCount,
@@ -11,27 +11,19 @@ import {
 } from '../src/node';
 
 
-describe('Balls module', () => {
+describe('DrawBox module', () => {
 
 
     beforeEach(() => {
     });
 
 
-    test('lotteryBalls test', () => {
-        const a = lotteryBalls(99);
-        //console.log(JSON.stringify(a));
-        expect(a.length).toBeGreaterThanOrEqual(99);
-        expect(() => { lotteryBalls(200); }).toThrow(Error);
-    });
-
-
-    test('shuffleBalls test', () => {
-        const a = lotteryBalls(99);
-        shuffleBalls(a, 40);
+    test('DrawBox.draw test', () => {
+        const r = new DrawBox(99);
+        const a = r.draw(99, 40);
         const b = !((a[1] === 1) && (a[2] === 2) && (a[3] === 3) && (a[4] === 4))
         expect(b).toBe(true);
-        expect(() => { lotteryBalls(200); }).toThrow(Error);
+        expect(() => { new DrawBox(200); }).toThrow(Error);
     });
 
 

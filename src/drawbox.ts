@@ -1,12 +1,12 @@
 'use strict';
-import { randomNumberRange } from './random';
+import { Random } from './random';
 
 
 export class DrawBox {
 	private readonly _count: number;
 	private readonly _balls: number[];
-	
-	
+
+
 	/**
 	 * Builds a draw box of lottery balls from 1 to len
 	 * 1 <= len <= 99
@@ -15,43 +15,55 @@ export class DrawBox {
 	 * do not consider the item at index 0.
 	 */
 	constructor(count: number) {
-		super();
-		
+		// super();
+
 		if (count < 1 || count > 99) throw new Error('Invalid count parameter');
 		this._count = count;
 		this._balls = Array.from({ length: count+1 }, (_, i) => i);
 	}
-	
-	
-	get Count(): number {
+
+
+	/*get Count(): number {
 		return this._count;
 	}
-	
-	
+
+
 	get Balls(): number[] {
 		return this._balls;
+	}*/
+
+
+	/**
+	 * Draws the balls from the draw box.
+	 * @param size      Size of the random selection of numbers
+	 * @param nbSwap    Optional parameter. Number of shuffle operations. Default value to 50.
+	 * @return          none
+	 */
+	public draw(size:number, nbSwap:number = 50): number[] {
+		if (size > this._count) throw new Error('Invalid size parameter');
+		this.shuffle(nbSwap);
+		return this._balls.slice(1, size+1);
 	}
-	
-	
+
+
 	/**
 	 * Shuffles the balls in the draw box.
 	 * @param nbSwap    number of shuffle operations
 	 * @return          none
 	 */
-	public shuffle(nbSwap:number): void {
-		const len = _balls.length - 1;
+	private shuffle(nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
-			const a = randomNumberRange(1, len);
-			swapBalls((i+1)%(len+1), a);
+			const a = Random.randomNumberRange(1, this._count);
+			this.swapBalls(i%(this._count+1)+1, a);
 		}
 	}
-	
-	
+
+
 	private swapBalls(a:number, b:number): void {
 		if (a === b) return;
-		const aux = _balls[a];
-		_balls[a] = _balls[b];
-		_balls[b] = aux;
+		const aux = this._balls[a];
+		this._balls[a] = this._balls[b];
+		this._balls[b] = aux;
 	}
 }
 
