@@ -46,6 +46,14 @@ const balls = box.draw(20);
 console.log(balls);
 ```
 
+
+Import in your NodeJS project with ES6:
+
+
+Import in your NodeJS project with TypeScript:
+
+
+
 Or get it from a CDN:
 
 ```html
