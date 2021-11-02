@@ -14,9 +14,10 @@ export class DrawBox {
 	 * PS:
 	 * do not consider the item at index 0.
 	 */
-	constructor(count: number) {
+	public constructor(count: number) {
 		// super();
 
+		if (count === undefined) throw new Error('Need to pass a count parameter');
 		if (count < 1 || count > 99) throw new Error('Invalid count parameter');
 		this._count = count;
 		this._balls = Array.from({ length: count+1 }, (_, i) => i);
@@ -54,7 +55,7 @@ export class DrawBox {
 	private shuffle(nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
 			const a = Random.randomNumberRange(1, this._count);
-			this.swapBalls(i%(this._count+1)+1, a);
+			this.swapBalls(1+i%this._count, a);
 		}
 	}
 
