@@ -19,7 +19,7 @@ export class Random {
 	 * Returns a random number
 	 */
 	public static randomNumber(): number {
-		const length = 4;
+		const length = 8;
 		const randomBytes1:Int8Array = Random.randomBytes(length);
 		const randomBytes2:Int8Array = Random.randomBytes(length);
 		let rand1:number = 0;
@@ -30,7 +30,7 @@ export class Random {
 			rand1 |= randomBytes1[i];
 			rand2 |= randomBytes2[i];
 		}
-		return rand1 * rand2;
+		return rand1 ^ rand2;
 	}
 
 
