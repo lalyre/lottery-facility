@@ -40,7 +40,7 @@ const cli = meow(`
 		},
 		nbSwap: {
 			type: 'number',
-			default: 35,
+			default: 200,
 		},
 	}
 });
@@ -60,13 +60,12 @@ let total = cli.flags.total;
 let size = cli.flags.size;
 let nb = cli.flags.nb;
 let nbSwap = cli.flags.nbSwap;
-let balls = lotteryFacility.lotteryBalls(total);
+let box = new lotteryFacility.DrawBox(total);
 let cb = null;
 let str = null;
 
 for (let i = 0; i < nb; i++) {
-	lotteryFacility.shuffleBalls(balls, nbSwap);
-	cb = balls.slice(1, size+1);
-	str = (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(cb, " ") : lotteryFacility.combinationString(cb, " ");
+	let balls = box.draw(size, nbSwap);
+	str = (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(balls, " ") : lotteryFacility.combinationString(balls, " ");
 	console.log(str);
 }
