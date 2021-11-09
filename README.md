@@ -30,6 +30,7 @@ CLI utilities:
 Install with npm:
 
 ```sh
+npm install --save-dev @types/lottery-facility
 npm install lottery-facility
 ```
 
@@ -47,10 +48,7 @@ console.log(balls);
 ```
 
 
-Import in your NodeJS project with ES6:
-
-
-Import in your NodeJS project with TypeScript:
+Import in your NodeJS project with ES6 or TypeScript:
 
 
 
@@ -175,7 +173,7 @@ https://github.com/chalk/chalk
 https://github.com/sindresorhus/meow
 https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
 
-
+npm install --save-dev @types/react
 
 
 
