@@ -37,7 +37,7 @@ export class DrawBox {
 	/**
 	 * Draws the balls from the draw box.
 	 * @param size      Size of the random selection of numbers
-	 * @param nbSwap    Optional parameter. Number of shuffle operations. Default value to 50.
+	 * @param nbSwap    Optional parameter. Number of shuffle operations. Default value is 50.
 	 * @return          none
 	 */
 	public draw(size:number, nbSwap:number = 50): number[] {
