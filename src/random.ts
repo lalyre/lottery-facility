@@ -21,16 +21,12 @@ export class Random {
 	public static randomNumber(): number {
 		const length = 8;
 		const randomBytes1:Int8Array = Random.randomBytes(length);
-		const randomBytes2:Int8Array = Random.randomBytes(length);
 		let rand1:number = 0;
-		let rand2:number = 0;
 		for (let i = 0; i < length; i++) {
 			rand1 <<= 8;
-			rand2 <<= 8;
 			rand1 |= randomBytes1[i];
-			rand2 |= randomBytes2[i];
 		}
-		return rand1 ^ rand2;
+		return rand1;
 	}
 
 
