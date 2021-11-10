@@ -46,8 +46,8 @@ const generalConfig = {
 
 const nodeConfig = {
 	entry: {
-		"nodebundle": "./lib/node.js",
-		"nodebundle.min": "./lib/node.js",
+		"nodebundle": "./lib/main.js",
+		"nodebundle.min": "./lib/main.js",
 	},
 	target: 'node',
 	node: {

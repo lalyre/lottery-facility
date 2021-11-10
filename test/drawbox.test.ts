@@ -8,7 +8,7 @@ import {
      union,
      intersection,
      complementCombination,
-} from '../src/node';
+} from '../src/main';
 
 
 describe('DrawBox module', () => {

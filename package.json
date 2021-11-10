@@ -3,21 +3,19 @@
   "version": "0.0.1-alpha.5",
   "description": "Some APIs for designing lottery cracking systems.",
   "main": "dist/lotteryfacility-nodebundle.js",
+  "types": "./ts4.4/main.d.ts",
+  "typesVersions": {
+    ">=4.4": { "*": ["ts4.4/*"] }
+  },
   "exports": {
     "./*": "./dist/*.js"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
   },
   "files": [
     "bin/",
     "dist/**.txt",
     "dist/**.js",
-    "dist/**.min.js"
+    "dist/**.min.js",
+    "ts4.4/"
   ],
   "type": "mmmmmmmmmmmmmodule",
   "private": false,
@@ -35,7 +33,7 @@
     "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
     "lint:ts": "tslint -c tslint.json -p ./tsconfig.json \"src/**/*.ts\" -t stylish -e \"node_modules/**/*.ts\" -e \"**/*.d.ts\"",
     "tsc": "tsc",
-    "clean": "rimraf build dist lib types coverage",
+    "clean": "rimraf build dist lib coverage types ts4.4",
     "prebuild": "npm run clean && npm run lint:ts",
     "start:dev": "webpack --mode=development --watch --progress",
     "build": "tsc",

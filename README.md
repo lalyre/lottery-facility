@@ -10,7 +10,6 @@ Some APIs for designing lottery cracking systems.
 
 
 ## Overview
-
 Features:
 * Random numbers generator
 * Draws statistics
@@ -26,7 +25,6 @@ CLI utilities:
 
 
 ## Install
-
 Install with npm:
 
 ```sh
@@ -36,7 +34,6 @@ npm install lottery-facility
 
 
 ## Quick start
-
 Import in your NodeJS project with CommonJS:
 
 ```js
@@ -175,8 +172,34 @@ https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c216
 
 npm install --save-dev @types/react
 
+{ "*": ["ts3.1/*"] }
+[...]/node_modules/package-name/ts3.1/index.d.ts
 
 
+"types": "./index.d.ts",
+"typesVersions": {
+"<4.0": { "index.d.ts": ["index.v3.d.ts"] }
+}
+./index.d.ts		TypeScript 4.0 and above
+./index.v3.d.ts		TypeScript  3.9 and below
+
+"types": "./index.d.ts",
+"typesVersions": {
+	">=3.2": { "*": ["ts3.2/*"] },
+	">=3.1": { "*": ["ts3.1/*"] }
+}
+
+"typesVersions": {
+	">=3.1": { "*": ["ts3.1/*"] }
+}
+
+"types": "./index.d.ts",
+"typesVersions": {
+  ">=4.4": { "*": ["ts4.4/*"] }
+},
+
+
+https://definitelytyped.org/guides/contributing.html
 
 
 
@@ -184,7 +207,6 @@ npm install --save-dev @types/react
 
 
 ## Publish a version
-
 Build and test the project with these commands
 ```sh
 npm install
@@ -223,6 +245,4 @@ The project is released under the [MIT license](http://www.opensource.org/licens
 
 
 ## Contributors
-
 * [All Contributors](./AUTHORS)
-
