@@ -1,4 +1,4 @@
-import * as version from '../src/version';
+import { api_version } from '../src/version';
 
 
 describe('Version module', () => {
@@ -9,7 +9,7 @@ describe('Version module', () => {
 
 
     test('version.api_version test', () => {
-        console.log("version " + version.api_version);
+        console.log("version " + api_version);
         //fail('need to write a test');
     });
 
