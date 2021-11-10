@@ -8,7 +8,7 @@ describe('Version module', () => {
     });
 
 
-    test('version.api_version test', () => {
+    test('api_version test', () => {
         console.log("version " + api_version);
         //fail('need to write a test');
     });
