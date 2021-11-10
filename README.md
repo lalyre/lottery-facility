@@ -200,7 +200,7 @@ npm install --save-dev @types/react
 
 
 https://definitelytyped.org/guides/contributing.html
-
+https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html
 
 
 
