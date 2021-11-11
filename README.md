@@ -28,8 +28,8 @@ CLI utilities:
 Install with npm:
 
 ```sh
-npm install --save-dev @types/lottery-facility
 npm install lottery-facility
+npm install --save-dev @types/lottery-facility
 ```
 
 
@@ -47,6 +47,19 @@ console.log(balls);
 
 Import in your NodeJS project with ES6 or TypeScript:
 
+Create a file test.ts
+```js
+import { DrawBox } from 'lottery-facility';
+
+const box = new DrawBox(70);
+const balls = box.draw(20);
+console.log(balls);
+```
+
+and compile with these commands
+```sh
+npx  tsc test.ts
+```
 
 
 Or get it from a CDN:
