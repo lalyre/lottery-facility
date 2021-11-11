@@ -11,8 +11,8 @@ describe('Random module', () => {
     test('Random.randomNumberRange test', () => {
         const a = Random.randomNumberRange(1, 2000);
         const b = Random.randomNumberRange(1, 2000);
-        //console.log("a: " + a);
-        //console.log("b: " + b);
+        console.log("a: " + a);
+        console.log("b: " + b);
 
         expect(a).toBeGreaterThanOrEqual(1);
         expect(a).toBeLessThanOrEqual(2000);
@@ -24,7 +24,7 @@ describe('Random module', () => {
 
     test('Random.randomNumber test', () => {
         const a = Random.randomNumber();
-        //console.log("a: " + a);
+        console.log("a: " + a);
     });
 
 });

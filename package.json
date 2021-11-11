@@ -38,7 +38,7 @@
     "start:dev": "webpack --mode=development --watch --progress",
     "build": "tsc",
     "postbuild": "npm run copy-files && webpack --mode=production",
-    "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage",
+    "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
     "test0": "echo \"Error: no test specified\" && exit 1"
   },

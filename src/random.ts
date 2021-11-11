@@ -32,8 +32,9 @@ export class Random {
 
 	private static randomBytes(len:number): Int8Array {
 		if (len < 1 || len > 32) throw new Error('Invalid len parameter');
-		const rand = Date.now() * Math.random() * 2**16;
-		const hash = sha256.array(rand.toString());
+		// const rand = Date.now().toString(2) + Math.random().toString(2);
+		const rand = Date.now().toString() + Math.random().toString().substring(2);
+		const hash = sha256.array(rand);
 		const arr:Int8Array = new Int8Array(hash.slice(0, len));
 		return arr;
 	}
