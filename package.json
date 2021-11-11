@@ -5,7 +5,11 @@
   "main": "dist/lotteryfacility-nodebundle.js",
   "types": "./ts4.4/main.d.ts",
   "typesVersions": {
-    ">=4.4": { "*": ["ts4.4/*"] }
+    ">=4.4": {
+      "*": [
+        "ts4.4/*"
+      ]
+    }
   },
   "exports": {
     "./*": "./dist/*.js"
@@ -87,8 +91,12 @@
   },
   "homepage": "https://github.com/lalyre/lottery-facility#readme",
   "devDependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
     "@types/jest": "^26.0.20",
     "@types/lodash": "^4.14.171",
+    "babel-preset-env": "^1.7.0",
     "buffer": "^6.0.3",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
@@ -104,9 +112,9 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "js-sha256": "^0.9.0",
     "chalk": "^4.1.2",
     "fs": "^0.0.1-security",
+    "js-sha256": "^0.9.0",
     "jszip": "^3.7.1",
     "meow": "^7.1.0",
     "readline": "^1.3.0",

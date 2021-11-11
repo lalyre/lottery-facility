@@ -47,7 +47,7 @@ console.log(balls);
 
 Import in your NodeJS project with ES6 or TypeScript:
 
-Create a file test.ts
+create a file test.ts (for Typescript) or test.js (for ES6)
 ```js
 import { DrawBox } from 'lottery-facility';
 
@@ -58,12 +58,12 @@ console.log(balls);
 
 and compile with these commands
 ```sh
-npx  tsc test.ts
+npx tsc test.ts
+npx babel --presets=@babel/env test.js --out-file script-compiled.js
 ```
 
 
 Or get it from a CDN:
-
 ```html
 <!DOCTYPE html>
 <html>
