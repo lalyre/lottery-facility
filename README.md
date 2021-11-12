@@ -34,6 +34,8 @@ npm install --save-dev @types/lottery-facility
 
 
 ## Quick start
+
+### CommonJS
 Import in your NodeJS project with CommonJS:
 
 ```JavaScript
@@ -45,6 +47,7 @@ console.log(balls);
 ```
 
 
+### ES6 or TypeScript
 Import in your NodeJS project with ES6 or TypeScript:
 
 create a file test.ts (for Typescript) or test.js (for ES6)
@@ -63,6 +66,7 @@ npx babel --presets=@babel/env test.js --out-file script-compiled.js
 ```
 
 
+### For browsers
 Or get it from a CDN:
 ```html
 <!DOCTYPE html>
