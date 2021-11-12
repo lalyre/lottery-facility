@@ -64,7 +64,7 @@ npx babel --presets=@babel/env test.js --out-file script-compiled.js
 ```
 
 
-### For browsers
+### Browsers
 Import in your browser project from a CDN:
 ```html
 <!DOCTYPE html>
