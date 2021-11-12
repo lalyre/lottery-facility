@@ -3,17 +3,6 @@ const webpack = require("webpack");
 const nodeExternals = require('webpack-node-externals');
 const TerserPlugin = require("terser-webpack-plugin");
 
-// import path from 'path';
-// import webpack from 'webpack';
-// import nodeExternals from 'webpack-node-externals';
-// import TerserPlugin from 'terser-webpack-plugin';
-
-// import { fileURLToPath } from 'url';
-// import { dirname } from 'path';
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-// const __dirname = path.resolve();
-
 
 const generalConfig = {
 	resolve: {
@@ -98,4 +87,3 @@ module.exports = (env, argv) => {
 
 	return [nodeConfig, browserConfig];
 };
-
