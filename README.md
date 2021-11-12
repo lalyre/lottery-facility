@@ -26,7 +26,6 @@ CLI utilities:
 
 ## Install
 Install with npm:
-
 ```sh
 npm install lottery-facility
 npm install --save-dev @types/lottery-facility
@@ -37,7 +36,6 @@ npm install --save-dev @types/lottery-facility
 
 ### CommonJS
 Import in your NodeJS project with CommonJS:
-
 ```JavaScript
 const lotteryFacility = require('lottery-facility');
 
@@ -67,7 +65,7 @@ npx babel --presets=@babel/env test.js --out-file script-compiled.js
 
 
 ### For browsers
-Or get it from a CDN:
+Import in your browser project from a CDN:
 ```html
 <!DOCTYPE html>
 <html>
