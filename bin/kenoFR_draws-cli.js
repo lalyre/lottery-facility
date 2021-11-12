@@ -4,7 +4,7 @@ const request = require('request');
 const rp = require('request-promise');
 const JSZip = require("jszip");
 const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle');
+const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
 const cli = meow(`

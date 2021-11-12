@@ -77,12 +77,12 @@ Or get it from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.6/dist/lotteryfacility-webbundle.min.js"></script>
+  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.6/dist/lotteryfacility-webbundle.min.umd.js"></script>
 
   <script>
   const box = new LotteryFacility.DrawBox(70);
   const balls = box.draw(20);
-  document.write(balls.slice(1, 11));
+  document.write(balls);
   </script>
 
 </body>

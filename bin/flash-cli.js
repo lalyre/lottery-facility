@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict'
 const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle');
+const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
 const cli = meow(`

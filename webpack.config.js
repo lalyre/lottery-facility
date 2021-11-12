@@ -59,7 +59,7 @@ const nodeConfig = {
 	],
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: "lotteryfacility-[name].js",
+		filename: "lotteryfacility-[name].umd.js",
 		library: {
 			type: 'umd',
 		},
@@ -75,10 +75,10 @@ const browserConfig = {
 	target: 'web',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: "lotteryfacility-[name].js",
+		filename: "lotteryfacility-[name].umd.js",
 		library: {
 			name: 'LotteryFacility',
-			type: 'commonjs',
+			type: 'umd',
 		},
 	},
 };

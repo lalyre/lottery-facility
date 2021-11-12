@@ -3,7 +3,7 @@
 const fs = require('fs');
 const readline = require('readline');
 const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle');
+const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
 const cli = meow(`

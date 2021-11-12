@@ -2,7 +2,7 @@
   "name": "lottery-facility",
   "version": "0.0.1-alpha.5",
   "description": "Some APIs for designing lottery cracking systems.",
-  "main": "dist/lotteryfacility-nodebundle.js",
+  "main": "dist/lotteryfacility-nodebundle.umd.js",
   "types": "./ts4.4/main.d.ts",
   "typesVersions": {
     ">=4.4": {
