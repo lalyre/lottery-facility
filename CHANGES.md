@@ -1,6 +1,7 @@
 2021-xx-xx, Version 0.0.1-alpha.6
 ==================================
 * Package fix.
+* Documentation update.
 * Adding balancer CLI utility.
 * Adding Random class.
 * Adding DrawBox class.
