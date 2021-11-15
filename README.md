@@ -63,7 +63,6 @@ npx tsc test.ts
 npx babel --presets=@babel/env test.js --out-file script-compiled.js
 ```
 
-
 ### Browsers
 Import in your browser project from a CDN:
 ```html
