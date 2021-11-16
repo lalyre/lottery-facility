@@ -74,7 +74,7 @@ Import in your browser project from a CDN:
 <body>
 
   <!-- Load lottery-facility library -->
-  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.6/dist/lotteryfacility-webbundle.min.umd.js"></script>
+  <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.8/dist/lotteryfacility-webbundle.min.umd.js"></script>
 
   <script>
   const box = new LotteryFacility.DrawBox(70);

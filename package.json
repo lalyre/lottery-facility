@@ -16,9 +16,10 @@
   },
   "files": [
     "bin/",
+    "dist/**.json",
     "dist/**.txt",
+    "dist/**.csv",
     "dist/**.js",
-    "dist/**.min.js",
     "ts4.4/"
   ],
   "type": "mmmmmmmmmmmmmodule",

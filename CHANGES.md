@@ -1,3 +1,8 @@
+2021-xx-xx, Version 0.0.1-alpha.8
+==================================
+* Adding balancer CLI utility.
+
+
 2021-11-16, Version 0.0.1-alpha.7
 ==================================
 * Package fix.
