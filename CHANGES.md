@@ -1,3 +1,9 @@
+2021-11-16, Version 0.0.1-alpha.7
+==================================
+* Package fix.
+* Fixing compilation issue.
+
+
 2021-11-16, Version 0.0.1-alpha.6
 ==================================
 * Package fix.

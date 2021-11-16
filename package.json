@@ -3,16 +3,16 @@
   "version": "0.0.1-alpha.6",
   "description": "Some APIs for designing lottery cracking systems.",
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
-  "types": "./ts4.4/main.d.ts",
+  "exports": {
+    ".": "./dist/lotteryfacility-nodebundle.umd.js"
+  },
+  "types": "main.d.ts",
   "typesVersions": {
     ">=4.4": {
       "*": [
         "ts4.4/*"
       ]
     }
-  },
-  "exports": {
-    "./*": "./dist/*.js"
   },
   "files": [
     "bin/",
