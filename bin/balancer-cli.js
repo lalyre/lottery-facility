@@ -44,8 +44,10 @@ const cli = meow(`
 
 
 let pass = cli.flags.pass;
-let infile = cli.flags.infile;
-let outfile = cli.flags.outfile;
+let infile = cli.flags.infile.trim();
+let outfile = cli.flags.outfile.trim();
+let outfile_numbers = [];
+
 /*
 let total = cli.flags.total;
 let separator = false;
@@ -75,5 +77,15 @@ do {
 	var ret = nextCombination(iterators);
 } while (ret != null);
 */
+
+
+
+let outfile_lines = fs.readFileSync(outfile).toString().split(/\r?\n/);
+for (let outfile_line of outfile_lines) {
+	let numbers = outfile_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+	if (numbers[0] == 0) continue;
+	outfile_numbers.push(numbers);
+}
+
 
 
