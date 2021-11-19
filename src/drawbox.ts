@@ -38,7 +38,7 @@ export class DrawBox {
 	 * Draws the balls from the draw box.
 	 * @param size      Size of the random selection of numbers
 	 * @param nbSwap    Optional parameter. Number of shuffle operations. Default value is 50.
-	 * @return          none
+	 * @return          a random selection of numbers picked in the draw box
 	 */
 	public draw(size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
