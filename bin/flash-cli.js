@@ -9,7 +9,7 @@ const cli = meow(`
 	  $ flash
 
 	Parameters
-	  --total, -t  Total number of lottery balls
+	  --total, -t  Total number of lottery balls.
 	  --size, -s   Size of generated combinations
 	  --sort       Display ordered combinations
 	  --nb         Number of generated combinations
@@ -18,17 +18,21 @@ const cli = meow(`
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
 	The optional parameter 'sort' sorts combinations items in ascending order.
+
+	You can put <total> and <size> multiple times for selection into multiple draw boxes.
 `, {
 	flags: {
 		total: {
 			type: 'number',
 			alias: 't',
 			isRequired: (input, flags) => true,
+			isMultiple: true,
 		},
 		size: {
 			type: 'number',
 			alias: 's',
 			isRequired: (input, flags) => true,
+			isMultiple: true,
 		},
 		sort: {
 			type: 'boolean',
@@ -46,26 +50,39 @@ const cli = meow(`
 });
 
 
-if (cli.flags.total < 1 || cli.flags.total > 99) {
-	console.error("wrong value for <total> parameter !");
-	process.exit(1);
-}
-if (cli.flags.total < cli.flags.size) {
-	console.error("wrong value for <size> parameter !");
+if (cli.flags.total.length !== cli.flags.size.length) {
+	console.error("Missing <total> or <size> parameter !");
 	process.exit(1);
 }
 
-
-let total = cli.flags.total;
-let size = cli.flags.size;
+let totals = cli.flags.total;
+let sizes = cli.flags.size;
 let nb = cli.flags.nb;
 let nbSwap = cli.flags.nbSwap;
-let box = new lotteryFacility.DrawBox(total);
 let cb = null;
 let str = null;
 
+let boxes = [];
+for (let i = 0; i < totals.length; i++) {
+	if (totals[i] < 1 || totals[i] > 99) {
+		console.error(`wrong value for <total> (#${i}) parameter !`);
+		process.exit(1);
+	}
+	if (totals[i] < sizes[i]) {
+		console.error(`wrong value for <size> (#${i}) parameter !`);
+		process.exit(1);
+	}
+	boxes[i] = new lotteryFacility.DrawBox(totals[i]);
+}
+
+
 for (let i = 0; i < nb; i++) {
-	let balls = box.draw(size, nbSwap);
-	str = (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(balls, " ") : lotteryFacility.combinationString(balls, " ");
+	let str = "";
+	let ballsSet = [];
+	for (let j = 0; j < totals.length; j++) {
+		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
+		if (j > 0) str += " | ";
+		str += (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(ballsSet[j], " ") : lotteryFacility.combinationString(ballsSet[j], " ");
+	}	
 	console.log(str);
 }
