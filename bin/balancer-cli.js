@@ -46,14 +46,14 @@ const cli = meow(`
 			isMultiple: false,
 		},
 		level: {
-			type: 'number',
+			type: 'string',
 			alias: 'l',
 			isRequired: true,
 			isMultiple: false,
 			//default: 1,
 		},
 		hits: {
-			type: 'number',
+			type: 'string',
 			alias: 'h',
 			isRequired: true,
 			isMultiple: false,
@@ -63,31 +63,31 @@ const cli = meow(`
 });
 
 
-if (!cli.flags.level) {
-	console.error("Wrong <level> value.");
-	process.exit(1);
-}
-if (!cli.flags.hits) {
-	console.error("Wrong <hits> value.");
-	process.exit(1);
-}
-if (!cli.flags.infile) {
-	console.error("Missing <infile> parameter.");
-	process.exit(1);
-}
-
-
 let level = cli.flags.level;
 let hits = cli.flags.hits;
 let infile = cli.flags.infile.trim();
 let filterfile = cli.flags.filter.trim();
 let filter_numbers = [];
 
-/*
-let total = cli.flags.total;
-let separator = false;
-let SEP = (separator) ? '|' : ' ';
-*/
+
+switch (true) {
+	case (/^(\<|\<=|=|\>=)\d$/).test(level):
+		break;
+	
+	default:
+		console.error("Wrong <level> value.");
+		process.exit(1);
+		break;
+}
+switch (hits) {
+	default:
+		console.error("Wrong <hits> value.");
+		process.exit(1);
+		break;
+	}
+
+
+
 
 
 
