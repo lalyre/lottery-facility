@@ -55,12 +55,14 @@ if (cli.flags.total.length !== cli.flags.size.length) {
 	process.exit(1);
 }
 
+
 let totals = cli.flags.total;
 let sizes = cli.flags.size;
 let nb = cli.flags.nb;
 let nbSwap = cli.flags.nbSwap;
 let cb = null;
 let str = null;
+
 
 let boxes = [];
 for (let i = 0; i < totals.length; i++) {

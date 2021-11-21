@@ -11,42 +11,77 @@ const cli = meow(`
 	  $ balancer
 
 	Parameters
-	  --pass, -p       Total number of passes
-	  --infile, -in    An input file containing one combination per line
-	  --outfile, -out  An output file containing balanced combinations
+	  --infile, -in   An input file containing one combination per line, where some combinations will be selected.
+	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select input combinations.
+	  --level, -l     Defining the <level> of collisions with the current filter.
+	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
 
 	Description
-	At each pass, this script selects combinations from input file that can be added to the output file
-	keeping that output file well balanced. For each pass a blank line is first added to the ouput file.
+	This script selects combinations from input file according to filter <level> and <hits> restrictions.
+	The selected combinations are printed and also added to the current filter combinations, increasing the difficulty of next selections.
+	
+	With --level <=x, only filter lines with less than or equal x collisions with the current input combination are considered.
+	With --level <x, only filter lines with less than x collisions with the current input combination are considered.
+	With --level =x or --level x, only filter lines with x collisions with the current input combination are considered.
+	With --level >=x, only filter lines with more than or equal x collisions with the current input combination are considered.
+	With --level >x, only filter lines with more than x collisions with the current input combination are considered.
+	
+	With --hits <=x, if the current combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
+	With --hits <x, if the current combination matches with less than x filter lines then it is selected and printed to the ouput.
+	With --hits =x or --hits x, if the current combination matches with x filter lines then it is selected and printed to the ouput.
+	With --hits >=x, if the current combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
+	With --hits >x, if the current combination matches with more than x filter lines then it is selected and printed to the ouput.
 `, {
 	flags: {
-		pass: {
-			type: 'number',
-			alias: 'p',
-			isRequired: false,
-			isMultiple: false,
-			default: 1,
-		},
 		infile: {
 			type: 'string',
 			alias: 'in',
 			isRequired: true,
 			isMultiple: false,
 		},
-		outfile: {
+		filter: {
 			type: 'string',
-			alias: 'out',
+			alias: 'f',
 			isRequired: true,
 			isMultiple: false,
+		},
+		level: {
+			type: 'number',
+			alias: 'l',
+			isRequired: true,
+			isMultiple: false,
+			//default: 1,
+		},
+		hits: {
+			type: 'number',
+			alias: 'h',
+			isRequired: true,
+			isMultiple: false,
+			//default: 1,
 		},
 	}
 });
 
 
-let pass = cli.flags.pass;
+if (!cli.flags.level) {
+	console.error("Wrong <level> value.");
+	process.exit(1);
+}
+if (!cli.flags.hits) {
+	console.error("Wrong <hits> value.");
+	process.exit(1);
+}
+if (!cli.flags.infile) {
+	console.error("Missing <infile> parameter.");
+	process.exit(1);
+}
+
+
+let level = cli.flags.level;
+let hits = cli.flags.hits;
 let infile = cli.flags.infile.trim();
-let outfile = cli.flags.outfile.trim();
-let outfile_numbers = [];
+let filterfile = cli.flags.filter.trim();
+let filter_numbers = [];
 
 /*
 let total = cli.flags.total;
@@ -55,16 +90,13 @@ let SEP = (separator) ? '|' : ' ';
 */
 
 
-if (pass < 1) {
-	console.error("Wrong <pass> value.");
-	process.exit(1);
-}
+
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
 }
-if (!fs.existsSync(outfile)) {
-	fs.writeFileSync(outfile, '', { flag: 'a+'});
+if (!fs.existsSync(filterfile)) {
+	fs.writeFileSync(filterfile, '', { flag: 'a+'});
 }
 
 
@@ -80,11 +112,11 @@ do {
 
 
 
-let outfile_lines = fs.readFileSync(outfile).toString().split(/\r?\n/);
-for (let outfile_line of outfile_lines) {
-	let numbers = outfile_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+let filter_lines = fs.readFileSync(outfile).toString().split(/\r?\n/);
+for (let filter_line of filter_lines) {
+	let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
 	if (numbers[0] == 0) continue;
-	outfile_numbers.push(numbers);
+	filter_numbers.push(numbers);
 }
 
 

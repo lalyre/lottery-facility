@@ -106,10 +106,9 @@ if (origin_alphabet.length > target_alphabet.length) {
 var fileStream = fs.createReadStream(cli.flags.file);
 var rl = readline.createInterface({
 	input: fileStream,
-	crlfDelay: Infinity
-});
-
-rl.on('line', (line) => {
+	crlfDelay: Infinity,
+})
+.on('line', (line) => {
 	if (!line) {
 		return;
 	}
