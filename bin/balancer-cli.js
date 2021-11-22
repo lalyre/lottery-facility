@@ -20,17 +20,17 @@ const cli = meow(`
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
 	The selected combinations are printed and also added to the current filter combinations, increasing the difficulty of next selections.
 	
-	With --level <=x, only filter lines with less than or equal x collisions with the current input combination are considered.
-	With --level <x, only filter lines with less than x collisions with the current input combination are considered.
-	With --level =x or --level x, only filter lines with x collisions with the current input combination are considered.
-	With --level >=x, only filter lines with more than or equal x collisions with the current input combination are considered.
-	With --level >x, only filter lines with more than x collisions with the current input combination are considered.
+	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
+	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
+	With --level "=x" or --level x, only filter lines with x collisions with the current input combination are considered.
+	With --level ">=x", only filter lines with more than or equal x collisions with the current input combination are considered.
+	With --level ">x", only filter lines with more than x collisions with the current input combination are considered.
 	
-	With --hits <=x, if the current combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
-	With --hits <x, if the current combination matches with less than x filter lines then it is selected and printed to the ouput.
-	With --hits =x or --hits x, if the current combination matches with x filter lines then it is selected and printed to the ouput.
-	With --hits >=x, if the current combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
-	With --hits >x, if the current combination matches with more than x filter lines then it is selected and printed to the ouput.
+	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
+	With --hits "<x", if the current input combination matches with less than x filter lines then it is selected and printed to the ouput.
+	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
+	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
+	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
 `, {
 	flags: {
 		infile: {
@@ -71,7 +71,7 @@ let filter_numbers = [];
 
 
 switch (true) {
-	case (/^(\<|\<=|=|\>=)\d$/).test(level):
+	case (/^(<|<=|=|>=|>)?\d*$/).test(level):
 		break;
 	
 	default:
@@ -79,18 +79,15 @@ switch (true) {
 		process.exit(1);
 		break;
 }
-switch (hits) {
+switch (true) {
+	case (/^(<|<=|=|>=|>)?\d*$/).test(hits):
+		break;
+
 	default:
 		console.error("Wrong <hits> value.");
 		process.exit(1);
 		break;
-	}
-
-
-
-
-
-
+}
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
@@ -100,19 +97,8 @@ if (!fs.existsSync(filterfile)) {
 }
 
 
-
-/*
-do {
-	var temp_array = iterators.map(x => numbers[x-1]);
-	var result_line = temp_array.join(SEP);
-	console.log(result_line);
-	var ret = nextCombination(iterators);
-} while (ret != null);
-*/
-
-
-
-let filter_lines = fs.readFileSync(outfile).toString().split(/\r?\n/);
+// Loading initial filter
+let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
 for (let filter_line of filter_lines) {
 	let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
 	if (numbers[0] == 0) continue;
