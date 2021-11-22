@@ -63,15 +63,20 @@ const cli = meow(`
 });
 
 
-let level = cli.flags.level;
-let hits = cli.flags.hits;
+let levelSelection = cli.flags.level;
+let hitsSelection = cli.flags.hits;
+let level = null;
+let hits = null;
 let infile = cli.flags.infile.trim();
 let filterfile = cli.flags.filter.trim();
 let filter_numbers = [];
 
 
+let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
 switch (true) {
-	case (/^(<|<=|=|>=|>)?\d*$/).test(level):
+	case regexp.test(levelSelection):
+		let match = regexp.exec(levelSelection);
+		level = match[2];
 		break;
 	
 	default:
@@ -80,7 +85,9 @@ switch (true) {
 		break;
 }
 switch (true) {
-	case (/^(<|<=|=|>=|>)?\d*$/).test(hits):
+	case regexp.test(hitsSelection):
+		let match = regexp.exec(hitsSelection);
+		hits = match[2];
 		break;
 
 	default:
@@ -104,6 +111,4 @@ for (let filter_line of filter_lines) {
 	if (numbers[0] == 0) continue;
 	filter_numbers.push(numbers);
 }
-
-
 

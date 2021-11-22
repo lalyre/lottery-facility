@@ -50,7 +50,7 @@ const cli = meow(`
 });
 
 
-if (cli.flags.total.length !== cli.flags.size.length) {
+if (!cli.flags.total || !cli.flags.size) {
 	console.error("Missing <total> or <size> parameter !");
 	process.exit(1);
 }
@@ -60,8 +60,6 @@ let totals = cli.flags.total;
 let sizes = cli.flags.size;
 let nb = cli.flags.nb;
 let nbSwap = cli.flags.nbSwap;
-let cb = null;
-let str = null;
 
 
 let boxes = [];

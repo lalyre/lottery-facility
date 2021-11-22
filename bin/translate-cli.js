@@ -19,7 +19,7 @@ const cli = meow(`
 	  
 	Description
 	This script takes an input file <file> containing one combination per line, combinations
-	written with the <origin> alphabet and translated into <target> alphabet.
+	written with the <origin> alphabet and to be translated into <target> alphabet.
 	Items of <origin> alphabet are translated to <target> alphabet relatively to
 	their corresponding order of declaration.
 
@@ -96,11 +96,11 @@ if (cli.flags.targetnum) {
 	target_alphabet = fs.readFileSync(cli.flags.targetfile).toString().trim().split(/\r?\n/);
 }
 
-
+/*
 if (origin_alphabet.length > target_alphabet.length) {
 	console.error("The target alphabet does not contain enough items");
 	process.exit(1);
-}
+}*/
 
 
 var fileStream = fs.createReadStream(cli.flags.file);
@@ -131,5 +131,3 @@ var rl = readline.createInterface({
 	//console.log('Have a great day!');
 	//process.exit(0);
 });
-
-
