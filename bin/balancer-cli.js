@@ -42,7 +42,7 @@ const cli = meow(`
 		filter: {
 			type: 'string',
 			alias: 'f',
-			isRequired: true,
+			isRequired: false,
 			isMultiple: false,
 		},
 		level: {
@@ -68,7 +68,6 @@ let hitsSelection = cli.flags.hits;
 let level = null;
 let hits = null;
 let infile = cli.flags.infile.trim();
-let filterfile = cli.flags.filter.trim();
 let filter_numbers = [];
 
 
@@ -99,16 +98,57 @@ if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
 }
-if (!fs.existsSync(filterfile)) {
-	fs.writeFileSync(filterfile, '', { flag: 'a+'});
-}
 
 
 // Loading initial filter
-let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
-for (let filter_line of filter_lines) {
-	let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
-	if (numbers[0] == 0) continue;
-	filter_numbers.push(numbers);
+if (cli.flags.filter) {
+	let filterfile = cli.flags.filter.trim();
+
+	/*if (!fs.existsSync(filterfile)) {
+		fs.writeFileSync(filterfile, '', { flag: 'a+'});
+	}*/
+	
+	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
+	for (let filter_line of filter_lines) {
+		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+		if (numbers[0] == 0) continue;
+		if (numbers.join("") == '') continue;
+		filter_numbers.push(numbers);
+	}
 }
+
+
+// Test all combinations of input file
+let inputLinesCount = 0;
+var fileStream = fs.createReadStream(infile);
+var rl = readline.createInterface({
+	input: fileStream,
+	crlfDelay: Infinity,
+})
+.on('line', async (line) => {
+	if (!line) {
+		return;
+	}
+	let input_line_numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+	if (input_line_numbers[0] == 0) continue;
+	if (input_line_numbers.join("") == '') continue;
+	inputLinesCount++;
+	//console.log(line_numbers);
+
+
+	for (let j = 0; j < filter_numbers.length; j++) {
+		var nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
+
+		
+	}
+
+
+})
+.on('close', () => {
+	//console.log("inputLinesCount "  + inputLinesCount);
+
+
+
+});
+fileStream.close();
 

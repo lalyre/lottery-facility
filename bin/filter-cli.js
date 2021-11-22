@@ -532,6 +532,7 @@ rl.on('line', (line) => {
 	//console.log('Have a great day!');
 	//process.exit(0);
 });
+fileStream.close();
 
 
 const collisionsCount = function (arr1, arr2) {

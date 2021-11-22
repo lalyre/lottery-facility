@@ -131,3 +131,5 @@ var rl = readline.createInterface({
 	//console.log('Have a great day!');
 	//process.exit(0);
 });
+fileStream.close();
+
