@@ -19,13 +19,13 @@ const cli = meow(`
 	Description
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
 	The selected combinations are printed and also added to the current filter combinations, increasing the difficulty of next selections.
-	
+
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
 	With --level "=x" or --level x, only filter lines with x collisions with the current input combination are considered.
 	With --level ">=x", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With --level ">x", only filter lines with more than x collisions with the current input combination are considered.
-	
+
 	With --hits "<x", if the current input combination matches with less than x filter lines then it is selected and printed to the ouput.
 	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
@@ -85,6 +85,7 @@ switch (true) {
 		break;
 }
 
+
 let regexp2 = /^(<|<=|=|>=|>)?(\d*)|\*$/;
 switch (true) {
 	case regexp2.test(hitsSelection):
@@ -132,7 +133,7 @@ let rl = readline.createInterface({
 	if (!line) {
 		return;
 	}
-	let input_line_numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+	let input_line_numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 	if (input_line_numbers[0] == 0) return;
 	if (input_line_numbers.join("") == '') return;
 	inputLinesCount++;
@@ -178,6 +179,7 @@ let rl = readline.createInterface({
 				break;
 		}
 	}
+
 
 	switch (true) {
 		case /^<\d*$/.test(hitsSelection):
@@ -226,10 +228,13 @@ let rl = readline.createInterface({
 			break;
 	}
 
-	if (filter_numbers.length >= 100000) {
+
+	/*if (filter_numbers.length >= 5000) {
 		console.error("Limit of filter is reached !");
 		process.exit(1);
-	}
+	*/
+
+
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
@@ -240,14 +245,28 @@ let rl = readline.createInterface({
 
 
 
-// combination --total 22 --size 5 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22" > 5_20.txt
-// node bin/balancer-cli.js --infile 5_20.txt --level 0 --hits "*" > toto.txt
-// node bin/balancer-cli.js --infile 5_20.txt --filter toto.txt --level 1 --hits "*"
-// 
-// 01 02 03 04 05
-// 06 07 08 09 10
-// 11 12 13 14 15
-// 16 17 18 19 20
-// 
-// 01 06 11 21 22
+/*
+
+combination --total 22 --size 5 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22" > 5_22.txt
+node bin/balancer-cli.js --infile 5_22.txt --level 0 --hits "*" > filter.txt
+echo. >> filter.txt
+echo. >> filter.txt
+node bin/balancer-cli.js --infile 5_22.txt --filter filter.txt --level ">1" --hits "0"
+
+
+01 02 03 04 05
+06 07 08 09 10
+11 12 13 14 15
+16 17 18 19 20
+
+01 06 11 21 22
+
+
+combination --total 22 --size 1 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22" > 1_22.txt
+node bin/balancer-cli.js --infile 5_22.txt --filter 1_22.txt --level "0" --hits "5"
+
+
+
+*/
+
 
