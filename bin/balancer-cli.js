@@ -20,14 +20,14 @@ const cli = meow(`
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
 	The selected combinations are printed and also added to the current filter combinations, increasing the difficulty of next selections.
 	
-	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
+	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
 	With --level "=x" or --level x, only filter lines with x collisions with the current input combination are considered.
 	With --level ">=x", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With --level ">x", only filter lines with more than x collisions with the current input combination are considered.
 	
-	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits "<x", if the current input combination matches with less than x filter lines then it is selected and printed to the ouput.
+	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
 	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
