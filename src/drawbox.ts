@@ -76,7 +76,7 @@ export class DrawBox {
 /**
  * Get lottery combination string
  */
-export function combinationString(numbers:number[], sep:string): string {
+export function combinationString(numbers:number[], sep:string = ' '): string {
 	if (!numbers) return '';
 	const display = numbers.map(x => x.toString().padStart(2, '0')).join(sep);
 	return display;
@@ -86,7 +86,7 @@ export function combinationString(numbers:number[], sep:string): string {
 /**
  * Get canonical (ordered) lottery combination string
  */
-export function canonicalCombinationString(numbers:number[], sep:string): string {
+export function canonicalCombinationString(numbers:number[], sep:string = ' '): string {
 	if (!numbers) return '';
 	const arr = numbers.sort((a, b) => {return a - b;});
 	const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);

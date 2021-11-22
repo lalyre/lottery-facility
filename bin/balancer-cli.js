@@ -31,6 +31,7 @@ const cli = meow(`
 	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
 	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
+	With --hits "*", if the current input combination matches with all filter lines then it is selected and printed to the ouput.
 `, {
 	flags: {
 		infile: {
@@ -71,10 +72,10 @@ let infile = cli.flags.infile.trim();
 let filter_numbers = [];
 
 
-let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
+let regexp1 = /^(<|<=|=|>=|>)?(\d*)$/;
 switch (true) {
-	case regexp.test(levelSelection):
-		let match = regexp.exec(levelSelection);
+	case regexp1.test(levelSelection):
+		let match = regexp1.exec(levelSelection);
 		level = match[2];
 		break;
 	
@@ -83,9 +84,11 @@ switch (true) {
 		process.exit(1);
 		break;
 }
+
+let regexp2 = /^(<|<=|=|>=|>)?(\d*)|\*$/;
 switch (true) {
-	case regexp.test(hitsSelection):
-		let match = regexp.exec(hitsSelection);
+	case regexp2.test(hitsSelection):
+		let match = regexp2.exec(hitsSelection);
 		hits = match[2];
 		break;
 
@@ -120,8 +123,8 @@ if (cli.flags.filter) {
 
 // Test all combinations of input file
 let inputLinesCount = 0;
-var fileStream = fs.createReadStream(infile);
-var rl = readline.createInterface({
+let fileStream = fs.createReadStream(infile);
+let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,
 })
@@ -130,25 +133,109 @@ var rl = readline.createInterface({
 		return;
 	}
 	let input_line_numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
-	if (input_line_numbers[0] == 0) continue;
-	if (input_line_numbers.join("") == '') continue;
+	if (input_line_numbers[0] == 0) return;
+	if (input_line_numbers.join("") == '') return;
 	inputLinesCount++;
-	//console.log(line_numbers);
+	//console.log(input_line_numbers);
 
 
+	let hitsCount = 0;
 	for (let j = 0; j < filter_numbers.length; j++) {
-		var nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
-
+		let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
 		
+		switch (true) {
+			case /^<\d*$/.test(levelSelection):
+				if (nb_collisions < level) {
+					hitsCount++;
+				}
+				break;
+	
+			case /^<=\d*$/.test(levelSelection):
+				if (nb_collisions <= level) {
+					hitsCount++;
+				}
+				break;
+	
+			case /^(=)?\d*$/.test(levelSelection):
+				if (nb_collisions == level) {
+					hitsCount++;
+				}
+				break;
+	
+			case /^>=\d*$/.test(levelSelection):
+				if (nb_collisions >= level) {
+					hitsCount++;
+				}
+				break;
+	
+			case /^>\d*$/.test(levelSelection):
+				if (nb_collisions > level) {
+					hitsCount++;
+				}
+				break;
+	
+			default:
+				break;
+		}
 	}
 
+	switch (true) {
+		case /^<\d*$/.test(hitsSelection):
+			if (hitsCount < hits) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
 
+		case /^<=\d*$/.test(hitsSelection):
+			if (hitsCount <= hits) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
+
+		case /^(=)?\d*$/.test(hitsSelection):
+			if (hitsCount == hits) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
+
+		case /^>=\d*$/.test(hitsSelection):
+			if (hitsCount >= hits) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
+
+		case /^>\d*$/.test(hitsSelection):
+			if (hitsCount > hits) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
+
+		case /^\*$/.test(hitsSelection):
+			if (hitsCount == filter_numbers.length) {
+				filter_numbers.push(input_line_numbers);
+				console.log(lotteryFacility.combinationString(input_line_numbers));
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	if (filter_numbers.length >= 100000) {
+		console.error("Limit of filter is reached !");
+		process.exit(1);
+	}
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
 
 
-
+	fileStream.close();
 });
-fileStream.close();
+
 

@@ -103,20 +103,20 @@ if (origin_alphabet.length > target_alphabet.length) {
 }*/
 
 
-var fileStream = fs.createReadStream(cli.flags.file);
-var rl = readline.createInterface({
+let fileStream = fs.createReadStream(cli.flags.file);
+let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,
 })
-.on('line', (line) => {
+.on('line', async (line) => {
 	if (!line) {
 		return;
 	}
-	var res1 = line.trim().split(/\s+/);
+	let res1 = line.trim().split(/\s+/);
 	//console.log("res1 " + res1);
 	
-	var res2 = res1.map(o => {
-		var id = origin_alphabet.findIndex(obj => obj == o);
+	let res2 = res1.map(o => {
+		let id = origin_alphabet.findIndex(obj => obj == o);
 		if (id == -1) {
 			return `>>>${o}<<<`;
 		}
@@ -124,12 +124,12 @@ var rl = readline.createInterface({
 	});
 	//console.log("res2 " + res2);
 	
-	var result_line = res2.join(" ");
+	let result_line = res2.join(" ");
 	console.log(result_line);
 })
 .on('close', () => {
 	//console.log('Have a great day!');
 	//process.exit(0);
+	fileStream.close();
 });
-fileStream.close();
 
