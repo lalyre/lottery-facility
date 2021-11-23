@@ -188,7 +188,8 @@ let rl = readline.createInterface({
 	switch (true) {
 		case /^<\d*$/.test(hitsSelection):
 			if (!(hitsCount < hits)) {
-				selectCombination = false;			}
+				selectCombination = false;
+			}
 			break;
 
 		case /^<=\d*$/.test(hitsSelection):
@@ -205,7 +206,8 @@ let rl = readline.createInterface({
 
 		case /^>=\d*$/.test(hitsSelection):
 			if (!(hitsCount >= hits)) {
-				selectCombination = false;			}
+				selectCombination = false;
+			}
 			break;
 
 		case /^>\d*$/.test(hitsSelection):
@@ -233,7 +235,7 @@ let rl = readline.createInterface({
 	*/
 
 	filter_numbers.push(input_line_numbers.sort());
-	console.log(lotteryFacility.combinationString(input_line_numbers));
+	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
