@@ -86,11 +86,14 @@ switch (true) {
 }
 
 
-let regexp2 = /^(<|<=|=|>=|>)?(\d*)|\*$/;
+let regexp2 = /^(<|<=|=|>=|>)?(\d*)$/;
 switch (true) {
 	case regexp2.test(hitsSelection):
 		let match = regexp2.exec(hitsSelection);
 		hits = match[2];
+		break;
+
+	case /^\*$/.test(hitsSelection):
 		break;
 
 	default:
