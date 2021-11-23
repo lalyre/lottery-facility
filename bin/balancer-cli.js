@@ -243,30 +243,3 @@ let rl = readline.createInterface({
 	fileStream.close();
 });
 
-
-
-/*
-
-combination --total 22 --size 5 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22" > 5_22.txt
-node bin/balancer-cli.js --infile 5_22.txt --level 0 --hits "*" > filter.txt
-echo. >> filter.txt
-echo. >> filter.txt
-node bin/balancer-cli.js --infile 5_22.txt --filter filter.txt --level ">1" --hits "0"
-
-
-01 02 03 04 05
-06 07 08 09 10
-11 12 13 14 15
-16 17 18 19 20
-
-01 06 11 21 22
-
-
-combination --total 22 --size 1 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22" > 1_22.txt
-node bin/balancer-cli.js --infile 5_22.txt --filter 1_22.txt --level "0" --hits "5"
-
-
-
-*/
-
-
