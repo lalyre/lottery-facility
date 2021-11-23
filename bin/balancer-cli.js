@@ -114,7 +114,7 @@ if (cli.flags.filter) {
 	
 	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
 	for (let filter_line of filter_lines) {
-		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).sort();
+		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
 		if (numbers.join("") == '') continue;
 		filter_numbers.push(numbers);
@@ -140,6 +140,7 @@ let rl = readline.createInterface({
 	//console.log(input_line_numbers);
 
 
+	let selectCombination = true;
 	let hitsCount = 0;
 	for (let j = 0; j < filter_numbers.length; j++) {
 		let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
@@ -183,58 +184,53 @@ let rl = readline.createInterface({
 
 	switch (true) {
 		case /^<\d*$/.test(hitsSelection):
-			if (hitsCount < hits) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
-			}
+			if (!(hitsCount < hits)) {
+				selectCombination = false;			}
 			break;
 
 		case /^<=\d*$/.test(hitsSelection):
-			if (hitsCount <= hits) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
+			if (!(hitsCount <= hits)) {
+				selectCombination = false;
 			}
 			break;
 
 		case /^(=)?\d*$/.test(hitsSelection):
-			if (hitsCount == hits) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
+			if (!(hitsCount == hits)) {
+				selectCombination = false;
 			}
 			break;
 
 		case /^>=\d*$/.test(hitsSelection):
-			if (hitsCount >= hits) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
-			}
+			if (!(hitsCount >= hits)) {
+				selectCombination = false;			}
 			break;
 
 		case /^>\d*$/.test(hitsSelection):
-			if (hitsCount > hits) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
+			if (!(hitsCount > hits)) {
+				selectCombination = false;
 			}
 			break;
 
 		case /^\*$/.test(hitsSelection):
-			if (hitsCount == filter_numbers.length) {
-				filter_numbers.push(input_line_numbers);
-				console.log(lotteryFacility.combinationString(input_line_numbers));
+			if (!(hitsCount == filter_numbers.length)) {
+				selectCombination = false;
 			}
 			break;
 
 		default:
+			selectCombination = false;
 			break;
 	}
 
+	if (!selectCombination) return;
 
 	/*if (filter_numbers.length >= 5000) {
 		console.error("Limit of filter is reached !");
 		process.exit(1);
 	*/
 
-
+	filter_numbers.push(input_line_numbers.sort());
+	console.log(lotteryFacility.combinationString(input_line_numbers));
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
