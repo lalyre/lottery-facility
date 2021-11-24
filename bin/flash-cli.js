@@ -50,7 +50,7 @@ const cli = meow(`
 });
 
 
-if (!cli.flags.total || !cli.flags.size) {
+if (cli.flags.total.length !== cli.flags.size.length) {
 	console.error("Missing <total> or <size> parameter !");
 	process.exit(1);
 }

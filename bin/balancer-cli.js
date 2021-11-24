@@ -50,60 +50,66 @@ const cli = meow(`
 			type: 'string',
 			alias: 'l',
 			isRequired: true,
-			isMultiple: false,
+			isMultiple: true,
 			//default: 1,
 		},
 		hits: {
 			type: 'string',
 			alias: 'h',
 			isRequired: true,
-			isMultiple: false,
+			isMultiple: true,
 			//default: 1,
 		},
 	}
 });
 
 
+let infile = cli.flags.infile.trim();
 let levelSelection = cli.flags.level;
 let hitsSelection = cli.flags.hits;
-let level = null;
-let hits = null;
-let infile = cli.flags.infile.trim();
-let filter_numbers = [];
-
-
-let regexp1 = /^(<|<=|=|>=|>)?(\d*)$/;
-switch (true) {
-	case regexp1.test(levelSelection):
-		let match = regexp1.exec(levelSelection);
-		level = match[2];
-		break;
-	
-	default:
-		console.error("Wrong <level> value.");
-		process.exit(1);
-		break;
-}
-
-
-let regexp2 = /^(<|<=|=|>=|>)?(\d*)$/;
-switch (true) {
-	case regexp2.test(hitsSelection):
-		let match = regexp2.exec(hitsSelection);
-		hits = match[2];
-		break;
-
-	case /^\*$/.test(hitsSelection):
-		break;
-
-	default:
-		console.error("Wrong <hits> value.");
-		process.exit(1);
-		break;
-}
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
+}
+if (levelSelection.length !== hitsSelection.length) {
+	console.error("Missing <level> or <hits> parameter !");
+	process.exit(1);
+}
+
+
+let level = [];
+let hits = [];
+let filter_numbers = [];
+
+
+let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
+for (let i = 0; i < levelSelection.length; i++) {
+	switch (true) {
+		case regexp.test(levelSelection[i]):
+			let match = regexp.exec(levelSelection[i]);
+			level.push(match[2]);
+			break;
+		
+		default:
+			console.error(`Wrong <level> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
+
+	switch (true) {
+		case regexp.test(hitsSelection[i]):
+			let match = regexp.exec(hitsSelection[i]);
+			hits.push(match[2]);
+			break;
+	
+		case /^\*$/.test(hitsSelection[i]):
+			break;
+	
+		default:
+			console.error(`Wrong <hits> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
 }
 
 
@@ -143,96 +149,99 @@ let rl = readline.createInterface({
 	//console.log(input_line_numbers);
 
 
-	let selectCombination = true;
-	let hitsCount = 0;
-	for (let j = 0; j < filter_numbers.length; j++) {
-		let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
+	for (let i = 0; i < levelSelection.length; i++)
+	{
+		let selectCombination = true;
+		let hitsCount = 0;
+		for (let j = 0; j < filter_numbers.length; j++) {
+			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
+			
+			switch (true) {
+				case /^<\d*$/.test(levelSelection[i]):
+					if (nb_collisions < level[i]) {
+						hitsCount++;
+					}
+					break;
 		
+				case /^<=\d*$/.test(levelSelection[i]):
+					if (nb_collisions <= level[i]) {
+						hitsCount++;
+					}
+					break;
+		
+				case /^(=)?\d*$/.test(levelSelection[i]):
+					if (nb_collisions == level[i]) {
+						hitsCount++;
+					}
+					break;
+		
+				case /^>=\d*$/.test(levelSelection[i]):
+					if (nb_collisions >= level[i]) {
+						hitsCount++;
+					}
+					break;
+		
+				case /^>\d*$/.test(levelSelection[i]):
+					if (nb_collisions > level[i]) {
+						hitsCount++;
+					}
+					break;
+		
+				default:
+					break;
+			}
+		}
+
 		switch (true) {
-			case /^<\d*$/.test(levelSelection):
-				if (nb_collisions < level) {
-					hitsCount++;
+			case /^<\d*$/.test(hitsSelection[i]):
+				if (!(hitsCount < hits[i])) {
+					selectCombination = false;
 				}
 				break;
 	
-			case /^<=\d*$/.test(levelSelection):
-				if (nb_collisions <= level) {
-					hitsCount++;
+			case /^<=\d*$/.test(hitsSelection[i]):
+				if (!(hitsCount <= hits[i])) {
+					selectCombination = false;
 				}
 				break;
 	
-			case /^(=)?\d*$/.test(levelSelection):
-				if (nb_collisions == level) {
-					hitsCount++;
+			case /^(=)?\d*$/.test(hitsSelection[i]):
+				if (!(hitsCount == hits[i])) {
+					selectCombination = false;
 				}
 				break;
 	
-			case /^>=\d*$/.test(levelSelection):
-				if (nb_collisions >= level) {
-					hitsCount++;
+			case /^>=\d*$/.test(hitsSelection[i]):
+				if (!(hitsCount >= hits[i])) {
+					selectCombination = false;
 				}
 				break;
 	
-			case /^>\d*$/.test(levelSelection):
-				if (nb_collisions > level) {
-					hitsCount++;
+			case /^>\d*$/.test(hitsSelection[i]):
+				if (!(hitsCount > hits[i])) {
+					selectCombination = false;
+				}
+				break;
+	
+			case /^\*$/.test(hitsSelection[i]):
+				if (!(hitsCount == filter_numbers.length)) {
+					selectCombination = false;
 				}
 				break;
 	
 			default:
+				selectCombination = false;
 				break;
 		}
+	
+		if (!selectCombination) return;
 	}
 
 
-	switch (true) {
-		case /^<\d*$/.test(hitsSelection):
-			if (!(hitsCount < hits)) {
-				selectCombination = false;
-			}
-			break;
-
-		case /^<=\d*$/.test(hitsSelection):
-			if (!(hitsCount <= hits)) {
-				selectCombination = false;
-			}
-			break;
-
-		case /^(=)?\d*$/.test(hitsSelection):
-			if (!(hitsCount == hits)) {
-				selectCombination = false;
-			}
-			break;
-
-		case /^>=\d*$/.test(hitsSelection):
-			if (!(hitsCount >= hits)) {
-				selectCombination = false;
-			}
-			break;
-
-		case /^>\d*$/.test(hitsSelection):
-			if (!(hitsCount > hits)) {
-				selectCombination = false;
-			}
-			break;
-
-		case /^\*$/.test(hitsSelection):
-			if (!(hitsCount == filter_numbers.length)) {
-				selectCombination = false;
-			}
-			break;
-
-		default:
-			selectCombination = false;
-			break;
-	}
-
-	if (!selectCombination) return;
-
-	/*if (filter_numbers.length >= 5000) {
+	if (filter_numbers.length >= 500000) {
 		console.error("Limit of filter is reached !");
 		process.exit(1);
-	*/
+	}
 
 	filter_numbers.push(input_line_numbers.sort());
 	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
