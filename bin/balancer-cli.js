@@ -230,7 +230,6 @@ let rl = readline.createInterface({
 				break;
 	
 			default:
-				selectCombination = false;
 				break;
 		}
 	
