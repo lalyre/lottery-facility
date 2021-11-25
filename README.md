@@ -20,9 +20,15 @@ CLI utilities:
 * flash
 * translate
 * combination
+* balancer
 * filter
 * euromillions_draws
 * kenoFR_draws
+
+<!--
+Type this command to enable CLI utilities (during development)
+$ npm link
+-->
 
 
 ## Install
