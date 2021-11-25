@@ -12,6 +12,7 @@ Some APIs for designing lottery cracking systems.
 ## Overview
 Features:
 * Random numbers generator
+* Random selections of numbers
 * Draws statistics
 * Draws prediction algorithms
 
