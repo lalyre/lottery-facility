@@ -4,6 +4,7 @@ const fs = require('fs');
 const readline = require('readline');
 const meow = require('meow');
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+const FILTER_LIMIT = 500000;
 
 
 const cli = meow(`
@@ -15,6 +16,7 @@ const cli = meow(`
 	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select input combinations.
 	  --level, -l     Defining the <level> of collisions with the current filter.
 	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
+	  --length        Defining the maximum number of additions into the running filter. Default value is -1 (unlimited).
 
 	Description
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
@@ -60,11 +62,18 @@ const cli = meow(`
 			isMultiple: true,
 			//default: 1,
 		},
+		length: {
+			type: 'number',
+			isRequired: false,
+			isMultiple: false,
+			default: -1,
+		}
 	}
 });
 
 
 let infile = cli.flags.infile.trim();
+let filterAdditions = cli.flags.length;
 let levelSelection = cli.flags.level;
 let hitsSelection = cli.flags.hits;
 if (!fs.existsSync(infile)) {
@@ -132,6 +141,7 @@ if (cli.flags.filter) {
 
 
 // Test all combinations of input file
+let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
 let rl = readline.createInterface({
@@ -147,6 +157,12 @@ let rl = readline.createInterface({
 	if (input_line_numbers.join("") == '') return;
 	inputLinesCount++;
 	//console.log(input_line_numbers);
+	
+	
+	if (filter_numbers.length >= FILTER_LIMIT) {
+		console.error("Limit of filter is reached !");
+		process.exit(1);
+	}
 
 
 	for (let i = 0; i < levelSelection.length; i++)
@@ -237,13 +253,11 @@ let rl = readline.createInterface({
 	}
 
 
-	if (filter_numbers.length >= 500000) {
-		console.error("Limit of filter is reached !");
+	filter_numbers.push(input_line_numbers.sort()); additions++;
+	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
+	if (filterAdditions != -1 && additions >= filterAdditions) {
 		process.exit(1);
 	}
-
-	filter_numbers.push(input_line_numbers.sort());
-	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
