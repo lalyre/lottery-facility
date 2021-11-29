@@ -130,7 +130,14 @@ for (let i = 0; i < levelSelection.length; i++) {
 
 // Loading initial filter
 if (cli.flags.filter) {
-	let filterfile = cli.flags.filter.trim();	
+	let filterfile = cli.flags.filter.trim();
+
+	if (!fs.existsSync(filterfile)) {
+		//fs.writeFileSync(filterfile, '', { flag: 'a+'});
+		console.error(`Filter file ${filterfile} does not exist.`);
+		process.exit(1);
+	}
+
 	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
 	for (let filter_line of filter_lines) {
 		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
