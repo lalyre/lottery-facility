@@ -17,6 +17,7 @@ const cli = meow(`
 	  --level, -l     Defining the <level> of collisions with the current filter.
 	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
 	  --length        Defining the maximum number of additions into the running filter. Default value is -1 (unlimited).
+	  --exclusive     If true the selected combinations are added on the fly to the running filter. Default value is true.
 
 	Description
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
@@ -53,29 +54,34 @@ const cli = meow(`
 			alias: 'l',
 			isRequired: true,
 			isMultiple: true,
-			//default: 1,
 		},
 		hits: {
 			type: 'string',
 			alias: 'h',
 			isRequired: true,
 			isMultiple: true,
-			//default: 1,
 		},
 		length: {
 			type: 'number',
 			isRequired: false,
 			isMultiple: false,
 			default: -1,
+		},
+		exclusive: {
+			type: 'boolean',
+			isRequired: false,
+			isMultiple: false,
+			default: true,
 		}
 	}
 });
 
 
-let infile = cli.flags.infile.trim();
+let exclusiveMode = cli.flags.exclusive;
 let filterAdditions = cli.flags.length;
 let levelSelection = cli.flags.level;
 let hitsSelection = cli.flags.hits;
+let infile = cli.flags.infile.trim();
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
@@ -124,12 +130,7 @@ for (let i = 0; i < levelSelection.length; i++) {
 
 // Loading initial filter
 if (cli.flags.filter) {
-	let filterfile = cli.flags.filter.trim();
-
-	/*if (!fs.existsSync(filterfile)) {
-		fs.writeFileSync(filterfile, '', { flag: 'a+'});
-	}*/
-	
+	let filterfile = cli.flags.filter.trim();	
 	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
 	for (let filter_line of filter_lines) {
 		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
@@ -253,10 +254,20 @@ let rl = readline.createInterface({
 	}
 
 
-	filter_numbers.push(input_line_numbers.sort()); additions++;
 	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
-	if (filterAdditions != -1 && additions >= filterAdditions) {
-		process.exit(1);
+
+	/*if (printhits) {
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + " - [hits: " + hitsCount + "]");
+	} else {
+		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
+	}*/
+
+
+	if (exclusiveMode) {
+		filter_numbers.push(input_line_numbers.sort()); additions++;
+		if (filterAdditions != -1 && additions >= filterAdditions) {
+			process.exit(1);
+		}
 	}
 })
 .on('close', () => {
