@@ -18,6 +18,7 @@ const cli = meow(`
 	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
 	  --length        Defining the maximum number of additions into the running filter. Default value is -1 (unlimited).
 	  --exclusive     If true the selected combinations are added on the fly to the running filter. Default value is true.
+	  --printhits     Display the hit counts for each filter in their declarative order.
 
 	Description
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
@@ -72,7 +73,13 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 			default: true,
-		}
+		},
+		printhits: {
+			type: 'boolean',
+			isRequired: false,
+			isMultiple: false,
+			default: false,
+		},
 	}
 });
 
@@ -263,7 +270,7 @@ let rl = readline.createInterface({
 
 	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
 
-	/*if (printhits) {
+	/*if (cli.flags.printhits) {
 		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + " - [hits: " + hitsCount + "]");
 	} else {
 		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
