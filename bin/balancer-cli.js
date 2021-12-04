@@ -140,9 +140,9 @@ if (cli.flags.filter) {
 	let filterfile = cli.flags.filter.trim();
 
 	if (!fs.existsSync(filterfile)) {
-		//fs.writeFileSync(filterfile, '', { flag: 'a+'});
-		console.error(`Filter file ${filterfile} does not exist.`);
-		process.exit(1);
+		fs.writeFileSync(filterfile, '', { flag: 'a+'});
+		//console.error(`Filter file ${filterfile} does not exist.`);
+		//process.exit(1);
 	}
 
 	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
@@ -180,6 +180,7 @@ let rl = readline.createInterface({
 	}
 
 
+	let hits_count_string = '';
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let selectCombination = true;
@@ -265,16 +266,15 @@ let rl = readline.createInterface({
 		}
 	
 		if (!selectCombination) return;
+		hits_count_string += " - [hits: " + hitsCount + "]";
 	}
 
 
-	console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
-
-	/*if (cli.flags.printhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + " - [hits: " + hitsCount + "]");
+	if (cli.flags.printhits) {
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + hits_count_string);
 	} else {
 		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
-	}*/
+	}
 
 
 	if (exclusiveMode) {
