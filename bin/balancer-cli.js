@@ -181,6 +181,7 @@ let rl = readline.createInterface({
 
 
 	let hits_count_string = '';
+	let hits_filters_string = '';
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let selectCombination = true;
@@ -192,30 +193,40 @@ let rl = readline.createInterface({
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
+						hits_filters_string += '\n';
 					}
 					break;
 		
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
+						hits_filters_string += '\n';
 					}
 					break;
 		
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
+						hits_filters_string += '\n';
 					}
 					break;
 		
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
+						hits_filters_string += '\n';
 					}
 					break;
 		
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
+						hits_filters_string += '\n';
 					}
 					break;
 		
@@ -272,6 +283,7 @@ let rl = readline.createInterface({
 
 	if (cli.flags.printhits) {
 		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + hits_count_string);
+		console.log(hits_filters_string);
 	} else {
 		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
 	}
