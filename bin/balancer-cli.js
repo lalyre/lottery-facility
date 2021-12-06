@@ -18,7 +18,7 @@ const cli = meow(`
 	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
 	  --length        Defining the maximum number of additions into the running filter. Default value is -1 (unlimited).
 	  --exclusive     If true the selected combinations are added on the fly to the running filter. Default value is true.
-	  --printhits     Display the hit counts for each filter in their declarative order.
+	  --printhits     Display the hit counts for each (level, hits) pair in their declarative order.
 
 	Description
 	This script selects combinations from input file according to filter <level> and <hits> restrictions.
@@ -138,11 +138,8 @@ for (let i = 0; i < levelSelection.length; i++) {
 // Loading initial filter
 if (cli.flags.filter) {
 	let filterfile = cli.flags.filter.trim();
-
 	if (!fs.existsSync(filterfile)) {
 		fs.writeFileSync(filterfile, '', { flag: 'a+'});
-		//console.error(`Filter file ${filterfile} does not exist.`);
-		//process.exit(1);
 	}
 
 	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
@@ -193,40 +190,35 @@ let rl = readline.createInterface({
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
-						hits_filters_string += '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
-						hits_filters_string += '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
-						hits_filters_string += '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
-						hits_filters_string += '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]);
-						hits_filters_string += '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
 					}
 					break;
 		
@@ -298,8 +290,6 @@ let rl = readline.createInterface({
 })
 .on('close', () => {
 	//console.log("inputLinesCount "  + inputLinesCount);
-
-
 	fileStream.close();
 });
 
