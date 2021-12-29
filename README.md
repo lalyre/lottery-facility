@@ -95,6 +95,34 @@ Import in your browser project from a CDN:
 
 
 
+## CLI utilities
+All the following documentation is available in the tools by running `--help` on command line.
+
+### flash
+**Parameters**
+```sh
+    --total, -t  Total number of lottery balls.
+    --size, -s   Size of generated combinations
+    --sort       Display ordered combinations
+    --nb         Number of generated combinations
+    --nbSwap     Number of shuffle operations
+```
+
+**Description**
+This script generates a random selection of lottery balls, taken from 1 to <total> balls.
+The optional parameter 'sort' sorts combinations items in ascending order.
+You can put <total> and <size> multiple times for selection into multiple draw boxes.
+
+
+### combination
+
+### translate
+
+### euromillions_draws
+
+### kenoFR_draws
+
+
 
 
 
