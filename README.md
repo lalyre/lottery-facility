@@ -99,19 +99,19 @@ Import in your browser project from a CDN:
 All the following documentation is available in the tools by running `--help` on command line.
 
 ### flash
-**Parameters**
+**Parameters**<br>
 ```sh
-    --total, -t  Total number of lottery balls.
-    --size, -s   Size of generated combinations
-    --sort       Display ordered combinations
-    --nb         Number of generated combinations
-    --nbSwap     Number of shuffle operations
+--total, -t  Total number of lottery balls.
+--size, -s   Size of generated combinations
+--sort       Display ordered combinations
+--nb         Number of generated combinations
+--nbSwap     Number of shuffle operations
 ```
 
-**Description**
-This script generates a random selection of lottery balls, taken from 1 to <total> balls.
-The optional parameter 'sort' sorts combinations items in ascending order.
-You can put <total> and <size> multiple times for selection into multiple draw boxes.
+**Description**<br>
+This script generates a random selection of lottery balls, taken from 1 to <total> balls.<br>
+The optional parameter 'sort' sorts combinations items in ascending order.<br>
+You can put <total> and <size> pairs multiple times for selection into multiple draw boxes.<br>
 
 
 ### combination
