@@ -6,6 +6,7 @@ Some APIs for designing lottery cracking systems.
 - [Overview](#overview)
 - [Install](#install)
 - [Quick start](#quick-start)
+- [CLI utilities](#cli-utilities)
 - [Publishing](#publish-a-version)
 
 
