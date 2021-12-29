@@ -115,7 +115,7 @@ The optional parameter `sort` sorts combinations items in ascending order.<br>
 You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.<br>
 
 **Exemple**<br>
-Generates 8 random games for Euromillions.
+Generate 8 random games for Euromillions.
 ```sh
 $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 07 10 12 17 28 | 04 08
