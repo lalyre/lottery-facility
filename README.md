@@ -109,9 +109,9 @@ All the following documentation is available in the tools by running `--help` on
 ```
 
 **Description**<br>
-This script generates a random selection of lottery balls, taken from 1 to *total* balls.<br>
-The optional parameter *sort* sorts combinations items in ascending order.<br>
-You can put *total* and *size* pairs multiple times for selection into multiple draw boxes.<br>
+This script generates a random selection of lottery balls, taken from `1` to `total` balls.<br>
+The optional parameter `sort` sorts combinations items in ascending order.<br>
+You can put `total` and `size` pairs multiple times for selection into multiple draw boxes.<br>
 
 
 ### 2. combination
