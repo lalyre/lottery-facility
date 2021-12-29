@@ -111,8 +111,18 @@ All the following documentation is available in the tools by running `--help` on
 **Description**<br>
 This script generates a random selection of lottery balls, taken from `1` to `total` balls.<br>
 The optional parameter `sort` sorts combinations items in ascending order.<br>
-You can put `total` and `size` pairs multiple times for selection into multiple draw boxes.<br>
+You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.<br>
 
+**Exemple**<br>
+Generates 5 random games for Euromillions.
+```sh
+$ flash --total 50 --size 5 --total 12 --size 2 --nb 5 --sort
+03 10 15 23 36 | 07 10
+04 05 19 37 47 | 07 09
+07 22 23 37 38 | 02 08
+10 11 33 44 48 | 07 12
+11 12 24 27 41 | 05 10
+```
 
 ### 2. combination
 
