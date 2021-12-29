@@ -98,7 +98,7 @@ Import in your browser project from a CDN:
 ## CLI utilities
 All the following documentation is available in the tools by running `--help` on command line.
 
-### flash
+### 1. flash
 **Parameters**<br>
 ```sh
 --total, -t  Total number of lottery balls.
@@ -114,13 +114,13 @@ The optional parameter 'sort' sorts combinations items in ascending order.<br>
 You can put <total> and <size> pairs multiple times for selection into multiple draw boxes.<br>
 
 
-### combination
+### 2. combination
 
-### translate
+### 3. translate
 
-### euromillions_draws
+### 4. euromillions_draws
 
-### kenoFR_draws
+### 5. kenoFR_draws
 
 
 
