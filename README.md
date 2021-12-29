@@ -19,12 +19,12 @@ Features:
 
 CLI utilities:
 * flash
-* translate
 * combination
-* balancer
-* filter
+* translate
 * euromillions_draws
 * kenoFR_draws
+* balancer
+* filter
 
 <!--
 Type this command to enable CLI utilities (during development)
@@ -115,7 +115,7 @@ The optional parameter `sort` sorts combinations items in ascending order.<br>
 You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.<br>
 
 **Exemple**<br>
-Generate 8 random games for Euromillions.
+Generate 8 random games for Euromillions lottery.
 ```sh
 $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 07 10 12 17 28 | 04 08
