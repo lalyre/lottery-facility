@@ -9,7 +9,7 @@ const cli = meow(`
 	  $ flash
 
 	Parameters
-	  --total, -t  Total number of lottery balls.
+	  --total, -t  Total number of lottery balls
 	  --size, -s   Size of generated combinations
 	  --sort       Display ordered combinations
 	  --nb         Number of generated combinations
@@ -19,7 +19,7 @@ const cli = meow(`
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
 	The optional parameter 'sort' sorts combinations items in ascending order.
 
-	You can put <total> and <size> multiple times for selection into multiple draw boxes.
+	You can put <total> and <size> multiple times for random selection into multiple draw boxes.
 `, {
 	flags: {
 		total: {
