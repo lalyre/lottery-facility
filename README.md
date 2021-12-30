@@ -102,7 +102,7 @@ All the following documentation is available in the tools by running `--help` on
 ### 1. flash
 **Parameters**<br>
 ```sh
---total, -t  Total number of lottery balls.
+--total, -t  Total number of lottery balls
 --size, -s   Size of generated combinations
 --sort       Display ordered combinations
 --nb         Number of generated combinations
