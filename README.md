@@ -138,7 +138,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ```
 
 **Description**<br>
-This script generates combinations of items taken in file `file` or space separated list `numbers`, of size `size`,
+This script generates combinations of items taken in file `file` or list `numbers`, of size `size`,
 implementing choice of `size` items among `total` items.
 Only the first `total` items of `file` or `numbers` are used to build combinations.<br>
 
