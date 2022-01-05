@@ -138,8 +138,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ```
 
 **Description**<br>
-This script generates combinations of items taken in file `file` or list `numbers`, of size `size`,
-implementing choice of `size` items among `total` items.
+This script generates combinations of items taken in file `file` or list `numbers`, of size `size`, implementing choice of `size` items among `total` items.<br>
 Only the first `total` items of `file` or `numbers` are used to build combinations.<br>
 
 **Exemple**<br>
@@ -164,15 +163,14 @@ $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 --file, -f    A file containing one combination per line to be translated
 --originnum   Items of combinations separated by '|' or ' '
 --originfile  File containing one item per line that are used in combinations of <file> file
---targetnum   Items of combinations separated by '|' or ' ', used for the translation of combinations
+--targetnum   Items of combinations separated by '|' or ' ', for the translation of combinations
 --targetfile  File containing one item per line used for the translation <file> file
 ```
 
 **Description**<br>
-This script takes an input file `file` containing one combination per line.<br>
-These input combinations are written with the `origin` alphabet and to be translated into `target` alphabet.<br>
+This script takes an input file `file` containing one combination per line.
+These input combinations are written with the `origin` alphabet and to be translated into `target` alphabet.
 Items of `origin` alphabet are translated to `target` alphabet relatively to their corresponding order of declaration.<br>
-<br>
 The `origin` alphabet can be declared either with `originnum` or `originfile` parameters.<br>
 The `target` alphabet can be declared either with `targetnum` or `targetfile` parameters.<br>
 
