@@ -175,7 +175,7 @@ The `origin` alphabet can be declared either with `originnum` or `originfile` pa
 The `target` alphabet can be declared either with `targetnum` or `targetfile` parameters.<br>
 
 **Exemple**<br>
-We start with a tactical `GAME.txt` file written with the origin alphabat `01 02 03 04 05 06 07 08 09 10 11 12`.
+We start with a tactical `GAME.txt` file written with the origin alphabet `01 02 03 04 05 06 07 08 09 10 11 12`.
 ```sh
 $ cat GAME.txt
 01 02 03 04 05 06
@@ -198,7 +198,7 @@ After many hours of statistics analysis, we select 12 high probability winning n
 We need to apply this selection onto our tactical `GAME.txt` file. We use the `translate` tool to do that job with the following command
 ```sh
 $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
-	--targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
+--targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
 25 28 31 34 37 52
 53 25 28 59 37 61
 53 34 59 67 52 61
