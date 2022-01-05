@@ -158,6 +158,13 @@ $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 ```
 
 ### 3. translate
+In order to win lottery games, you need both a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
+First, you have to find good numbers with high probability to draw. The more you have winning numbers in your selection the better it is for you.
+Then, you also have to put the good numbers all together on a same combination. If there are too many loosing numbers in your selection, they can polluate
+your games. To be sure to have winning numbers on the same combination you have to make a huge amount of combinations. But you cannot afford to make all possible
+combinations for economical reasons. So you need to use a tactical set of combinations that can help you win if you have sufficient amount of winning numbers.
+In the end, you need to apply your smart selection of numbers onto your tactical game. And this is the usage of `tanslate` tool.
+
 **Parameters**<br>
 ```sh
 --file, -f    A file containing one combination per line to be translated
