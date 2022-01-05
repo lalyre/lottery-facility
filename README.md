@@ -138,7 +138,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ```
 
 **Description**<br>
-This script generates combinations of items taken in file `file` or list `numbers`, of size `size`, implementing choice of `size` items among `total` items.<br>
+This script generates combinations of items taken in file `file` or list `numbers`, of size `size`, implementing choice of `size` items among `total` items.
 Only the first `total` items of `file` or `numbers` are used to build combinations.<br>
 
 **Exemple**<br>
@@ -197,7 +197,8 @@ $ cat GAME.txt
 After many hours of statistics analysis, we select 12 high probability winning numbers. These numbers are `25 28 31 34 37 52 53 59 61 67 68 70`.
 We need to apply this selection onto our tactical `GAME.txt` file. We use the `translate` tool to do that job with the following command
 ```sh
-$ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" --targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
+$ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
+	--targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
 25 28 31 34 37 52
 53 25 28 59 37 61
 53 34 59 67 52 61
