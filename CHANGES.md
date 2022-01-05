@@ -1,5 +1,6 @@
-2021-xx-xx, Version 0.0.1-alpha.8
+2022-xx-xx, Version 0.0.1-alpha.8
 ==================================
+* Documentation update.
 * Adding balancer CLI utility.
 
 
