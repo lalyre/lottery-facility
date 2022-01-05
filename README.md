@@ -159,6 +159,62 @@ $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 ```
 
 ### 3. translate
+**Parameters**<br>
+```sh
+--file, -f    A file containing one combination per line to be translated
+--originnum   Items of combinations separated by '|' or ' '
+--originfile  File containing one item per line that are used in combinations of <file> file
+--targetnum   Items of combinations separated by '|' or ' ', used for the translation of combinations
+--targetfile  File containing one item per line used for the translation <file> file
+```
+
+**Description**<br>
+This script takes an input file `file` containing one combination per line.<br>
+These input combinations are written with the `origin` alphabet and to be translated into `target` alphabet.<br>
+Items of `origin` alphabet are translated to `target` alphabet relatively to their corresponding order of declaration.<br>
+<br>
+The `origin` alphabet can be declared either with `originnum` or `originfile` parameters.<br>
+The `target` alphabet can be declared either with `targetnum` or `targetfile` parameters.<br>
+
+**Exemple**<br>
+We start with a tactical `GAME.txt` file written with the origin alphabat `01 02 03 04 05 06 07 08 09 10 11 12`.
+```sh
+$ cat GAME.txt
+01 02 03 04 05 06
+07 01 02 08 05 09
+07 04 08 10 06 09
+01 02 04 08 10 11
+07 01 03 10 06 11
+03 08 10 05 06 11
+07 03 04 05 09 11
+07 01 04 08 05 12
+07 02 03 08 06 12
+02 03 04 10 09 12
+01 10 05 06 09 12
+07 02 10 05 11 12
+01 03 08 09 11 12
+02 04 06 09 11 12
+```
+
+After many hours of statistics analysis, we select 12 high probability winning numbers. These numbers are `25 28 31 34 37 52 53 59 61 67 68 70`.
+We need to apply this selection onto our tactical `GAME.txt` file. We use the `translate` tool to do that job with the following command
+```sh
+$ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" --targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
+25 28 31 34 37 52
+53 25 28 59 37 61
+53 34 59 67 52 61
+25 28 34 59 67 68
+53 25 31 67 52 68
+31 59 67 37 52 68
+53 31 34 37 61 68
+53 25 34 59 37 70
+53 28 31 59 52 70
+28 31 34 67 61 70
+25 67 37 52 61 70
+53 28 67 37 68 70
+25 31 59 61 68 70
+28 34 52 61 68 70
+```
 
 ### 4. euromillions_draws
 
