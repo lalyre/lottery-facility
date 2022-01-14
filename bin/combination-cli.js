@@ -11,7 +11,7 @@ const cli = meow(`
 	  $ combination
 
 	Parameters
-	  --total, -t     Total number of lottery balls
+	  --total, -t     Total number of items
 	  --size, -s      Number of assembled items
 	  --file, -f      A file containing one item of combination per line
 	  --numbers, -n   Items of combinations separated by '|', or ' '

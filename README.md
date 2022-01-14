@@ -131,7 +131,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ### 2. combination
 **Parameters**<br>
 ```sh
---total, -t     Total number of lottery balls
+--total, -t     Total number of items
 --size, -s      Number of assembled items
 --file, -f      A file containing one item of combination per line
 --numbers, -n   Items of combinations separated by '|', or ' '
