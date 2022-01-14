@@ -132,13 +132,13 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 **Parameters**<br>
 ```sh
 --total, -t     Total number of lottery balls
---size, -s      Size of generated combinations
+--size, -s      Number of assembled items
 --file, -f      A file containing one item of combination per line
 --numbers, -n   Items of combinations separated by '|', or ' '
 ```
 
 **Description**<br>
-This script generates combinations of items taken in file `file` or list `numbers`, of size `size`, implementing choice of `size` items among `total` items.
+This script generates combinations of items taken in file `file` or list `numbers`, of size `size` items, implementing choice of `size` items among `total` items.
 Only the first `total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
