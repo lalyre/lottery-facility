@@ -142,7 +142,7 @@ This script generates combinations of items taken in file `file` or list `number
 Only the first `total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
-Generate all combinations of size 3 in a list of 5 numbers (choice of 3 among 5).
+Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5).
 ```sh
 $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 01 02 03
@@ -158,6 +158,7 @@ $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 ```
 
 ### 3. translate
+**Overview**<br>
 In order to win lottery games, you both need a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
 First, you have to find good numbers with high probability to draw. The more you have winning numbers in your selection the better it is for you.
 Then, you also have to put the good numbers all together on a same combination. If there are too many loosing numbers in your selection, they can polluate
