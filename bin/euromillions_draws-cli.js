@@ -113,7 +113,7 @@ rp({
 		var values = current_line.split(';');
 		var date = values[2];
 		var balls = values.slice(5, 10);
-		var stars = values.slice(10, 12);		
+		var stars = values.slice(10, 12);
 
 		var display = balls.map (x => x.toString().padStart(2, 0)).join(" ")
 		if (displayStars) {
