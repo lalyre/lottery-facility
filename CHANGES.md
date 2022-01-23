@@ -1,6 +1,7 @@
 2022-xx-xx, Version 0.0.1-alpha.8
 ==================================
 * Documentation update.
+* Adding cartesian_product CLI utility.
 * Adding balancer CLI utility.
 
 

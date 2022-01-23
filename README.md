@@ -20,6 +20,7 @@ Features:
 CLI utilities:
 * flash
 * combination
+* cartesian_product
 * translate
 * euromillions_draws
 * kenoFR_draws
