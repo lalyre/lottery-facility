@@ -22,10 +22,10 @@ CLI utilities:
 * combination
 * cartesian_product
 * translate
+* filter
 * euromillions_draws
 * kenoFR_draws
-* balancer
-* filter
+
 
 <!--
 Type this command to enable CLI utilities (during development)

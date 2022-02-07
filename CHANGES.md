@@ -2,7 +2,6 @@
 ==================================
 * Documentation update.
 * Adding cartesian_product CLI utility.
-* Adding balancer CLI utility.
 
 
 2021-11-16, Version 0.0.1-alpha.7
