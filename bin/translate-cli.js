@@ -124,7 +124,7 @@ let rl = readline.createInterface({
 	});
 	//console.log("res2 " + res2);
 	
-	let result_line = res2.join(" ").split(" ").filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).join(" ");
+	let result_line = res2.join(" ").split(" ").filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(" ");
 	console.log(result_line);
 })
 .on('close', () => {
