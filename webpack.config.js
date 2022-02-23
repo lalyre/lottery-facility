@@ -1,7 +1,10 @@
+'use strict';
+const fs = require('fs');
 const path = require('path');
 const webpack = require("webpack");
 const nodeExternals = require('webpack-node-externals');
 const TerserPlugin = require("terser-webpack-plugin");
+const { merge } = require('webpack-merge');
 
 
 const generalConfig = {
@@ -21,49 +24,63 @@ const generalConfig = {
 		modules: [path.resolve('./src'), "node_modules"],
 		extensions: ['.tsx', '.ts', '.js'],
 	},
+
 	context: path.resolve(__dirname),
 	mode: 'production',		// or 'development',
 	devtool: 'source-map',	// or 'inline-source-map'
 	optimization: {
 		minimize: true,
 		minimizer: [new TerserPlugin({
-			include: /\.min\.js$/
+			test: /\.min\.[A-Za-z]*\.js$/i,
 		})],
 	},
+
+	externals: [
+		//new UglifyJSPlugin(),
+	],
 };
 
 
 const nodeConfig = {
-	entry: {
-		"nodebundle": "./lib/main.js",
-		"nodebundle.min": "./lib/main.js",
-	},
+	name: 'node-config',
 	target: 'node',
 	node: {
 		__filename: true,
 		__dirname: true,
 	},
-	externals: [
-		nodeExternals(),	// in order to ignore all modules in node_modules folder
-	],
+
+	entry: {
+		"nodebundle": "./lib/main.js",
+		"nodebundle.min": "./lib/main.js",
+	},
+
 	output: {
 		path: path.resolve(__dirname, 'dist'),
+		publicPath: '/',
 		filename: "lotteryfacility-[name].umd.js",
 		library: {
 			type: 'umd',
 		},
 	},
+
+	externals: [
+		nodeExternals(),	// in order to ignore all modules in node_modules folder
+	],
 };
 
 
 const browserConfig = {
+	name: 'web-config',
+	target: 'web',
+
 	entry: {
 		"webbundle": "./lib/browser.js",
 		"webbundle.min": "./lib/browser.js",
 	},
-	target: 'web',
+
 	output: {
 		path: path.resolve(__dirname, 'dist'),
+		publicPath: '/',
 		filename: "lotteryfacility-[name].umd.js",
 		library: {
 			name: 'LotteryFacility',
@@ -82,8 +99,8 @@ module.exports = (env, argv) => {
 		throw new Error('Specify env');
 	}
 
-	Object.assign(nodeConfig, generalConfig);
-	Object.assign(browserConfig, generalConfig);
+	var nodeConf = merge(generalConfig, nodeConfig);
+	var webConf = merge(generalConfig, browserConfig);
 
-	return [nodeConfig, browserConfig];
+	return [nodeConf, webConf];
 };
