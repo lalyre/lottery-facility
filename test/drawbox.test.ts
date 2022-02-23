@@ -35,7 +35,7 @@ describe('DrawBox module', () => {
 
 
     test('canonicalCombinationString test', () => {
-         let a = [8, 3, 1, 7, 6, 5];
+         let a = [8, 3, 1, 7, 6, 3, 7, 6, 5];
          let s = canonicalCombinationString(a, " ");
          expect(s).toBe("01 03 05 06 07 08");
     });

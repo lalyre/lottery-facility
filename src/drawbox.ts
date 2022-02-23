@@ -88,7 +88,7 @@ export function combinationString(numbers:number[], sep:string = ' '): string {
  */
 export function canonicalCombinationString(numbers:number[], sep:string = ' '): string {
 	if (!numbers) return '';
-	const arr = numbers.sort((a, b) => {return a - b;});
+	const arr = numbers.filter((element, index, array) => array.indexOf(element) === index).sort((a, b) => {return a - b;});
 	const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);
 	return display;
 }
