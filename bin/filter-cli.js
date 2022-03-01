@@ -12,17 +12,18 @@ const cli = meow(`
 	  $ filter
 
 	Parameters
-	  --infile, -in   An input file containing one combination per line, where some combinations will be selected.
-	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select input combinations.
-	  --level, -l     Defining the <level> of collisions with the current filter.
-	  --hits, -h      Defining the number of <hits>, i.e. the number of filter lines that match the request.
-	  --length        Defining the maximum number of additions into the running filter. Default value is -1 (unlimited).
-	  --exclusive     If true the selected combinations are added on the fly to the running filter. Default value is true.
-	  --printhits     Display the hit counts for each (level, hits) pair in their declarative order.
+	  --infile, -in   An input file containing one input combination per line, where some combinations will be selected.
+	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
+	  --level, -l     Defining the <level> of collisions with the tested <filter> file.
+	  --hits, -h      Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
+	  --length        Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
+	  --exclusive     If true the selected combinations are added on the fly to the running selection. Default value is true.
+	  --printhits     Display the hit counts for each (filter, level, hits) trio in their declarative order.
 
 	Description
-	This script selects combinations from input file according to filter <level> and <hits> restrictions.
-	The selected combinations are printed and also added to the current filter combinations, increasing the difficulty of next selections.
+	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
+	The selected combinations are printed and also added to the current selection of input combinations, increasing the difficulty of next selections.
+	You can use "_self" or "_empty" values for <filter> file if you want to filter against the current selected input line or against an empty filter.
 
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
@@ -47,8 +48,8 @@ const cli = meow(`
 		filter: {
 			type: 'string',
 			alias: 'f',
-			isRequired: false,
-			isMultiple: false,
+			isRequired: true,
+			isMultiple: true,
 		},
 		level: {
 			type: 'string',
@@ -86,6 +87,7 @@ const cli = meow(`
 
 let exclusiveMode = cli.flags.exclusive;
 let filterAdditions = cli.flags.length;
+let filterSelection = cli.flags.filter;
 let levelSelection = cli.flags.level;
 let hitsSelection = cli.flags.hits;
 let infile = cli.flags.infile.trim();
@@ -93,19 +95,33 @@ if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
 }
-if (levelSelection.length !== hitsSelection.length) {
-	console.error("Missing <level> or <hits> parameter !");
+if (filterSelection.length != levelSelection.length || levelSelection.length !== hitsSelection.length) {
+	console.error("Missing <filter> or <level> or <hits> parameter !");
 	process.exit(1);
 }
 
 
 let level = [];
 let hits = [];
-let filter_numbers = [];
 
 
 let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
 for (let i = 0; i < levelSelection.length; i++) {
+	switch (true) {
+		case /^_empty$/.test(filterSelection[i].trim()):
+			break;
+
+		case /^_self$/.test(filterSelection[i].trim()):
+			break;
+		
+		default:
+			if (!fs.existsSync(filterSelection[i].trim())) {
+				console.error(`File ${filterSelection[i]} does not exist`);
+				process.exit(1);
+			}
+			break;
+	}
+
 	switch (true) {
 		case regexp.test(levelSelection[i]):
 			let match = regexp.exec(levelSelection[i]);
@@ -135,24 +151,8 @@ for (let i = 0; i < levelSelection.length; i++) {
 }
 
 
-// Loading initial filter
-if (cli.flags.filter) {
-	let filterfile = cli.flags.filter.trim();
-	if (!fs.existsSync(filterfile)) {
-		fs.writeFileSync(filterfile, '', { flag: 'a+'});
-	}
-
-	let filter_lines = fs.readFileSync(filterfile).toString().split(/\r?\n/);
-	for (let filter_line of filter_lines) {
-		let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
-		if (numbers[0] == 0) continue;
-		if (numbers.join("") == '') continue;
-		filter_numbers.push(numbers);
-	}
-}
-
-
 // Test all combinations of input file
+let filter_selection_numbers = [];
 let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
@@ -169,9 +169,9 @@ let rl = readline.createInterface({
 	if (input_line_numbers.join("") == '') return;
 	inputLinesCount++;
 	//console.log(input_line_numbers);
+
 	
-	
-	if (filter_numbers.length >= FILTER_LIMIT) {
+	if (filter_selection_numbers.length >= FILTER_LIMIT) {
 		console.error("Limit of filter is reached !");
 		process.exit(1);
 	}
@@ -181,44 +181,65 @@ let rl = readline.createInterface({
 	let hits_filters_string = '';
 	for (let i = 0; i < levelSelection.length; i++)
 	{
+		let filter_tested_numbers = [];
+		switch (true) {
+			case /^_empty$/.test(filterSelection[i].trim()):
+				break;
+	
+			case /^_self$/.test(filterSelection[i].trim()):
+				filter_tested_numbers = filter_selection_numbers;
+				break;
+			
+			default:
+				let filter_lines = fs.readFileSync(filterSelection[i].trim()).toString().split(/\r?\n/);
+				for (let filter_line of filter_lines) {
+					let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+					if (numbers[0] == 0) continue;
+					if (numbers.join("") == '') continue;
+					filter_tested_numbers.push(numbers);
+				}
+				break;
+		}
+
+		
 		let selectCombination = true;
 		let hitsCount = 0;
-		for (let j = 0; j < filter_numbers.length; j++) {
-			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_numbers[j]);
+		for (let j = 0; j < filter_tested_numbers.length; j++) {
+			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 			
 			switch (true) {
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
 					}
 					break;
 		
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
 					}
 					break;
 		
@@ -259,7 +280,7 @@ let rl = readline.createInterface({
 				break;
 	
 			case /^\*$/.test(hitsSelection[i]):
-				if (!(hitsCount == filter_numbers.length)) {
+				if (!(hitsCount == filter_tested_numbers.length)) {
 					selectCombination = false;
 				}
 				break;
@@ -282,7 +303,7 @@ let rl = readline.createInterface({
 
 
 	if (exclusiveMode) {
-		filter_numbers.push(input_line_numbers.sort()); additions++;
+		filter_selection_numbers.push(input_line_numbers.sort()); additions++;
 		if (filterAdditions != -1 && additions >= filterAdditions) {
 			process.exit(1);
 		}
