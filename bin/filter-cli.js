@@ -152,7 +152,7 @@ for (let i = 0; i < levelSelection.length; i++) {
 
 
 // Test all combinations of input file
-let filter_selection_numbers = [];
+let selected_numbers = [];
 let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
@@ -171,7 +171,7 @@ let rl = readline.createInterface({
 	//console.log(input_line_numbers);
 
 	
-	if (filter_selection_numbers.length >= FILTER_LIMIT) {
+	if (selected_numbers.length >= FILTER_LIMIT) {
 		console.error("Limit of filter is reached !");
 		process.exit(1);
 	}
@@ -187,7 +187,7 @@ let rl = readline.createInterface({
 				break;
 	
 			case /^_self$/.test(filterSelection[i].trim()):
-				filter_tested_numbers = filter_selection_numbers;
+				filter_tested_numbers = selected_numbers;
 				break;
 			
 			default:
@@ -211,35 +211,35 @@ let rl = readline.createInterface({
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
 		
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 		
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 		
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 		
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + '\n';
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 		
@@ -247,6 +247,7 @@ let rl = readline.createInterface({
 					break;
 			}
 		}
+		hits_filters_string += '\n';
 
 		switch (true) {
 			case /^<\d*$/.test(hitsSelection[i]):
@@ -290,7 +291,7 @@ let rl = readline.createInterface({
 		}
 	
 		if (!selectCombination) return;
-		hits_count_string += " - [hits: " + hitsCount + "]";
+		hits_count_string += ` - [hits: ${hitsCount} ]`;
 	}
 
 
@@ -303,7 +304,7 @@ let rl = readline.createInterface({
 
 
 	if (exclusiveMode) {
-		filter_selection_numbers.push(input_line_numbers.sort()); additions++;
+		selected_numbers.push(input_line_numbers.sort()); additions++;
 		if (filterAdditions != -1 && additions >= filterAdditions) {
 			process.exit(1);
 		}
