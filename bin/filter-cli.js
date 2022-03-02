@@ -4,7 +4,7 @@ const fs = require('fs');
 const readline = require('readline');
 const meow = require('meow');
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
-const FILTER_LIMIT = 500000;
+const SELECTION_LIMIT = 500000;
 
 
 const cli = meow(`
@@ -17,13 +17,13 @@ const cli = meow(`
 	  --level, -l     Defining the <level> of collisions with the tested <filter> file.
 	  --hits, -h      Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
 	  --length        Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
-	  --exclusive     If true the selected combinations are added on the fly to the running selection. Default value is true.
+	  --addition      If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits     Display the hit counts for each (filter, level, hits) trio in their declarative order.
 
 	Description
 	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
-	The selected combinations are printed and also added to the current selection of input combinations, increasing the difficulty of next selections.
-	You can use "_self" or "_empty" values for <filter> file if you want to filter against the current selected input line or against an empty filter.
+	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
+	You can use "_self" value for <filter> file if you want to perform selection against the current selection of input combinations.
 
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
@@ -69,7 +69,7 @@ const cli = meow(`
 			isMultiple: false,
 			default: -1,
 		},
-		exclusive: {
+		addition: {
 			type: 'boolean',
 			isRequired: false,
 			isMultiple: false,
@@ -85,7 +85,7 @@ const cli = meow(`
 });
 
 
-let exclusiveMode = cli.flags.exclusive;
+let additionMode = cli.flags.addition;
 let filterAdditions = cli.flags.length;
 let filterSelection = cli.flags.filter;
 let levelSelection = cli.flags.level;
@@ -170,9 +170,9 @@ let rl = readline.createInterface({
 	inputLinesCount++;
 	//console.log(input_line_numbers);
 
-	
-	if (selected_numbers.length >= FILTER_LIMIT) {
-		console.error("Limit of filter is reached !");
+
+	if (selected_numbers.length >= SELECTION_LIMIT) {
+		console.error("Limit of selection is reached !");
 		process.exit(1);
 	}
 
@@ -182,10 +182,7 @@ let rl = readline.createInterface({
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
-		switch (true) {
-			case /^_empty$/.test(filterSelection[i].trim()):
-				break;
-	
+		switch (true) {	
 			case /^_self$/.test(filterSelection[i].trim()):
 				filter_tested_numbers = selected_numbers;
 				break;
@@ -303,7 +300,7 @@ let rl = readline.createInterface({
 	}
 
 
-	if (exclusiveMode) {
+	if (additionMode) {
 		selected_numbers.push(input_line_numbers.sort()); additions++;
 		if (filterAdditions != -1 && additions >= filterAdditions) {
 			process.exit(1);
