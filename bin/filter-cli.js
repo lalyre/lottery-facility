@@ -16,7 +16,7 @@ const cli = meow(`
 	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
 	  --level, -l     Defining the <level> of collisions with the tested <filter> file.
 	  --hits, -h      Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
-	  --length        Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
+	  --limit         Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition      If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits     Display the hit counts for each (filter, level, hits) trio in their declarative order.
 
@@ -63,7 +63,7 @@ const cli = meow(`
 			isRequired: true,
 			isMultiple: true,
 		},
-		length: {
+		limit: {
 			type: 'number',
 			isRequired: false,
 			isMultiple: false,
@@ -86,7 +86,7 @@ const cli = meow(`
 
 
 let additionMode = cli.flags.addition;
-let filterAdditions = cli.flags.length;
+let additionsLimit = cli.flags.limit;
 let filterSelection = cli.flags.filter;
 let levelSelection = cli.flags.level;
 let hitsSelection = cli.flags.hits;
@@ -198,7 +198,6 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		
 		let selectCombination = true;
 		let hitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
@@ -302,7 +301,7 @@ let rl = readline.createInterface({
 
 	if (additionMode) {
 		selected_numbers.push(input_line_numbers.sort()); additions++;
-		if (filterAdditions != -1 && additions >= filterAdditions) {
+		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}
 	}
