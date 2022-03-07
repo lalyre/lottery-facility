@@ -11,15 +11,16 @@ const cli = meow(`
 	  $ combination
 
 	Parameters
-	  --total, -t     Total number of items
-	  --size, -s      Number of assembled items
+	  --total, -t     Total number of arranged packets of items.
+	  --size, -s      Number of assembled packets of items.
 	  --file, -f      A file containing one item of combination per line
 	  --numbers, -n   Items of combinations separated by '|', or ' '
+	  --step          Size of a packet of items. Default value 1.
 
 	Description
-	This script generates combinations of items taken in <file> or <numbers>, of size <size> items,
-	implementing choice of <size> items among <total> items.
-	Only the first <total> items of <file> or <numbers> are used to build combinations.
+	This script generates combinations of packets of items taken in <file> or <numbers>, of size <size> packets,
+	implementing choice of <size> packets among <total> packets.
+	Only the first <step>*<total> items of <file> or <numbers> are used to build combinations.
 `, {
 	flags: {
 		total: {
@@ -52,6 +53,12 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 		},
+		step: {
+			type: 'number',
+			isRequired: false,
+			isMultiple: false,
+			default: 1,
+		},
 	}
 });
 
@@ -59,6 +66,7 @@ const cli = meow(`
 let numbers = null;
 let size = cli.flags.size;
 let total = cli.flags.total;
+let step = cli.flags.step;
 let separator = false;
 let SEP = (separator) ? '|' : ' ';
 
@@ -110,9 +118,8 @@ const nextCombination = function (tab) {
 
 
 do {
-	var temp_array = iterators.map(x => numbers[x-1]);
+	var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step));
 	var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
 	console.log(result_line);
 	var ret = nextCombination(iterators);
 } while (ret != null);
-

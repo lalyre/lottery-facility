@@ -108,9 +108,6 @@ let hits = [];
 let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
 for (let i = 0; i < levelSelection.length; i++) {
 	switch (true) {
-		case /^_empty$/.test(filterSelection[i].trim()):
-			break;
-
 		case /^_self$/.test(filterSelection[i].trim()):
 			break;
 		

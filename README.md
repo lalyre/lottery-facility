@@ -132,15 +132,16 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ### 2. combination
 **Parameters**<br>
 ```sh
---total, -t     Total number of items
---size, -s      Number of assembled items
+--total, -t     Total number of arranged packets of items.
+--size, -s      Number of assembled packets of items.
 --file, -f      A file containing one item of combination per line
 --numbers, -n   Items of combinations separated by '|', or ' '
+--step          Size of a packet of items. Default value 1.
 ```
 
 **Description**<br>
-This script generates combinations of items taken in file `file` or list `numbers`, of size `size` items, implementing choice of `size` items among `total` items.
-Only the first `total` items of `file` or `numbers` are used to build combinations.
+This script generates combinations of packets of items taken in file `file` or list `numbers`, of size `size` packets, implementing choice of `size` packets among `total` packets.
+Only the first `step*total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
 Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5).
