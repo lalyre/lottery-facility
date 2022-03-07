@@ -109,11 +109,15 @@ let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
 for (let i = 0; i < levelSelection.length; i++) {
 	switch (true) {
 		case /^_self$/.test(filterSelection[i].trim()):
+			if (!additionMode) {
+				console.error(`You must enable <addition> mode in conjonction with "_self" filter.`);
+				process.exit(1);
+			}
 			break;
 		
 		default:
 			if (!fs.existsSync(filterSelection[i].trim())) {
-				console.error(`File ${filterSelection[i]} does not exist`);
+				console.error(`File ${filterSelection[i]} does not exist.`);
 				process.exit(1);
 			}
 			break;
