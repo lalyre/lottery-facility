@@ -118,7 +118,7 @@ const nextCombination = function (tab) {
 
 
 do {
-	var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step));
+	var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(SEP));
 	var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
 	console.log(result_line);
 	var ret = nextCombination(iterators);
