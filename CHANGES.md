@@ -2,15 +2,20 @@ Roadmap
 =======
 * Manage all history databases of Euromillions draws for euromillions_draws.
 * Manage all history databases of Keno draws for kenoFR_draws.
-* Filter CLI improvment.
+* allow multiple files output with combination CLI utiliy.
 * cartesian_product CLI utility.
 * paste CLI utility.
+* cut CLI utility.
 
 
-2022-xx-xx, Version 0.0.1-alpha.8
+2022-xx-xx, Version 0.0.1-alpha.9
 ==================================
 * Documentation update.
-* Adding cartesian_product CLI utility.
+
+
+2022-03-14, Version 0.0.1-alpha.8
+==================================
+* Documentation update.
 
 
 2021-11-16, Version 0.0.1-alpha.7

@@ -105,7 +105,7 @@ let level = [];
 let hits = [];
 
 
-let regexp = /^(<|<=|=|>=|>)?(\d*)$/;
+let regexp = /^(<|=<|<=|=|>=|=>|>)?(\d*)$/;
 for (let i = 0; i < levelSelection.length; i++) {
 	switch (true) {
 		case /^_self$/.test(filterSelection[i].trim()):
@@ -212,6 +212,7 @@ let rl = readline.createInterface({
 					}
 					break;
 		
+				case /^=<\d*$/.test(levelSelection[i]):
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
@@ -226,6 +227,7 @@ let rl = readline.createInterface({
 					}
 					break;
 		
+				case /^=>\d*$/.test(levelSelection[i]):
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
@@ -253,6 +255,7 @@ let rl = readline.createInterface({
 				}
 				break;
 	
+			case /^=<\d*$/.test(hitsSelection[i]):
 			case /^<=\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount <= hits[i])) {
 					selectCombination = false;
@@ -265,6 +268,7 @@ let rl = readline.createInterface({
 				}
 				break;
 	
+			case /^=>\d*$/.test(hitsSelection[i]):
 			case /^>=\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount >= hits[i])) {
 					selectCombination = false;

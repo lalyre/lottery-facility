@@ -21,6 +21,8 @@ CLI utilities:
 * flash
 * combination
 * cartesian_product
+* paste
+* cut
 * translate
 * filter
 * euromillions_draws
@@ -225,9 +227,15 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 28 34 52 61 68 70
 ```
 
-### 4. euromillions_draws
+### 4. cartesian_product
 
-### 5. kenoFR_draws
+### 5. paste
+
+### 6. cut
+
+### 7. euromillions_draws
+
+### 8. kenoFR_draws
 
 
 
