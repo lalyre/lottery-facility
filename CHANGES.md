@@ -3,6 +3,7 @@ Roadmap
 * Manage all history databases of Euromillions draws for euromillions_draws.
 * Manage all history databases of Keno draws for kenoFR_draws.
 * allow multiple files output with combination CLI utiliy.
+* allow multiple files output with flash CLI utiliy.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
