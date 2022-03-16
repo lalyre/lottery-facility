@@ -36,6 +36,8 @@ const cli = meow(`
 	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
 	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
+	With --hits "min", the combinations with the minimum hits count are selected and printed to the ouput.
+	With --hits "max", the combinations with the maximum hits count are selected and printed to the ouput.
 	With --hits "*", if the current input combination matches with all filter lines then it is selected and printed to the ouput.
 `, {
 	flags: {
@@ -141,6 +143,12 @@ for (let i = 0; i < levelSelection.length; i++) {
 			hits.push(match[2]);
 			break;
 	
+		case /^min$/.test(hitsSelection[i]):
+			break;
+	
+		case /^max$/.test(hitsSelection[i]):
+			break;
+	
 		case /^\*$/.test(hitsSelection[i]):
 			break;
 	
@@ -183,7 +191,7 @@ let rl = readline.createInterface({
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
-		switch (true) {	
+		switch (true) {
 			case /^_self$/.test(filterSelection[i].trim()):
 				filter_tested_numbers = selected_numbers;
 				break;
@@ -279,6 +287,14 @@ let rl = readline.createInterface({
 				if (!(hitsCount > hits[i])) {
 					selectCombination = false;
 				}
+				break;
+	
+			case /^min$/.test(hitsSelection[i]):
+				selectCombination = false;
+				break;
+	
+			case /^max$/.test(hitsSelection[i]):
+				selectCombination = false;
 				break;
 	
 			case /^\*$/.test(hitsSelection[i]):

@@ -4,6 +4,7 @@ Roadmap
 * Manage all history databases of Keno draws for kenoFR_draws.
 * allow multiple files output with combination CLI utiliy.
 * allow multiple files output with flash CLI utiliy.
+* adding a "min" and "max" selection feature for CLI filter.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
