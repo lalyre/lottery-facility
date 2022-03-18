@@ -1,9 +1,12 @@
 Roadmap
 =======
+* Usage of cli-progress library.
+* Usage of ansi-colors library.
 * Manage all history databases of Euromillions draws for euromillions_draws.
 * Manage all history databases of Keno draws for kenoFR_draws.
 * allow multiple files output with combination CLI utiliy.
 * allow multiple files output with flash CLI utiliy.
+* filter CLI enhancement with selection of groups of combinations.
 * adding a "min" and "max" selection feature for CLI filter.
 * cartesian_product CLI utility.
 * paste CLI utility.
