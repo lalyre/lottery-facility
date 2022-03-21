@@ -20,11 +20,11 @@ Features:
 CLI utilities:
 * flash
 * combination
+* translate
+* filter
 * cartesian_product
 * paste
 * cut
-* translate
-* filter
 * euromillions_draws
 * kenoFR_draws
 
