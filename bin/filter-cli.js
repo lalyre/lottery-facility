@@ -143,11 +143,11 @@ for (let i = 0; i < levelSelection.length; i++) {
 			hits.push(match[2]);
 			break;
 	
-		case /^min$/.test(hitsSelection[i]):
-			break;
+		//case /^min$/.test(hitsSelection[i]):
+			//break;
 	
-		case /^max$/.test(hitsSelection[i]):
-			break;
+		//case /^max$/.test(hitsSelection[i]):
+			//break;
 	
 		case /^\*$/.test(hitsSelection[i]):
 			break;
@@ -289,13 +289,13 @@ let rl = readline.createInterface({
 				}
 				break;
 	
-			case /^min$/.test(hitsSelection[i]):
-				selectCombination = false;
-				break;
+			//case /^min$/.test(hitsSelection[i]):
+				//selectCombination = false;
+				//break;
 	
-			case /^max$/.test(hitsSelection[i]):
-				selectCombination = false;
-				break;
+			//case /^max$/.test(hitsSelection[i]):
+				//selectCombination = false;
+				//break;
 	
 			case /^\*$/.test(hitsSelection[i]):
 				if (!(hitsCount == filter_tested_numbers.length)) {
