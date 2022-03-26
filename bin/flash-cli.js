@@ -126,12 +126,14 @@ for (let i = 0; i < nb; i++) {
 
 	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
 		fileNum++; lineNum = 0;
-		if (basename) file = basename + '_' + fileNum;
-		if (extension) file += extension;
-		if (!verboseMode) console.log(file);
+		if (basename) {
+			file = basename + '_' + fileNum;
+			if (extension) file += extension;
+			if (!verboseMode) console.log(file);
 
-		if (outfd) fs.closeSync(outfd);
-		outfd = fs.openSync(file, 'w');
+			if (outfd) { fs.closeSync(outfd); outfd = null; }
+			outfd = fs.openSync(file, 'w');
+		}
 	}
 	lineNum++;
 
@@ -154,5 +156,5 @@ for (let i = 0; i < nb; i++) {
 	}
 }
 
-if (outfd) fs.closeSync(outfd);
+if (outfd) { fs.closeSync(outfd); outfd = null; }
 
