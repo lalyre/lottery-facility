@@ -103,11 +103,13 @@ All the following documentation is available in the tools by running `--help` on
 ### 1. flash
 **Parameters**<br>
 ```sh
---total, -t  Total number of lottery balls
---size, -s   Size of generated combinations
---sort       Display ordered combinations
---nb         Number of generated combinations
---nbSwap     Number of shuffle operations
+--verbose, -v  Verbose mode (default true)
+--outfile      Output filename (optional)
+--total, -t    Total number of lottery balls
+--size, -s     Size of generated combinations
+--sort         Display ordered combinations
+--nb           Number of generated combinations
+--nbSwap       Number of shuffle operations
 ```
 
 **Description**<br>
@@ -132,6 +134,8 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ### 2. combination
 **Parameters**<br>
 ```sh
+--verbose, -v   Verbose mode (default true)
+--outfile       Output filename (optional)
 --total, -t     Total number of arranged packets of items.
 --size, -s      Number of assembled packets of items.
 --file, -f      A file containing one item of combination per line

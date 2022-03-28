@@ -157,6 +157,8 @@ for (let i = 0; i < nb; i++) {
 		if (j > 0) str += " | ";
 		str += (cli.flags.sort) ? lotteryFacility.canonicalCombinationString(ballsSet[j], " ") : lotteryFacility.combinationString(ballsSet[j], " ");
 	}
+	
+	// Output
 	if (verboseMode) {
 		console.log(str);
 	}

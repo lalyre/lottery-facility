@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 const fs = require('fs');
+const path = require('path');
 const readline = require('readline');
 const meow = require('meow');
+const colors = require('ansi-colors');
+const cliProgress = require('cli-progress');
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+const FILE_LIMIT = 500000;
 
 
 const cli = meow(`
@@ -11,6 +15,8 @@ const cli = meow(`
 	  $ combination
 
 	Parameters
+	  --verbose, -v   Verbose mode (default true)
+	  --outfile       Output filename (optional)
 	  --total, -t     Total number of arranged packets of items.
 	  --size, -s      Number of assembled packets of items.
 	  --file, -f      A file containing one item of combination per line
@@ -23,6 +29,15 @@ const cli = meow(`
 	Only the first <step>*<total> items of <file> or <numbers> are used to build combinations.
 `, {
 	flags: {
+		verbose: {
+			type: 'boolean',
+			default: true,
+		},
+		outfile: {
+			type: 'string',
+			isRequired: false,
+			isMultiple: false,
+		},
 		total: {
 			type: 'number',
 			alias: 't',
@@ -63,6 +78,33 @@ const cli = meow(`
 });
 
 
+if (!cli.flags.verbose && !cli.flags.outfile) {
+	console.error("Enable verbose mode or file output mode !");
+	process.exit(1);
+}
+
+let outfile = (cli.flags.outfile) ? cli.flags.outfile.trim() : null;
+let extension = (outfile) ? path.extname(outfile) : null;
+if (outfile && outfile.startsWith('.')) {
+	console.error(`Wrong output filename !`);
+	process.exit(1);
+}
+
+let basename = null;
+switch (true) {
+	case (outfile != null && extension != null):
+		basename = path.basename(outfile, extension);
+		break;
+
+	case (outfile != null):
+		basename = path.basename(outfile);
+		break;
+
+	default:
+		break;
+}
+
+let verboseMode = cli.flags.verbose;
 let numbers = null;
 let size = cli.flags.size;
 let total = cli.flags.total;
@@ -117,9 +159,58 @@ const nextCombination = function (tab) {
 }
 
 
+let bar = null;
+let outfd = null;
+let file = null;
+let fileNum = 0;
+let lineNum = 0;
 do {
+	// Progress bar
+	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
+		fileNum++; lineNum = 0;
+		if (basename) {
+			file = basename + '_' + fileNum; if (extension) file += extension;
+			if (!verboseMode) {
+				//console.log(file);
+				if (bar) { bar.stop(); }
+				bar = new cliProgress.SingleBar({
+					format: file + ' |' + colors.cyan('{bar}') + '| {percentage}% || {value}/{total} combinations',
+					barCompleteChar: '\u2588',
+					barIncompleteChar: '\u2591',
+					hideCursor: true
+				});
+
+				var totalValue = FILE_LIMIT;
+				var startValue = 0
+				bar.start(totalValue, startValue);
+			}
+
+			if (outfd) { fs.closeSync(outfd); outfd = null; }
+			outfd = fs.openSync(file, 'w');
+		}
+	}
+	lineNum++;
+	
+	// Computation
 	var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(SEP));
 	var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
-	console.log(result_line);
+	
+	// Output
+	if (verboseMode) {
+		console.log(result_line);
+	}
+	if (outfd) {
+		fs.writeSync(outfd, result_line);
+		fs.writeSync(outfd, '\n');
+	}
+	if (bar) {
+		bar.increment();
+	}
+	
+	// Next
 	var ret = nextCombination(iterators);
 } while (ret != null);
+
+if (outfd) { fs.closeSync(outfd); outfd = null; }
+if (bar) { bar.stop(); }
+
