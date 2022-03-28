@@ -55,7 +55,6 @@ const balls = box.draw(20);
 console.log(balls);
 ```
 
-
 ### ES6 or TypeScript
 Import in your NodeJS project with ES6 or TypeScript:
 
@@ -96,7 +95,6 @@ Import in your browser project from a CDN:
 </body>
 </html>
 ```
-
 
 
 ## CLI utilities
@@ -227,15 +225,22 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 28 34 52 61 68 70
 ```
 
-### 4. cartesian_product
+### 4. filter
 
-### 5. paste
+### 5. cartesian_product
 
-### 6. cut
+### 6. paste
 
-### 7. euromillions_draws
+### 7. cut
 
-### 8. kenoFR_draws
+### 8. euromillions_draws
+
+### 9. kenoFR_draws
+
+
+
+
+
 
 
 
@@ -256,13 +261,7 @@ env/ is for any environment that's needed for testing
 
 https://definitelytyped.org/guides/contributing.html
 https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-d-ts.html
-
 -->
-
-
-
-
-
 
 
 ## Publish a version

@@ -3,6 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 const meow = require('meow');
+const colors = require('ansi-colors');
+const cliProgress = require('cli-progress');
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 const FILE_LIMIT = 500000;
 
@@ -19,7 +21,7 @@ const cli = meow(`
 	  --sort         Display ordered combinations
 	  --nb           Number of generated combinations
 	  --nbSwap       Number of shuffle operations
-	  
+
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
 	The optional parameter 'sort' sorts combinations items in ascending order.
@@ -66,7 +68,7 @@ const cli = meow(`
 
 if (!cli.flags.verbose && !cli.flags.outfile) {
 	console.error("Enable verbose mode or file output mode !");
-	process.exit(1);	
+	process.exit(1);
 }
 if (cli.flags.total.length !== cli.flags.size.length) {
 	console.error("Missing <total> or <size> parameter !");
@@ -115,21 +117,31 @@ for (let i = 0; i < totals.length; i++) {
 }
 
 
+let bar = null;
 let outfd = null;
 let file = null;
 let fileNum = 0;
 let lineNum = 0;
 for (let i = 0; i < nb; i++) {
-
-
-
-
+	// Progress bar
 	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
 		fileNum++; lineNum = 0;
 		if (basename) {
-			file = basename + '_' + fileNum;
-			if (extension) file += extension;
-			if (!verboseMode) console.log(file);
+			file = basename + '_' + fileNum; if (extension) file += extension;
+			if (!verboseMode) {
+				//console.log(file);
+				if (bar) { bar.stop(); }
+				bar = new cliProgress.SingleBar({
+					format: file + ' |' + colors.cyan('{bar}') + '| {percentage}% || {value}/{total} combinations',
+					barCompleteChar: '\u2588',
+					barIncompleteChar: '\u2591',
+					hideCursor: true
+				});
+
+				var totalValue = FILE_LIMIT;
+				var startValue = 0
+				bar.start(totalValue, startValue);
+			}
 
 			if (outfd) { fs.closeSync(outfd); outfd = null; }
 			outfd = fs.openSync(file, 'w');
@@ -137,9 +149,7 @@ for (let i = 0; i < nb; i++) {
 	}
 	lineNum++;
 
-
-
-
+	// Computation
 	let str = "";
 	let ballsSet = [];
 	for (let j = 0; j < totals.length; j++) {
@@ -154,7 +164,11 @@ for (let i = 0; i < nb; i++) {
 		fs.writeSync(outfd, str);
 		fs.writeSync(outfd, '\n');
 	}
+	if (bar) {
+		bar.increment();
+	}
 }
 
 if (outfd) { fs.closeSync(outfd); outfd = null; }
+if (bar) { bar.stop(); }
 

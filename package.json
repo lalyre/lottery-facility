@@ -49,9 +49,8 @@
   },
   "bin": {
     "flash": "./bin/flash-cli.js",
-    "translate": "./bin/translate-cli.js",
     "combination": "./bin/combination-cli.js",
-    "balancer": "./bin/balancer-cli.js",
+    "translate": "./bin/translate-cli.js",
     "filter": "./bin/filter-cli.js",
     "euromillions_draws": "./bin/euromillions_draws-cli.js",
     "kenoFR_draws": "./bin/kenoFR_draws-cli.js"
@@ -118,7 +117,9 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "ansi-colors": "^4.1.1",
     "chalk": "^4.1.2",
+    "cli-progress": "^3.10.0",
     "fs": "^0.0.1-security",
     "js-sha256": "^0.9.0",
     "jszip": "^3.7.1",
