@@ -209,6 +209,7 @@ let rl = readline.createInterface({
 
 		let selectCombination = true;
 		let hitsCount = 0;
+		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 			
@@ -216,6 +217,7 @@ let rl = readline.createInterface({
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
+						if (nb_collisions == level[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
@@ -224,6 +226,7 @@ let rl = readline.createInterface({
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
+						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
@@ -231,6 +234,7 @@ let rl = readline.createInterface({
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
+						limitHitsCount++;
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
@@ -239,6 +243,7 @@ let rl = readline.createInterface({
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
+						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
@@ -246,6 +251,7 @@ let rl = readline.createInterface({
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
+						if (nb_collisions == level[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
@@ -308,7 +314,7 @@ let rl = readline.createInterface({
 		}
 	
 		if (!selectCombination) return;
-		hits_count_string += ` - [hits: ${hitsCount} ]`;
+		hits_count_string += ` - [hits: ${hitsCount} - limit_hits: ${limitHitsCount}]`;
 	}
 
 
