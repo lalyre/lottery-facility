@@ -23,21 +23,23 @@ const cli = meow(`
 	Description
 	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
 	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
-	You can use "_self" value for <filter> file if you want to perform selection against the current selection of input combinations.
+	You can use "_selection" value for <filter> file if you want to perform selection against the current selection of input combinations.
 
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
 	With --level "=x" or --level x, only filter lines with x collisions with the current input combination are considered.
+	With --level "!=x", only filter lines with not x collisions with the current input combination are considered.
 	With --level ">=x", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With --level ">x", only filter lines with more than x collisions with the current input combination are considered.
 
 	With --hits "<x", if the current input combination matches with less than x filter lines then it is selected and printed to the ouput.
 	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
+	With --hits "!=x", if the current input combination does not match with x filter lines then it is selected and printed to the ouput.
 	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
 	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
-	With --hits "min", the combinations with the minimum hits count are selected and printed to the ouput.
-	With --hits "max", the combinations with the maximum hits count are selected and printed to the ouput.
+	// With --hits "min", the combinations with the minimum hits count are selected and printed to the ouput.
+	// With --hits "max", the combinations with the maximum hits count are selected and printed to the ouput.
 	With --hits "*", if the current input combination matches with all filter lines then it is selected and printed to the ouput.
 `, {
 	flags: {
@@ -107,12 +109,12 @@ let level = [];
 let hits = [];
 
 
-let regexp = /^(<|=<|<=|=|>=|=>|>)?(\d*)$/;
+let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 for (let i = 0; i < levelSelection.length; i++) {
 	switch (true) {
-		case /^_self$/.test(filterSelection[i].trim()):
+		case /^_selection$/.test(filterSelection[i].trim()):
 			if (!additionMode) {
-				console.error(`You must enable <addition> mode in conjonction with "_self" filter.`);
+				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
 			break;
@@ -192,7 +194,7 @@ let rl = readline.createInterface({
 	{
 		let filter_tested_numbers = [];
 		switch (true) {
-			case /^_self$/.test(filterSelection[i].trim()):
+			case /^_selection$/.test(filterSelection[i].trim()):
 				filter_tested_numbers = selected_numbers;
 				break;
 			
@@ -221,7 +223,7 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
-		
+
 				case /^=<\d*$/.test(levelSelection[i]):
 				case /^<=\d*$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
@@ -230,7 +232,7 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-		
+
 				case /^(=)?\d*$/.test(levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
@@ -238,7 +240,14 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-		
+
+				case /^!=\d*$/.test(levelSelection[i]):
+					if (nb_collisions != level[i]) {
+						hitsCount++;
+						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
+
 				case /^=>\d*$/.test(levelSelection[i]):
 				case /^>=\d*$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
@@ -247,7 +256,7 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-		
+
 				case /^>\d*$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
@@ -255,7 +264,7 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-		
+
 				default:
 					break;
 			}
@@ -268,33 +277,39 @@ let rl = readline.createInterface({
 					selectCombination = false;
 				}
 				break;
-	
+
 			case /^=<\d*$/.test(hitsSelection[i]):
 			case /^<=\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount <= hits[i])) {
 					selectCombination = false;
 				}
 				break;
-	
+
 			case /^(=)?\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount == hits[i])) {
 					selectCombination = false;
 				}
 				break;
-	
+
+			case /^!=\d*$/.test(hitsSelection[i]):
+				if (hitsCount == hits[i]) {
+					selectCombination = false;
+				}
+				break;
+
 			case /^=>\d*$/.test(hitsSelection[i]):
 			case /^>=\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount >= hits[i])) {
 					selectCombination = false;
 				}
 				break;
-	
+
 			case /^>\d*$/.test(hitsSelection[i]):
 				if (!(hitsCount > hits[i])) {
 					selectCombination = false;
 				}
 				break;
-	
+
 			//case /^min$/.test(hitsSelection[i]):
 				//selectCombination = false;
 				//break;
@@ -302,17 +317,17 @@ let rl = readline.createInterface({
 			//case /^max$/.test(hitsSelection[i]):
 				//selectCombination = false;
 				//break;
-	
+
 			case /^\*$/.test(hitsSelection[i]):
 				if (!(hitsCount == filter_tested_numbers.length)) {
 					selectCombination = false;
 				}
 				break;
-	
+
 			default:
 				break;
 		}
-	
+
 		if (!selectCombination) return;
 		hits_count_string += ` - [hits: ${hitsCount} - limit_hits: ${limitHitsCount}]`;
 	}
