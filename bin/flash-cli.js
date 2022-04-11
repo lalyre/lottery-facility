@@ -14,13 +14,13 @@ const cli = meow(`
 	  $ flash
 
 	Parameters
-	  --verbose, -v  Verbose mode (default true)
-	  --outfile      Output filename (optional)
-	  --total, -t    Total number of lottery balls
-	  --size, -s     Size of generated combinations
-	  --sort         Display ordered combinations
-	  --nb           Number of generated combinations
-	  --nbSwap       Number of shuffle operations
+	  --verbose, -v  Verbose mode (default true).
+	  --outfile      Output filename (optional).
+	  --total, -t    Total number of lottery balls.
+	  --size, -s     Size of generated combinations.
+	  --sort         Display ordered combinations (optional).
+	  --nb           Number of generated combinations.
+	  --nbSwap       Number of shuffle operations. Default value 200.
 
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.

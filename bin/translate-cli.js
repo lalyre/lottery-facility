@@ -11,11 +11,11 @@ const cli = meow(`
 	  $ translate
 
 	Parameters
-	  --file, -f    A file containing one combination per line to be translated
-	  --originnum   Items of combinations separated by '|' or ' '
-	  --originfile  File containing one item per line that are used in combinations of <file> file
-	  --targetnum   Items of combinations separated by '|' or ' ', used for the translation of combinations
-	  --targetfile  File containing one item per line used for the translation <file> file
+	  --file, -f    A file containing one combination per line to be translated.
+	  --originnum   Items of combinations separated by '|' or ' '.
+	  --originfile  File containing one item per line that are used in combinations of <file> file.
+	  --targetnum   Items of combinations separated by '|' or ' ', used for the translation of combinations.
+	  --targetfile  File containing one item per line used for the translation <file> file.
 	  
 	Description
 	This script takes an input file <file> containing one combination per line, combinations

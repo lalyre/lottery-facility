@@ -103,13 +103,13 @@ All the following documentation is available in the tools by running `--help` on
 ### 1. flash
 **Parameters**<br>
 ```sh
---verbose, -v  Verbose mode (default true)
---outfile      Output filename (optional)
---total, -t    Total number of lottery balls
---size, -s     Size of generated combinations
---sort         Display ordered combinations
---nb           Number of generated combinations
---nbSwap       Number of shuffle operations
+--verbose, -v  Verbose mode (default true).
+--outfile      Output filename (optional).
+--total, -t    Total number of lottery balls.
+--size, -s     Size of generated combinations.
+--sort         Display ordered combinations (optional).
+--nb           Number of generated combinations.
+--nbSwap       Number of shuffle operations. Default value 200.
 ```
 
 **Description**<br>
@@ -134,12 +134,12 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ### 2. combination
 **Parameters**<br>
 ```sh
---verbose, -v   Verbose mode (default true)
---outfile       Output filename (optional)
+--verbose, -v   Verbose mode (default true).
+--outfile       Output filename (optional).
 --total, -t     Total number of arranged packets of items.
 --size, -s      Number of assembled packets of items.
---file, -f      A file containing one item of combination per line
---numbers, -n   Items of combinations separated by '|', or ' '
+--file, -f      A file containing one item of combination per line.
+--numbers, -n   Items of combinations separated by '|', or ' '.
 --step          Size of a packet of items. Default value 1.
 ```
 
@@ -174,11 +174,11 @@ In the end, you need to apply your smart selection of numbers onto your tactical
 
 **Parameters**<br>
 ```sh
---file, -f    A file containing one combination per line to be translated
---originnum   Items of combinations separated by '|' or ' '
---originfile  File containing one item per line that are used in combinations of <file> file
---targetnum   Items of combinations separated by '|' or ' ', for the translation of combinations
---targetfile  File containing one item per line used for the translation <file> file
+--file, -f    A file containing one combination per line to be translated.
+--originnum   Items of combinations separated by '|' or ' '.
+--originfile  File containing one item per line that are used in combinations of <file> file.
+--targetnum   Items of combinations separated by '|' or ' ', for the translation of combinations.
+--targetfile  File containing one item per line used for the translation <file> file.
 ```
 
 **Description**<br>

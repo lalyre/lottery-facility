@@ -15,12 +15,12 @@ const cli = meow(`
 	  $ combination
 
 	Parameters
-	  --verbose, -v   Verbose mode (default true)
-	  --outfile       Output filename (optional)
+	  --verbose, -v   Verbose mode (default true).
+	  --outfile       Output filename (optional).
 	  --total, -t     Total number of arranged packets of items.
 	  --size, -s      Number of assembled packets of items.
-	  --file, -f      A file containing one item of combination per line
-	  --numbers, -n   Items of combinations separated by '|', or ' '
+	  --file, -f      A file containing one item of combination per line.
+	  --numbers, -n   Items of combinations separated by '|', or ' '.
 	  --step          Size of a packet of items. Default value 1.
 
 	Description
@@ -49,7 +49,6 @@ const cli = meow(`
 			alias: 's',
 			isRequired: true,
 			isMultiple: false,
-
 		},
 		file: {
 			type: 'string',
