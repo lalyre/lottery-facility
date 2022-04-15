@@ -14,19 +14,19 @@ Some APIs for designing lottery cracking systems.
 Features:
 * Random numbers generator
 * Random selections of numbers
-* Draws statistics
-* Draws prediction algorithms
+* Draws statistics (TODO)
+* Draws prediction algorithms (TODO)
 
 CLI utilities:
 * flash
 * combination
 * translate
 * filter
-* cartesian_product
-* paste
-* cut
-* euromillions_draws
-* kenoFR_draws
+* cartesian_product (TODO)
+* paste (TODO)
+* cut (TODO)
+* euromillions_draws (TODO)
+* kenoFR_draws (TODO)
 
 
 <!--
