@@ -2,6 +2,7 @@ Roadmap
 =======
 * Manage all history databases of Euromillions draws for euromillions_draws.
 * Manage all history databases of Keno draws for kenoFR_draws.
+* combination CLI enhancement with production of balanced and count limited combinations.
 * filter CLI enhancement with selection of groups of combinations.
 * adding a "min" and "max" selection feature for CLI filter.
 * cartesian_product CLI utility.
