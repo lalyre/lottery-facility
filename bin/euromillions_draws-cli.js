@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 'use strict'
-const request = require('request');
-const rp = require('request-promise');
 const JSZip = require("jszip");
 const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-node.umd');
+const bent = require('bent')
+const getJSON = bent('json')
+const getBuffer = bent('buffer')
+const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd.js');
+
 
 
 const cli = meow(`
@@ -58,13 +60,9 @@ let displayStars = cli.flags.stars;
  * https://media.fdj.fr/static/csv/euromillions/euromillions_202002.zip
  */
 const euromillionsArchive = 'https://media.fdj.fr/static/csv/euromillions/euromillions_202002.zip';
-rp({
-	method: "GET",
-	url: euromillionsArchive,
-	encoding: null,		// <- this one is important !
-})
-.then((data) => {
-	return JSZip.loadAsync(data);
+getBuffer(euromillionsArchive)
+.then((buffer) => {
+	return JSZip.loadAsync(buffer)
 })
 .then((zipContent) => {
 	return zipContent.file("euromillions_202002.csv").async("string");
