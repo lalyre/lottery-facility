@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 'use strict'
-const request = require('request');
-const rp = require('request-promise');
 const JSZip = require("jszip");
 const meow = require('meow');
+const bent = require('bent')
+const getJSON = bent('json')
+const getBuffer = bent('buffer')
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
@@ -50,13 +51,9 @@ let displayDate = cli.flags.date;
 //const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201302.zip';
 //const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201811.zip';
 const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_202010.zip';
-rp({
-	method: "GET",
-	url: kenoArchive,
-	encoding: null,		// <- this one is important !
-})
-.then((data) => {
-	return JSZip.loadAsync(data);	
+getBuffer(kenoArchive)
+.then((buffer) => {
+	return JSZip.loadAsync(buffer)
 })
 .then((zipContent) => {
 	//return zipContent.file("keno_201811.csv").async("string");

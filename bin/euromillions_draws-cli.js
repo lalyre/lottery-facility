@@ -5,7 +5,7 @@ const meow = require('meow');
 const bent = require('bent')
 const getJSON = bent('json')
 const getBuffer = bent('buffer')
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd.js');
+const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
 
