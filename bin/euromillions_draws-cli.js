@@ -8,7 +8,6 @@ const getBuffer = bent('buffer')
 const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 
-
 const cli = meow(`
 	Usage
 	  $ euromillions_draws

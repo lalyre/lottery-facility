@@ -14,6 +14,7 @@ Roadmap
 ==================================
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
+* Package fix.
 * Documentation update.
 
 
