@@ -9,7 +9,7 @@ export class DrawBox {
 
 	/**
 	 * Builds a draw box of lottery balls from 1 to len
-	 * 1 <= len <= 99
+	 * 1 <= len
 	 *
 	 * PS:
 	 * do not consider the item at index 0.
@@ -18,7 +18,7 @@ export class DrawBox {
 		// super();
 
 		if (count === undefined) throw new Error('Need to pass a count parameter');
-		if (count < 1 || count > 99) throw new Error('Invalid count parameter');
+		if (count < 1) throw new Error('Invalid count parameter');
 		this._count = count;
 		this._balls = Array.from({ length: count+1 }, (_, i) => i);
 	}

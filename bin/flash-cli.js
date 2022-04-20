@@ -105,7 +105,7 @@ let nbSwap = cli.flags.nbSwap;
 
 let boxes = [];
 for (let i = 0; i < totals.length; i++) {
-	if (totals[i] < 1 || totals[i] > 99) {
+	if (totals[i] < 1) {
 		console.error(`wrong value for <total> (#${i+1}) parameter !`);
 		process.exit(1);
 	}

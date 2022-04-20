@@ -14,6 +14,7 @@ Roadmap
 ==================================
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
+* Removing limitation of 99 balls in DrawBox class.
 * Package fix.
 * Documentation update.
 
