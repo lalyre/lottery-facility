@@ -190,6 +190,7 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
+	let selectCombination = false;
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -209,7 +210,6 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		let selectCombination = true;
 		let hitsCount = 0;
 		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
@@ -273,54 +273,54 @@ let rl = readline.createInterface({
 
 		switch (true) {
 			case /^<\d*$/.test(hitsSelection[i]):
-				if (!(hitsCount < hits[i])) {
-					selectCombination = false;
+				if (hitsCount < hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			case /^=<\d*$/.test(hitsSelection[i]):
 			case /^<=\d*$/.test(hitsSelection[i]):
-				if (!(hitsCount <= hits[i])) {
-					selectCombination = false;
+				if (hitsCount <= hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			case /^(=)?\d*$/.test(hitsSelection[i]):
-				if (!(hitsCount == hits[i])) {
-					selectCombination = false;
+				if (hitsCount == hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			case /^!=\d*$/.test(hitsSelection[i]):
-				if (hitsCount == hits[i]) {
-					selectCombination = false;
+				if (hitsCount != hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			case /^=>\d*$/.test(hitsSelection[i]):
 			case /^>=\d*$/.test(hitsSelection[i]):
-				if (!(hitsCount >= hits[i])) {
-					selectCombination = false;
+				if (hitsCount >= hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			case /^>\d*$/.test(hitsSelection[i]):
-				if (!(hitsCount > hits[i])) {
-					selectCombination = false;
+				if (hitsCount > hits[i]) {
+					selectCombination = true;
 				}
 				break;
 
 			//case /^min$/.test(hitsSelection[i]):
-				//selectCombination = false;
+				//selectCombination = true;
 				//break;
 	
 			//case /^max$/.test(hitsSelection[i]):
-				//selectCombination = false;
+				//selectCombination = true;
 				//break;
 
 			case /^\*$/.test(hitsSelection[i]):
-				if (!(hitsCount == filter_tested_numbers.length)) {
-					selectCombination = false;
+				if (hitsCount == filter_tested_numbers.length) {
+					selectCombination = true;
 				}
 				break;
 
@@ -328,9 +328,9 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		if (!selectCombination) return;
 		hits_count_string += ` - [hits: ${hitsCount} - limit_hits: ${limitHitsCount}]`;
 	}
+	if (!selectCombination) return;
 
 
 	if (cli.flags.printhits) {
