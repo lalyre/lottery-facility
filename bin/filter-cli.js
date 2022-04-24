@@ -12,18 +12,27 @@ const cli = meow(`
 	  $ filter
 
 	Parameters
-	  --infile, -in   An input file containing one input combination per line, where some combinations will be selected.
-	  --filter, -f    A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
-	  --level, -l     Defining the <level> of collisions with the tested <filter> file.
-	  --hits, -h      Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
-	  --limit         Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
-	  --addition      If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
-	  --printhits     Display the hit counts for each (filter, level, hits) trio in their declarative order.
+	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected.
+	  --selectionLevel  Define the number of filters to be passed to select a combination. By default ALL filters are required.
+	  --filter, -f       A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
+	  --level, -l        Defining the <level> of collisions with the tested <filter> file.
+	  --hits, -h         Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
+	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
+	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
+	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
 
 	Description
 	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
 	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
 	You can use "_selection" value for <filter> file if you want to perform selection against the current selection of input combinations.
+	
+	Witch --selectionLevel "<x", only combinations with less than x passed filters are selected.
+	Witch --selectionLevel "<=x", only combinations with less than or equal x passed filters are selected..
+	Witch --selectionLevel "=x", only combinations with x passed filters are selected.
+	Witch --selectionLevel "!=x", only combinations with not x passed filters are selected.
+	Witch --selectionLevel ">=x", only combinations with more than or equal x passed filters are selected.
+	Witch --selectionLevel ">x", only combinations with more than x passed filters are selected.
+	Witch --selectionLevel "*", only combinations with ALL filters passed are selected (Default case).
 
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
@@ -54,6 +63,12 @@ const cli = meow(`
 			alias: 'f',
 			isRequired: true,
 			isMultiple: true,
+		},
+		selectionLevel: {
+			type: 'string',
+			isRequired: false,
+			isMultiple: false,
+			default: '*',
 		},
 		level: {
 			type: 'string',
@@ -89,6 +104,8 @@ const cli = meow(`
 });
 
 
+let filterModeSelection = cli.flags.selectionLevel;
+let filterLevel = 0;
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
 let filterSelection = cli.flags.filter;
@@ -110,6 +127,20 @@ let hits = [];
 
 
 let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
+switch (true) {
+	case regexp.test(filterModeSelection):
+		let match = regexp.exec(filterModeSelection);
+		filterLevel = match[2];
+		break;
+
+	case /^\*$/.test(filterModeSelection):
+		break;
+
+	default:
+		console.error(`Wrong <selectionLevel> value.`);
+		process.exit(1);
+		break;
+}
 for (let i = 0; i < levelSelection.length; i++) {
 	switch (true) {
 		case /^_selection$/.test(filterSelection[i].trim()):
@@ -190,7 +221,7 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	let selectCombination = false;
+	let filtersSelection = 0;
 	for (let i = 0; i < levelSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -212,6 +243,7 @@ let rl = readline.createInterface({
 
 		let hitsCount = 0;
 		let limitHitsCount = 0;
+		let selectCombination = false;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 			
@@ -329,8 +361,43 @@ let rl = readline.createInterface({
 		}
 
 		hits_count_string += ` - [hits: ${hitsCount} - limit_hits: ${limitHitsCount}]`;
+		if (selectCombination) filtersSelection++;
 	}
-	if (!selectCombination) return;
+
+	switch (true) {
+		case /^<\d*$/.test(filterModeSelection):
+			if (!(filtersSelection < filterLevel)) return;				// reject this combination
+			break;
+
+		case /^=<\d*$/.test(filterModeSelection):
+		case /^<=\d*$/.test(filterModeSelection):
+			if (!(filtersSelection <= filterLevel)) return;				// reject this combination
+			break;
+
+		case /^(=)?\d*$/.test(filterModeSelection):
+			if (!(filtersSelection == filterLevel)) return;				// reject this combination
+			break;
+
+		case /^!=\d*$/.test(filterModeSelection):
+			if (!(filtersSelection != filterLevel)) return;				// reject this combination
+			break;
+
+		case /^=>\d*$/.test(filterModeSelection):
+		case /^>=\d*$/.test(filterModeSelection):
+			if (!(filtersSelection >= filterLevel)) return;				// reject this combination
+			break;
+
+		case /^>\d*$/.test(filterModeSelection):
+			if (!(filtersSelection > filterLevel)) return;				// reject this combination
+			break;
+
+		case /^\*$/.test(filterModeSelection):
+			if (filtersSelection != levelSelection.length) return;		// reject this combination
+			break;
+
+		default:
+			return;
+	}
 
 
 	if (cli.flags.printhits) {

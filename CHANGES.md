@@ -5,6 +5,7 @@ Roadmap
 * combination CLI enhancement with production of balanced and count limited combinations.
 * filter CLI enhancement with selection of groups of combinations.
 * adding a "min" and "max" selection feature for CLI filter.
+* adding a "cover" selection feature for CLI filter, decreasing the filter as long as duos, trios, etc... are covered.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
@@ -14,6 +15,7 @@ Roadmap
 ==================================
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
+* Filter CLI selection mode based on number of positive filters decision.
 * Removal of 99 balls limitation in DrawBox class.
 * Package fix.
 * Documentation update.
