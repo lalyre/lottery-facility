@@ -15,7 +15,7 @@ Roadmap
 ==================================
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
-* Filter CLI selection mode based on number of positive filters decision.
+* Filter CLI selection mode based on count of filters acceptance.
 * Removal of 99 balls limitation in DrawBox class.
 * Package fix.
 * Documentation update.

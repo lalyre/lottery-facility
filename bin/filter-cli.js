@@ -13,7 +13,7 @@ const cli = meow(`
 
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected.
-	  --selectionLevel  Define the number of filters to be passed to select a combination. By default ALL filters are required.
+	  --selectionLevel   Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
 	  --filter, -f       A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
 	  --level, -l        Defining the <level> of collisions with the tested <filter> file.
 	  --hits, -h         Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
