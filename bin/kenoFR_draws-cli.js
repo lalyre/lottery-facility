@@ -46,6 +46,17 @@ let num = cli.flags.num;
 let head = cli.flags.head;
 let displayDate = cli.flags.date;
 
+
+// powerball	https://data.ny.gov/api/views/d6yy-54nr/rows.csv?accessType=DOWNLOAD
+// megamillions	https://data.ny.gov/api/views/5xaw-6ayf/rows.csv?accessType=DOWNLOAD
+
+// https://media.fdj.fr/static/csv/keno/keno_199309.zip
+// https://media.fdj.fr/static/csv/keno/keno_201302.zip
+// https://media.fdj.fr/static/csv/keno/keno_201811.zip
+// https://media.fdj.fr/static/csv/keno/keno_202010.zip
+
+
+
 // Download from https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
 //const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_199309.zip';
 //const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201302.zip';
