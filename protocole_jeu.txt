@@ -1,0 +1,120 @@
+Tous les triplets possibles du Keno FR
+combination --total 70 --size 3 --file KENOFR_70.txt > 70_3.txt
+
+Les 20 derniers tirages du Keno FR
+kenoFR_draws --num 20 > last_draws.txt
+
+Trouver le palmares de tous les trios sur les 20 derniers tirages
+filter --infile 70_3.txt  --filter last_draws.txt --level 3 --hits ">=4"
+
+==============================
+
+Attendu 6/20
+combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
+combination --total 20 --size 2 --file KENOFR_70.txt > 20_2.txt
+filter --infile 20_6.txt --filter _self --level ">=3" --hits "0" > filter_1.txt
+
+filter --infile 20_2.txt --filter filter_1.txt --level ">=2" --hits ">=120" > game_1.txt
+filter --infile filter_1.txt --filter game_1.txt --level ">=2" --hits "0" > filter_2.txt
+
+filter --infile 20_2.txt --filter filter_2.txt --level ">=2" --hits ">=66" > game_2.txt
+filter --infile filter_2.txt --filter game_2.txt --level ">=2" --hits "0" > filter_3.txt
+
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=28" > game_3.txt
+filter --infile filter_3.txt --filter game_3.txt --level ">=2" --hits "0" > filter_4.txt
+
+filter --infile 20_2.txt --filter filter_4.txt --level ">=2" --hits ">=28" > game_4.txt
+filter --infile filter_4.txt --filter game_4.txt --level ">=2" --hits "0" > filter_5.txt
+
+
+==============================
+
+Attendu 6/20
+combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
+combination --total 20 --size 3 --file KENOFR_70.txt > 20_3.txt
+filter --infile 20_6.txt --filter _self --level ">=4" --hits "0" > filter_1.txt
+
+filter --infile 20_3.txt --filter filter_1.txt --level ">=3" --hits ">=5" > game_1.txt
+filter --infile filter_1.txt --filter game_1.txt --level ">=3" --hits "0" > filter_2.txt
+
+
+filter --infile 20_3.txt --filter filter_2.txt --level ">=3" --hits ">=4" > game_2.txt
+filter --infile filter_2.txt --filter game_2.txt --level ">=3" --hits "0" > filter_3.txt
+
+
+
+filter --infile KENOFR_70.txt --filter game.txt --level ">=1" --hits ">=1"
+filter --infile KENOFR_70.txt --filter A.txt --level ">=1" --hits ">=1"
+
+
+
+
+combination --total 24 --size 8 --file KENOFR_70.txt > 24_8.txt
+735471 lignes
+
+
+game_3.txt
+01 02 03
+04 05 06
+07 08 09
+10 11 12
+13 14 15
+16 17 18
+19 20 21
+22 23 24
+
+
+filter --infile 24_8.txt --filter game_3.txt --level "3" --hits "<=1" --addition false > leak_3.txt
+731187 lignes
+
+
+game_8.txt
+01 04 09 10 14 16 19 23
+01 05 08 10 14 16 20 24
+02 05 09 10 13 16 19 22
+02 06 07 10 14 16 19 24
+03 05 07 10 14 17 19 22
+03 05 07 10 15 16 20 23
+
+
+filter --infile 24_8.txt --filter game_8.txt --level ">=6" --hits "0" --addition false > leak_8.txt
+714860 lignes
+
+
+
+
+combination --total 16 --size 8 --file KENOFR_70.txt > 16_8.txt
+filter --infile 16_8.txt --filter _selection --level ">=5" --hits "0"
+01 02 03 04 05 06 07 08
+01 02 03 04 09 10 11 12
+01 02 03 04 13 14 15 16
+01 02 05 06 09 10 13 14
+01 02 05 06 11 12 15 16
+01 02 07 08 09 10 15 16
+01 02 07 08 11 12 13 14
+01 03 05 07 09 11 13 15
+01 03 05 07 10 12 14 16
+01 03 06 08 09 11 14 16
+01 03 06 08 10 12 13 15
+01 04 05 08 09 12 13 16
+01 04 05 08 10 11 14 15
+01 04 06 07 09 12 14 15
+01 04 06 07 10 11 13 16
+02 03 05 08 09 12 14 15
+02 03 05 08 10 11 13 16
+02 03 06 07 09 12 13 16
+02 03 06 07 10 11 14 15
+02 04 05 07 09 11 14 16
+02 04 05 07 10 12 13 15
+02 04 06 08 09 11 13 15
+02 04 06 08 10 12 14 16
+03 04 05 06 09 10 15 16
+03 04 05 06 11 12 13 14
+03 04 07 08 09 10 13 14
+03 04 07 08 11 12 15 16
+05 06 07 08 09 10 11 12
+05 06 07 08 13 14 15 16
+09 10 11 12 13 14 15 16
+
+
+
