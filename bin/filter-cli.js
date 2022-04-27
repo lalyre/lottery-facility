@@ -20,6 +20,7 @@ const cli = meow(`
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
+	  --printfullhits    Display the hit counts for each (filter, level, hits) trio in their declarative order, and the filter lines that are collided.
 
 	Description
 	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
@@ -95,6 +96,12 @@ const cli = meow(`
 			default: true,
 		},
 		printhits: {
+			type: 'boolean',
+			isRequired: false,
+			isMultiple: false,
+			default: false,
+		},
+		printfullhits: {
 			type: 'boolean',
 			isRequired: false,
 			isMultiple: false,
@@ -400,9 +407,9 @@ let rl = readline.createInterface({
 	}
 
 
-	if (cli.flags.printhits) {
+	if (cli.flags.printhits || cli.flags.printfullhits) {
 		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + hits_count_string);
-		console.log(hits_filters_string);
+		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
 		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
 	}

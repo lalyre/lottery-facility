@@ -47,8 +47,17 @@ let head = cli.flags.head;
 let displayDate = cli.flags.date;
 
 
-// powerball	https://data.ny.gov/api/views/d6yy-54nr/rows.csv?accessType=DOWNLOAD
-// megamillions	https://data.ny.gov/api/views/5xaw-6ayf/rows.csv?accessType=DOWNLOAD
+// powerball		https://data.ny.gov/api/views/d6yy-54nr/rows.csv?accessType=DOWNLOAD
+// megamillions		https://data.ny.gov/api/views/5xaw-6ayf/rows.csv?accessType=DOWNLOAD
+// SuperEnalotto	http://lottoscar.altervista.org/ArchivioSuper.zip
+
+
+// https://media.fdj.fr/static/csv/loto/loto_197605.zip
+// https://media.fdj.fr/static/csv/loto/loto_200810.zip
+// https://media.fdj.fr/static/csv/loto/loto_201703.zip
+// https://media.fdj.fr/static/csv/loto/loto_201902.zip
+// https://media.fdj.fr/static/csv/loto/loto_201911.zip
+
 
 // https://media.fdj.fr/static/csv/keno/keno_199309.zip
 // https://media.fdj.fr/static/csv/keno/keno_201302.zip

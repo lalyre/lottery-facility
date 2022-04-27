@@ -84,6 +84,7 @@ filter --infile 24_8.txt --filter game_8.txt --level ">=6" --hits "0" --addition
 
 
 combination --total 16 --size 8 --file KENOFR_70.txt > 16_8.txt
+combination --total 16 --size 4 --file KENOFR_70.txt > 16_4.txt
 filter --infile 16_8.txt --filter _selection --level ">=5" --hits "0"
 01 02 03 04 05 06 07 08
 01 02 03 04 09 10 11 12
@@ -118,3 +119,32 @@ filter --infile 16_8.txt --filter _selection --level ">=5" --hits "0"
 
 
 
+filter --infile 16_4.txt --filter _selection --level ">=3" --hits "0"
+
+
+
+
+combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
+cat A.txt
+01 02 03 04 05 06
+07 08 09 10 11
+12 13 14 15 16 17
+18 19 20 21 22
+23 24 25 26 27 28
+29 30 31 32 33
+34 35 36 37 38 39
+40 41 42 43 44
+45 46 47 48 49 50
+
+combination --total 9 --size 2 --file A.txt > filter.txt
+filter --infile 50_5.txt --filter filter.txt --level ">=2" --hits ">=15" --filter _selection --level ">=1" --hits "0"
+filter --infile 50_5.txt --filter game.txt --level ">=2" --hits "0" --filter filter.txt --level ">=2" --hits ">=15" --filter _selection --level ">=1" --hits "0"
+filter --infile 50_5.txt --filter game.txt --level ">=2" --hits "0" --filter filter.txt --level ">=2" --hits ">=15" --filter _selection --level ">=1" --hits "0"
+filter --infile 50_5.txt --filter game.txt --level ">=2" --hits "0" --filter filter.txt --level ">=2" --hits ">=15" --filter _selection --level ">=1" --hits "0"
+filter --infile 50_5.txt --filter game.txt --level ">=2" --hits "0" --filter filter.txt --level ">=2" --hits ">=15" --filter _selection --level ">=1" --hits "0"
+
+
+
+filter --infile 50_5.txt --filter filter.txt --level ">=2" --hits ">=500"
+
+filter --infile 50_5.txt --filter filter.txt --level ">=2" --hits ">=400" --printhits
