@@ -32,33 +32,83 @@ filter --infile 20_8.txt --filter filter_1.txt --level ">=4" --hits "0" --filter
 cat filter_1.txt filter_2.txt > filter_3.txt
 
 
-
-filter --infile 20_4.txt --filter filter_1.txt --level ">=3" --hits ">=20" --filter _selection --level ">=3" --hits "0" --printhits
-filter --infile 20_4.txt --filter filter_1.txt --level ">=3" --hits ">=20" --filter _selection --level ">=3" --hits "0" > game_1.txt
-
-
-
-filter --infile 20_8.txt --filter game_1.txt --level ">=3" --hits "<=0" --printhits
-filter --infile filter_1.txt --filter game_1.txt --level ">=3" --hits "<=1" --printhits
-
-
-filter --infile filter_1.txt --filter game_1.txt --level ">=3" --hits "<=1" > leak_1.txt
-
-
-
-
-
-
 ==============================
 
-
-
 Attendu 6/20
-combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
-combination --total 20 --size 2 --file KENOFR_70.txt > 20_2.txt
-filter --infile 20_6.txt --filter _selection --level ">=3" --hits "0" > filter_1.txt
 
-filter --infile 20_2.txt --filter filter_1.txt --level ">=2" --hits ">=120" > game_1.txt
+
+combination --total 20 --size 10 --file KENOFR_70.txt > 20_10.txt
+combination --total 20 --size 9 --file KENOFR_70.txt > 20_9.txt
+combination --total 20 --size 8 --file KENOFR_70.txt > 20_8.txt
+combination --total 20 --size 7 --file KENOFR_70.txt > 20_7.txt
+combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
+combination --total 20 --size 4 --file KENOFR_70.txt > 20_4.txt
+combination --total 20 --size 3 --file KENOFR_70.txt > 20_3.txt
+combination --total 20 --size 2 --file KENOFR_70.txt > 20_2.txt
+
+
+6/8	30€
+6/7	70€
+5/6	30€
+4/4	50€
+
+
+touch game10.txt
+touch game8.txt
+
+
+filter --infile 20_10.txt --filter _selection --level ">=5" --hits "0" > game10_1.txt
+filter --infile 20_10.txt --filter game10_1.txt --level ">=7" --hits "0" --filter _selection --level ">=5" --hits "0" > game10_1.txt
+filter --infile 20_10.txt --filter game10_1.txt --level ">=6" --hits "0" --filter _selection --level ">=6" --hits "0" > game10_2.txt
+cat game10_1.txt game10_2.txt > game10_3.txt
+
+
+
+filter --infile 20_8.txt --filter game8.txt --level ">=2" --hits "0" --filter game8.txt --level "=1" --hits "<=1" --printhits
+
+
+
+filter --infile 20_6.txt --filter _selection --level ">=3" --hits "0" > filter_1.txt
+filter --infile 20_6.txt --filter filter_1.txt --level ">=5" --hits "0" --filter _selection --level ">=3" --hits "0" > filter_2.txt
+cat filter_1.txt filter_2.txt > filter_3.txt
+
+
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=6" --filter _selection --level ">=1" --hits "0" --printhits
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=6" --filter _selection --level ">=1" --hits "0" > game2.txt
+filter --infile filter_3.txt --filter game2.txt --level ">=2" --hits "<=1" --printhits
+
+
+
+
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=2" --printhits
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=2" --filter _selection --level ">=1" --hits "0" --printhits
+filter --infile 20_2.txt --filter filter_3.txt --level ">=2" --hits ">=2" --filter _selection --level ">=1" --hits "0" > game_1.txt
+
+
+
+filter --infile 20_4.txt --filter filter_3.txt --level ">=3" --hits ">=2" --printhits
+filter --infile 20_4.txt --filter filter_3.txt --level ">=3" --hits ">=2" --filter _selection --level ">=1" --hits "0" --printhits
+filter --infile 20_4.txt --filter filter_3.txt --level ">=3" --hits ">=2" --filter _selection --level ">=1" --hits "0" > game_1.txt
+
+
+
+
+filter --infile 20_3.txt --filter filter_3.txt --level ">=3" --hits ">=2" --printhits
+filter --infile 20_3.txt --filter filter_3.txt --level ">=3" --hits ">=2" --filter _selection --level ">=1" --hits "0" --printhits
+filter --infile 20_3.txt --filter filter_3.txt --level ">=3" --hits ">=2" --filter _selection --level ">=1" --hits "0" > game_1.txt
+
+
+
+filter --infile 20_3.txt --filter game_1.txt --level ">=3" --hits "<=1"
+
+
+
+
+filter --infile filter_3.txt --filter game_1.txt --level ">=3" --hits "0"
+
+
+
+filter --infile 20_3.txt --filter filter_3.txt --level ">=3" --hits ">0" > game_1.txt
 filter --infile filter_1.txt --filter game_1.txt --level ">=2" --hits "0" > filter_2.txt
 
 filter --infile 20_2.txt --filter filter_2.txt --level ">=2" --hits ">=66" > game_2.txt
