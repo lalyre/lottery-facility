@@ -30,6 +30,18 @@ combination --total 20 --size 2 --file KENOFR_70.txt > 20_2.txt
 filter --infile 20_8.txt --filter _selection --level ">=3" --hits "0" > filter_1.txt
 filter --infile 20_8.txt --filter filter_1.txt --level ">=4" --hits "0" --filter _selection --level ">=4" --hits "0" > filter_2.txt
 cat filter_1.txt filter_2.txt > filter_3.txt
+cat filter_3.txt
+
+cat game2.txt
+
+
+
+filter --infile 20_8.txt --filter game2.txt --level ">=2" --hits "0"
+01 02
+03 04
+06 07
+08 14
+09 10
 
 
 ==============================
