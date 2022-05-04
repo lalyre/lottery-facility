@@ -102,6 +102,7 @@ All the following documentation is available in the tools by running `--help` on
 
 ### 1. flash
 **Parameters**<br>
+
 ```sh
 --verbose, -v  Verbose mode (default true).
 --outfile      Output filename (optional).
@@ -113,12 +114,15 @@ All the following documentation is available in the tools by running `--help` on
 ```
 
 **Description**<br>
+
 This script generates a random selection of lottery balls, taken from `1` to `total` balls.
 The optional parameter `sort` sorts combinations items in ascending order.
 You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.
 
 **Exemple**<br>
-Generate 8 random games for Euromillions lottery.
+
+Generate 8 random games for Euromillions lottery
+
 ```sh
 $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 07 10 12 17 28 | 04 08
@@ -133,6 +137,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 
 ### 2. combination
 **Parameters**<br>
+
 ```sh
 --verbose, -v   Verbose mode (default true).
 --outfile       Output filename (optional).
@@ -144,11 +149,14 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ```
 
 **Description**<br>
+
 This script generates combinations of packets of items taken in file `file` or list `numbers`, of size `size` packets, implementing choice of `size` packets among `total` packets.
 Only the first `step*total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
-Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5).
+
+Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
+
 ```sh
 $ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
 01 02 03
@@ -173,6 +181,7 @@ combinations for economical reasons. So you need to use a tactical set of combin
 In the end, you need to apply your smart selection of numbers onto your tactical game. And this is the usage of `tanslate` tool.
 
 **Parameters**<br>
+
 ```sh
 --file, -f    A file containing one combination per line to be translated.
 --originnum   Items of combinations separated by '|' or ' '.
@@ -182,6 +191,7 @@ In the end, you need to apply your smart selection of numbers onto your tactical
 ```
 
 **Description**<br>
+
 This script takes an input file `file` containing one combination per line.
 These input combinations are written with the `origin` alphabet and to be translated into `target` alphabet.
 Items of `origin` alphabet are translated to `target` alphabet relatively to their corresponding order of declaration.<br>
@@ -189,7 +199,9 @@ The `origin` alphabet can be declared either with `originnum` or `originfile` pa
 The `target` alphabet can be declared either with `targetnum` or `targetfile` parameters.<br>
 
 **Exemple**<br>
-We start with a tactical `GAME.txt` file written with the origin alphabet `01 02 03 04 05 06 07 08 09 10 11 12`.
+
+We start with a tactical `GAME.txt` file written with the origin alphabet `01 02 03 04 05 06 07 08 09 10 11 12`
+
 ```sh
 $ cat GAME.txt
 01 02 03 04 05 06
@@ -210,6 +222,7 @@ $ cat GAME.txt
 
 After many hours of statistics analysis, we select 12 high probability winning numbers. These numbers are `25 28 31 34 37 52 53 59 61 67 68 70`.
 We need to apply this selection onto our tactical `GAME.txt` file. We use the `translate` tool to do that job with the following command
+
 ```sh
 $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 --targetnum "25 28 31 34 37 52 53 59 61 67 68 70"
@@ -270,6 +283,7 @@ https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-
 
 ## Publish a version
 Build and test the project with these commands
+
 ```sh
 npm install
 npm run build
@@ -277,11 +291,13 @@ npm run test
 ```
 
 You can see what files will be embedded in the new release with the command below. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package. Files and directories listed in the "files:" section of **package.json** file will be included in the final package.
+
 ```sh
 npm pack
 ```
 
 Update the package version with one of the following commands. If inside a Git directory, the **package.json** file's version is changed and committed. And a new Git tag related to the new version is created.
+
 ```sh
 npm version prerelease --preid=alpha
 npm version prerelease --preid=beta
@@ -292,11 +308,13 @@ npm version major
 ```
 
 Push the new Git tag to remote origin
+
 ```sh
 git push --tags
 ```
 
 Go to the root of the project, and publish publicly the new package version to the NPM registry. Once published a version can be deprecated, but it cannot be deleted nor re-used.
+
 ```sh
 npm publish --access public
 ```
