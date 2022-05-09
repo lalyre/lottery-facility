@@ -102,3 +102,14 @@ combination --total 20 --size 8 --file KENOFR_70.txt > 20_8.txt
 filter --infile 20_8.txt --filter _selection --level ">=7" --hits "0" --printhits
 filter --infile 20_8.txt --filter _selection --level ">=7" --hits "0" > filter_1.txt
 
+
+
+
+combination --total 16 --size 7 --file KENOFR_70.txt > 16_7.txt
+combination --total 16 --size 6 --file KENOFR_70.txt > 16_6.txt
+combination --total 16 --size 5 --file KENOFR_70.txt > 16_5.txt
+
+filter --infile 16_7.txt --filter A.txt --level ">=5" --hits "0" --printhits
+
+01 02 03
+
