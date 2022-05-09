@@ -4,6 +4,7 @@ Roadmap
 * Manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
 * filter CLI enhancement with selection of groups of combinations.
+* filter CLI enhancement with calculation of lottery winnings, and filtering on the amount of winnings.
 * adding a "min" and "max" selection feature for CLI filter.
 * adding a "cover" selection feature for CLI filter, decreasing the filter as long as duos, trios, etc... are covered.
 * cartesian_product CLI utility.
