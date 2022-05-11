@@ -51,6 +51,7 @@
     "flash": "./bin/flash-cli.js",
     "combination": "./bin/combination-cli.js",
     "translate": "./bin/translate-cli.js",
+    "difference": "./bin/difference-cli.js",
     "filter": "./bin/filter-cli.js",
     "euromillions_draws": "./bin/euromillions_draws-cli.js",
     "kenoFR_draws": "./bin/kenoFR_draws-cli.js"

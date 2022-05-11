@@ -242,17 +242,62 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 28 34 52 61 68 70
 ```
 
-### 4. filter
+### 4. difference
+**Parameters**<br>
 
-### 5. cartesian_product
+```sh
+--file, -f    A file containing one combination per line to calculate the difference to.
+--globalnum   All items that can be used in combinations, separated by '|' or ' '.
+--globalfile  File containing one item of combination per line, items used in combinations of <file> file, but possibly others items.
+```
 
-### 6. paste
+**Description**<br>
 
-### 7. cut
+This script takes an input file `file` containing one combination per line, combinations written with items of the `global` alphabet,
+and returns the difference between the global alphabet and the combination.<br>
+The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
-### 8. euromillions_draws
+**Exemple**<br>
 
-### 9. kenoFR_draws
+We start with a `GAME.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ cat GAME.txt
+01 02 03 04 05 07 09 
+01 02 03 04 06 07 08 
+01 02 05 06 08 09 10 
+01 03 04 05 07 08 10 
+01 03 04 06 07 09 10 
+02 03 04 05 06 07 10 
+02 03 04 07 08 09 10 
+03 04 05 06 07 08 09 
+```
+
+Computation of the difference of file `GAME.txt` relatively to the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ difference --file A.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
+06 08 10
+05 09 10
+03 04 07
+02 06 09
+02 05 08
+01 08 09
+01 05 06
+01 02 10
+```
+
+### 5. filter
+
+### 6. cartesian_product
+
+### 7. paste
+
+### 8. cut
+
+### 9. euromillions_draws
+
+### 10. kenoFR_draws
 
 
 

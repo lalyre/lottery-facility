@@ -7,6 +7,7 @@ import {
      collisionsCount,
      union,
      intersection,
+     difference,
      complementCombination,
 } from '../src/main';
 
@@ -72,6 +73,23 @@ describe('DrawBox module', () => {
          let e = intersection([1, 2], [3, 4]);
          expect(e.length).toBe(0);
     });
+
+
+    test('difference test', () => {
+     let a = [8, 3, 7, 8, 6, 5, 3, 1];
+     let b = [4, 3, 1, 2, 6, 9, 1, 9, 3];
+     let c = difference(a, b);
+     let s1 = canonicalCombinationString(c, " ");
+     expect(s1).toBe("05 07 08");
+
+     let d = difference(b, a);
+     let s2 = canonicalCombinationString(d, " ");
+     expect(s2).toBe("02 04 09");
+
+     let e = difference([1, 2], [3, 4]);
+     let s3 = canonicalCombinationString(e, " ");
+     expect(s3).toBe("01 02");
+});
 
 
     test('complementCombination test', () => {

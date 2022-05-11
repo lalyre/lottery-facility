@@ -111,7 +111,7 @@ export function union(arr1:number[], arr2:number[]): number[] {
 	if (!arr1) return arr2;
 	if (!arr2) return arr1;
 	const union1 = [...arr1, ...arr2];
-	const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos).sort();
+	const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
 	return union2;
 }
 
@@ -121,8 +121,19 @@ export function union(arr1:number[], arr2:number[]): number[] {
  */
 export function intersection(arr1:number[], arr2:number[]): number[] {
 	if (!arr1 || !arr2) return [];
-	const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1).sort();
+	const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1);
 	return intersec;
+}
+
+
+/**
+ * Give the difference between 2 lottery combinations
+ * its gives the elements of "arr1" minus the elements of "arr2"
+ */
+ export function difference(arr1:number[], arr2:number[]): number[] {
+	if (!arr1 || !arr2) return [];
+	const diff = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) === -1);
+	return diff;
 }
 
 
