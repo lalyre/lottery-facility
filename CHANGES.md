@@ -1,12 +1,13 @@
 Roadmap
 =======
-* Manage all history databases of Euromillions draws for euromillions_draws.
-* Manage all history databases of Keno draws for kenoFR_draws.
+* manage all history databases of Euromillions draws for euromillions_draws.
+* manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
 * filter CLI enhancement with selection of groups of combinations.
 * filter CLI enhancement with calculation of lottery winnings, and filtering on the amount of winnings.
 * adding a "min" and "max" selection feature for CLI filter.
-* adding a "cover" selection feature for CLI filter, decreasing the filter as long as duos, trios, etc... are covered.
+* adding a optimised "cover" selection feature for CLI filter, decreasing the filter when one combination is better than several ones.
+* enhance library by incorporating CLI features.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
