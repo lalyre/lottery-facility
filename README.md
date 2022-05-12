@@ -21,6 +21,7 @@ CLI utilities:
 * flash
 * combination
 * translate
+* difference
 * filter
 * cartesian_product (TODO)
 * paste (TODO)
