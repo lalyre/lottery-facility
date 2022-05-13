@@ -106,11 +106,14 @@ export function collisionsCount(arr1:number[], arr2:number[]): number {
 /**
  * Give the union between 2 lottery combinations
  */
-export function union(arr1:number[], arr2:number[]): number[] {
+export function union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
 	if (!arr1 && !arr2) return [];
 	if (!arr1) return arr2;
 	if (!arr2) return arr1;
 	const union1 = [...arr1, ...arr2];
+	if (duplicate) {
+		return union1;
+	}
 	const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
 	return union2;
 }

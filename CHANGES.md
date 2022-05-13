@@ -20,6 +20,7 @@ Roadmap
 * Filter CLI selection mode based on count of passed filters.
 * Adding difference CLI utility.
 * Removal of 99 balls limitation in DrawBox class.
+* Adding Combination class.
 * Package fix.
 * Documentation update.
 

@@ -252,14 +252,14 @@ let rl = readline.createInterface({
 		let limitHitsCount = 0;
 		let selectCombination = false;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
-			let nb_collisions = lotteryFacility.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 			
 			switch (true) {
 				case /^<\d*$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]-1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
 
@@ -268,7 +268,7 @@ let rl = readline.createInterface({
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -276,14 +276,14 @@ let rl = readline.createInterface({
 					if (nb_collisions == level[i]) {
 						hitsCount++;
 						limitHitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^!=\d*$/.test(levelSelection[i]):
 					if (nb_collisions != level[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -292,7 +292,7 @@ let rl = readline.createInterface({
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -300,7 +300,7 @@ let rl = readline.createInterface({
 					if (nb_collisions > level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]+1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.combinationString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -408,10 +408,10 @@ let rl = readline.createInterface({
 
 
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.combinationString(input_line_numbers.sort()) + hits_count_string);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
-		console.log(lotteryFacility.combinationString(input_line_numbers.sort()));
+		console.log(lotteryFacility.Combination.toString(input_line_numbers.sort()));
 	}
 
 
