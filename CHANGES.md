@@ -6,7 +6,7 @@ Roadmap
 * filter CLI enhancement with selection of groups of combinations.
 * filter CLI enhancement with calculation of lottery winnings, and filtering on the amount of winnings.
 * adding a "min" and "max" selection feature for CLI filter.
-* adding a optimised "cover" selection feature for CLI filter, decreasing the filter when one combination is better than several ones.
+* adding a optimised "cover" selection feature for CLI filter, decreasing the selection when one combination is better than several ones.
 * enhance library by incorporating CLI features.
 * cartesian_product CLI utility.
 * paste CLI utility.
