@@ -5,6 +5,9 @@ import { sha256 } from 'js-sha256';
 export class Random {
 	/**
 	 * Returns a random number within a range of integers
+	 * @param a          integer value
+	 * @param b          integer value
+	 * @return           random number between a and b
 	 */
 	public static randomNumberRange(a: number, b: number): number {
 		const min = (a < b) ? a : b;
@@ -17,6 +20,8 @@ export class Random {
 
 	/**
 	 * Returns a random number
+	 * @param            none
+	 * @return           random integer number
 	 */
 	public static randomNumber(): number {
 		const length = 8;
@@ -39,3 +44,4 @@ export class Random {
 		return arr;
 	}
 }
+
