@@ -8,7 +8,7 @@ export class DrawBox {
 
 
 	/**
-	 * Builds a draw box of lottery balls from 1 to len
+	 * Build a draw box of lottery balls from 1 to len
 	 * 1 <= len
 	 *
 	 * PS:
@@ -35,10 +35,10 @@ export class DrawBox {
 
 
 	/**
-	 * Draws the balls from the draw box.
-	 * @param size      Size of the random selection of numbers
-	 * @param nbSwap    Optional parameter. Number of shuffle operations. Default value is 50.
-	 * @return          a random selection of numbers picked in the draw box
+	 * Draw the balls from the draw box.
+	 * @param size      size of the random selection of numbers.
+	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
+	 * @return          a random selection of numbers picked in the draw box.
 	 */
 	public draw(size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
@@ -48,9 +48,9 @@ export class DrawBox {
 
 
 	/**
-	 * Shuffles the balls in the draw box.
-	 * @param nbSwap    number of shuffle operations
-	 * @return          none
+	 * Shuffle the balls in the draw box.
+	 * @param nbSwap    number of shuffle operations.
+	 * @return          none.
 	 */
 	private shuffle(nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {

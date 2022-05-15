@@ -37,6 +37,10 @@ describe('Combination module', () => {
 		let c = Combination.union(a, b);
 		let s = Combination.toCanonicalString(c, " ");
 		expect(s).toBe("01 02 03 04 05 06 07 08 09");
+		
+		let d = Combination.union(a, b, true);
+		let ss = Combination.toString(d, " ");
+		expect(ss).toBe("08 03 01 07 06 05 04 03 01 02 06 09");
 	});
 
 
