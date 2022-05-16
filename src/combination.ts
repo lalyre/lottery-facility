@@ -4,9 +4,9 @@
 export class Combination {
 	/**
 	 * Get lottery combination string
-	 * @param numbers	array of balls number.
-	 * @param sep		separator (default SPACE).
-	 * @return			combination in string form.
+	 * @param numbers   array of balls number.
+	 * @param sep       separator (default SPACE).
+	 * @return          combination in string form.
 	 */
 	public static toString(numbers:number[], sep:string = ' '): string {
 		if (!numbers) return '';
@@ -17,9 +17,9 @@ export class Combination {
 
 	/**
 	 * Get canonical (ordered) lottery combination string
-	 * @param numbers	array of balls number.
-	 * @param sep		separator (default SPACE).
-	 * @return			combination in string form.
+	 * @param numbers   array of balls number.
+	 * @param sep       separator (default SPACE).
+	 * @return          combination in string form.
 	 */
 	public static toCanonicalString(numbers:number[], sep:string = ' '): string {
 		if (!numbers) return '';
@@ -31,9 +31,9 @@ export class Combination {
 
 	/**
 	 * Compute the number of collisions between 2 lottery combinations
-	 * @param arr1		array of balls number.
-	 * @param arr2		array of balls number.
-	 * @return			number of balls both inside arr1 and arr2.
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @return          number of balls both inside arr1 and arr2.
 	 */
 	public static collisionsCount(arr1:number[], arr2:number[]): number {
 		const merge = Combination.intersection(arr1, arr2);
@@ -43,10 +43,10 @@ export class Combination {
 
 	/**
 	 * Give the union between 2 lottery combinations
-	 * @param arr1		array of balls number.
-	 * @param arr2		array of balls number.
-	 * @param duplicate	if true then duplicate balls number are kept. Otherwise only unique numbers are returned.
-	 * @return			array containing all balls inside arr1 and arr2.
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @param duplicate if true then duplicate balls number are kept. Otherwise only unique numbers are returned.
+	 * @return          array containing all balls inside arr1 and arr2.
 	 */
 	public static union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
 		if (!arr1 && !arr2) return [];
@@ -63,9 +63,9 @@ export class Combination {
 
 	/**
 	 * Give the intersection between 2 lottery combinations
-	 * @param arr1		array of balls number.
-	 * @param arr2		array of balls number.
-	 * @return			array containing balls both inside arr1 and arr2.
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @return          array containing balls both inside arr1 and arr2.
 	 */
 	public static intersection(arr1:number[], arr2:number[]): number[] {
 		if (!arr1 || !arr2) return [];
@@ -77,9 +77,9 @@ export class Combination {
 	/**
 	 * Give the difference between 2 lottery combinations
 	 * It gives the elements of "arr1" minus the elements of "arr2"
-	 * @param arr1		array of balls number.
-	 * @param arr2		array of balls number.
-	 * @return			array containing balls of arr1 that are not inside arr2.
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @return          array containing balls of arr1 that are not inside arr2.
 	 */
 	 public static difference(arr1:number[], arr2:number[]): number[] {
 		if (!arr1) return [];
@@ -91,9 +91,9 @@ export class Combination {
 
 	/**
 	 * Compute the complement combination of a lottery combination relatively to maximum number value
-	 * @param max		the maximum possible number value used in balls numbers.
-	 * @param numbers	array of balls number.
-	 * @return			array containing balls numbers of the complement combination.
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param numbers   array of balls number.
+	 * @return          array containing balls numbers of the complement combination.
 	 */
 	public static complement(max:number, numbers:number[]): number[] {
 		if (!numbers) return [];
@@ -145,8 +145,8 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 
 	/**
 	 * Factorial function
- 	 * @param n 		integer value
-	 * @return 			factorial value of n
+ 	 * @param n         integer value
+	 * @return          factorial value of n
 	 */
 	 public static factorial(n:number): number {
 		if (n < 0) return -1;
@@ -159,8 +159,8 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 	/**
 	 * Binomial coefficient function
 	 * @param max       the maximum possible number value used in balls numbers.
- 	 * @param n 		integer value
-	 * @return 			binomial coefficient value of (max, n)
+ 	 * @param n         integer value
+	 * @return          binomial coefficient value of (max, n)
 	 */
 	 public static binomial(max:number, n:number): number {
 		if (n > max) return 0;
@@ -173,9 +173,9 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 
 	/**
 	 * Great common divisor
-	 * @param a 		integer value
-	 * @param b 		integer value
-	 * @return 			great common divisor value of "a" and "b"
+	 * @param a         integer value
+	 * @param b         integer value
+	 * @return          great common divisor value of "a" and "b"
 	 */
 	 public static gcd(a:number, b:number): number {
 		if (a < b) return Combination.gcd(b,a);
@@ -186,9 +186,9 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 
 	/**
 	 * Least common multiplier
-	 * @param a 		integer value
-	 * @param b 		integer value
-	 * @return 			least common multiplier value of "a" and "b"
+	 * @param a         integer value
+	 * @param b         integer value
+	 * @return          least common multiplier value of "a" and "b"
 	 */
 	 public static lcm(a:number, b:number): number {
 		return a*b/Combination.gcd(a,b);
