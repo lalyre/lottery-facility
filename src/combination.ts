@@ -115,11 +115,20 @@ export class Combination {
 		if (max <= 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
-		let rank = Combination.binomial(max, len);
 		numbers.sort((a, b) => {return a - b;});
+		/*let rank = Combination.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			rank -= Combination.binomial(max-numbers[len-i]+1, i);
 			rank += Combination.binomial(max-numbers[len-i], i-1);
+		}*/
+
+		let rank = 0;
+		for (let i = 0; i < len; i++) {
+			rank += Combination.binomial(numbers[i]+len, len-i);
+			// rank += Combination.binomial(numbers[i]+i, len-i);
+
+			// rank -= Combination.binomial(max-numbers[len-i]+1, i);
+			// rank += Combination.binomial(max-numbers[len-i], i-1);
 		}
 		return rank;
 	}
@@ -151,10 +160,10 @@ export class Combination {
 
 	/**
 	 * Factorial function
- 	 * @param n         integer value
+	 * @param n         integer value
 	 * @return          factorial value of n
 	 */
-	 public static factorial(n:number): number {
+	public static factorial(n:number): number {
 		if (n < 0) return -1;
 		let ret:number = 1;
 		for (let i = 1; i <= n; i++) { ret = ret*i; }
@@ -165,10 +174,10 @@ export class Combination {
 	/**
 	 * Binomial coefficient function
 	 * @param max       the maximum possible number value used in balls numbers.
- 	 * @param n         integer value
+	 * @param n         integer value
 	 * @return          binomial coefficient value of (max, n)
 	 */
-	 public static binomial(max:number, n:number): number {
+	public static binomial(max:number, n:number): number {
 		if (max <= 0) return 0;
 		if (n > max) return 0;
 		if (n === max) return 1;
@@ -187,7 +196,7 @@ export class Combination {
 	 */
 	 public static gcd(a:number, b:number): number {
 		if (a < b) return Combination.gcd(b,a);
-		let r:number = a%b; if (r != 0) return Combination.gcd(b,r);
+		const r:number = a%b; if (r !== 0) return Combination.gcd(b,r);
 		return b;
 	}
 
