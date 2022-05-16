@@ -104,22 +104,23 @@ export class Combination {
 	}
 
 
-/**
- * @param
- * @return 
- */
-/*
-public static BigInteger combinationToRank (Long total, Long combination[]) {
-int len = combination.length;
-BigInteger rank = combin(total,(long)len);
-Arrays.sort (combination);
-for (int i = len; i > 0; i--) {
-rank = rank.subtract (combin (total-combination[len-i]+1, (long)i));
-rank = rank.add (combin (total-combination[len-i], (long)i-1));
-}
-return rank;
-}
-*/
+	/**
+	 * Give the rank of a given combination
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param numbers   array of balls number (combination).
+	 * @return          the rank of the combination.
+	 */
+	public static combinationToRank(max:number, numbers:number[]): number {
+		if (!numbers) return -1;
+		const len:number = numbers.length;
+		let rank = Combination.binomial(max, len);
+		numbers.sort((a, b) => {return a - b;});
+		for (let i = len; i > 0; i--) {
+			rank -= Combination.binomial(max-numbers[len-i]+1, i);
+			rank += Combination.binomial(max-numbers[len-i], i-1);
+		}
+		return rank;
+	}
 
 
 /**
@@ -164,6 +165,7 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 	 */
 	 public static binomial(max:number, n:number): number {
 		if (n > max) return 0;
+		if (n === max) return 1;
 		let ret:number = Combination.factorial(max);
 		ret /= Combination.factorial(n);
 		ret /= Combination.factorial(max-n);
