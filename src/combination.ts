@@ -102,5 +102,96 @@ export class Combination {
 		for (let j = 0; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
 		return complement;
 	}
+
+
+/**
+ * @param
+ * @return 
+ */
+/*
+public static BigInteger combinationToRank (Long total, Long combination[]) {
+int len = combination.length;
+BigInteger rank = combin(total,(long)len);
+Arrays.sort (combination);
+for (int i = len; i > 0; i--) {
+rank = rank.subtract (combin (total-combination[len-i]+1, (long)i));
+rank = rank.add (combin (total-combination[len-i], (long)i-1));
+}
+return rank;
+}
+*/
+
+
+/**
+ * @param
+ * @return 
+ */
+/*
+public static void rankToCombination (Long total, Long combination[], BigInteger rank) {
+for (Long v : combination) v = 0L;
+if (rank.compareTo (BigInteger.valueOf(0)) <= 0
+|| rank.compareTo (combin(total,(long)combination.length)) > 0) return;
+int len = combination.length;
+for (int i = 0; i < len; i++) {
+for (Long k = total; k >= len; k--) {
+Long m = k;
+for (int j = len-1; j >= i; j--) {combination[j] = m; m--;}
+if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
+}
+}
+}
+*/
+
+
+	/**
+	 * Factorial function
+ 	 * @param n 		integer value
+	 * @return 			factorial value of n
+	 */
+	 public static factorial(n:number): number {
+		if (n < 0) return -1;
+		let ret:number = 1;
+		for (let i = 1; i <= n; i++) { ret = ret*i; }
+		return ret;
+	}
+
+
+	/**
+	 * Binomial coefficient function
+	 * @param max       the maximum possible number value used in balls numbers.
+ 	 * @param n 		integer value
+	 * @return 			binomial value of (max, n)
+	 */
+	 public static binomial(max:number, n:number): number {
+		if (n > max) return 0;
+		let ret:number = Combination.factorial(max);
+		ret /= Combination.factorial(n);
+		ret /= Combination.factorial(max-n);
+		return ret;
+	}
+
+
+	/**
+	 * Great common divisor
+	 * @param a 		integer value
+	 * @param b 		integer value
+	 * @return 			great common divisor value of "a" and "b"
+	 */
+	 public static gcd(a:number, b:number): number {
+		if (a < b) return Combination.gcd(b,a);
+		let r:number = a%b; if (r != 0) return Combination.gcd(b,r);
+		return b;
+	}
+
+
+	/**
+	 * Least common multiplier
+	 * @param a 		integer value
+	 * @param b 		integer value
+	 * @return 			least common multiplier value of "a" and "b"
+	 */
+	 public static lcm(a:number, b:number): number {
+		return a*b/Combination.gcd(a,b);
+	}
 }
 
