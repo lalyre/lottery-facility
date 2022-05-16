@@ -96,6 +96,7 @@ export class Combination {
 	 * @return          array containing balls numbers of the complement combination.
 	 */
 	public static complement(max:number, numbers:number[]): number[] {
+		if (max <= 0) return [];
 		if (!numbers) return [];
 		const complement:number[] = [];
 		complement.length = numbers.length;
@@ -111,6 +112,7 @@ export class Combination {
 	 * @return          the rank of the combination.
 	 */
 	public static combinationToRank(max:number, numbers:number[]): number {
+		if (max <= 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
 		let rank = Combination.binomial(max, len);
@@ -123,25 +125,28 @@ export class Combination {
 	}
 
 
-/**
- * @param
- * @return 
- */
-/*
-public static void rankToCombination (Long total, Long combination[], BigInteger rank) {
-for (Long v : combination) v = 0L;
-if (rank.compareTo (BigInteger.valueOf(0)) <= 0
-|| rank.compareTo (combin(total,(long)combination.length)) > 0) return;
-int len = combination.length;
-for (int i = 0; i < len; i++) {
-for (Long k = total; k >= len; k--) {
-Long m = k;
-for (int j = len-1; j >= i; j--) {combination[j] = m; m--;}
-if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
-}
-}
-}
-*/
+	/**
+	 * Give the combination corresponding to the given rank
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param length    the length of the combination to be returned.
+	 * @param rank      the rank of the combination to be returned.
+	 * @return          the combination corresponding to the given rank.
+	 */
+	public static rankToCombination(max:number, length:number, rank:number): number[] {
+		if (max <= 0) return [];
+		if (length <= 0) return [];
+		if (rank <= 0 || rank > Combination.binomial(max, length)) return [];
+		const numbers = Array.from({ length: length }, (_, i) => 0);
+
+		for (let i = 0; i < length; i++) {
+			for (let k = max; k >= length; k--) {
+				let m = k;
+				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
+				if (Combination.combinationToRank(max, numbers) < rank) break;
+			}
+		}
+		return numbers;
+	}
 
 
 	/**
@@ -164,6 +169,7 @@ if (combinationToRank(total,combination).compareTo(rank) <= 0) break;
 	 * @return          binomial coefficient value of (max, n)
 	 */
 	 public static binomial(max:number, n:number): number {
+		if (max <= 0) return 0;
 		if (n > max) return 0;
 		if (n === max) return 1;
 		let ret:number = Combination.factorial(max);
