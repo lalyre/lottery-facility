@@ -186,6 +186,7 @@ export class Combination {
 	public static binomial(max:number, n:number): number {
 		if (max <= 0) return 0;
 		if (n > max) return 0;
+		if (n === 0) return 1;
 		if (n === max) return 1;
 		let ret:number = Combination.factorial(max);
 		ret /= Combination.factorial(n);
