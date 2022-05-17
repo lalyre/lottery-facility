@@ -172,7 +172,7 @@ export class Combination {
 	public static factorial(n:number): number {
 		if (n < 0) return -1;
 		let ret:number = 1;
-		for (let i = 1; i <= n; i++) { ret = ret*i; }
+		for (let i = 1; i <= n; i++) { ret *= i; }
 		return ret;
 	}
 
