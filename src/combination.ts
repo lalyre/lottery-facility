@@ -116,20 +116,26 @@ export class Combination {
 		if (!numbers) return -1;
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
-		/*let rank = Combination.binomial(max, len);
+
+		/*let rank:number = Combination.binomial(max, len);
 		for (let i = len; i > 0; i--) {
+			if (numbers[len-i] > max) throw new Error('Wrong value in combination');
 			rank -= Combination.binomial(max-numbers[len-i]+1, i);
 			rank += Combination.binomial(max-numbers[len-i], i-1);
 		}*/
 
-		let rank = 0;
-		for (let i = 0; i < len; i++) {
-			rank += Combination.binomial(numbers[i]+len, len-i);
-			// rank += Combination.binomial(numbers[i]+i, len-i);
 
-			// rank -= Combination.binomial(max-numbers[len-i]+1, i);
-			// rank += Combination.binomial(max-numbers[len-i], i-1);
+		let rank:number = 0;
+		for (let i = 0; i < len; i++) {
+			if (numbers[i] > max) throw new Error('Wrong value in combination');
+			// rank -= Combination.binomial(max-numbers[i]+1, i);
+			// rank += Combination.binomial(max-numbers[i], i-1);
+
+
+
 		}
+
+
 		return rank;
 	}
 
