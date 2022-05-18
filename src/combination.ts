@@ -117,7 +117,8 @@ export class Combination {
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		/*let rank:number = Combination.binomial(max, len);
+		/*
+		let rank:number = Combination.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			if (numbers[len-i] > max) throw new Error('Wrong value in combination');
 			rank -= Combination.binomial(max-numbers[len-i]+1, i);
@@ -125,14 +126,16 @@ export class Combination {
 		}*/
 
 
+		// let rank:number = Combination.binomial(max, len);
 		let rank:number = 0;
 		for (let i = 0; i < len; i++) {
 			if (numbers[i] > max) throw new Error('Wrong value in combination');
-			// rank -= Combination.binomial(max-numbers[i]+1, i);
-			// rank += Combination.binomial(max-numbers[i], i-1);
 
+			rank += Combination.binomial(max-i, len-i);
+			rank -= Combination.binomial(max-numbers[i]+1, len-i);
+			rank += 1;
 
-
+			break;
 		}
 
 
