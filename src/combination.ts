@@ -117,27 +117,17 @@ export class Combination {
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		/*
-		let rank:number = Combination.binomial(max, len);
-		for (let i = len; i > 0; i--) {
-			if (numbers[len-i] > max) throw new Error('Wrong value in combination');
-			rank -= Combination.binomial(max-numbers[len-i]+1, i);
-			rank += Combination.binomial(max-numbers[len-i], i-1);
-		}*/
-
-
-		// let rank:number = Combination.binomial(max, len);
-		let rank:number = 0;
+		//let rank:number = 0;
+		let rank:number = Combination.binomial(max, len) + 1;
 		for (let i = 0; i < len; i++) {
 			if (numbers[i] > max) throw new Error('Wrong value in combination');
-
-			rank += Combination.binomial(max-i, len-i);
+			if (i > 0 && numbers[i-1]+1 >= numbers[i]) {
+				continue;
+			}
 			rank -= Combination.binomial(max-numbers[i]+1, len-i);
-			rank += 1;
-
-			break;
+			rank += Combination.binomial(max-numbers[i], len-i);
 		}
-
+		// rank += 1;
 
 		return rank;
 	}
