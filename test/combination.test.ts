@@ -83,5 +83,41 @@ describe('Combination module', () => {
 		let s = Combination.toString(c, " ");
 		expect(s).toBe("02 07 09 03 02 04 05 07 03 09");
 	});
+
+
+	test('Combination.combinationToRank test', () => {
+		expect(Combination.combinationToRank(5, [1])).toBe(1);
+		expect(Combination.combinationToRank(5, [2])).toBe(2);
+		expect(Combination.combinationToRank(5, [3])).toBe(3);
+		expect(Combination.combinationToRank(5, [4])).toBe(4);
+		expect(Combination.combinationToRank(5, [5])).toBe(5);
+
+		expect(Combination.combinationToRank(5, [1, 2, 3])).toBe(1);
+		expect(Combination.combinationToRank(5, [1, 2, 4])).toBe(2);
+		expect(Combination.combinationToRank(5, [1, 2, 5])).toBe(3);
+		expect(Combination.combinationToRank(5, [1, 3, 4])).toBe(4);
+		expect(Combination.combinationToRank(5, [1, 3, 5])).toBe(5);
+		expect(Combination.combinationToRank(5, [1, 4, 5])).toBe(6);
+		expect(Combination.combinationToRank(5, [2, 3, 4])).toBe(7);
+		expect(Combination.combinationToRank(5, [2, 3, 5])).toBe(8);
+		expect(Combination.combinationToRank(5, [2, 4, 5])).toBe(9);
+		expect(Combination.combinationToRank(5, [3, 4, 5])).toBe(10);
+
+		expect(Combination.combinationToRank(6, [1, 2, 3, 4])).toBe(1);
+		expect(Combination.combinationToRank(6, [1, 2, 3, 5])).toBe(2);
+		expect(Combination.combinationToRank(6, [1, 2, 3, 6])).toBe(3);
+		expect(Combination.combinationToRank(6, [1, 2, 4, 5])).toBe(4);
+		expect(Combination.combinationToRank(6, [1, 2, 4, 6])).toBe(5);
+		expect(Combination.combinationToRank(6, [1, 2, 5, 6])).toBe(6);
+		expect(Combination.combinationToRank(6, [1, 3, 4, 5])).toBe(7);
+		expect(Combination.combinationToRank(6, [1, 3, 4, 6])).toBe(8);
+		expect(Combination.combinationToRank(6, [1, 3, 5, 6])).toBe(9);
+		expect(Combination.combinationToRank(6, [1, 4, 5, 6])).toBe(10);
+		expect(Combination.combinationToRank(6, [2, 3, 4, 5])).toBe(11);
+		expect(Combination.combinationToRank(6, [2, 3, 4, 6])).toBe(12);
+		expect(Combination.combinationToRank(6, [2, 3, 5, 6])).toBe(13);
+		expect(Combination.combinationToRank(6, [2, 4, 5, 6])).toBe(14);
+		expect(Combination.combinationToRank(6, [3, 4, 5, 6])).toBe(15);
+	});
 });
 
