@@ -119,7 +119,7 @@ export class Combination {
 
 		let rank:number = Combination.binomial(max, len);
 		for (let i = len; i > 0; i--) {
-			if (numbers[len-i] > max) throw new Error('Wrong value in combination');
+			if (numbers[len-i] > max) return -1;
 			rank -= Combination.binomial(max-numbers[len-i]+1, i);
 			if (i > 1) rank += Combination.binomial(max-numbers[len-i], i-1);
 		}
