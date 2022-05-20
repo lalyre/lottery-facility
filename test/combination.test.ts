@@ -103,6 +103,12 @@ describe('Combination module', () => {
 		expect(Combination.combinationToRank(5, [2, 4, 5])).toBe(9);
 		expect(Combination.combinationToRank(5, [3, 4, 5])).toBe(10);
 
+		expect(Combination.combinationToRank(5, [1, 2, 3, 4])).toBe(1);
+		expect(Combination.combinationToRank(5, [1, 2, 3, 5])).toBe(2);
+		expect(Combination.combinationToRank(5, [1, 2, 4, 5])).toBe(3);
+		expect(Combination.combinationToRank(5, [1, 3, 4, 5])).toBe(4);
+		expect(Combination.combinationToRank(5, [2, 3, 4, 5])).toBe(5);
+
 		expect(Combination.combinationToRank(6, [1, 2, 3, 4])).toBe(1);
 		expect(Combination.combinationToRank(6, [1, 2, 3, 5])).toBe(2);
 		expect(Combination.combinationToRank(6, [1, 2, 3, 6])).toBe(3);
