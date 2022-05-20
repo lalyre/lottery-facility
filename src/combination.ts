@@ -112,7 +112,7 @@ export class Combination {
 	 * @return          the rank of the combination.
 	 */
 	public static combinationToRank(max:number, numbers:number[]): number {
-		if (max <= 0) return -1;
+		if (max < 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
