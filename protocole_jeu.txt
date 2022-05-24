@@ -22,6 +22,7 @@ filter --infile 20_8.txt --filter filter_1.txt --level ">=5" --hits "=0" --print
 filter --infile 20_8.txt --filter filter_1.txt --level ">=5" --hits ">0" --printhits
 
 filter --infile 20_5.txt --filter _selection --level ">=2" --hits "0"
+filter --infile 20_5.txt --filter A.txt --level ">=4" --hits ">0" --filter B.txt --level ">=4" --hits ">0"
 
 filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" --printhits
 filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" > game_1.txt

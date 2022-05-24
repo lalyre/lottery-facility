@@ -250,7 +250,6 @@ let rl = readline.createInterface({
 
 		let hitsCount = 0;
 		let limitHitsCount = 0;
-		let selectCombination = false;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 			
@@ -310,6 +309,7 @@ let rl = readline.createInterface({
 		}
 		hits_filters_string += '\n';
 
+		let selectCombination = false;
 		switch (true) {
 			case /^<\d*$/.test(hitsSelection[i]):
 				if (hitsCount < hits[i]) {
