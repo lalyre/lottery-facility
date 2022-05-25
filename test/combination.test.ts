@@ -125,5 +125,36 @@ describe('Combination module', () => {
 		expect(Combination.combinationToRank(6, [2, 4, 5, 6])).toBe(14);
 		expect(Combination.combinationToRank(6, [3, 4, 5, 6])).toBe(15);
 	});
+
+
+	test('Combination.rankToCombination test', () => {
+		expect(Combination.rankToCombination(5, 1, 1)).toStrictEqual([1]);
+		expect(Combination.rankToCombination(5, 1, 2)).toStrictEqual([2]);
+		expect(Combination.rankToCombination(5, 1, 3)).toStrictEqual([3]);
+		expect(Combination.rankToCombination(5, 1, 4)).toStrictEqual([4]);
+		expect(Combination.rankToCombination(5, 1, 5)).toStrictEqual([5]);
+
+		expect(Combination.rankToCombination(5, 2, 1)).toStrictEqual([1, 2]);
+		expect(Combination.rankToCombination(5, 2, 2)).toStrictEqual([1, 3]);
+		expect(Combination.rankToCombination(5, 2, 3)).toStrictEqual([1, 4]);
+		expect(Combination.rankToCombination(5, 2, 4)).toStrictEqual([1, 5]);
+		expect(Combination.rankToCombination(5, 2, 5)).toStrictEqual([2, 3]);
+		expect(Combination.rankToCombination(5, 2, 6)).toStrictEqual([2, 4]);
+		expect(Combination.rankToCombination(5, 2, 7)).toStrictEqual([2, 5]);
+		expect(Combination.rankToCombination(5, 2, 8)).toStrictEqual([3, 4]);
+		expect(Combination.rankToCombination(5, 2, 9)).toStrictEqual([3, 5]);
+		expect(Combination.rankToCombination(5, 2, 10)).toStrictEqual([4, 5]);
+
+		expect(Combination.rankToCombination(5, 3, 1)).toStrictEqual([1, 2, 3]);
+		expect(Combination.rankToCombination(5, 3, 2)).toStrictEqual([1, 2, 4]);
+		expect(Combination.rankToCombination(5, 3, 3)).toStrictEqual([1, 2, 5]);
+		expect(Combination.rankToCombination(5, 3, 4)).toStrictEqual([1, 3, 4]);
+		expect(Combination.rankToCombination(5, 3, 5)).toStrictEqual([1, 3, 5]);
+		expect(Combination.rankToCombination(5, 3, 6)).toStrictEqual([1, 4, 5]);
+		expect(Combination.rankToCombination(5, 3, 7)).toStrictEqual([2, 3, 4]);
+		expect(Combination.rankToCombination(5, 3, 8)).toStrictEqual([2, 3, 5]);
+		expect(Combination.rankToCombination(5, 3, 9)).toStrictEqual([2, 4, 5]);
+		expect(Combination.rankToCombination(5, 3, 10)).toStrictEqual([3, 4, 5]);
+	});
 });
 

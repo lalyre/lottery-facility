@@ -138,6 +138,7 @@ export class Combination {
 	public static rankToCombination(max:number, length:number, rank:number): number[] {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
+		if (length > max) return [];
 		if (rank <= 0 || rank > Combination.binomial(max, length)) return [];
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
@@ -145,7 +146,7 @@ export class Combination {
 			for (let k = max; k >= length; k--) {
 				let m = k;
 				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (Combination.combinationToRank(max, numbers) < rank) break;
+				if (Combination.combinationToRank(max, numbers) <= rank) break;
 			}
 		}
 		return numbers;
