@@ -13,27 +13,46 @@ const cli = meow(`
 
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected.
-	  --selectionLevel   Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
+	  --selectionMode    Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
+
+
+
+
+// TODO
 	  --filter, -f       A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
 	  --level, -l        Defining the <level> of collisions with the tested <filter> file.
 	  --hits, -h         Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
+
+
+
+
+
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
 	  --printfullhits    Display the hit counts for each (filter, level, hits) trio in their declarative order, and the filter lines that are collided.
 
+
+
+// TODO
 	Description
 	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
 	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
 	You can use "_selection" value for <filter> file if you want to perform selection against the current selection of input combinations.
-	
-	Witch --selectionLevel "<x", only combinations with less than x passed filters are selected.
-	Witch --selectionLevel "<=x", only combinations with less than or equal x passed filters are selected..
-	Witch --selectionLevel "=x", only combinations with x passed filters are selected.
-	Witch --selectionLevel "!=x", only combinations with not x passed filters are selected.
-	Witch --selectionLevel ">=x", only combinations with more than or equal x passed filters are selected.
-	Witch --selectionLevel ">x", only combinations with more than x passed filters are selected.
-	Witch --selectionLevel "*", only combinations with ALL filters passed are selected (Default case).
+
+
+
+
+
+	Witch --selectionMode  "<x", only combinations with less than x passed filters are selected.
+	Witch --selectionMode  "<=x", only combinations with less than or equal x passed filters are selected..
+	Witch --selectionMode  "=x", only combinations with x passed filters are selected.
+	Witch --selectionMode  "!=x", only combinations with not x passed filters are selected.
+	Witch --selectionMode  ">=x", only combinations with more than or equal x passed filters are selected.
+	Witch --selectionMode  ">x", only combinations with more than x passed filters are selected.
+	Witch --selectionMode "*", only combinations with ALL filters passed are selected (Default case).
+
+
 
 	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
 	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
@@ -51,6 +70,14 @@ const cli = meow(`
 	// With --hits "min", the combinations with the minimum hits count are selected and printed to the ouput.
 	// With --hits "max", the combinations with the maximum hits count are selected and printed to the ouput.
 	With --hits "*", if the current input combination matches with all filter lines then it is selected and printed to the ouput.
+
+
+
+// TODO
+--filter "filename(_selection)weight(1)level(>=2)score(0)"
+
+
+
 `, {
 	flags: {
 		infile: {
@@ -59,27 +86,15 @@ const cli = meow(`
 			isRequired: true,
 			isMultiple: false,
 		},
-		filter: {
-			type: 'string',
-			alias: 'f',
-			isRequired: true,
-			isMultiple: true,
-		},
-		selectionLevel: {
+		selectionMode: {
 			type: 'string',
 			isRequired: false,
 			isMultiple: false,
 			default: '*',
 		},
-		level: {
+		filter: {
 			type: 'string',
-			alias: 'l',
-			isRequired: true,
-			isMultiple: true,
-		},
-		hits: {
-			type: 'string',
-			alias: 'h',
+			alias: 'f',
 			isRequired: true,
 			isMultiple: true,
 		},
@@ -111,89 +126,105 @@ const cli = meow(`
 });
 
 
-let filterModeSelection = cli.flags.selectionLevel;
-let filterLevel = 0;
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
-let filterSelection = cli.flags.filter;
-let levelSelection = cli.flags.level;
-let hitsSelection = cli.flags.hits;
 let infile = cli.flags.infile.trim();
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
 }
-if (filterSelection.length != levelSelection.length || levelSelection.length !== hitsSelection.length) {
-	console.error("Missing <filter> or <level> or <hits> parameter !");
-	process.exit(1);
-}
 
 
-let level = [];
-let hits = [];
-
-
+let filterModeSelection = cli.flags.selectionMode;
+let filterMode = 0;
 let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case regexp.test(filterModeSelection):
 		let match = regexp.exec(filterModeSelection);
-		filterLevel = match[2];
+		filterMode = match[2];
 		break;
 
 	case /^\*$/.test(filterModeSelection):
 		break;
 
 	default:
-		console.error(`Wrong <selectionLevel> value.`);
+		console.error(`Wrong <selectionMode> value.`);
 		process.exit(1);
 		break;
 }
-for (let i = 0; i < levelSelection.length; i++) {
+
+
+let filterSelection = cli.flags.filter;
+let filename = [];
+let levelSelection = [];
+let level = [];
+let weight = [];
+let scoreSelection = [];
+let score = [];
+
+
+for (let i = 0; i < filterSelection.length; i++) {
 	switch (true) {
-		case /^_selection$/.test(filterSelection[i].trim()):
+		case /filename\(_selection\)/.test(filterSelection[i].trim()):
 			if (!additionMode) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
+			filename.push('_selection')
 			break;
 		
-		default:
-			if (!fs.existsSync(filterSelection[i].trim())) {
-				console.error(`File ${filterSelection[i]} does not exist.`);
+		case /filename\((\s)\)/.test(filterSelection[i].trim()):
+			let match = /filename\((\s)\)/.exec(filterSelection[i]);
+			filename.push(match[1]);
+			if (!fs.existsSync(filename[i].trim())) {
+				console.error(`File ${filename[i]} does not exist.`);
 				process.exit(1);
 			}
 			break;
-	}
-
-	switch (true) {
-		case regexp.test(levelSelection[i]):
-			let match = regexp.exec(levelSelection[i]);
-			level.push(match[2]);
-			break;
-		
+			
 		default:
-			console.error(`Wrong <level> (#${i+1}) value.`);
+			console.error(`No <filename> (#${i+1}) value.`);
 			process.exit(1);
 			break;
 	}
 
+
 	switch (true) {
-		case regexp.test(hitsSelection[i]):
-			let match = regexp.exec(hitsSelection[i]);
-			hits.push(match[2]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterSelection[i]):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterSelection[i]);
+			levelSelection.push(match[1])
+			level.push(match[2]);
 			break;
-	
-		//case /^min$/.test(hitsSelection[i]):
-			//break;
-	
-		//case /^max$/.test(hitsSelection[i]):
-			//break;
-	
-		case /^\*$/.test(hitsSelection[i]):
-			break;
-	
+		
 		default:
-			console.error(`Wrong <hits> (#${i+1}) value.`);
+			console.error(`No <level> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
+
+
+	switch (true) {
+		case /weight\((\d*)\)/.test(filterSelection[i]):
+			let match = /weight\((\d*)\)/.exec(filterSelection[i]);
+			weight.push(match[1])
+			break;
+		
+		default:
+			console.error(`No <weight> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
+
+
+	switch (true) {
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterSelection[i]):
+			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterSelection[i]);
+			scoreSelection.push(match[1])
+			score.push(match[2]);
+			break;
+		
+		default:
+			console.error(`No <score> (#${i+1}) value.`);
 			process.exit(1);
 			break;
 	}
@@ -229,16 +260,16 @@ let rl = readline.createInterface({
 	let hits_count_string = '';
 	let hits_filters_string = '';
 	let filtersSelection = 0;
-	for (let i = 0; i < levelSelection.length; i++)
+	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
 		switch (true) {
-			case /^_selection$/.test(filterSelection[i].trim()):
+			case /^_selection$/.test(filename[i].trim()):
 				filter_tested_numbers = selected_numbers;
 				break;
 			
 			default:
-				let filter_lines = fs.readFileSync(filterSelection[i].trim()).toString().split(/\r?\n/);
+				let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
 				for (let filter_line of filter_lines) {
 					let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 					if (numbers[0] == 0) continue;
@@ -252,113 +283,98 @@ let rl = readline.createInterface({
 		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
-			
-			switch (true) {
-				case /^<\d*$/.test(levelSelection[i]):
+
+
+				if (/</.test(levelSelection[i])) {
 					if (nb_collisions < level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
-					break;
+				}
 
-				case /^=<\d*$/.test(levelSelection[i]):
-				case /^<=\d*$/.test(levelSelection[i]):
+				if ((/=</.test(levelSelection[i]))
+				|| (/<=/.test(levelSelection[i]))) {
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-					break;
+				}
 
-				case /^(=)?\d*$/.test(levelSelection[i]):
+				if (/(=)?/.test(levelSelection[i])) {
 					if (nb_collisions == level[i]) {
 						hitsCount++;
 						limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-					break;
+				}
 
-				case /^!=\d*$/.test(levelSelection[i]):
+				if (/!=/.test(levelSelection[i])) {
 					if (nb_collisions != level[i]) {
 						hitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-					break;
+				}
 
-				case /^=>\d*$/.test(levelSelection[i]):
-				case /^>=\d*$/.test(levelSelection[i]):
+
+				if ((/=>/.test(levelSelection[i]))
+				|| (/>=/.test(levelSelection[i]))) {
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-					break;
+				}
 
-				case /^>\d*$/.test(levelSelection[i]):
+				if (/>/.test(levelSelection[i])) {
 					if (nb_collisions > level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-					break;
-
-				default:
-					break;
-			}
+				}
 		}
 		hits_filters_string += '\n';
-
+		
+		
+		let score2 = hitsCount * weight[i];
 		let selectCombination = false;
 		switch (true) {
-			case /^<\d*$/.test(hitsSelection[i]):
-				if (hitsCount < hits[i]) {
+			case /</.test(scoreSelection[i]):
+				if (score2 < score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^=<\d*$/.test(hitsSelection[i]):
-			case /^<=\d*$/.test(hitsSelection[i]):
-				if (hitsCount <= hits[i]) {
+			case /=</.test(scoreSelection[i]):
+			case /<=/.test(scoreSelection[i]):
+				if (score2 <= score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^(=)?\d*$/.test(hitsSelection[i]):
-				if (hitsCount == hits[i]) {
+			case /(=)?/.test(scoreSelection[i]):
+				if (score2 == score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^!=\d*$/.test(hitsSelection[i]):
-				if (hitsCount != hits[i]) {
+			case /!=/.test(scoreSelection[i]):
+				if (score2 != score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^=>\d*$/.test(hitsSelection[i]):
-			case /^>=\d*$/.test(hitsSelection[i]):
-				if (hitsCount >= hits[i]) {
+			case /=>/.test(scoreSelection[i]):
+			case />=/.test(scoreSelection[i]):
+				if (score2 >= score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^>\d*$/.test(hitsSelection[i]):
-				if (hitsCount > hits[i]) {
-					selectCombination = true;
-				}
-				break;
-
-			//case /^min$/.test(hitsSelection[i]):
-				//selectCombination = true;
-				//break;
-	
-			//case /^max$/.test(hitsSelection[i]):
-				//selectCombination = true;
-				//break;
-
-			case /^\*$/.test(hitsSelection[i]):
-				if (hitsCount == filter_tested_numbers.length) {
+			case />/.test(scoreSelection[i]):
+				if (score2 > score[i]) {
 					selectCombination = true;
 				}
 				break;
@@ -371,39 +387,40 @@ let rl = readline.createInterface({
 		if (selectCombination) filtersSelection++;
 	}
 
+
 	switch (true) {
 		case /^<\d*$/.test(filterModeSelection):
-			if (!(filtersSelection < filterLevel)) return;				// reject this combination
+			if (!(filtersSelection < filterMode)) return;				// reject this combination
 			break;
 
 		case /^=<\d*$/.test(filterModeSelection):
 		case /^<=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection <= filterLevel)) return;				// reject this combination
+			if (!(filtersSelection <= filterMode)) return;				// reject this combination
 			break;
 
 		case /^(=)?\d*$/.test(filterModeSelection):
-			if (!(filtersSelection == filterLevel)) return;				// reject this combination
+			if (!(filtersSelection == filterMode)) return;				// reject this combination
 			break;
 
 		case /^!=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection != filterLevel)) return;				// reject this combination
+			if (!(filtersSelection != filterMode)) return;				// reject this combination
 			break;
 
 		case /^=>\d*$/.test(filterModeSelection):
 		case /^>=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection >= filterLevel)) return;				// reject this combination
+			if (!(filtersSelection >= filterMode)) return;				// reject this combination
 			break;
 
 		case /^>\d*$/.test(filterModeSelection):
-			if (!(filtersSelection > filterLevel)) return;				// reject this combination
+			if (!(filtersSelection > filterMode)) return;				// reject this combination
 			break;
 
 		case /^\*$/.test(filterModeSelection):
-			if (filtersSelection != levelSelection.length) return;		// reject this combination
+			if (filtersSelection != filterSelection.length) return;		// reject this combination
 			break;
 
 		default:
-			return;
+			return;														// reject this combination
 	}
 
 
