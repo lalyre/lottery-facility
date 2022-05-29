@@ -90,7 +90,7 @@ const cli = meow(`
 			type: 'string',
 			isRequired: false,
 			isMultiple: false,
-			default: '*',
+			//default: '*',
 		},
 		filter: {
 			type: 'string',
@@ -387,7 +387,7 @@ let rl = readline.createInterface({
 
 	switch (true) {
 		case /^<\d*$/.test(filterModeSelection):
-			if (!(globalScore < filterGlobalScore)) return;				// reject this combination
+			if (!(globalScore < filterGlobalScore)) return;					// reject this combination
 			break;
 
 		case /^=<\d*$/.test(filterModeSelection):
@@ -409,11 +409,11 @@ let rl = readline.createInterface({
 			break;
 
 		case /^>\d*$/.test(filterModeSelection):
-			if (!(globalScore > filterGlobalScore)) return;				// reject this combination
+			if (!(globalScore > filterGlobalScore)) return;					// reject this combination
 			break;
 
 		default:
-			return;														// reject this combination
+			return;															// reject this combination
 	}
 
 
