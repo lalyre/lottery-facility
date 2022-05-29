@@ -256,7 +256,7 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	let globalScore = 0;
+	let globalScore = -1;
 	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -380,12 +380,15 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		if (selectCombination) globalScore += score2;
+		if (selectCombination) globalScore = (globalScore == -1) ? score2 : globalScore + score2;
 		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
 	}
 
 
 	switch (true) {
+		case (globalScore == -1):
+			return;															// reject this combination
+
 		case /^<\d*$/.test(filterModeSelection):
 			if (!(globalScore < filterGlobalScore)) return;					// reject this combination
 			break;
