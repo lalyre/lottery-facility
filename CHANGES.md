@@ -4,7 +4,6 @@ Roadmap
 * manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
 * filter CLI enhancement with selection of groups of combinations.
-* filter CLI enhancement with calculation of lottery winnings, and filtering on the amount of winnings.
 * adding a "min" and "max" selection feature for CLI filter.
 * adding a optimised "cover" selection feature for CLI filter, decreasing the selection when one combination is better than several ones.
 * enhance library by incorporating CLI features.
@@ -15,6 +14,7 @@ Roadmap
 
 2022-xx-xx, Version 0.0.1-alpha.9
 ==================================
+* Enhancement of filter CLI utility with calculation of lottery winnings, and filtering on the amount of winnings.
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
 * Filter CLI selection mode based on count of passed filters.

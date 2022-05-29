@@ -136,15 +136,12 @@ if (!fs.existsSync(infile)) {
 
 
 let filterModeSelection = cli.flags.selectionMode;
-let filterMode = 0;
+let filterGlobalScore = 0;
 let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case regexp.test(filterModeSelection):
 		let match = regexp.exec(filterModeSelection);
-		filterMode = match[2];
-		break;
-
-	case /^\*$/.test(filterModeSelection):
+		filterGlobalScore = match[2];
 		break;
 
 	default:
@@ -259,7 +256,7 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	let filtersSelection = 0;
+	let globalScore = 0;
 	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -383,40 +380,36 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		hits_count_string += ` - [hits: ${hitsCount} - limit_hits: ${limitHitsCount}]`;
-		if (selectCombination) filtersSelection++;
+		if (selectCombination) globalScore += score2;
+		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
 	}
 
 
 	switch (true) {
 		case /^<\d*$/.test(filterModeSelection):
-			if (!(filtersSelection < filterMode)) return;				// reject this combination
+			if (!(globalScore < filterGlobalScore)) return;				// reject this combination
 			break;
 
 		case /^=<\d*$/.test(filterModeSelection):
 		case /^<=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection <= filterMode)) return;				// reject this combination
+			if (!(globalScore <= filterGlobalScore)) return;				// reject this combination
 			break;
 
 		case /^(=)?\d*$/.test(filterModeSelection):
-			if (!(filtersSelection == filterMode)) return;				// reject this combination
+			if (!(globalScore == filterGlobalScore)) return;				// reject this combination
 			break;
 
 		case /^!=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection != filterMode)) return;				// reject this combination
+			if (!(globalScore != filterGlobalScore)) return;				// reject this combination
 			break;
 
 		case /^=>\d*$/.test(filterModeSelection):
 		case /^>=\d*$/.test(filterModeSelection):
-			if (!(filtersSelection >= filterMode)) return;				// reject this combination
+			if (!(globalScore >= filterGlobalScore)) return;				// reject this combination
 			break;
 
 		case /^>\d*$/.test(filterModeSelection):
-			if (!(filtersSelection > filterMode)) return;				// reject this combination
-			break;
-
-		case /^\*$/.test(filterModeSelection):
-			if (filtersSelection != filterSelection.length) return;		// reject this combination
+			if (!(globalScore > filterGlobalScore)) return;				// reject this combination
 			break;
 
 		default:
@@ -425,7 +418,8 @@ let rl = readline.createInterface({
 
 
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + hits_count_string);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore);
+		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
 		console.log(lotteryFacility.Combination.toString(input_line_numbers.sort()));
