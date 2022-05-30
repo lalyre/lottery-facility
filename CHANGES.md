@@ -1,5 +1,7 @@
 Roadmap
 =======
+* draws statistics.
+* draws prediction algorithms.
 * manage all history databases of Euromillions draws for euromillions_draws.
 * manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.

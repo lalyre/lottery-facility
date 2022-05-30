@@ -12,6 +12,7 @@ filter --infile 70_3.txt  --filter last_draws.txt --level 3 --hits ">=4"
 Attendu 8/20 dans la sélection
 
 combination --total 20 --size 8 --file KENOFR_70.txt > 20_8.txt
+combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
 combination --total 20 --size 5 --file KENOFR_70.txt > 20_5.txt
 combination --total 20 --size 4 --file KENOFR_70.txt > 20_4.txt
 combination --total 20 --size 3 --file KENOFR_70.txt > 20_3.txt
@@ -27,6 +28,10 @@ filter --infile 20_5.txt --filter A.txt --level ">=4" --hits ">0" --filter B.txt
 
 filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" --printhits
 filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" > game_1.txt
+
+
+
+filter --infile 20_6.txt --filter "filename(GAME3.txt)weight(2)level(2)score(>0)" --filter "filename(GAME3.txt)weight(10)level(3)score(>0)" --selectionMode "<7" --printhits
 
 
 

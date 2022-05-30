@@ -135,12 +135,13 @@ if (!fs.existsSync(infile)) {
 }
 
 
-let filterModeSelection = cli.flags.selectionMode;
-let filterGlobalScore = 0;
+let filterModeSelection = null;
+let filterGlobalScore = -1;
 let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
-	case regexp.test(filterModeSelection):
-		let match = regexp.exec(filterModeSelection);
+	case regexp.test(cli.flags.selectionMode):
+		let match = regexp.exec(cli.flags.selectionMode);
+		filterModeSelection = match[1];
 		filterGlobalScore = match[2];
 		break;
 
@@ -162,7 +163,7 @@ let score = [];
 
 for (let i = 0; i < filterSelection.length; i++) {
 	switch (true) {
-		case /filename\(_selection\)/.test(filterSelection[i].trim()):
+		case /filename\(_selection\)*/.test(filterSelection[i].trim()):
 			if (!additionMode) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
@@ -170,8 +171,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 			filename.push('_selection')
 			break;
 		
-		case /filename\((\s)\)/.test(filterSelection[i].trim()):
-			let match = /filename\((\s)\)/.exec(filterSelection[i]);
+		case /filename\(([\w|\.]*)\)*/.test(filterSelection[i].trim()):
+			let match = /filename\(([\w|\.]*)\)*/.exec(filterSelection[i]);
 			filename.push(match[1]);
 			if (!fs.existsSync(filename[i].trim())) {
 				console.error(`File ${filename[i]} does not exist.`);
@@ -187,8 +188,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterSelection[i]):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterSelection[i]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i]):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
 			levelSelection.push(match[1])
 			level.push(match[2]);
 			break;
@@ -201,8 +202,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /weight\((\d*)\)/.test(filterSelection[i]):
-			let match = /weight\((\d*)\)/.exec(filterSelection[i]);
+		case /weight\((\d*)\)*/.test(filterSelection[i]):
+			let match = /weight\((\d*)\)*/.exec(filterSelection[i]);
 			weight.push(match[1])
 			break;
 		
@@ -214,8 +215,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterSelection[i]):
-			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterSelection[i]);
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i]):
+			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
 			scoreSelection.push(match[1])
 			score.push(match[2]);
 			break;
@@ -281,56 +282,65 @@ let rl = readline.createInterface({
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
 
-
-				if (/</.test(levelSelection[i])) {
+			switch (true) {
+				case /^<$/.test(levelSelection[i]):
 					if (nb_collisions < level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
-				}
+					break;
+				
 
-				if ((/=</.test(levelSelection[i]))
-				|| (/<=/.test(levelSelection[i]))) {
+				case /^=<$/.test(levelSelection[i]):
+				case /^<=$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-				}
+					break;
 
-				if (/(=)?/.test(levelSelection[i])) {
+
+				case /^=$/.test(levelSelection[i]):
+				case (!levelSelection[i]):
 					if (nb_collisions == level[i]) {
 						hitsCount++;
 						limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-				}
+					break;
+		
 
-				if (/!=/.test(levelSelection[i])) {
+				case /^!=$/.test(levelSelection[i]):
 					if (nb_collisions != level[i]) {
 						hitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-				}
+					break;
 
 
-				if ((/=>/.test(levelSelection[i]))
-				|| (/>=/.test(levelSelection[i]))) {
+				case /^=>$/.test(levelSelection[i]):
+				case /^>=$/.test(levelSelection[i]):
 					if (nb_collisions >= level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-				}
+					break;
+				
 
-				if (/>/.test(levelSelection[i])) {
+				case /^>$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
 						hitsCount++;
 						if (nb_collisions == level[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
-				}
+					break;
+
+				default:
+					break;
+			}
 		}
 		hits_filters_string += '\n';
 		
@@ -338,43 +348,50 @@ let rl = readline.createInterface({
 		let score2 = hitsCount * weight[i];
 		let selectCombination = false;
 		switch (true) {
-			case /</.test(scoreSelection[i]):
+			case /^<$/.test(scoreSelection[i]):
 				if (score2 < score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /=</.test(scoreSelection[i]):
-			case /<=/.test(scoreSelection[i]):
+
+			case /^=<$/.test(scoreSelection[i]):
+			case /^<=$/.test(scoreSelection[i]):
 				if (score2 <= score[i]) {
 					selectCombination = true;
 				}
 				break;
+			
 
-			case /(=)?/.test(scoreSelection[i]):
+			case /^=$/.test(scoreSelection[i]):
+			case (!scoreSelection[i]):
 				if (score2 == score[i]) {
 					selectCombination = true;
 				}
 				break;
+			
 
-			case /!=/.test(scoreSelection[i]):
+			case /^!=$/.test(scoreSelection[i]):
 				if (score2 != score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /=>/.test(scoreSelection[i]):
-			case />=/.test(scoreSelection[i]):
+
+			case /^=>$/.test(scoreSelection[i]):
+			case /^>=$/.test(scoreSelection[i]):
 				if (score2 >= score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case />/.test(scoreSelection[i]):
+
+			case /^>$/.test(scoreSelection[i]):
 				if (score2 > score[i]) {
 					selectCombination = true;
 				}
 				break;
+
 
 			default:
 				break;
@@ -388,35 +405,44 @@ let rl = readline.createInterface({
 	switch (true) {
 		case (globalScore == -1):
 			return;															// reject this combination
+			break;
 
-		case /^<\d*$/.test(filterModeSelection):
+
+		case /^<$/.test(filterModeSelection):
 			if (!(globalScore < filterGlobalScore)) return;					// reject this combination
 			break;
 
-		case /^=<\d*$/.test(filterModeSelection):
-		case /^<=\d*$/.test(filterModeSelection):
+
+		case /^=<$/.test(filterModeSelection):
+		case /^<=$/.test(filterModeSelection):
 			if (!(globalScore <= filterGlobalScore)) return;				// reject this combination
 			break;
 
-		case /^(=)?\d*$/.test(filterModeSelection):
+
+		case /^=$/.test(filterModeSelection):
+		case (!filterModeSelection):
 			if (!(globalScore == filterGlobalScore)) return;				// reject this combination
 			break;
 
-		case /^!=\d*$/.test(filterModeSelection):
+
+		case /^!=$/.test(filterModeSelection):
 			if (!(globalScore != filterGlobalScore)) return;				// reject this combination
 			break;
 
-		case /^=>\d*$/.test(filterModeSelection):
-		case /^>=\d*$/.test(filterModeSelection):
+
+		case /^=>$/.test(filterModeSelection):
+		case /^>=$/.test(filterModeSelection):
 			if (!(globalScore >= filterGlobalScore)) return;				// reject this combination
 			break;
 
-		case /^>\d*$/.test(filterModeSelection):
+		
+		case /^>$/.test(filterModeSelection):
 			if (!(globalScore > filterGlobalScore)) return;					// reject this combination
 			break;
-
+	
 		default:
-			return;															// reject this combination
+			return;
+			break;
 	}
 
 
