@@ -74,7 +74,7 @@ const cli = meow(`
 
 
 // TODO
---filter "filename(_selection)weight(1)level(>=2)score(0)"
+--filter "filename(_selection)weight(1)level(>=2)score(>0)"
 
 
 
@@ -90,7 +90,6 @@ const cli = meow(`
 			type: 'string',
 			isRequired: false,
 			isMultiple: false,
-			//default: '*',
 		},
 		filter: {
 			type: 'string',
@@ -291,7 +290,6 @@ let rl = readline.createInterface({
 					}
 					break;
 				
-
 				case /^=<$/.test(levelSelection[i]):
 				case /^<=$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
@@ -301,7 +299,6 @@ let rl = readline.createInterface({
 					}
 					break;
 
-
 				case /^=$/.test(levelSelection[i]):
 				case (!levelSelection[i]):
 					if (nb_collisions == level[i]) {
@@ -310,7 +307,6 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-		
 
 				case /^!=$/.test(levelSelection[i]):
 					if (nb_collisions != level[i]) {
@@ -318,7 +314,6 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-
 
 				case /^=>$/.test(levelSelection[i]):
 				case /^>=$/.test(levelSelection[i]):
@@ -328,7 +323,6 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
-				
 
 				case /^>$/.test(levelSelection[i]):
 					if (nb_collisions > level[i]) {
@@ -354,14 +348,12 @@ let rl = readline.createInterface({
 				}
 				break;
 
-
 			case /^=<$/.test(scoreSelection[i]):
 			case /^<=$/.test(scoreSelection[i]):
 				if (score2 <= score[i]) {
 					selectCombination = true;
 				}
 				break;
-			
 
 			case /^=$/.test(scoreSelection[i]):
 			case (!scoreSelection[i]):
@@ -369,14 +361,12 @@ let rl = readline.createInterface({
 					selectCombination = true;
 				}
 				break;
-			
 
 			case /^!=$/.test(scoreSelection[i]):
 				if (score2 != score[i]) {
 					selectCombination = true;
 				}
 				break;
-
 
 			case /^=>$/.test(scoreSelection[i]):
 			case /^>=$/.test(scoreSelection[i]):
@@ -385,13 +375,11 @@ let rl = readline.createInterface({
 				}
 				break;
 
-
 			case /^>$/.test(scoreSelection[i]):
 				if (score2 > score[i]) {
 					selectCombination = true;
 				}
 				break;
-
 
 			default:
 				break;
@@ -407,35 +395,29 @@ let rl = readline.createInterface({
 			return;															// reject this combination
 			break;
 
-
 		case /^<$/.test(filterModeSelection):
 			if (!(globalScore < filterGlobalScore)) return;					// reject this combination
 			break;
-
 
 		case /^=<$/.test(filterModeSelection):
 		case /^<=$/.test(filterModeSelection):
 			if (!(globalScore <= filterGlobalScore)) return;				// reject this combination
 			break;
 
-
 		case /^=$/.test(filterModeSelection):
 		case (!filterModeSelection):
 			if (!(globalScore == filterGlobalScore)) return;				// reject this combination
 			break;
 
-
 		case /^!=$/.test(filterModeSelection):
 			if (!(globalScore != filterGlobalScore)) return;				// reject this combination
 			break;
-
 
 		case /^=>$/.test(filterModeSelection):
 		case /^>=$/.test(filterModeSelection):
 			if (!(globalScore >= filterGlobalScore)) return;				// reject this combination
 			break;
 
-		
 		case /^>$/.test(filterModeSelection):
 			if (!(globalScore > filterGlobalScore)) return;					// reject this combination
 			break;
