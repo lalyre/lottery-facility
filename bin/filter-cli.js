@@ -13,7 +13,7 @@ const cli = meow(`
 
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected.
-	  --selectionMode    Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
+	  --globalScore      Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
 
 
 
@@ -44,13 +44,13 @@ const cli = meow(`
 
 
 
-	Witch --selectionMode  "<x", only combinations with less than x passed filters are selected.
-	Witch --selectionMode  "<=x", only combinations with less than or equal x passed filters are selected..
-	Witch --selectionMode  "=x", only combinations with x passed filters are selected.
-	Witch --selectionMode  "!=x", only combinations with not x passed filters are selected.
-	Witch --selectionMode  ">=x", only combinations with more than or equal x passed filters are selected.
-	Witch --selectionMode  ">x", only combinations with more than x passed filters are selected.
-	Witch --selectionMode "*", only combinations with ALL filters passed are selected (Default case).
+	Witch --globalScore  "<x", only combinations with less than x passed filters are selected.
+	Witch --globalScore  "<=x", only combinations with less than or equal x passed filters are selected..
+	Witch --globalScore  "=x", only combinations with x passed filters are selected.
+	Witch --globalScore  "!=x", only combinations with not x passed filters are selected.
+	Witch --globalScore  ">=x", only combinations with more than or equal x passed filters are selected.
+	Witch --globalScore  ">x", only combinations with more than x passed filters are selected.
+	Witch --globalScore "*", only combinations with ALL filters passed are selected (Default case).
 
 
 
@@ -86,7 +86,7 @@ const cli = meow(`
 			isRequired: true,
 			isMultiple: false,
 		},
-		selectionMode: {
+		globalScore: {
 			type: 'string',
 			isRequired: false,
 			isMultiple: false,
@@ -134,18 +134,18 @@ if (!fs.existsSync(infile)) {
 }
 
 
-let filterModeSelection = null;
-let filterGlobalScore = -1;
+let globalScoreSelection = null;
+let globalScore = -1;
 let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
-	case regexp.test(cli.flags.selectionMode):
-		let match = regexp.exec(cli.flags.selectionMode);
-		filterModeSelection = match[1];
-		filterGlobalScore = match[2];
+	case regexp.test(cli.flags.globalScore):
+		let match = regexp.exec(cli.flags.globalScore);
+		globalScoreSelection = match[1];
+		globalScore = match[2];
 		break;
 
 	default:
-		console.error(`Wrong <selectionMode> value.`);
+		console.error(`Wrong <globalScore> value.`);
 		process.exit(1);
 		break;
 }
@@ -256,7 +256,7 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	let globalScore = -1;
+	let globalScore2 = -1;
 	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -385,51 +385,51 @@ let rl = readline.createInterface({
 				break;
 		}
 
-		if (selectCombination) globalScore = (globalScore == -1) ? score2 : globalScore + score2;
+		if (selectCombination) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
 		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
 	}
 
 
 	switch (true) {
-		case (globalScore == -1):
-			return;															// reject this combination
+		case (globalScore2 == -1):
+			return; // reject this combination
 			break;
 
-		case /^<$/.test(filterModeSelection):
-			if (!(globalScore < filterGlobalScore)) return;					// reject this combination
+		case /^<$/.test(globalScoreSelection):
+			if (!(globalScore2 < globalScore)) return; // reject this combination
 			break;
 
-		case /^=<$/.test(filterModeSelection):
-		case /^<=$/.test(filterModeSelection):
-			if (!(globalScore <= filterGlobalScore)) return;				// reject this combination
+		case /^=<$/.test(globalScoreSelection):
+		case /^<=$/.test(globalScoreSelection):
+			if (!(globalScore2 <= globalScore)) return; // reject this combination
 			break;
 
-		case /^=$/.test(filterModeSelection):
-		case (!filterModeSelection):
-			if (!(globalScore == filterGlobalScore)) return;				// reject this combination
+		case /^=$/.test(globalScoreSelection):
+		case (!globalScoreSelection):
+			if (!(globalScore2 == globalScore)) return; // reject this combination
 			break;
 
-		case /^!=$/.test(filterModeSelection):
-			if (!(globalScore != filterGlobalScore)) return;				// reject this combination
+		case /^!=$/.test(globalScoreSelection):
+			if (!(globalScore2 != globalScore)) return; // reject this combination
 			break;
 
-		case /^=>$/.test(filterModeSelection):
-		case /^>=$/.test(filterModeSelection):
-			if (!(globalScore >= filterGlobalScore)) return;				// reject this combination
+		case /^=>$/.test(globalScoreSelection):
+		case /^>=$/.test(globalScoreSelection):
+			if (!(globalScore2 >= globalScore)) return; // reject this combination
 			break;
 
-		case /^>$/.test(filterModeSelection):
-			if (!(globalScore > filterGlobalScore)) return;					// reject this combination
+		case /^>$/.test(globalScoreSelection):
+			if (!(globalScore2 > globalScore)) return; // reject this combination
 			break;
 	
 		default:
-			return;
+			return; // reject this combination
 			break;
 	}
 
 
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore2);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
