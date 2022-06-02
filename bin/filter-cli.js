@@ -276,10 +276,12 @@ let rl = readline.createInterface({
 				break;
 		}
 
+
 		let hitsCount = 0;
 		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
+
 
 			switch (true) {
 				case /^<$/.test(levelSelection[i]):
@@ -384,6 +386,7 @@ let rl = readline.createInterface({
 			default:
 				break;
 		}
+
 
 		if (selectCombination) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
 		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
