@@ -1,5 +1,6 @@
 Roadmap
 =======
+* add Web features to the library.
 * draws statistics.
 * draws prediction algorithms.
 * manage all history databases of Euromillions draws for euromillions_draws.
@@ -9,6 +10,7 @@ Roadmap
 * adding a "min" and "max" selection feature for CLI filter.
 * adding a optimised "cover" selection feature for CLI filter, decreasing the selection when one combination is better than several ones.
 * enhance library by incorporating CLI features.
+* filter CLI selection mode based on count of passed filters.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
@@ -19,7 +21,6 @@ Roadmap
 * Enhancement of filter CLI utility with calculation of lottery winnings, and filtering on the amount of winnings.
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
-* Filter CLI selection mode based on count of passed filters.
 * Adding difference CLI utility.
 * Removal of 99 balls limitation in DrawBox class.
 * Adding Combination class.

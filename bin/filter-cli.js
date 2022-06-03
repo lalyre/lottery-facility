@@ -187,7 +187,7 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i]):
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
 			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
 			levelSelection.push(match[1])
 			level.push(match[2]);
@@ -201,7 +201,7 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /weight\((\d*)\)*/.test(filterSelection[i]):
+		case /weight\((\d*)\)*/.test(filterSelection[i].trim()):
 			let match = /weight\((\d*)\)*/.exec(filterSelection[i]);
 			weight.push(match[1])
 			break;
@@ -214,7 +214,7 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i]):
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
 			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
 			scoreSelection.push(match[1])
 			score.push(match[2]);
@@ -291,7 +291,7 @@ let rl = readline.createInterface({
 						hits_filters_string += lotteryFacility.Combination.toString(filter_tested_numbers[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
-				
+
 				case /^=<$/.test(levelSelection[i]):
 				case /^<=$/.test(levelSelection[i]):
 					if (nb_collisions <= level[i]) {
