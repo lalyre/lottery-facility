@@ -339,11 +339,16 @@ let rl = readline.createInterface({
 			}
 		}
 		hits_filters_string += '\n';
-		
-		
-		let score2 = hitsCount * weight[i];
+
+
+		let score2 = -1;
+		if (hitsCount > 0) score2 = hitsCount * weight[i];
+
 		let selectCombination = false;
 		switch (true) {
+			/*case (score2 == -1):
+			break;*/
+
 			case /^<$/.test(scoreSelection[i]):
 				if (score2 < score[i]) {
 					selectCombination = true;
@@ -388,15 +393,15 @@ let rl = readline.createInterface({
 		}
 
 
-		if (selectCombination) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
 		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
+		if (selectCombination && score2 >= 0) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
 	}
 
 
 	switch (true) {
-		case (globalScore2 == -1):
+		/*case (globalScore2 == -1):
 			return; // reject this combination
-			break;
+			break;*/
 
 		case /^<$/.test(globalScoreSelection):
 			if (!(globalScore2 < globalScore)) return; // reject this combination
