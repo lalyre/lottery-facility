@@ -16,6 +16,8 @@ const cli = meow(`
 	  --globalScore      Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
 
 
+//TODO
+	  --globalFailure      Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
 
 
 // TODO
@@ -91,6 +93,11 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 		},
+		globalFailure: {
+			type: 'string',
+			isRequired: false,
+			isMultiple: false,
+		},
 		filter: {
 			type: 'string',
 			alias: 'f',
@@ -136,16 +143,33 @@ if (!fs.existsSync(infile)) {
 
 let globalScoreSelection = null;
 let globalScore = -1;
-let regexp = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
+let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
-	case regexp.test(cli.flags.globalScore):
-		let match = regexp.exec(cli.flags.globalScore);
+	case regexp1.test(cli.flags.globalScore):
+		let match = regexp1.exec(cli.flags.globalScore);
 		globalScoreSelection = match[1];
 		globalScore = match[2];
 		break;
 
 	default:
 		console.error(`Wrong <globalScore> value.`);
+		process.exit(1);
+		break;
+}
+
+
+let globalFailureSelection = null;
+let globalFailure = -1;
+let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
+switch (true) {
+	case regexp2.test(cli.flags.globalFailure):
+		let match = regexp2.exec(cli.flags.globalFailure);
+		globalFailureSelection = match[1];
+		globalFailure = match[2];
+		break;
+
+	default:
+		console.error(`Wrong <globalFailure> value.`);
 		process.exit(1);
 		break;
 }
@@ -257,6 +281,7 @@ let rl = readline.createInterface({
 	let hits_count_string = '';
 	let hits_filters_string = '';
 	let globalScore2 = -1;
+	let globalFailure2 = -1;
 	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -346,8 +371,9 @@ let rl = readline.createInterface({
 
 		let selectCombination = false;
 		switch (true) {
-			/*case (score2 == -1):
-			break;*/
+			case (score2 == -1):
+				selectCombination = false;
+				break;
 
 			case /^<$/.test(scoreSelection[i]):
 				if (score2 < score[i]) {
@@ -389,19 +415,20 @@ let rl = readline.createInterface({
 				break;
 
 			default:
+				selectCombination = false;
 				break;
 		}
 
 
 		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
-		if (selectCombination && score2 >= 0) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
+		if (selectCombination) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
+		if (score2 < 0) globalFailure2 = (globalFailure2 == -1) ? 1 : globalFailure2 + 1;
 	}
 
 
 	switch (true) {
-		/*case (globalScore2 == -1):
-			return; // reject this combination
-			break;*/
+		case (globalScore == -1):
+			break; // No rule
 
 		case /^<$/.test(globalScoreSelection):
 			if (!(globalScore2 < globalScore)) return; // reject this combination
@@ -436,8 +463,45 @@ let rl = readline.createInterface({
 	}
 
 
+	switch (true) {
+		case (globalFailure == -1):
+			break; // No rule
+
+		case /^<$/.test(globalFailureSelection):
+			if (!(globalFailure2 < globalFailure)) return; // reject this combination
+			break;
+
+		case /^=<$/.test(globalFailureSelection):
+		case /^<=$/.test(globalFailureSelection):
+			if (!(globalFailure2 <= globalFailure)) return; // reject this combination
+			break;
+
+		case /^=$/.test(globalFailureSelection):
+		case (!globalFailureSelection):
+			if (!(globalFailure2 == globalFailure)) return; // reject this combination
+			break;
+
+		case /^!=$/.test(globalFailureSelection):
+			if (!(globalFailure2 != globalFailure)) return; // reject this combination
+			break;
+
+		case /^=>$/.test(globalFailureSelection):
+		case /^>=$/.test(globalFailureSelection):
+			if (!(globalFailure2 >= globalFailure)) return; // reject this combination
+			break;
+
+		case /^>$/.test(globalFailureSelection):
+			if (!(globalFailure2 > globalFailure)) return; // reject this combination
+			break;
+
+		default:
+			return; // reject this combination
+			break;
+	}
+
+
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore2);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore2 + " - global failure: " + globalFailure2);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
