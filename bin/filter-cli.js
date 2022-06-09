@@ -145,6 +145,10 @@ let globalScoreSelection = null;
 let globalScore = -1;
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
+	case cli.flags.globalScore === null:
+	case cli.flags.globalScore === undefined:
+		break;
+
 	case regexp1.test(cli.flags.globalScore):
 		let match = regexp1.exec(cli.flags.globalScore);
 		globalScoreSelection = match[1];
@@ -162,6 +166,10 @@ let globalFailureSelection = null;
 let globalFailure = -1;
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
+	case cli.flags.globalFailure === null:
+	case cli.flags.globalFailure === undefined:
+		break;
+
 	case regexp2.test(cli.flags.globalFailure):
 		let match = regexp2.exec(cli.flags.globalFailure);
 		globalFailureSelection = match[1];

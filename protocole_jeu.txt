@@ -30,6 +30,10 @@ filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" --printhit
 filter --infile 20_4.txt --filter _selection --level ">=3" --hits "0" > game_1.txt
 
 
+filter --infile 20_6.txt --filter "filename(GAME4.txt)weight(5)level(=3)score(>=0)" --filter "filename(GAME4.txt)weight(50)level(=4)score(>=0)" --globalScore ">=5" --printhits
+
+
+
 filter --infile 20_6.txt --filter "filename(GAME2.txt)weight(6)level(=2)score(>=0)" --globalScore "<6" --printhits
 filter --infile 20_6.txt --filter "filename(GAME3.txt)weight(2)level(2)score(>0)" --filter "filename(GAME3.txt)weight(10)level(3)score(>0)" --selectionMode "<7" --printhits
 
