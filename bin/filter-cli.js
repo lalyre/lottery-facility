@@ -10,76 +10,58 @@ const SELECTION_LIMIT = 500000;
 const cli = meow(`
 	Usage
 	  $ filter
-
+	
 	Parameters
-	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected.
-	  --globalScore      Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
-
-
-//TODO
-	  --globalFailure      Define the number of filters to be passed to select a combination. By default ALL filters are required to be passed.
-
-
-// TODO
-	  --filter, -f       A filter file containing one combination per line, and those combinations will be used to select (with collisions count) input combinations.
-	  --level, -l        Defining the <level> of collisions with the tested <filter> file.
-	  --hits, -h         Defining the number of <hits>, i.e. the number of tested <filter> file lines that match the request.
-
-
-
-
-
+	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected or not.
+	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
+	  --globalFailure    Define the global number of filters that are not passed to select a combination.
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(x)level(y)score(z)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
 	  --printfullhits    Display the hit counts for each (filter, level, hits) trio in their declarative order, and the filter lines that are collided.
-
-
-
-// TODO
+	
 	Description
-	This script selects combinations from input file according to filter file <filter>, and <level> and <hits> restrictions.
+	This script selects combinations from input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
-	You can use "_selection" value for <filter> file if you want to perform selection against the current selection of input combinations.
-
-
-
-
-
-	Witch --globalScore  "<x", only combinations with less than x passed filters are selected.
-	Witch --globalScore  "<=x", only combinations with less than or equal x passed filters are selected..
-	Witch --globalScore  "=x", only combinations with x passed filters are selected.
-	Witch --globalScore  "!=x", only combinations with not x passed filters are selected.
-	Witch --globalScore  ">=x", only combinations with more than or equal x passed filters are selected.
-	Witch --globalScore  ">x", only combinations with more than x passed filters are selected.
-	Witch --globalScore "*", only combinations with ALL filters passed are selected (Default case).
-
-
-
-	With --level "<x", only filter lines with less than x collisions with the current input combination are considered.
-	With --level "<=x", only filter lines with less than or equal x collisions with the current input combination are considered.
-	With --level "=x" or --level x, only filter lines with x collisions with the current input combination are considered.
-	With --level "!=x", only filter lines with not x collisions with the current input combination are considered.
-	With --level ">=x", only filter lines with more than or equal x collisions with the current input combination are considered.
-	With --level ">x", only filter lines with more than x collisions with the current input combination are considered.
-
-	With --hits "<x", if the current input combination matches with less than x filter lines then it is selected and printed to the ouput.
-	With --hits "<=x", if the current input combination matches with less than or equal x filter lines then it is selected and printed to the ouput.
-	With --hits "=x" or --hits x, if the current input combination matches with x filter lines then it is selected and printed to the ouput.
-	With --hits "!=x", if the current input combination does not match with x filter lines then it is selected and printed to the ouput.
-	With --hits ">=x", if the current input combination matches with more than or equal x filter lines then it is selected and printed to the ouput.
-	With --hits ">x", if the current input combination matches with more than x filter lines then it is selected and printed to the ouput.
-	// With --hits "min", the combinations with the minimum hits count are selected and printed to the ouput.
-	// With --hits "max", the combinations with the maximum hits count are selected and printed to the ouput.
-	With --hits "*", if the current input combination matches with all filter lines then it is selected and printed to the ouput.
-
-
-
-// TODO
---filter "filename(_selection)weight(1)level(>=2)score(>0)"
-
-
-
+	
+	The filter command can be used in two forms
+	- "filename(_selection)weight(x)level(y)score(z)"
+	- "filename(<filename>)weight(x)level(y)score(z)"
+	
+	The filter instruction contains a filename, with the form "filename(XXX)", to read combinations from that will be confronted against the current tested combination of the input file.
+	You can use "_selection" value for <filter> filename value if you want to perform selection against the current ongoing selection of input combinations.
+	You can put as many <filter> commands as you need on the command line.
+	
+	With "score(<x)",  only filter lines with filter score less than x are considered.
+	With "score(<=x)", only filter lines with filter score less than or equal x are considered.
+	With "score(=x)" or "score(x)", only filter lines with filter score equal to x are considered.
+	With "score(!=x)", only filter lines with filter score different from x are considered.
+	With "score(>=x)", only filter lines with filter score greater than or equal to x considered.
+	With "score(>x)",  only filter lines with filter score greater than x are considered.
+	
+	With "level(<x)",  only filter lines with less than x collisions with the current input combination are considered.
+	With "level(<=x)", only filter lines with less than or equal x collisions with the current input combination are considered.
+	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
+	With "level(!=x)", only filter lines with not x collisions with the current input combination are considered.
+	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
+	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
+	
+	With "weight(x)", the filter score is multiplied by x.
+	
+	With --globalScore    "<x",  only combinations with global score less than x are selected.
+	With --globalScore    "<=x", only combinations with global score less than or equal x are selected..
+	With --globalScore    "=x",  only combinations with global score equal to x are selected.
+	With --globalScore    "!=x", only combinations with global score not equal to x are selected.
+	With --globalScore    ">=x", only combinations with global score greater than or equal to x are selected.
+	With --globalScore    ">x",  only combinations with global score greater than x are selected.
+	
+	With --globalFailure  "<x",  only combinations with less than x failed filters are selected.
+	With --globalFailure  "<=x", only combinations with less than or equal x failed filters are selected..
+	With --globalFailure  "=x",  only combinations with x failed filters are selected.
+	With --globalFailure  "!=x", only combinations with not x failed filters are selected.
+	With --globalFailure  ">=x", only combinations with more than or equal x failed filters are selected.
+	With --globalFailure  ">x",  only combinations with more than x failed filters are selected.
 `, {
 	flags: {
 		infile: {
