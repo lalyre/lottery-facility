@@ -47,7 +47,7 @@ const cli = meow(`
 	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
 	
-	With "weight(x)", the filter score is multiplied by x.
+	With "weight(x)", the filter score is computed as the multiplication of number of collisions by the weight value.
 	
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
 	With --globalScore    "<=x", only combinations with global score less than or equal x are selected..

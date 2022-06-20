@@ -23,9 +23,6 @@ CLI utilities:
 * translate
 * difference
 * filter
-* cartesian_product (TODO)
-* paste (TODO)
-* cut (TODO)
 * euromillions_draws (TODO)
 * kenoFR_draws (TODO)
 
