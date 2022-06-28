@@ -3,14 +3,14 @@ Roadmap
 * add Web features to the library.
 * draws statistics.
 * draws prediction algorithms.
-* manage all history databases of Euromillions draws for euromillions_draws.
-* manage all history databases of Keno draws for kenoFR_draws.
-* combination CLI enhancement with production of balanced and count limited combinations.
-* adding an optimised "cover" CLI selection feature.
 * enhance library by incorporating CLI features.
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
+* manage all history databases of Euromillions draws for euromillions_draws.
+* manage all history databases of Keno draws for kenoFR_draws.
+* combination CLI enhancement with production of balanced and count limited combinations.
+* adding an optimised "cover" CLI selection feature.
 
 
 2022-xx-xx, Version 0.0.1-alpha.9

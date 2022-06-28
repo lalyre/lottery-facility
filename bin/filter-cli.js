@@ -15,7 +15,7 @@ const cli = meow(`
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected or not.
 	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Define the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(x)level(y)score(z)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(x)level(y)combi_score(z)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
@@ -26,20 +26,21 @@ const cli = meow(`
 	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
 	
 	The filter command can be used in two forms
-	- "filename(_selection)weight(x)level(y)score(z)"
-	- "filename(<filename>)weight(x)level(y)score(z)"
+	- "filename(_selection)weight(x)level(y)combi_score(z)"
+	- "filename(<filename>)weight(x)level(y)combi_score(z)"
 	
 	The filter instruction contains a filename, with the form "filename(XXX)", to read combinations from that will be confronted against the current tested combination of the input file.
 	You can use "_selection" value for <filter> filename value if you want to perform selection against the current ongoing selection of input combinations.
 	You can put as many <filter> commands as you need on the command line.
 	
-	With "score(<x)",  only filter lines with filter score less than x are considered.
-	With "score(<=x)", only filter lines with filter score less than or equal x are considered.
-	With "score(=x)" or "score(x)", only filter lines with filter score equal to x are considered.
-	With "score(!=x)", only filter lines with filter score different from x are considered.
-	With "score(>=x)", only filter lines with filter score greater than or equal to x considered.
-	With "score(>x)",  only filter lines with filter score greater than x are considered.
-	
+	With "combi_score(<x)",  only input combinations with score less than x are considered.
+	With "combi_score(<=x)", only input combinations with score less than or equal x are considered.
+	With "combi_score(=x)" or "combi_score(x)", only input combinations with score equal to x are considered.
+	With "combi_score(!=x)", only input combinations with score different from x are considered.
+	With "combi_score(>=x)", only input combinations with score greater than or equal to x considered.
+	With "combi_score(>x)",  only input combinations with score greater than x are considered.
+	//With "combi_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+
 	With "level(<x)",  only filter lines with less than x collisions with the current input combination are considered.
 	With "level(<=x)", only filter lines with less than or equal x collisions with the current input combination are considered.
 	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
@@ -123,8 +124,8 @@ if (!fs.existsSync(infile)) {
 }
 
 
-let globalScoreSelection = null;
-let globalScore = -1;
+let combiGlobalScoreSelection = null;
+let combiGlobalScore = -1;
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case cli.flags.globalScore === null:
@@ -133,8 +134,8 @@ switch (true) {
 
 	case regexp1.test(cli.flags.globalScore):
 		let match = regexp1.exec(cli.flags.globalScore);
-		globalScoreSelection = match[1];
-		globalScore = match[2];
+		combiGlobalScoreSelection = match[1];
+		combiGlobalScore = match[2];
 		break;
 
 	default:
@@ -144,8 +145,8 @@ switch (true) {
 }
 
 
-let globalFailureSelection = null;
-let globalFailure = -1;
+let combiGlobalFailureSelection = null;
+let combiGlobalFailure = -1;
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case cli.flags.globalFailure === null:
@@ -154,8 +155,8 @@ switch (true) {
 
 	case regexp2.test(cli.flags.globalFailure):
 		let match = regexp2.exec(cli.flags.globalFailure);
-		globalFailureSelection = match[1];
-		globalFailure = match[2];
+		combiGlobalFailureSelection = match[1];
+		combiGlobalFailure = match[2];
 		break;
 
 	default:
@@ -170,8 +171,8 @@ let filename = [];
 let levelSelection = [];
 let level = [];
 let weight = [];
-let scoreSelection = [];
-let score = [];
+let combiScoreSelection = [];
+let combiScore = [];
 
 
 for (let i = 0; i < filterSelection.length; i++) {
@@ -228,14 +229,19 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
-			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
-			scoreSelection.push(match[1])
-			score.push(match[2]);
+		case /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
+			let match = /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
+			combiScoreSelection.push(match[1])
+			combiScore.push(match[2]);
 			break;
-		
+
+		/*case /score\(\*\)/.test(filterSelection[i].trim()):
+			scoreSelection.push('*')
+			score.push('*');
+			break;*/
+
 		default:
-			console.error(`No <score> (#${i+1}) value.`);
+			console.error(`No <combi_score> (#${i+1}) value.`);
 			process.exit(1);
 			break;
 	}
@@ -270,8 +276,8 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	let globalScore2 = -1;
-	let globalFailure2 = -1;
+	let combiGlobalScore2 = -1;
+	let combiGlobalFailure2 = -1;
 	for (let i = 0; i < filterSelection.length; i++)
 	{
 		let filter_tested_numbers = [];
@@ -292,6 +298,7 @@ let rl = readline.createInterface({
 		}
 
 
+		let localScore2 = -1;
 		let hitsCount = 0;
 		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
@@ -356,53 +363,59 @@ let rl = readline.createInterface({
 		hits_filters_string += '\n';
 
 
-		let score2 = -1;
-		if (hitsCount > 0) score2 = hitsCount * weight[i];
+		let combiScore2 = -1;
+		if (hitsCount > 0) combiScore2 = hitsCount * weight[i];
 
 		let selectCombination = false;
 		switch (true) {
-			case (score2 == -1):
+			case (combiScore2 == -1):
 				selectCombination = false;
 				break;
 
-			case /^<$/.test(scoreSelection[i]):
-				if (score2 < score[i]) {
+			case /^<$/.test(combiScoreSelection[i]):
+				if (combiScore2 < score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^=<$/.test(scoreSelection[i]):
-			case /^<=$/.test(scoreSelection[i]):
-				if (score2 <= score[i]) {
+			case /^=<$/.test(combiScoreSelection[i]):
+			case /^<=$/.test(combiScoreSelection[i]):
+				if (combiScore2 <= score[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^=$/.test(scoreSelection[i]):
-			case (!scoreSelection[i]):
-				if (score2 == score[i]) {
+			case /^=$/.test(combiScoreSelection[i]):
+			case (!combiScoreSelection[i]):
+				if (combiScore2 == combiScore[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^!=$/.test(scoreSelection[i]):
-				if (score2 != score[i]) {
+			case /^!=$/.test(combiScoreSelection[i]):
+				if (combiScore2 != combiScore[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^=>$/.test(scoreSelection[i]):
-			case /^>=$/.test(scoreSelection[i]):
-				if (score2 >= score[i]) {
+			case /^=>$/.test(combiScoreSelection[i]):
+			case /^>=$/.test(combiScoreSelection[i]):
+				if (combiScore2 >= combiScore[i]) {
 					selectCombination = true;
 				}
 				break;
 
-			case /^>$/.test(scoreSelection[i]):
-				if (score2 > score[i]) {
+			case /^>$/.test(combiScoreSelection[i]):
+				if (combiScore2 > combiScore[i]) {
 					selectCombination = true;
 				}
 				break;
+
+			/*case /^\*$/.test(scoreSelection[i]):
+				if (hitsCount == filter_tested_numbers.length) {
+					selectCombination = true;
+				}
+				break;*/
 
 			default:
 				selectCombination = false;
@@ -410,41 +423,41 @@ let rl = readline.createInterface({
 		}
 
 
-		hits_count_string += ` - [hits: ${hitsCount} - score: ${score2}]`;
-		if (selectCombination) globalScore2 = (globalScore2 == -1) ? score2 : globalScore2 + score2;
-		if (score2 < 0) globalFailure2 = (globalFailure2 == -1) ? 1 : globalFailure2 + 1;
+		hits_count_string += ` - [hits: ${hitsCount} - combi_score: ${combiScore2}]`;
+		if (selectCombination) combiGlobalScore2 = (combiGlobalScore2 == -1) ? combiScore2 : combiGlobalScore2 + combiScore2;
+		if (combiScore2 < 0) combiGlobalFailure2 = (combiGlobalFailure2 == -1) ? 1 : combiGlobalFailure2 + 1;
 	}
 
 
 	switch (true) {
-		case (globalScore == -1):
+		case (combiGlobalScore == -1):
 			break; // No rule
 
-		case /^<$/.test(globalScoreSelection):
-			if (!(globalScore2 < globalScore)) return; // reject this combination
+		case /^<$/.test(combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 < combiGlobalScore)) return; // reject this combination
 			break;
 
-		case /^=<$/.test(globalScoreSelection):
-		case /^<=$/.test(globalScoreSelection):
-			if (!(globalScore2 <= globalScore)) return; // reject this combination
+		case /^=<$/.test(combiGlobalScoreSelection):
+		case /^<=$/.test(combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 <= combiGlobalScore)) return; // reject this combination
 			break;
 
-		case /^=$/.test(globalScoreSelection):
-		case (!globalScoreSelection):
-			if (!(globalScore2 == globalScore)) return; // reject this combination
+		case /^=$/.test(combiGlobalScoreSelection):
+		case (!combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 == combiGlobalScore)) return; // reject this combination
 			break;
 
-		case /^!=$/.test(globalScoreSelection):
-			if (!(globalScore2 != globalScore)) return; // reject this combination
+		case /^!=$/.test(combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 != combiGlobalScore)) return; // reject this combination
 			break;
 
-		case /^=>$/.test(globalScoreSelection):
-		case /^>=$/.test(globalScoreSelection):
-			if (!(globalScore2 >= globalScore)) return; // reject this combination
+		case /^=>$/.test(combiGlobalScoreSelection):
+		case /^>=$/.test(combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 >= combiGlobalScore)) return; // reject this combination
 			break;
 
-		case /^>$/.test(globalScoreSelection):
-			if (!(globalScore2 > globalScore)) return; // reject this combination
+		case /^>$/.test(combiGlobalScoreSelection):
+			if (!(combiGlobalScore2 > combiGlobalScore)) return; // reject this combination
 			break;
 	
 		default:
@@ -454,34 +467,34 @@ let rl = readline.createInterface({
 
 
 	switch (true) {
-		case (globalFailure == -1):
+		case (combiGlobalFailure == -1):
 			break; // No rule
 
-		case /^<$/.test(globalFailureSelection):
-			if (!(globalFailure2 < globalFailure)) return; // reject this combination
+		case /^<$/.test(combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 < combiGlobalFailure)) return; // reject this combination
 			break;
 
-		case /^=<$/.test(globalFailureSelection):
-		case /^<=$/.test(globalFailureSelection):
-			if (!(globalFailure2 <= globalFailure)) return; // reject this combination
+		case /^=<$/.test(combiGlobalFailureSelection):
+		case /^<=$/.test(combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 <= combiGlobalFailure)) return; // reject this combination
 			break;
 
-		case /^=$/.test(globalFailureSelection):
-		case (!globalFailureSelection):
-			if (!(globalFailure2 == globalFailure)) return; // reject this combination
+		case /^=$/.test(combiGlobalFailureSelection):
+		case (!combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 == combiGlobalFailure)) return; // reject this combination
 			break;
 
-		case /^!=$/.test(globalFailureSelection):
-			if (!(globalFailure2 != globalFailure)) return; // reject this combination
+		case /^!=$/.test(combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 != combiGlobalFailure)) return; // reject this combination
 			break;
 
-		case /^=>$/.test(globalFailureSelection):
-		case /^>=$/.test(globalFailureSelection):
-			if (!(globalFailure2 >= globalFailure)) return; // reject this combination
+		case /^=>$/.test(combiGlobalFailureSelection):
+		case /^>=$/.test(combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 >= combiGlobalFailure)) return; // reject this combination
 			break;
 
-		case /^>$/.test(globalFailureSelection):
-			if (!(globalFailure2 > globalFailure)) return; // reject this combination
+		case /^>$/.test(combiGlobalFailureSelection):
+			if (!(combiGlobalFailure2 > combiGlobalFailure)) return; // reject this combination
 			break;
 
 		default:
@@ -491,7 +504,7 @@ let rl = readline.createInterface({
 
 
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore2 + " - global failure: " + globalFailure2);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + combiGlobalScore2 + " - global failure: " + combiGlobalFailure2);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
