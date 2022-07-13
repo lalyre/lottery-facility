@@ -8,9 +8,9 @@
   },
   "types": "main.d.ts",
   "typesVersions": {
-    ">=4.6": {
+    ">=4.7": {
       "*": [
-        "ts4.6/*"
+        "ts4.7/*"
       ]
     }
   },
@@ -20,7 +20,7 @@
     "dist/**.txt",
     "dist/**.csv",
     "dist/**.js",
-    "ts4.6/"
+    "ts4.7/"
   ],
   "type": "mmmmmmmmmmmmmodule",
   "private": false,
@@ -38,7 +38,7 @@
     "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
     "lint:ts": "tslint -c tslint.json -p ./tsconfig.json \"src/**/*.ts\" -t stylish -e \"node_modules/**/*.ts\" -e \"**/*.d.ts\"",
     "tsc": "tsc",
-    "clean": "rimraf build dist lib coverage types ts4.6",
+    "clean": "rimraf build dist lib coverage types ts4.7",
     "prebuild": "npm run clean && npm run lint:ts",
     "start:dev": "webpack --mode=development --watch --progress",
     "build": "tsc",
