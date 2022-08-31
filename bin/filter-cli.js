@@ -12,27 +12,39 @@ const cli = meow(`
 	  $ filter
 	
 	Parameters
-	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected or not.
+	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Define the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(x)level(y)combi_score(z)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)combi_score(c)combi_failure(d)filter_score(e)filter_failure(f)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
-	  --printhits        Display the hit counts for each (filter, level, hits) trio in their declarative order.
-	  --printfullhits    Display the hit counts for each (filter, level, hits) trio in their declarative order, and the filter lines that are collided.
+	  --printhits        Display the hit counts/scores/failures for each filter in their declarative order.
+	  --printfullhits    Display the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
 	
 	Description
-	This script selects combinations from input file according to filters restrictions.
-	The selected combinations are printed, and also added to the current selection of input combinations if the <addition> mode is enabled.
+	This script selects combinations from an input file according to filters restrictions.
+	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command can be used in two forms
-	- "filename(_selection)weight(x)level(y)combi_score(z)"
-	- "filename(<filename>)weight(x)level(y)combi_score(z)"
-	
-	The filter instruction contains a filename, with the form "filename(XXX)", to read combinations from that will be confronted against the current tested combination of the input file.
-	You can use "_selection" value for <filter> filename value if you want to perform selection against the current ongoing selection of input combinations.
+	The filter command is in that form "filename(<filename>)weight(a)level(b)combi_score(c)combi_failure(d)filter_score(e)filter_failure(f)".
 	You can put as many <filter> commands as you need on the command line.
 	
+	* filename
+	The filter instruction contains a filename, with the form "filename(XXX)", to read combinations from that will be confronted against the current tested combination of the input file.
+	You can use "_selection" value for filename value if you want to perform filtering against the current ongoing selection of input combinations.
+	
+	* weight
+	With "weight(x)", the filter score is computed as the multiplication of the number of collisions (hit count) by the weight value.
+	If not specified, the default value is 1.
+
+	* level
+	With "level(<x)",  only filter lines with less than x collisions with the current input combination are considered.
+	With "level(<=x)", only filter lines with less than or equal x collisions with the current input combination are considered.
+	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
+	With "level(!=x)", only filter lines with not x collisions with the current input combination are considered.
+	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
+	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
+
+	* combi_score
 	With "combi_score(<x)",  only input combinations with score less than x are considered.
 	With "combi_score(<=x)", only input combinations with score less than or equal x are considered.
 	With "combi_score(=x)" or "combi_score(x)", only input combinations with score equal to x are considered.
@@ -41,14 +53,6 @@ const cli = meow(`
 	With "combi_score(>x)",  only input combinations with score greater than x are considered.
 	//With "combi_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
-	With "level(<x)",  only filter lines with less than x collisions with the current input combination are considered.
-	With "level(<=x)", only filter lines with less than or equal x collisions with the current input combination are considered.
-	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
-	With "level(!=x)", only filter lines with not x collisions with the current input combination are considered.
-	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
-	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
-	
-	With "weight(x)", the filter score is computed as the multiplication of number of collisions by the weight value.
 	
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
 	With --globalScore    "<=x", only combinations with global score less than or equal x are selected..

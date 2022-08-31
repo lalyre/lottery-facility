@@ -7,6 +7,7 @@ Roadmap
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
+* for filter CLI utility, add feature for loading a pre-selection file of combination, and add feature for saving the final selection of combinations.
 * manage all history databases of Euromillions draws for euromillions_draws.
 * manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
@@ -18,7 +19,7 @@ Roadmap
 * Enhancement of filter CLI utility with calculation of lottery winnings, and filtering on the amount of winnings.
 * Enhancement of combination CLI utility with multiple files output.
 * Enhancement of flash CLI utility with multiple files output.
-* Filter CLI selection mode based on count of passed/failed filters.
+* Filter CLI selection mode based on count of passed/failed filters, and on scoring of filters.
 * Adding difference CLI utility.
 * Removal of 99 balls limitation in DrawBox class.
 * Adding Combination class.
