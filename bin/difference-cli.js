@@ -17,7 +17,7 @@ const cli = meow(`
 	  
 	Description
 	This script takes an input file <file> containing one combination per line, combinations
-	written with items of the <global> alphabet, and returns the difference between the global alphabet and the combination.
+	written with items of the <global> alphabet, and returns the difference between the global alphabet and each combination.
 
 	The <global> alphabet can be declared either with <globalnum> or <globalfile> parameters.
 `, {

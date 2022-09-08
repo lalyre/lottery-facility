@@ -185,7 +185,7 @@ In the end, you need to apply your smart selection of numbers onto your tactical
 --originnum   Items of combinations separated by '|' or ' '.
 --originfile  File containing one item per line that are used in combinations of <file> file.
 --targetnum   Items of combinations separated by '|' or ' ', for the translation of combinations.
---targetfile  File containing one item per line used for the translation <file> file.
+--targetfile  File containing one item per line used for the translation of <file> file.
 ```
 
 **Description**<br>
@@ -253,7 +253,7 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 **Description**<br>
 
 This script takes an input file `file` containing one combination per line, combinations written with items of the `global` alphabet,
-and returns the difference between the global alphabet and the combination.<br>
+and returns the difference between the global alphabet and each combination.<br>
 The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
 **Exemple**<br>
