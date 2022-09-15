@@ -50,14 +50,21 @@ export class Combination {
 	 */
 	public static union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
 		if (!arr1 && !arr2) return [];
-		if (!arr1) return arr2;
-		if (!arr2) return arr1;
+		
+		if (duplicate) {
+			if (!arr1) return arr2;
+			if (!arr2) return arr1;
+		} else {
+			if (!arr1) return arr2.filter((item, pos) => arr2.indexOf(item) === pos);
+			if (!arr2) return arr1.filter((item, pos) => arr1.indexOf(item) === pos);
+		}
+
 		const union1 = [...arr1, ...arr2];
 		if (duplicate) {
 			return union1;
+		} else {
+			return union1.filter((item, pos) => union1.indexOf(item) === pos);
 		}
-		const union2 = union1.filter((item, pos) => union1.indexOf(item) === pos);
-		return union2;
 	}
 
 
