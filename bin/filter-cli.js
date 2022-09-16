@@ -29,7 +29,7 @@ const cli = meow(`
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
-	The filter instruction contains a filename, with the form "filename(XXX)", to read combinations from that will be confronted against the current tested combination of the input file.
+	The filter instruction contains a filename to read combinations from, with the form "filename(XXX)", that will be confronted against the current tested combination of the input file.
 	You can use "_selection" value for filename value if you want to perform filtering against the current ongoing selection of input combinations.
 	
 	* weight
@@ -53,7 +53,16 @@ const cli = meow(`
 	With "combi_score(>x)",  only input combinations with score greater than x are considered.
 	//With "combi_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
-	
+	* filter_score
+	With "filter_score(<x)",  only input combinations with score less than x are considered.
+	With "filter_score(<=x)", only input combinations with score less than or equal x are considered.
+	With "filter_score(=x)" or "filter_score(x)", only input combinations with score equal to x are considered.
+	With "filter_score(!=x)", only input combinations with score different from x are considered.
+	With "filter_score(>=x)", only input combinations with score greater than or equal to x considered.
+	With "filter_score(>x)",  only input combinations with score greater than x are considered.
+	//With "filter_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+
+	* globalScore
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
 	With --globalScore    "<=x", only combinations with global score less than or equal x are selected..
 	With --globalScore    "=x",  only combinations with global score equal to x are selected.
@@ -61,6 +70,7 @@ const cli = meow(`
 	With --globalScore    ">=x", only combinations with global score greater than or equal to x are selected.
 	With --globalScore    ">x",  only combinations with global score greater than x are selected.
 	
+	* globalFailure
 	With --globalFailure  "<x",  only combinations with less than x failed filters are selected.
 	With --globalFailure  "<=x", only combinations with less than or equal x failed filters are selected..
 	With --globalFailure  "=x",  only combinations with x failed filters are selected.
@@ -170,13 +180,20 @@ switch (true) {
 }
 
 
+// filename(<filename>)weight(a)level(b)combi_score(c)combi_failure(d)filter_score(e)filter_failure(f)
 let filterSelection = cli.flags.filter;
 let filename = [];
+let weight = [];
 let levelSelection = [];
 let level = [];
-let weight = [];
 let combiScoreSelection = [];
 let combiScore = [];
+let combiScoreFailure = [];
+let combiFailure = [];
+let filterScoreSelection = [];
+let filterScore = [];
+let filterScoreFailure = [];
+let filterFailure = [];
 
 
 for (let i = 0; i < filterSelection.length; i++) {
@@ -206,6 +223,20 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
+		case /weight\((\d*)\)*/.test(filterSelection[i].trim()):
+			let match = /weight\((\d*)\)*/.exec(filterSelection[i]);
+			weight.push(match[1]);
+			break;
+
+		default:
+			weight.push(1);		// Default value is -1.
+			//console.error(`No <weight> (#${i+1}) value.`);
+			//process.exit(1);
+			break;
+	}
+
+
+	switch (true) {
 		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
 			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
 			levelSelection.push(match[1])
@@ -214,19 +245,6 @@ for (let i = 0; i < filterSelection.length; i++) {
 		
 		default:
 			console.error(`No <level> (#${i+1}) value.`);
-			process.exit(1);
-			break;
-	}
-
-
-	switch (true) {
-		case /weight\((\d*)\)*/.test(filterSelection[i].trim()):
-			let match = /weight\((\d*)\)*/.exec(filterSelection[i]);
-			weight.push(match[1])
-			break;
-		
-		default:
-			console.error(`No <weight> (#${i+1}) value.`);
 			process.exit(1);
 			break;
 	}
