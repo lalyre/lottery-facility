@@ -52,6 +52,15 @@ const cli = meow(`
 	With "combi_score(>=x)", only input combinations with score greater than or equal to x considered.
 	With "combi_score(>x)",  only input combinations with score greater than x are considered.
 	//With "combi_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+	
+	* combi_failure
+	With "combi_failure(<x)",  only input combinations with score less than x are considered.
+	With "combi_failure(<=x)", only input combinations with score less than or equal x are considered.
+	With "combi_failure(=x)" or "combi_failure(x)", only input combinations with score equal to x are considered.
+	With "combi_failure(!=x)", only input combinations with score different from x are considered.
+	With "combi_failure(>=x)", only input combinations with score greater than or equal to x considered.
+	With "combi_failure(>x)",  only input combinations with score greater than x are considered.
+	//With "combi_failure(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
 	* filter_score
 	With "filter_score(<x)",  only input combinations with score less than x are considered.
@@ -61,6 +70,15 @@ const cli = meow(`
 	With "filter_score(>=x)", only input combinations with score greater than or equal to x considered.
 	With "filter_score(>x)",  only input combinations with score greater than x are considered.
 	//With "filter_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+
+	* filter_failure
+	With "filter_failure(<x)",  only input combinations with score less than x are considered.
+	With "filter_failure(<=x)", only input combinations with score less than or equal x are considered.
+	With "filter_failure(=x)" or "filter_failure(x)", only input combinations with score equal to x are considered.
+	With "filter_failure(!=x)", only input combinations with score different from x are considered.
+	With "filter_failure(>=x)", only input combinations with score greater than or equal to x considered.
+	With "filter_failure(>x)",  only input combinations with score greater than x are considered.
+	//With "filter_failure(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
 	* globalScore
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
