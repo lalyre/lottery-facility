@@ -368,7 +368,7 @@ npm publish --access public
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
 ## Contact
-The project's website is located at https://github.com/lalyre/lottery-facility.
+The project's website is located at https://github.com/lalyre/lottery-facility.\
 Author: Claude Lalyre (claude.lalyre@gmail.com)
 
 
