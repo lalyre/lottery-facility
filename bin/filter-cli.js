@@ -201,7 +201,7 @@ switch (true) {
 
 
 // filename(<filename>)weight(a)level(b)combi_score(c)combi_failure(d)filter_score(e)filter_failure(f)
-let filterSelection = cli.flags.filter;
+let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
 let testLevelSelection = [];
@@ -216,9 +216,9 @@ let filterScoreFailure = [];
 let filterFailure = [];
 
 
-for (let i = 0; i < filterSelection.length; i++) {
+for (let i = 0; i < filterCommand.length; i++) {
 	switch (true) {
-		case /filename\(_selection\)*/.test(filterSelection[i].trim()):
+		case /filename\(_selection\)*/.test(filterCommand[i].trim()):
 			if (!additionMode) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
@@ -226,8 +226,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 			filename.push('_selection')
 			break;
 		
-		case /filename\(([\w|\.]*)\)*/.test(filterSelection[i].trim()):
-			let match = /filename\(([\w|\.]*)\)*/.exec(filterSelection[i]);
+		case /filename\(([\w|\.]*)\)*/.test(filterCommand[i].trim()):
+			let match = /filename\(([\w|\.]*)\)*/.exec(filterCommand[i]);
 			filename.push(match[1]);
 			if (!fs.existsSync(filename[i].trim())) {
 				console.error(`File ${filename[i]} does not exist.`);
@@ -243,8 +243,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /weight\((\d*)\)*/.test(filterSelection[i].trim()):
-			let match = /weight\((\d*)\)*/.exec(filterSelection[i]);
+		case /weight\((\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /weight\((\d*)\)*/.exec(filterCommand[i]);
 			weight.push(match[1]);
 			break;
 
@@ -255,8 +255,8 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
 			testLevelSelection.push(match[1])
 			testLevel.push(match[2]);
 			break;
@@ -269,13 +269,13 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 	switch (true) {
-		case /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterSelection[i].trim()):
-			let match = /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterSelection[i]);
+		case /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /combi_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
 			combiScoreSelection.push(match[1])
 			combiScore.push(match[2]);
 			break;
 
-		/*case /combi_score\(\*\)/.test(filterSelection[i].trim()):
+		/*case /combi_score\(\*\)/.test(filterCommand[i].trim()):
 			combiScoreSelection.push('*')
 			combiScore.push('*');
 			break;*/
@@ -288,7 +288,7 @@ for (let i = 0; i < filterSelection.length; i++) {
 
 
 // Test all combinations of input file
-let selected_numbers = [];
+let selectedCombinations = [];
 let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
@@ -300,13 +300,13 @@ let rl = readline.createInterface({
 	if (!line) {
 		return;
 	}
-	let input_line_numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
-	if (input_line_numbers[0] == 0) return;
-	if (input_line_numbers.join("") == '') return;
+	let testedCombination = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+	if (testedCombination[0] == 0) return;
+	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
-	//console.log(input_line_numbers);
+	//console.log(testedCombination);
 
-	if (selected_numbers.length >= SELECTION_LIMIT) {
+	if (selectedCombinations.length >= SELECTION_LIMIT) {
 		console.error("Limit of selection is reached !");
 		process.exit(1);
 	}
@@ -324,12 +324,12 @@ let rl = readline.createInterface({
 
 	let hits_count_string = '';
 	let hits_filters_string = '';
-	for (let i = 0; i < filterSelection.length; i++)
+	for (let i = 0; i < filterCommand.length; i++)
 	{
 		let filter_tested_numbers = [];
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
-				filter_tested_numbers = selected_numbers;
+				filter_tested_numbers = selectedCombinations;
 				break;
 			
 			default:
@@ -348,7 +348,7 @@ let rl = readline.createInterface({
 		let hitsCount = 0;
 		let limitHitsCount = 0;
 		for (let j = 0; j < filter_tested_numbers.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(input_line_numbers, filter_tested_numbers[j]);
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, filter_tested_numbers[j]);
 
 
 			switch (true) {
@@ -567,16 +567,16 @@ let rl = readline.createInterface({
 
 
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(input_line_numbers.sort()) + " - global score: " + globalScore + " - global failure: " + globalFailure);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - global score: " + globalScore + " - global failure: " + globalFailure);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
-		console.log(lotteryFacility.Combination.toString(input_line_numbers.sort()));
+		console.log(lotteryFacility.Combination.toString(testedCombination.sort()));
 	}
 
 
 	if (additionMode) {
-		selected_numbers.push(input_line_numbers.sort()); additions++;
+		selectedCombinations.push(testedCombination.sort()); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}
