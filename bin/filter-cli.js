@@ -282,7 +282,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 		/*case /combi_score\(\*\)/.test(filterCommand[i].trim()):
 			testCombiScoreSelection.push('*')
-			testCombiScore.push('*');
+			testCombiScore.push(-1);
 			break;*/
 
 		default:
@@ -299,11 +299,6 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFailureSelection.push(match[1])
 			testCombiFailure.push(match[2]);
 			break;
-
-		/*case /combi_failure\(\*\)/.test(filterCommand[i].trim()):
-			testCombiFailureSelection.push('*')
-			testCombiFailure.push('*');
-			break;*/
 
 		default:
 			testCombiFailureSelection.push(null);
@@ -346,7 +341,6 @@ let rl = readline.createInterface({
 	let hits_filters_string = '';
 	for (let i = 0; i < filterCommand.length; i++)
 	{
-
 		// Get current filter combinations
 		let currentFilterCombinations = [];
 		switch (true) {
@@ -511,10 +505,6 @@ let rl = readline.createInterface({
 				if (!(combiFailure > testCombiFailure[i])) return; // reject this combination
 				break;
 
-			/*case /^\*$/.test(testCombiFailureSelection[i]):
-				if (!(hitsCount == currentFilterCombinations.length)) return; // reject this combination
-				break;*/
-
 			default:
 				return; // reject this combination
 				break;
@@ -636,7 +626,7 @@ let rl = readline.createInterface({
 
 	// Display output
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - global score: " + globalScore + " - global failure: " + globalFailure);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - global_score: " + globalScore + " - global_failure: " + globalFailure);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
