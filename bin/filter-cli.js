@@ -158,7 +158,7 @@ if (!fs.existsSync(infile)) {
 
 let testGlobalScoreSelection = null;
 let testGlobalScore = -1;
-let globalScore = -1;
+let globalScore = 0;
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case cli.flags.globalScore === null:
@@ -180,7 +180,7 @@ switch (true) {
 
 let testGlobalFailureSelection = null;
 let testGlobalFailure = -1;
-let globalFailure = -1;
+let globalFailure = 0;
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 switch (true) {
 	case cli.flags.globalFailure === null:
@@ -210,9 +210,11 @@ let testCombiScoreSelection = [];
 let testCombiScore = [];
 let testCombiScoreFailure = [];
 let testCombiFailure = [];
-let filterScoreSelection = [];
+let testFilterScoreSelection = [];
+let testFilterScore = [];
 let filterScore = [];
-let filterScoreFailure = [];
+let testFilterScoreFailure = [];
+let testFilterFailure = [];
 let filterFailure = [];
 
 
@@ -334,6 +336,11 @@ let rl = readline.createInterface({
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
 	//console.log(testedCombination);
+	
+	
+	// Init global filter track record
+	globalScore = 0;
+	globalFailure = 0;
 
 
 	// Loop on all filter commands
@@ -341,6 +348,11 @@ let rl = readline.createInterface({
 	let hits_filters_string = '';
 	for (let i = 0; i < filterCommand.length; i++)
 	{
+		// Init current filter track record
+		filterScore[i] = 0;
+		filterFailure[i] = 0;
+		
+		
 		// Get current filter combinations
 		let currentFilterCombinations = [];
 		switch (true) {
@@ -435,91 +447,91 @@ let rl = readline.createInterface({
 
 
 		// Combi scope
+		let selectScoreScope = true;
 		switch (true) {
 			case (testCombiScoreSelection[i] == null):
 				break; // No rule
 
 			case /^<$/.test(testCombiScoreSelection[i]):
-				if (!(combiScore < testCombiScore[i])) return; // reject this combination
+				if (!(combiScore < testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			case /^=<$/.test(testCombiScoreSelection[i]):
 			case /^<=$/.test(testCombiScoreSelection[i]):
-				if (!(combiScore <= testCombiScore[i])) return; // reject this combination
+				if (!(combiScore <= testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			case /^=$/.test(testCombiScoreSelection[i]):
 			case (!combiScoreSelection[i]):
-				if (!(combiScore == testCombiScore[i])) return; // reject this combination
+				if (!(combiScore == testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			case /^!=$/.test(testCombiScoreSelection[i]):
-				if (!(combiScore != testCombiScore[i])) return; // reject this combination
+				if (!(combiScore != testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			case /^=>$/.test(testCombiScoreSelection[i]):
 			case /^>=$/.test(testCombiScoreSelection[i]):
-				if (!(combiScore >= testCombiScore[i])) return; // reject this combination
+				if (!(combiScore >= testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			case /^>$/.test(testCombiScoreSelection[i]):
-				if (!(combiScore > testCombiScore[i])) return; // reject this combination
+				if (!(combiScore > testCombiScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
 			/*case /^\*$/.test(testCombiScoreSelection[i]):
-				if (!(hitsCount == currentFilterCombinations.length)) return; // reject this combination
+				if (!(hitsCount == currentFilterCombinations.length)) selectScoreScope = false; // reject this combination
 				break;*/
 
 			default:
-				return; // reject this combination
+				selectScoreScope = false; // reject this combination
 				break;
 		}
+		
+		let selectFailureScope = true;
 		switch (true) {
 			case (testCombiFailureSelection[i] == null):
 				break; // No rule
 
 			case /^<$/.test(testCombiFailureSelection[i]):
-				if (!(combiFailure < testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure < testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			case /^=<$/.test(testCombiFailureSelection[i]):
 			case /^<=$/.test(testCombiFailureSelection[i]):
-				if (!(combiFailure <= testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure <= testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			case /^=$/.test(testCombiFailureSelection[i]):
 			case (!combiScoreSelection[i]):
-				if (!(combiFailure == testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure == testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			case /^!=$/.test(testCombiFailureSelection[i]):
-				if (!(combiFailure != testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure != testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			case /^=>$/.test(testCombiFailureSelection[i]):
 			case /^>=$/.test(testCombiFailureSelection[i]):
-				if (!(combiFailure >= testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure >= testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			case /^>$/.test(testCombiFailureSelection[i]):
-				if (!(combiFailure > testCombiFailure[i])) return; // reject this combination
+				if (!(combiFailure > testCombiFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
 			default:
-				return; // reject this combination
+				selectFailureScope = false; // reject this combination
 				break;
 		}
 
 
-
-
-
-
-
-
-		
-		/////if (selectCombination) globalScore = (globalScore == -1) ? combiScore2 : globalScore + combiScore2;
-		/////if (combiScore2 < 0) globalFailure = (globalFailure == -1) ? 1 : globalFailure + 1;
+		// Update current filter track record
+		if (selectScoreScope && selectFailureScope) {
+			filterScore[i] += combiScore;
+		} else {
+			filterFailure[i] += combiFailure;
+		}
 	}
 
 
@@ -527,7 +539,9 @@ let rl = readline.createInterface({
 
 
 
-
+	// TODO
+	//globalScore = nextGlobalScore;
+	//globalFailure = nextGlobalFailure;
 
 
 
@@ -613,9 +627,7 @@ let rl = readline.createInterface({
 	}
 
 
-	// TODO
-	//globalScore = nextGlobalScore;
-	//globalFailure = nextGlobalFailure;
+
 
 
 
