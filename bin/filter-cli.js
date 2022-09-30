@@ -409,16 +409,15 @@ let rl = readline.createInterface({
 				default:
 					break;
 			}
-		}		
+		}
+		if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {
+			hitsCount = 1;
+		}
 		if (hitsCount <= 0) {
 			combiFilterScore[i] = 0;
-			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
 		} else {
 			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
-			combiFilterFailure[i] = 0;
 		}
-		hits_filters_string += '\n';
-		hits_count_string += ` - [hits: ${hitsCount} - combi_filter_score: ${combiFilterScore[i]} - combi_filter_failure: ${combiFilterFailure[i]}]`;
 
 
 		// Combi filter scope
@@ -462,7 +461,13 @@ let rl = readline.createInterface({
 				selectScoreScope = false; // reject this combination
 				break;
 		}
-		
+		if (!selectScoreScope) {
+			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
+		}
+		hits_filters_string += '\n';
+		hits_count_string += ` - [hits: ${hitsCount} - combi_filter_score: ${combiFilterScore[i]} - combi_filter_failure: ${combiFilterFailure[i]}]`;
+
+
 		let selectFailureScope = true;
 		switch (true) {
 			case (testCombiFilterScoreFailure[i] == null):
@@ -607,7 +612,7 @@ let rl = readline.createInterface({
 	if (additionMode) {
 
 		// TODO CL
-		console.log("adding " + testedCombination);
+		//console.log("adding " + testedCombination);
 
 
 		selectedCombinations.push(testedCombination.sort()); additions++;
