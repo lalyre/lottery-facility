@@ -141,3 +141,35 @@ filter --infile 20_6.txt --filter game.txt --level ">=4" --hits "0"
 filter --infile 20_7.txt --filter game.txt --level ">=4" --hits "0"
 filter --infile 20_8.txt --filter game.txt --level ">=4" --hits "0"
 
+==============================
+
+filter --infile WINNING_NUMBERS.txt --filter "filename(GAME1.txt)weight(1)level(>=0)" --printfullhits
+
+filter --infile GAME1.txt --filter "filename(WINNING_NUMBERS.txt)weight(1)level(>=0)" --printfullhits
+
+
+==============================
+
+
+combination --total 20 --size 10 --file KENOFR_70.txt > 20_10.txt
+kenoFR_draws --num 1 > last_draws.txt
+
+
+
+
+
+filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(<0)" --printfullhits
+
+
+
+filter --infile WINNING_NUMBERS.txt --filter "filename(GAME1.txt)weight(1)level(>=0)" --printfullhits
+
+filter --infile GAME1.txt --filter "filename(WINNING_NUMBERS.txt)weight(1)level(>=0)" --printfullhits
+
+filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(>=1)combi_filter_score()"
+
+
+
+
+
+

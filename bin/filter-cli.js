@@ -437,7 +437,7 @@ let rl = readline.createInterface({
 				break;
 
 			case /^=$/.test(testCombiFilterScoreSelection[i]):
-			case (!combiScoreSelection[i]):
+			case (!testCombiFilterScoreSelection[i]):
 				if (!(combiFilterScore[i] == testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
@@ -478,7 +478,7 @@ let rl = readline.createInterface({
 				break;
 
 			case /^=$/.test(testCombiFilterScoreFailure[i]):
-			case (!combiScoreSelection[i]):
+			case (!testCombiFilterScoreFailure[i]):
 				if (!(combiFilterFailure[i] == testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
 				break;
 
@@ -605,6 +605,11 @@ let rl = readline.createInterface({
 
 	// Add the tested combination to the ongoing selection
 	if (additionMode) {
+
+		// TODO CL
+		console.log("adding " + testedCombination);
+
+
 		selectedCombinations.push(testedCombination.sort()); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
