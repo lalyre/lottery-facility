@@ -15,7 +15,7 @@ const cli = meow(`
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Define the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)combi_filter_score(c)combi_filter_failure(d)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)failure(d)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts/scores/failures for each filter in their declarative order.
@@ -25,7 +25,7 @@ const cli = meow(`
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command is in that form "filename(<filename>)weight(a)level(b)combi_filter_score(c)combi_filter_failure(d)".
+	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)failure(d)".
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
@@ -44,23 +44,23 @@ const cli = meow(`
 	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
 
-	* combi_filter_score
-	With "combi_filter_score(<x)",  only input combinations with score less than x are considered.
-	With "combi_filter_score(<=x)", only input combinations with score less than or equal x are considered.
-	With "combi_filter_score(=x)" or "combi_filter_score(x)", only input combinations with score equal to x are considered.
-	With "combi_filter_score(!=x)", only input combinations with score different from x are considered.
-	With "combi_filter_score(>=x)", only input combinations with score greater than or equal to x considered.
-	With "combi_filter_score(>x)",  only input combinations with score greater than x are considered.
-	//With "combi_filter_score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+	* score
+	With "score(<x)",  only input combinations with score less than x are considered.
+	With "score(<=x)", only input combinations with score less than or equal x are considered.
+	With "score(=x)" or "score(x)", only input combinations with score equal to x are considered.
+	With "score(!=x)", only input combinations with score different from x are considered.
+	With "score(>=x)", only input combinations with score greater than or equal to x considered.
+	With "score(>x)",  only input combinations with score greater than x are considered.
+	//With "score(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
-	* combi_filter_failure
-	With "combi_filter_failure(<x)",  only input combinations with score less than x are considered.
-	With "combi_filter_failure(<=x)", only input combinations with score less than or equal x are considered.
-	With "combi_filter_failure(=x)" or "combi_filter_failure(x)", only input combinations with score equal to x are considered.
-	With "combi_filter_failure(!=x)", only input combinations with score different from x are considered.
-	With "combi_filter_failure(>=x)", only input combinations with score greater than or equal to x considered.
-	With "combi_filter_failure(>x)",  only input combinations with score greater than x are considered.
-	//With "combi_filter_failure(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
+	* failure
+	With "failure(<x)",  only input combinations with score less than x are considered.
+	With "failure(<=x)", only input combinations with score less than or equal x are considered.
+	With "failure(=x)" or "failure(x)", only input combinations with score equal to x are considered.
+	With "failure(!=x)", only input combinations with score different from x are considered.
+	With "failure(>=x)", only input combinations with score greater than or equal to x considered.
+	With "failure(>x)",  only input combinations with score greater than x are considered.
+	//With "failure(*)",   only input combinations that matches with all filter lines are selected and printed to the ouput.
 
 	* globalScore
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
@@ -180,7 +180,7 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)combi_filter_score(c)combi_filter_failure(d)
+// filename(<filename>)weight(a)level(b)score(c)failure(d)
 let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
@@ -249,15 +249,15 @@ for (let i = 0; i < filterCommand.length; i++) {
 	}
 
 
-	// Parsing COMBI_FILTER_SCORE
+	// Parsing SCORE
 	switch (true) {
-		case /combi_filter_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /combi_filter_score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
 			testCombiFilterScoreSelection.push(match[1]);
 			testCombiFilterScore.push(match[2]);
 			break;
 
-		/*case /combi_filter_score\(\*\)/.test(filterCommand[i].trim()):
+		/*case /score\(\*\)/.test(filterCommand[i].trim()):
 			testCombiFilterScoreSelection.push('*');
 			testCombiFilterScore.push(-1);
 			break;*/
@@ -269,10 +269,10 @@ for (let i = 0; i < filterCommand.length; i++) {
 	}
 
 
-	// Parsing COMBI_FILTER_FAILURE
+	// Parsing FAILURE
 	switch (true) {
-		case /combi_filter_failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /combi_filter_failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
 			testCombiFilterScoreFailure.push(match[1]);
 			testCombiFilterFailure.push(match[2]);
 			break;
@@ -328,6 +328,19 @@ let rl = readline.createInterface({
 		// Init tested combination current filter score
 		combiFilterScore[i] = 0;
 		combiFilterFailure[i] = 0;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		// Get current filter combinations
@@ -464,9 +477,6 @@ let rl = readline.createInterface({
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
 		}
-		hits_filters_string += '\n';
-		hits_count_string += ` - [hits: ${hitsCount} - combi_filter_score: ${combiFilterScore[i]} - combi_filter_failure: ${combiFilterFailure[i]}]`;
-
 
 		let selectFailureScope = true;
 		switch (true) {
@@ -504,6 +514,12 @@ let rl = readline.createInterface({
 				selectFailureScope = false; // reject this combination
 				break;
 		}
+
+
+		// Output
+		hits_filters_string += '\n';
+		hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
+
 
 		// Check tested combination
 		if (!selectScoreScope || !selectFailureScope) {
