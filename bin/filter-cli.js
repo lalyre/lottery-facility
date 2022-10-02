@@ -15,7 +15,7 @@ const cli = meow(`
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Define the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)failure(d)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts/scores/failures for each filter in their declarative order.
@@ -25,7 +25,7 @@ const cli = meow(`
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)failure(d)".
+	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)".
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
@@ -43,6 +43,14 @@ const cli = meow(`
 	With "level(!=x)", only filter lines with not x collisions with the current input combination are considered.
 	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
+
+	* length
+	With "length(<x)",  only input combinations with less than x numbers are considered.
+	With "length(<=x)", only input combinations with less than or equal x numbers are considered.
+	With "length(=x)" or "level(x)", only input combinations with x numbers are considered.
+	With "length(!=x)", only input combinations with not x numbers are considered.
+	With "length(>=x)", only input combinations with more than or equal x numbers are considered.
+	With "length(>x)",  only input combinations with more than x numbers are considered.
 
 	* score
 	With "score(<x)",  only input combinations with score less than x are considered.
@@ -180,12 +188,14 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)failure(d)
+// filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)
 let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
 let testLevelSelection = [];
 let testLevel = [];
+let testLengthSelection = [];
+let testLength = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
 let testCombiFilterScoreFailure = [];
@@ -230,11 +240,26 @@ for (let i = 0; i < filterCommand.length; i++) {
 			break;
 		
 		default:
-			console.error(`No <level> (#${i+1}) value.`);
-			process.exit(1);
+			testLevelSelection.push(null)
+			testLevel.push(-1);
 			break;
 	}
 
+
+	// Parsing LENGTH
+	switch (true) {
+		case /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+			testLengthSelection.push(match[1])
+			testLength.push(match[2]);
+			break;
+		
+		default:
+			testLengthSelection.push(null)
+			testLength.push(-1);
+			break;
+	}
+	
 
 	// Parsing WEIGHT
 	switch (true) {
@@ -325,22 +350,62 @@ let rl = readline.createInterface({
 	let hits_filters_string = '';
 	for (let i = 0; i < filterCommand.length; i++)
 	{
+		let hitsCount = 0;
+		let limitHitsCount = 0;
+		
+		
 		// Init tested combination current filter score
 		combiFilterScore[i] = 0;
 		combiFilterFailure[i] = 0;
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		// Combi length scope
+		let selectLengthScope = true;
+		switch (true) {
+			case (testLengthSelection[i] == null):
+				break; // No rule
+
+			case /^<$/.test(testLengthSelection[i]):
+				if (!(testedCombination.length < testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			case /^=<$/.test(testLengthSelection[i]):
+			case /^<=$/.test(testLengthSelection[i]):
+				if (!(testedCombination.length <= testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			case /^=$/.test(testLengthSelection[i]):
+			case (!testLengthSelection[i]):
+				if (!(testedCombination.length == testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			case /^!=$/.test(testLengthSelection[i]):
+				if (!(testedCombination.length != testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			case /^=>$/.test(testLengthSelection[i]):
+			case /^>=$/.test(testLengthSelection[i]):
+				if (!(testedCombination.length >= testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			case /^>$/.test(testLengthSelection[i]):
+				if (!(testedCombination.length > testLength[i])) selectLengthScope = false; // reject this combination
+				break;
+
+			/*case /^\*$/.test(testLengthSelection[i]):
+				if (!(hitsCount == currentFilterCombinations.length)) selectLengthScope = false; // reject this combination
+				break;*/
+
+			default:
+				selectLengthScope = false; // reject this combination
+				break;
+		}
+		if (!selectLengthScope) {
+			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
+			hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
+			
+			continue;		// next filter command
+		}
 		
 		
 		// Get current filter combinations
@@ -363,77 +428,73 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
-		let hitsCount = 0;
-		let limitHitsCount = 0;
-		for (let j = 0; j < currentFilterCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
+		if (testLevelSelection[i] != null) {
+			for (let j = 0; j < currentFilterCombinations.length; j++) {
+				let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
 
-			switch (true) {
-				case /^<$/.test(testLevelSelection[i]):
-					if (nb_collisions < testLevel[i]) {
-						hitsCount++;
-						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
-					}
-					break;
+				switch (true) {
+					case /^<$/.test(testLevelSelection[i]):
+						if (nb_collisions < testLevel[i]) {
+							hitsCount++;
+							if (nb_collisions == testLevel[i]-1) limitHitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						}
+						break;
 
-				case /^=<$/.test(testLevelSelection[i]):
-				case /^<=$/.test(testLevelSelection[i]):
-					if (nb_collisions <= testLevel[i]) {
-						hitsCount++;
-						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-					}
-					break;
+					case /^=<$/.test(testLevelSelection[i]):
+					case /^<=$/.test(testLevelSelection[i]):
+						if (nb_collisions <= testLevel[i]) {
+							hitsCount++;
+							if (nb_collisions == testLevel[i]) limitHitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						}
+						break;
 
-				case /^=$/.test(testLevelSelection[i]):
-				case (!testLevelSelection[i]):
-					if (nb_collisions == testLevel[i]) {
-						hitsCount++;
-						limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-					}
-					break;
+					case /^=$/.test(testLevelSelection[i]):
+					case (!testLevelSelection[i]):
+						if (nb_collisions == testLevel[i]) {
+							hitsCount++;
+							limitHitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						}
+						break;
 
-				case /^!=$/.test(testLevelSelection[i]):
-					if (nb_collisions != testLevel[i]) {
-						hitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-					}
-					break;
+					case /^!=$/.test(testLevelSelection[i]):
+						if (nb_collisions != testLevel[i]) {
+							hitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						}
+						break;
 
-				case /^=>$/.test(testLevelSelection[i]):
-				case /^>=$/.test(testLevelSelection[i]):
-					if (nb_collisions >= testLevel[i]) {
-						hitsCount++;
-						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-					}
-					break;
+					case /^=>$/.test(testLevelSelection[i]):
+					case /^>=$/.test(testLevelSelection[i]):
+						if (nb_collisions >= testLevel[i]) {
+							hitsCount++;
+							if (nb_collisions == testLevel[i]) limitHitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						}
+						break;
 
-				case /^>$/.test(testLevelSelection[i]):
-					if (nb_collisions > testLevel[i]) {
-						hitsCount++;
-						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
-					}
-					break;
+					case /^>$/.test(testLevelSelection[i]):
+						if (nb_collisions > testLevel[i]) {
+							hitsCount++;
+							if (nb_collisions == testLevel[i]+1) limitHitsCount++;
+							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						}
+						break;
 
-				default:
-					break;
+					default:
+						break;
+				}
+			}
+			if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {		// Select the tested combination by default
+				hitsCount = 1;
 			}
 		}
-		if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {
-			hitsCount = 1;
-		}
-		if (hitsCount <= 0) {
-			combiFilterScore[i] = 0;
-		} else {
-			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
-		}
+		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 
 
-		// Combi filter scope
+		// Combi score scope
 		let selectScoreScope = true;
 		switch (true) {
 			case (testCombiFilterScoreSelection[i] == null):
@@ -523,7 +584,7 @@ let rl = readline.createInterface({
 
 		// Check tested combination
 		if (!selectScoreScope || !selectFailureScope) {
-			return;		// reject this combination
+			continue;		// next filter command
 		}
 	}
 
