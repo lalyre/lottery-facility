@@ -427,7 +427,7 @@ let rl = readline.createInterface({
 			combiFilterScore[i] = weight[i]; combiGlobalScore += combiFilterScore[i];
 			hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
 
-			break;		// next tested combination
+			continue;		// next filter command
 		}
 
 
