@@ -167,9 +167,13 @@ filter --infile WINNING_NUMBERS.txt --filter "filename(GAME1.txt)weight(1)level(
 
 filter --infile GAME1.txt --filter "filename(WINNING_NUMBERS.txt)weight(1)level(>=0)" --printfullhits
 
-filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(>=1)combi_filter_score(=0)" --printfullhits
+filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(>=1)score(=0)" --globalFailure "=0" --printfullhits
 
-filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(=0)combi_filter_score(>=1)" --printfullhits
+
+
+filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(=0)score(>=1)" --globalScore   ">0" --printfullhits
+filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(=0)score(>=1)" --globalFailure "=0" --printfullhits
+
 
 
 
