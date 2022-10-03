@@ -59,7 +59,7 @@ const cli = meow(`
 	With "score(!=x)", only input combinations with score different from x are considered.
 	With "score(>=x)", only input combinations with score greater than or equal to x considered.
 	With "score(>x)",  only input combinations with score greater than x are considered.
-	With "score(*)",   only input combinations that matches with all filter lines are are considered.
+	With "score(*)",   only input combinations that matches with all filter lines are considered.
 
 	* failure
 	With "failure(<x)",  only input combinations with score less than x are considered.
@@ -309,6 +309,19 @@ for (let i = 0; i < filterCommand.length; i++) {
 }
 
 
+const printOutput = function (inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string) {
+	// Display output
+	if (cli.flags.printhits || cli.flags.printfullhits) {
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
+		console.log(hits_count_string);
+		////////console.log('\n');
+		if (cli.flags.printfullhits) console.log(hits_filters_string);
+	} else {
+		console.log(lotteryFacility.Combination.toString(testedCombination.sort()));
+	}
+}
+
+
 // Test all combinations of input file
 let selectedCombinations = [];
 let additions = 0;
@@ -424,10 +437,9 @@ let rl = readline.createInterface({
 
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {		// Select the tested combination by default in that case
-			combiFilterScore[i] = weight[i]; combiGlobalScore += combiFilterScore[i];
-			hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
-
-			continue;		// next filter command
+			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+			selectedCombinations.push(testedCombination.sort()); additions++;
+			return;			// next tested combination
 		}
 
 
@@ -680,24 +692,9 @@ let rl = readline.createInterface({
 	globalFailure += combiGlobalFailure;
 
 
-	// Display output
-	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
-		console.log(hits_count_string);
-		console.log('\n');
-		if (cli.flags.printfullhits) console.log(hits_filters_string);
-	} else {
-		console.log(lotteryFacility.Combination.toString(testedCombination.sort()));
-	}
-
-
 	// Add the tested combination to the ongoing selection
+	printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-
-		// TODO CL
-		//console.log("adding " + testedCombination);
-
-
 		selectedCombinations.push(testedCombination.sort()); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
