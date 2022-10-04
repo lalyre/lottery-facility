@@ -15,7 +15,7 @@ const cli = meow(`
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Define the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)").
 	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Display the hit counts/scores/failures for each filter in their declarative order.
@@ -25,7 +25,7 @@ const cli = meow(`
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)".
+	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)".
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
@@ -60,14 +60,6 @@ const cli = meow(`
 	With "score(>=x)", only input combinations with score greater than or equal to x considered.
 	With "score(>x)",  only input combinations with score greater than x are considered.
 	With "score(*)",   only input combinations that matches with all filter lines are considered.
-
-	* failure
-	With "failure(<x)",  only input combinations with score less than x are considered.
-	With "failure(<=x)", only input combinations with score less than or equal x are considered.
-	With "failure(=x)" or "failure(x)", only input combinations with score equal to x are considered.
-	With "failure(!=x)", only input combinations with score different from x are considered.
-	With "failure(>=x)", only input combinations with score greater than or equal to x considered.
-	With "failure(>x)",  only input combinations with score greater than x are considered.
 
 	* globalScore
 	With --globalScore    "<x",  only combinations with global score less than x are selected.
@@ -187,7 +179,7 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)failure(d)length(e)
+// filename(<filename>)weight(a)level(b)score(c)length(d)
 let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
@@ -197,8 +189,6 @@ let testLengthSelection = [];
 let testLength = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
-let testCombiFilterScoreFailure = [];
-let testCombiFilterFailure = [];
 let globalScore = 0;
 let globalFailure = 0;
 
@@ -291,21 +281,6 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterScore.push(-1);
 			break;
 	}
-
-
-	// Parsing FAILURE
-	switch (true) {
-		case /failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /failure\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
-			testCombiFilterScoreFailure.push(match[1]);
-			testCombiFilterFailure.push(+match[2]);
-			break;
-
-		default:
-			testCombiFilterScoreFailure.push(null);
-			testCombiFilterFailure.push(-1);
-			break;
-	}
 }
 
 
@@ -352,8 +327,8 @@ let rl = readline.createInterface({
 	// Init tested combination global score
 	let combiGlobalScore = 0;
 	let combiGlobalFailure = 0;
-	let combiFilterScore = []; combiFilterScore.length = filterCommand.length;
-	let combiFilterFailure = []; combiFilterFailure.length = filterCommand.length;
+	let combiFilterScore = new Array(filterCommand.length).fill(0);
+	let combiFilterFailure = new Array(filterCommand.length).fill(0);
 
 
 	// Loop on all filter commands
@@ -434,6 +409,7 @@ let rl = readline.createInterface({
 		}
 
 
+//TODO CL
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {		// Select the tested combination by default in that case
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
@@ -549,56 +525,15 @@ let rl = readline.createInterface({
 		}
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
-		}
-
-		let selectFailureScope = true;
-		switch (true) {
-			case (testCombiFilterScoreFailure[i] == null):
-				break; // No rule
-
-			case /^<$/.test(testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] < testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			case /^=<$/.test(testCombiFilterScoreFailure[i]):
-			case /^<=$/.test(testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] <= testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			case /^=$/.test(testCombiFilterScoreFailure[i]):
-			case (!testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] == testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			case /^!=$/.test(testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] != testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			case /^=>$/.test(testCombiFilterScoreFailure[i]):
-			case /^>=$/.test(testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] >= testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			case /^>$/.test(testCombiFilterScoreFailure[i]):
-				if (!(combiFilterFailure[i] > testCombiFilterFailure[i])) selectFailureScope = false; // reject this combination
-				break;
-
-			default:
-				selectFailureScope = false; // reject this combination
-				break;
-		}
-
-
-		// Check tested combination
-		if (!selectScoreScope || !selectFailureScope) {
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
-
+			
 			continue;		// next filter command
 		}
+
 	}
 
 
-	// Combi global scope
+	// Combi global score scope
 	let selectScoreScope = true;
 	switch (true) {
 		case (testGlobalScoreSelection == null):
@@ -635,7 +570,12 @@ let rl = readline.createInterface({
 			selectScoreScope = false; // reject this combination
 			break;
 	}
+	if (!selectScoreScope) {
+		return;		// reject this combination
+	}
 
+
+	// Combi global failure scope
 	let selectFailureScope = true;
 	switch (true) {
 		case (testGlobalFailureSelection == null):
@@ -672,9 +612,7 @@ let rl = readline.createInterface({
 			selectFailureScope = false; // reject this combination
 			break;
 	}
-
-	// Check tested combination
-	if (!selectScoreScope || !selectFailureScope) {
+	if (!selectFailureScope) {
 		return;		// reject this combination
 	}
 
