@@ -148,7 +148,8 @@ switch (true) {
 	case regexp1.test(cli.flags.globalScore):
 		let match = regexp1.exec(cli.flags.globalScore);
 		testGlobalScoreSelection = match[1];
-		testGlobalScore = match[2];
+		testGlobalScore = +match[2];
+		if (testGlobalScoreSelection ==  null) testGlobalScoreSelection = '=';
 		break;
 
 	default:
@@ -169,7 +170,8 @@ switch (true) {
 	case regexp2.test(cli.flags.globalFailure):
 		let match = regexp2.exec(cli.flags.globalFailure);
 		testGlobalFailureSelection = match[1];
-		testGlobalFailure = match[2];
+		testGlobalFailure = +match[2];
+		if (testGlobalFailureSelection == null) testGlobalFailureSelection = '=';
 		break;
 
 	default:
@@ -224,7 +226,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 	switch (true) {
 		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
 			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
-			testLevelSelection.push(match[1])
+			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
 			testLevel.push(+match[2]);
 			break;
 		
@@ -239,7 +241,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 	switch (true) {
 		case /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
 			let match = /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
-			testLengthSelection.push(match[1])
+			if (match[1] == null) testLengthSelection.push('='); else testLengthSelection.push(match[1]);
 			testLength.push(+match[2]);
 			break;
 		
@@ -272,7 +274,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
 			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
-			testCombiFilterScoreSelection.push(match[1]);
+			if (match[1] == null) testCombiFilterScoreSelection.push('='); else testCombiFilterScoreSelection.push(match[1]);
 			testCombiFilterScore.push(+match[2]);
 			break;
 
@@ -356,7 +358,6 @@ let rl = readline.createInterface({
 				break;
 
 			case /^=$/.test(testLengthSelection[i]):
-			case (!testLengthSelection[i]):
 				if (!(testedCombination.length == testLength[i])) selectLengthScope = false; // reject this combination
 				break;
 
@@ -446,7 +447,6 @@ let rl = readline.createInterface({
 						break;
 
 					case /^=$/.test(testLevelSelection[i]):
-					case (!testLevelSelection[i]):
 						if (nb_collisions == testLevel[i]) {
 							hitsCount++;
 							limitHitsCount++;
@@ -502,7 +502,6 @@ let rl = readline.createInterface({
 				break;
 
 			case /^=$/.test(testCombiFilterScoreSelection[i]):
-			case (!testCombiFilterScoreSelection[i]):
 				if (!(combiFilterScore[i] == testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 				break;
 
@@ -552,7 +551,6 @@ let rl = readline.createInterface({
 			break;
 
 		case /^=$/.test(testGlobalScoreSelection):
-		case (!testGlobalScoreSelection):
 			if (!(combiGlobalScore == testGlobalScore)) selectScoreScope = false; // reject this combination
 			break;
 
@@ -594,7 +592,6 @@ let rl = readline.createInterface({
 			break;
 
 		case /^=$/.test(testGlobalFailureSelection):
-		case (!testGlobalFailureSelection):
 			if (!(combiGlobalFailure == testGlobalFailure)) selectFailureScope = false; // reject this combination
 			break;
 
