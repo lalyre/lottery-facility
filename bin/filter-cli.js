@@ -314,7 +314,6 @@ const printOutput = function (inputLinesCount, testedCombination, combiGlobalSco
 	if (cli.flags.printhits || cli.flags.printfullhits) {
 		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
 		console.log(hits_count_string);
-		////////console.log('\n');
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
 		console.log(lotteryFacility.Combination.toString(testedCombination.sort()));
@@ -410,7 +409,7 @@ let rl = readline.createInterface({
 		}
 		if (!selectLengthScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
-			hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			
 			continue;		// next filter command
 		}
@@ -445,9 +444,6 @@ let rl = readline.createInterface({
 
 		// Get current tested combination's score
 		if (testLevelSelection[i] != null) {
-			//hitsCount = 0;
-			//limitHitsCount = 0;
-
 			for (let j = 0; j < currentFilterCombinations.length; j++) {
 				let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
 
@@ -508,9 +504,6 @@ let rl = readline.createInterface({
 			}
 			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 		}
-		/********if (hitsCount === 0) {
-			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
-		}*******/
 
 
 		// Combi score scope
@@ -555,7 +548,6 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectScoreScope) {
-			combiGlobalScore -= combiFilterScore[i]; combiFilterScore[i] = 0;
 			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
 		}
 
@@ -599,7 +591,7 @@ let rl = readline.createInterface({
 
 		// Check tested combination
 		if (!selectScoreScope || !selectFailureScope) {
-			hits_count_string += ` - [hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}]`;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 
 			continue;		// next filter command
 		}
@@ -702,7 +694,8 @@ let rl = readline.createInterface({
 	}
 })
 .on('close', () => {
-	console.log("Total score: "  + globalScore);
+	console.log("Nb selected:   "  + selectedCombinations.length);
+	console.log("Total score:   "  + globalScore);
 	console.log("Total failure: "  + globalFailure);
 
 	//console.log("inputLinesCount "  + inputLinesCount);
