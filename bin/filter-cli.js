@@ -393,6 +393,12 @@ let rl = readline.createInterface({
 //TODO CL
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
+		
+			//combiGlobalScore = 0;
+			//combiGlobalFailure = 0;
+			//globalScore += combiGlobalScore;
+			//globalFailure += combiGlobalFailure;
+		
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 			selectedCombinations.push(testedCombination.sort()); additions++;
 			return;			// next tested combination
