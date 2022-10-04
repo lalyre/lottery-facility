@@ -388,7 +388,16 @@ let rl = readline.createInterface({
 			
 			continue;		// next filter command
 		}
-		
+
+
+//TODO CL
+		// Init the ongoing selection in case of "_selection" logical file
+		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
+			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+			selectedCombinations.push(testedCombination.sort()); additions++;
+			return;			// next tested combination
+		}
+
 		
 		// Get current filter combinations
 		let currentFilterCombinations = [];
@@ -406,15 +415,6 @@ let rl = readline.createInterface({
 					currentFilterCombinations.push(numbers);
 				}
 				break;
-		}
-
-
-//TODO CL
-		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && currentFilterCombinations.length === 0) {		// Select the tested combination by default in that case
-			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
-			selectedCombinations.push(testedCombination.sort()); additions++;
-			return;			// next tested combination
 		}
 
 
@@ -529,7 +529,6 @@ let rl = readline.createInterface({
 			
 			continue;		// next filter command
 		}
-
 	}
 
 
@@ -571,7 +570,7 @@ let rl = readline.createInterface({
 			break;
 	}
 	if (!selectScoreScope) {
-		return;		// reject this combination
+		return;			// next tested combination
 	}
 
 
@@ -613,11 +612,11 @@ let rl = readline.createInterface({
 			break;
 	}
 	if (!selectFailureScope) {
-		return;		// reject this combination
+		return;			// next tested combination
 	}
 
 
-	// Total
+	// Select the tested combination and get global track records
 	globalScore += combiGlobalScore;
 	globalFailure += combiGlobalFailure;
 

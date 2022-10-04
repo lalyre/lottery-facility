@@ -157,6 +157,7 @@ kenoFR_draws --num 1 > last_draws.txt
 
 
 
+// filename(<filename>)weight(a)level(b)score(c)length(d)
 
 
 filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(<0)" --printfullhits
