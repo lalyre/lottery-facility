@@ -33,7 +33,7 @@ const cli = meow(`
 	You can use "_selection" value for filename value if you want to perform filtering against the current ongoing selection of input combinations.
 	
 	* weight
-	With "weight(x)", the filter score is computed as the multiplication of the number of collisions (hit count) by the weight value.
+	With "weight(x)", the filter score is computed as the multiplication of the number of filter lines that match the required level (hit count) by the weight value.
 	If not specified, the default value is 1.
 
 	* level
@@ -324,7 +324,7 @@ let rl = readline.createInterface({
 	//console.log(testedCombination);
 
 
-	// Init tested combination global score
+	// Init tested combination track records
 	let combiGlobalScore = 0;
 	let combiGlobalFailure = 0;
 	let combiFilterScore = new Array(filterCommand.length).fill(0);
@@ -338,11 +338,6 @@ let rl = readline.createInterface({
 	{
 		let hitsCount = 0;
 		let limitHitsCount = 0;
-		
-		
-		// Init tested combination current filter score
-		combiFilterScore[i] = 0;
-		combiFilterFailure[i] = 0;
 		
 		
 		// Combi length scope
@@ -390,6 +385,7 @@ let rl = readline.createInterface({
 		}
 
 
+/*
 //TODO CL
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
@@ -403,8 +399,9 @@ let rl = readline.createInterface({
 			selectedCombinations.push(testedCombination.sort()); additions++;
 			return;			// next tested combination
 		}
+*/
 
-		
+
 		// Get current filter combinations
 		let currentFilterCombinations = [];
 		switch (true) {
@@ -422,6 +419,9 @@ let rl = readline.createInterface({
 				}
 				break;
 		}
+
+
+//if (selectedCombinations.length === 0) currentFilterCombinations.push(null);
 
 
 		// Get current tested combination's score
