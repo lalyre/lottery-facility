@@ -386,15 +386,14 @@ let rl = readline.createInterface({
 		}
 
 
-//TODO CL
+		// Check whether computing a score is relevant or not
+		if (testLevelSelection[i] == null) {			
+			continue;		// next filter command
+		}
+
+
 		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
-		
-			//combiGlobalScore = 0;
-			//combiGlobalFailure = 0;
-			//globalScore += combiGlobalScore;
-			//globalFailure += combiGlobalFailure;
-		
+		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case		
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 			selectedCombinations.push(testedCombination.sort()); additions++;
 			return;			// next tested combination
@@ -420,70 +419,65 @@ let rl = readline.createInterface({
 		}
 
 
-//if (selectedCombinations.length === 0) currentFilterCombinations.push(null);
-
-
 		// Get current tested combination's score
-		if (testLevelSelection[i] != null) {
-			for (let j = 0; j < currentFilterCombinations.length; j++) {
-				let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
+		for (let j = 0; j < currentFilterCombinations.length; j++) {
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
 
-				switch (true) {
-					case /^<$/.test(testLevelSelection[i]):
-						if (nb_collisions < testLevel[i]) {
-							hitsCount++;
-							if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
-						}
-						break;
+			switch (true) {
+				case /^<$/.test(testLevelSelection[i]):
+					if (nb_collisions < testLevel[i]) {
+						hitsCount++;
+						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+					}
+					break;
 
-					case /^=<$/.test(testLevelSelection[i]):
-					case /^<=$/.test(testLevelSelection[i]):
-						if (nb_collisions <= testLevel[i]) {
-							hitsCount++;
-							if (nb_collisions == testLevel[i]) limitHitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						}
-						break;
+				case /^=<$/.test(testLevelSelection[i]):
+				case /^<=$/.test(testLevelSelection[i]):
+					if (nb_collisions <= testLevel[i]) {
+						hitsCount++;
+						if (nb_collisions == testLevel[i]) limitHitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
 
-					case /^=$/.test(testLevelSelection[i]):
-						if (nb_collisions == testLevel[i]) {
-							hitsCount++;
-							limitHitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						}
-						break;
+				case /^=$/.test(testLevelSelection[i]):
+					if (nb_collisions == testLevel[i]) {
+						hitsCount++;
+						limitHitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
 
-					case /^!=$/.test(testLevelSelection[i]):
-						if (nb_collisions != testLevel[i]) {
-							hitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						}
-						break;
+				case /^!=$/.test(testLevelSelection[i]):
+					if (nb_collisions != testLevel[i]) {
+						hitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
 
-					case /^=>$/.test(testLevelSelection[i]):
-					case /^>=$/.test(testLevelSelection[i]):
-						if (nb_collisions >= testLevel[i]) {
-							hitsCount++;
-							if (nb_collisions == testLevel[i]) limitHitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						}
-						break;
+				case /^=>$/.test(testLevelSelection[i]):
+				case /^>=$/.test(testLevelSelection[i]):
+					if (nb_collisions >= testLevel[i]) {
+						hitsCount++;
+						if (nb_collisions == testLevel[i]) limitHitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
 
-					case /^>$/.test(testLevelSelection[i]):
-						if (nb_collisions > testLevel[i]) {
-							hitsCount++;
-							if (nb_collisions == testLevel[i]+1) limitHitsCount++;
-							hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
-						}
-						break;
+				case /^>$/.test(testLevelSelection[i]):
+					if (nb_collisions > testLevel[i]) {
+						hitsCount++;
+						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+					}
+					break;
 
-					default:
-						break;
-				}
+				default:
+					break;
 			}
-			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 		}
+		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 
 
 		// Combi score scope
