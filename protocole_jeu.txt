@@ -151,8 +151,8 @@ filter --infile GAME1.txt --filter "filename(WINNING_NUMBERS.txt)weight(1)level(
 ==============================
 
 
-combination --total 20 --size 10 --file KENOFR_70.txt > 20_10.txt
-combination --total 20 --size 8 --file KENOFR_70.txt > 20_8.txt
+combination --total 22 --size 10 --file KENOFR_70.txt > 22_10.txt
+combination --total 22 --size 8 --file KENOFR_70.txt > 22_8.txt
 kenoFR_draws --num 1 > last_draws.txt
 
 
@@ -180,7 +180,11 @@ filter --infile 20_10.txt  --filter "filename(_selection)weight(1)level(=0)score
 
 
 
+type GAME1.txt
+01 02 03 04 05 06 07 08
+09 10 11 12 13 14 15 16
 
+filter --infile 22_8.txt  --filter "filename(GAME1.txt)level(>0)score(0)" --globalFailure "0" --printfullhits
 
 
 
