@@ -379,6 +379,9 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectLengthScope) {
+			hitsCount = -1;
+			limitHitsCount = -1;
+			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			
@@ -387,11 +390,16 @@ let rl = readline.createInterface({
 
 
 		// Check whether computing a score is relevant or not
-		if (testLevelSelection[i] == null) {			
+		if (testLevelSelection[i] == null) {
+			hitsCount = -1;
+			limitHitsCount = -1;
+			combiFilterScore[i] = -1;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
 		}
 
 
+// TODO CL
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case		
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
