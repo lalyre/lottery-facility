@@ -379,7 +379,7 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectLengthScope) {
-			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
+			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			
 			continue;		// next filter command
@@ -521,7 +521,7 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectScoreScope) {
-			combiFilterFailure[i] = 1; combiGlobalFailure += combiFilterFailure[i];
+			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			
 			continue;		// next filter command
