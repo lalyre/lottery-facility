@@ -36,46 +36,46 @@ const cli = meow(`
 	With "weight(x)", the filter score is computed as the multiplication of the number of filter lines that match the required level (hit count) by the weight value.
 	If not specified, the default value is 1.
 
-	* level
-	With "level(<x)",  only filter lines with less than x collisions with the current input combination are considered.
-	With "level(<=x)", only filter lines with less than or equal x collisions with the current input combination are considered.
-	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
-	With "level(!=x)", only filter lines with not x collisions with the current input combination are considered.
-	With "level(>=x)", only filter lines with more than or equal x collisions with the current input combination are considered.
-	With "level(>x)",  only filter lines with more than x collisions with the current input combination are considered.
-
 	* length
-	With "length(<x)",  only input combinations with less than x numbers are considered.
-	With "length(<=x)", only input combinations with less than or equal x numbers are considered.
+	With "length(<x)",   only input combinations with less than x numbers are considered.
+	With "length(<=x)",  only input combinations with less than or equal x numbers are considered.
 	With "length(=x)" or "level(x)", only input combinations with x numbers are considered.
-	With "length(!=x)", only input combinations with not x numbers are considered.
-	With "length(>=x)", only input combinations with more than or equal x numbers are considered.
-	With "length(>x)",  only input combinations with more than x numbers are considered.
+	With "length(!=x)",  only input combinations with not x numbers are considered.
+	With "length(>=x)",  only input combinations with more than or equal x numbers are considered.
+	With "length(>x)",   only input combinations with more than x numbers are considered.
+
+	* level
+	With "level(<x)",    only filter lines with less than x collisions with the current input combination are considered.
+	With "level(<=x)",   only filter lines with less than or equal x collisions with the current input combination are considered.
+	With "level(=x)" or "level(x)", only filter lines with x collisions with the current input combination are considered.
+	With "level(!=x)",   only filter lines with not x collisions with the current input combination are considered.
+	With "level(>=x)",   only filter lines with more than or equal x collisions with the current input combination are considered.
+	With "level(>x)",    only filter lines with more than x collisions with the current input combination are considered.
 
 	* score
-	With "score(<x)",  only input combinations with score less than x are considered.
-	With "score(<=x)", only input combinations with score less than or equal x are considered.
+	With "score(<x)",    only input combinations with score less than x are considered.
+	With "score(<=x)",   only input combinations with score less than or equal x are considered.
 	With "score(=x)" or "score(x)", only input combinations with score equal to x are considered.
-	With "score(!=x)", only input combinations with score different from x are considered.
-	With "score(>=x)", only input combinations with score greater than or equal to x considered.
-	With "score(>x)",  only input combinations with score greater than x are considered.
-	With "score(*)",   only input combinations that matches with all filter lines are considered.
+	With "score(!=x)",   only input combinations with score different from x are considered.
+	With "score(>=x)",   only input combinations with score greater than or equal to x considered.
+	With "score(>x)",    only input combinations with score greater than x are considered.
+	With "score(*)",     only input combinations that matches with all filter lines are considered.
 
 	* globalScore
-	With --globalScore    "<x",  only combinations with global score less than x are selected.
-	With --globalScore    "<=x", only combinations with global score less than or equal x are selected..
-	With --globalScore    "=x",  only combinations with global score equal to x are selected.
-	With --globalScore    "!=x", only combinations with global score not equal to x are selected.
-	With --globalScore    ">=x", only combinations with global score greater than or equal to x are selected.
-	With --globalScore    ">x",  only combinations with global score greater than x are selected.
+	With --globalScore   "<x",  only combinations with global score less than x are selected.
+	With --globalScore   "<=x", only combinations with global score less than or equal x are selected..
+	With --globalScore   "=x",  only combinations with global score equal to x are selected.
+	With --globalScore   "!=x", only combinations with global score not equal to x are selected.
+	With --globalScore   ">=x", only combinations with global score greater than or equal to x are selected.
+	With --globalScore   ">x",  only combinations with global score greater than x are selected.
 	
 	* globalFailure
-	With --globalFailure  "<x",  only combinations with less than x failed filters are selected.
-	With --globalFailure  "<=x", only combinations with less than or equal x failed filters are selected..
-	With --globalFailure  "=x",  only combinations with x failed filters are selected.
-	With --globalFailure  "!=x", only combinations with not x failed filters are selected.
-	With --globalFailure  ">=x", only combinations with more than or equal x failed filters are selected.
-	With --globalFailure  ">x",  only combinations with more than x failed filters are selected.
+	With --globalFailure "<x",  only combinations with less than x failed filters are selected.
+	With --globalFailure "<=x", only combinations with less than or equal x failed filters are selected..
+	With --globalFailure "=x",  only combinations with x failed filters are selected.
+	With --globalFailure "!=x", only combinations with not x failed filters are selected.
+	With --globalFailure ">=x", only combinations with more than or equal x failed filters are selected.
+	With --globalFailure ">x",  only combinations with more than x failed filters are selected.
 `, {
 	flags: {
 		infile: {
@@ -222,17 +222,15 @@ for (let i = 0; i < filterCommand.length; i++) {
 	}
 
 
-	// Parsing LEVEL
+	// Parsing WEIGHT
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
-			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
-			testLevel.push(+match[2]);
+		case /weight\((\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /weight\((\d*)\)*/.exec(filterCommand[i]);
+			weight.push(+match[1]);
 			break;
-		
+
 		default:
-			testLevelSelection.push(null)
-			testLevel.push(-1);
+			weight.push(1);		// Default value is 1.
 			break;
 	}
 
@@ -250,17 +248,19 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testLength.push(-1);
 			break;
 	}
-	
 
-	// Parsing WEIGHT
+
+	// Parsing LEVEL
 	switch (true) {
-		case /weight\((\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /weight\((\d*)\)*/.exec(filterCommand[i]);
-			weight.push(+match[1]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
+			testLevel.push(+match[2]);
 			break;
-
+		
 		default:
-			weight.push(1);		// Default value is 1.
+			testLevelSelection.push(null)
+			testLevel.push(-1);
 			break;
 	}
 
@@ -399,9 +399,13 @@ let rl = readline.createInterface({
 		}
 
 
-// TODO CL
 		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case		
+		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
+			hitsCount = -1;
+			limitHitsCount = -1;
+			combiFilterScore[i] = -1;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
+
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 			selectedCombinations.push(testedCombination.sort()); additions++;
 			return;			// next tested combination
@@ -419,8 +423,8 @@ let rl = readline.createInterface({
 				let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
 				for (let filter_line of filter_lines) {
 					let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
-					if (numbers[0] == 0) continue;
-					if (numbers.join("") == '') continue;
+					if (numbers[0] == 0) continue;				// next filter command
+					if (numbers.join("") == '') continue;		// next filter command
 					currentFilterCombinations.push(numbers);
 				}
 				break;
