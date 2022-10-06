@@ -404,7 +404,6 @@ let rl = readline.createInterface({
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
-			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 
 			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 			selectedCombinations.push(testedCombination.sort()); additions++;
