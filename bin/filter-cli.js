@@ -139,7 +139,7 @@ if (!fs.existsSync(infile)) {
 
 let testGlobalScoreSelection = null;
 let testGlobalScore = -1;
-let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
+let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(-?\d*)$/;
 switch (true) {
 	case cli.flags.globalScore === null:
 	case cli.flags.globalScore === undefined:
@@ -224,8 +224,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing WEIGHT
 	switch (true) {
-		case /weight\((\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /weight\((\d*)\)*/.exec(filterCommand[i]);
+		case /weight\((-?\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /weight\((-?\d*)\)*/.exec(filterCommand[i]);
 			weight.push(+match[1]);
 			break;
 
@@ -252,8 +252,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing LEVEL
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.exec(filterCommand[i]);
 			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
 			testLevel.push(+match[2]);
 			break;
@@ -272,8 +272,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterScore.push(-1);
 			break;
 
-		case /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.exec(filterCommand[i]);
 			if (match[1] == null) testCombiFilterScoreSelection.push('='); else testCombiFilterScoreSelection.push(match[1]);
 			testCombiFilterScore.push(+match[2]);
 			break;
