@@ -252,8 +252,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing LEVEL
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.exec(filterCommand[i]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
 			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
 			testLevel.push(+match[2]);
 			break;
