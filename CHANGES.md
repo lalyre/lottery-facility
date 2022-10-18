@@ -8,7 +8,7 @@ Roadmap
 * paste CLI utility.
 * cut CLI utility.
 * for filter CLI utility, add a feature for loading a pre-selection file of combination, and add feature for saving the final selection of combinations.
-* for filter CLI utility, add a feature for adding a subset of tested combinations.
+* for filter CLI utility, add a feature for adding a slice of tested combinations.
 * manage all history databases of Euromillions draws for euromillions_draws.
 * manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
