@@ -17,10 +17,10 @@ Roadmap
 
 2022-xx-xx, Version 0.0.1-alpha.9
 =================================
-* Enhancement of combination CLI utility with multiple files output.
-* Enhancement of flash CLI utility with multiple files output.
 * Enhancement of filter CLI utility with calculation of lottery winnings, and filtering on the amount of winnings.
 * Filter CLI selection mode based on count of passed/failed filters, selection on scoring of filters, printing scores.
+* Enhancement of combination CLI utility with multiple files output.
+* Enhancement of flash CLI utility with multiple files output.
 * Adding difference CLI utility.
 * Removal of 99 balls limitation in DrawBox class.
 * Adding Combination class.
