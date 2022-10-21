@@ -106,6 +106,12 @@ const cli = meow(`
 			isMultiple: false,
 			default: -1,
 		},
+		slice: {
+			type: 'number',
+			isRequired: false,
+			isMultiple: false,
+			default: -1,
+		},
 		addition: {
 			type: 'boolean',
 			isRequired: false,
@@ -130,6 +136,7 @@ const cli = meow(`
 
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
+let additionsSlice = cli.flags.slice;
 let infile = cli.flags.infile.trim();
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
@@ -630,7 +637,8 @@ let rl = readline.createInterface({
 	// Add the tested combination to the ongoing selection
 	printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-		selectedCombinations.push(testedCombination.sort()); additions++;
+		let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
+		selectedCombinations.push(selectedComb); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}
