@@ -8,7 +8,6 @@ Roadmap
 * paste CLI utility.
 * cut CLI utility.
 * for filter CLI utility, add a feature for loading a pre-selection file of combination, and add feature for saving the final selection of combinations.
-* for filter CLI utility, add a feature for adding a slice of tested combinations.
 * manage all history databases of Euromillions draws for euromillions_draws.
 * manage all history databases of Keno draws for kenoFR_draws.
 * combination CLI enhancement with production of balanced and count limited combinations.
@@ -17,10 +16,11 @@ Roadmap
 
 2022-xx-xx, Version 0.0.1-alpha.9
 =================================
-* Enhancement of filter CLI utility with calculation of lottery winnings, and filtering on the amount of winnings.
-* Filter CLI selection mode based on count of passed/failed filters, selection on scoring of filters, printing scores.
-* Enhancement of combination CLI utility with multiple files output.
-* Enhancement of flash CLI utility with multiple files output.
+* Enhancement of filter CLI utility, add a feature for adding a slice of tested combinations.
+* Enhancement of filter CLI utility, enable calculation of lottery winnings, and filtering on the amount of winnings.
+* Enhancement of filter CLI utility, selection mode based on count of passed/failed filters, selection on scoring of filters, printing scores.
+* Enhancement of combination CLI utility, multiple files output.
+* Enhancement of flash CLI utility, multiple files output.
 * Adding difference CLI utility.
 * Removal of 99 balls limitation in DrawBox class.
 * Adding Combination class.

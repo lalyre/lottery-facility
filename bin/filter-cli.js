@@ -13,13 +13,14 @@ const cli = meow(`
 	
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
-	  --globalScore      Define the global score obtained after passing through all filters to select a combination.
-	  --globalFailure    Define the global number of filters that are not passed to select a combination.
+	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
+	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)").
-	  --limit            Defining the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
+	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
+	  --slice            Defines the number of first elements of the tested combination that will be added to the ongoing selection. Default value is -1, and the whole tested combination is added.
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
-	  --printhits        Display the hit counts/scores/failures for each filter in their declarative order.
-	  --printfullhits    Display the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
+	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
+	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
 	
 	Description
 	This script selects combinations from an input file according to filters restrictions.
@@ -412,8 +413,9 @@ let rl = readline.createInterface({
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
 
-			printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
-			selectedCombinations.push(testedCombination.sort()); additions++;
+			let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
+			printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+			selectedCombinations.push(selectedComb.sort()); additions++;
 			return;			// next tested combination
 		}
 
@@ -635,9 +637,9 @@ let rl = readline.createInterface({
 
 
 	// Add the tested combination to the ongoing selection
-	printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+	let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
+	printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-		let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
 		selectedCombinations.push(selectedComb); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
