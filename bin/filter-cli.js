@@ -13,6 +13,7 @@ const cli = meow(`
 	
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
+	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)").
@@ -85,6 +86,11 @@ const cli = meow(`
 			isRequired: true,
 			isMultiple: false,
 		},
+		selection: {
+			type: 'string',
+			isRequired: false,
+			isMultiple: false,
+		},
 		globalScore: {
 			type: 'string',
 			isRequired: false,
@@ -138,10 +144,28 @@ const cli = meow(`
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
 let additionsSlice = cli.flags.slice;
+
+
 let infile = cli.flags.infile.trim();
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
+}
+
+
+let selectedCombinations = [];
+if (cli.flags.selection) {
+	let selectionFile = cli.flags.selection.trim();
+	if (!fs.existsSync(selectionFile)) {
+		console.error(`File ${selectionFile} does not exist`);
+		process.exit(1);
+	}
+	let preselections = fs.readFileSync(selectionFile).toString().split(/\r?\n/);
+	for (var line of preselections) {
+		var numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+		if (numbers[0] == 0) continue;
+		selectedCombinations.push(numbers);
+	}
 }
 
 
@@ -307,7 +331,6 @@ const printOutput = function (inputLinesCount, testedCombination, combiGlobalSco
 
 
 // Test all combinations of input file
-let selectedCombinations = [];
 let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
