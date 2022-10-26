@@ -153,6 +153,7 @@ filter --infile GAME1.txt --filter "filename(WINNING_NUMBERS.txt)weight(1)level(
 combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
 combination --total 50 --size 4 --file KENOFR_70.txt > 50_4.txt
 combination --total 50 --size 3 --file KENOFR_70.txt > 50_3.txt
+combination --total 50 --size 2 --file KENOFR_70.txt > 50_2.txt
 filter --infile 50_5.txt  --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --slice 4 --globalFailure "0"  > A.txt
 
 
@@ -167,11 +168,16 @@ filter --infile 50_3.txt --filter "filename(_selection)level(>=2)score(0)"      
 filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)"                --globalFailure "0"
 
 
+filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --slice 2 --globalFailure "0"  > A.txt
+filter --infile 50_2.txt --filter "filename(_selection)level(>=2)score(0)"           --globalFailure "0"  > B.txt
+filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)"                --globalFailure "0"
+
+
 ==============================
 
 
 combination --total 22 --size 10 --file KENOFR_70.txt > 22_10.txt
-combination --total 22 --size 8 --file KENOFR_70.txt > 22_8.txt
+combination --total 22 --size  8 --file KENOFR_70.txt > 22_8.txt
 kenoFR_draws --num 1 > last_draws.txt
 
 
