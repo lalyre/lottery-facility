@@ -415,7 +415,6 @@ let rl = readline.createInterface({
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
-			
 			continue;		// next filter command
 		}
 
@@ -425,6 +424,7 @@ let rl = readline.createInterface({
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
+			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
 		}
@@ -445,9 +445,11 @@ let rl = readline.createInterface({
 
 		// Get current filter combinations
 		let currentFilterCombinations = [];
+		////let currentFilterCombinationsScore = [];
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
 				currentFilterCombinations = selectedCombinations;
+				////currentFilterCombinationsScore = new Array(currentFilterCombinations.length).fill(0);
 				break;
 			
 			default:
@@ -457,6 +459,7 @@ let rl = readline.createInterface({
 					if (numbers[0] == 0) continue;				// next filter command
 					if (numbers.join("") == '') continue;		// next filter command
 					currentFilterCombinations.push(numbers);
+					////currentFilterCombinationsScore.push(0);
 				}
 				break;
 		}
@@ -472,6 +475,7 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -481,6 +485,7 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -489,6 +494,7 @@ let rl = readline.createInterface({
 						hitsCount++;
 						limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -496,6 +502,7 @@ let rl = readline.createInterface({
 					if (nb_collisions != testLevel[i]) {
 						hitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -505,6 +512,7 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -513,6 +521,7 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -521,6 +530,7 @@ let rl = readline.createInterface({
 			}
 		}
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
+		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 
 
 		// Combi score scope
@@ -565,8 +575,6 @@ let rl = readline.createInterface({
 		}
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
-			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
-			
 			continue;		// next filter command
 		}
 	}
