@@ -154,29 +154,25 @@ combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
 combination --total 50 --size 4 --file KENOFR_70.txt > 50_4.txt
 combination --total 50 --size 3 --file KENOFR_70.txt > 50_3.txt
 combination --total 50 --size 2 --file KENOFR_70.txt > 50_2.txt
-filter --infile 50_5.txt  --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --slice 4 --globalFailure "0"  > A.txt
-
-
-
-filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --slice 4 --globalFailure "0"  > A.txt
-filter --infile 50_4.txt --filter "filename(_selection)level(>=2)score(0)"           --globalFailure "0"  > B.txt
-filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)"                --globalFailure "0"
-
-
-filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --slice 3 --globalFailure "0"  > A.txt
-filter --infile 50_3.txt --filter "filename(_selection)level(>=2)score(0)"           --globalFailure "0"  > B.txt
-filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)"                --globalFailure "0"
-
-
-filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --slice 2 --globalFailure "0"  > A.txt
-filter --infile 50_2.txt --filter "filename(_selection)level(>=2)score(0)"           --globalFailure "0"  > B.txt
-filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)"                --globalFailure "0"
-
-
 
 filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"  > A.txt
-filter --infile 50_2.txt --filter "filename(A.txt)level(>=2)score(>0)" --globalFailure "0"  > B.txt
-filter --infile 50_5.txt --filter "filename(B.txt)level(>=2)score(>0)" --globalFailure "0" --printfullhits
+filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_2.txt --filter "filename(A.txt)level(>=2)score(>0)"  --globalFailure "0" > B.txt
+filter --infile 50_5.txt --filter "filename(B.txt)level(>=2)score(>=10)" --globalFailure "0" > A1.txt
+
+
+tac A1.txt > A2.txt
+filter --infile A2.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"  > A.txt
+filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_2.txt --filter "filename(A.txt)level(>=2)score(>0)"  --globalFailure "0" > B.txt
+filter --infile 50_5.txt --filter "filename(B.txt)level(>=2)score(>=10)" --globalFailure "0" > A1.txt
+
+
+filter --infile A1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"  > A.txt
+filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_2.txt --filter "filename(A.txt)level(>=2)score(>0)"  --globalFailure "0" > B.txt
+filter --infile 50_5.txt --filter "filename(B.txt)level(>=2)score(>=10)" --globalFailure "0" > A1.txt
+
 
 
 
