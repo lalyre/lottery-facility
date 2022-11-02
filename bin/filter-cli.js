@@ -431,15 +431,15 @@ let rl = readline.createInterface({
 
 
 		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && selectedCombinations.length === 0) {		// Select the tested combination by default in that case
+		if (filename[i] === '_selection' && selectedCombinations.length === 0) {
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
 
-			let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
-			printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
-			selectedCombinations.push(selectedComb.sort()); additions++;
-			return;			// next tested combination
+			//let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
+			//printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+			//selectedCombinations.push(selectedComb.sort()); additions++;
+			continue;		// next filter command
 		}
 
 

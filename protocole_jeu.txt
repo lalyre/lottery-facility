@@ -182,12 +182,18 @@ combination --total 13 --size 5 --numbers "01 02 03 04 05 06 07 08 09 10 11 12 1
 
 
 filter --infile 13_3.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > A1.txt 
-filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --globalFailure "0" > B1.txt
 
 
-filter --infile 13_4_4.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+filter --infile 13_5.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > A1.txt
+filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --globalFailure "0" > B1.txt
+
+filter --infile 13_5.txt --filter "filename(B1.txt)level(>=2)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalScore ">=8" --globalFailure "0" > A2.txt
+filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --globalFailure "0" > B2.txt
 
 
+filter --infile 13_5.txt --filter "filename(B1.txt)level(>=2)score(>0)" --filter "filename(B2.txt)level(>=2)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalScore ">=8" --globalFailure "0" > A3.txt
+filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --globalFailure "0"
 
 
 ==============================
