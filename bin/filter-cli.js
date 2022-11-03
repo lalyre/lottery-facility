@@ -435,10 +435,8 @@ let rl = readline.createInterface({
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
-
-			//let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
-			//printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
-			//selectedCombinations.push(selectedComb.sort()); additions++;
+			combiFilterFailure[i] = 0;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
 		}
 
@@ -678,9 +676,9 @@ let rl = readline.createInterface({
 	}
 })
 .on('close', () => {
-	console.log("Nb selected:   "  + selectedCombinations.length);
-	console.log("Total score:   "  + globalScore);
-	console.log("Total failure: "  + globalFailure);
+	console.warn("Nb selected:   "  + selectedCombinations.length);
+	console.warn("Total score:   "  + globalScore);
+	console.warn("Total failure: "  + globalFailure);
 
 	//console.log("inputLinesCount "  + inputLinesCount);
 	fileStream.close();
