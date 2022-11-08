@@ -1,3 +1,34 @@
+Obtenir un système réducteur qui donne 2/5 si 5/50
+
+combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
+combination --total 50 --size 4 --file KENOFR_70.txt > 50_4.txt
+combination --total 50 --size 3 --file KENOFR_70.txt > 50_3.txt
+combination --total 50 --size 2 --file KENOFR_70.txt > 50_2.txt
+
+
+1) solution n°1
+filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"  > AA.txt
+
+
+2) solution n°2
+filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=24)" --globalFailure "0"
+
+
+3) solution n°3
+> A1.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)" --globalFailure "0" > A2.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)" --globalFailure "0" > A3.txt
+cat A1.txt A2.txt A3.txt A4.txt A5.txt > AA.txt
+
+
+
+
+
+
+==============================
+
+
+
 Tous les triplets possibles du Keno FR
 combination --total 70 --size 3 --file KENOFR_70.txt > 70_3.txt
 
@@ -194,6 +225,25 @@ filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter 
 
 filter --infile 13_5.txt --filter "filename(B1.txt)level(>=2)score(>0)" --filter "filename(B2.txt)level(>=2)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalScore ">=8" --globalFailure "0" > A3.txt
 filter --infile 13_2.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+> A1.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A2.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A3.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A4.txt 
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --filter "filename(A4.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A5.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --filter "filename(A4.txt)level(>=2)score(0)" --filter "filename(A5.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A6.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --filter "filename(A4.txt)level(>=2)score(0)" --filter "filename(A5.txt)level(>=2)score(0)" --filter "filename(A6.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0" > A7.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(A3.txt)level(>=2)score(0)" --filter "filename(A4.txt)level(>=2)score(0)" --filter "filename(A5.txt)level(>=2)score(0)" --filter "filename(A6.txt)level(>=2)score(0)" --filter "filename(A7.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=1)score(0)" --globalFailure "0"
+cat A1.txt A2.txt A3.txt A4.txt A5.txt A6.txt A7.txt > AA.txt 
+
+
+filter --infile 50_5.txt --filter "filename(_selection)level(>=1)score(<=1)" --globalFailure "0" > A.txt
+filter --infile 50_5.txt --filter "filename(A.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
+
+
 
 
 ==============================
