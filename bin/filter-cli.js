@@ -230,7 +230,7 @@ let globalFailure = 0;
 for (let i = 0; i < filterCommand.length; i++) {
 	// Parsing FILENAME
 	switch (true) {
-		case /filename\(_selection\)*/.test(filterCommand[i].trim()):
+		case /filename\(_selection\)/.test(filterCommand[i].trim()):
 			if (!additionMode) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
@@ -238,8 +238,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 			filename.push('_selection')
 			break;
 		
-		case /filename\(([\w|\.]*)\)*/.test(filterCommand[i].trim()):
-			let match = /filename\(([\w|\.]*)\)*/.exec(filterCommand[i]);
+		case /filename\(([\w|\.]*)\)/.test(filterCommand[i].trim()):
+			let match = /filename\(([\w|\.]*)\)/.exec(filterCommand[i]);
 			filename.push(match[1]);
 			if (!fs.existsSync(filename[i].trim())) {
 				console.error(`File ${filename[i]} does not exist.`);
@@ -256,8 +256,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing WEIGHT
 	switch (true) {
-		case /weight\((-?\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /weight\((-?\d*)\)*/.exec(filterCommand[i]);
+		case /weight\((-?\d*)\)/.test(filterCommand[i].trim()):
+			let match = /weight\((-?\d*)\)/.exec(filterCommand[i]);
 			weight.push(+match[1]);
 			break;
 
@@ -269,8 +269,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing LENGTH
 	switch (true) {
-		case /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
+			let match = /length\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testLengthSelection.push('='); else testLengthSelection.push(match[1]);
 			testLength.push(+match[2]);
 			break;
@@ -284,8 +284,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing LEVEL
 	switch (true) {
-		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)*/.exec(filterCommand[i]);
+		case /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
+			let match = /level\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
 			testLevel.push(+match[2]);
 			break;
@@ -304,8 +304,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterScore.push(-1);
 			break;
 
-		case /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.test(filterCommand[i].trim()):
-			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)*/.exec(filterCommand[i]);
+		case /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
+			let match = /score\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testCombiFilterScoreSelection.push('='); else testCombiFilterScoreSelection.push(match[1]);
 			testCombiFilterScore.push(+match[2]);
 			break;
@@ -583,6 +583,9 @@ let rl = readline.createInterface({
 	switch (true) {
 		case (testGlobalScoreSelection == null):
 			break; // No rule
+
+		case (selectedCombinations.length === 0 && combiGlobalScore === 0):
+			break;
 
 		case /^<$/.test(testGlobalScoreSelection):
 			if (!(combiGlobalScore < testGlobalScore)) selectScoreScope = false; // reject this combination
