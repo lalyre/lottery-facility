@@ -17,10 +17,103 @@ filter --infile 50_5.txt --filter "filename(_selection)level(>=2)score(0)" --fil
 3) solution n°3
 > A1.txt
 filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)" --globalFailure "0" > A2.txt
-filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)" --globalFailure "0" > A3.txt
+filter --infile 50_5.txt --filter "filename(A1.txt)level(>=2)score(0)" --filter "filename(A2.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=2)" --globalFailure "0" > A3.txt
 cat A1.txt A2.txt A3.txt A4.txt A5.txt > AA.txt
 
 
+
+cat FILTER.txt
+01 02 03 04 05 06 07 08 09 10 11
+02 03 04 05 06 07 08 09 10 11 12
+03 04 05 06 07 08 09 10 11 12 13
+04 05 06 07 08 09 10 11 12 13 14
+05 06 07 08 09 10 11 12 13 14 15
+06 07 08 09 10 11 12 13 14 15 16
+07 08 09 10 11 12 13 14 15 16 17
+08 09 10 11 12 13 14 15 16 17 18
+09 10 11 12 13 14 15 16 17 18 19
+10 11 12 13 14 15 16 17 18 19 20
+11 12 13 14 15 16 17 18 19 20 21
+12 13 14 15 16 17 18 19 20 21 22
+13 14 15 16 17 18 19 20 21 22 23
+14 15 16 17 18 19 20 21 22 23 24
+15 16 17 18 19 20 21 22 23 24 25
+16 17 18 19 20 21 22 23 24 25 26
+17 18 19 20 21 22 23 24 25 26 27
+18 19 20 21 22 23 24 25 26 27 28
+19 20 21 22 23 24 25 26 27 28 29
+20 21 22 23 24 25 26 27 28 29 30
+21 22 23 24 25 26 27 28 29 30 31
+22 23 24 25 26 27 28 29 30 31 32
+23 24 25 26 27 28 29 30 31 32 33
+24 25 26 27 28 29 30 31 32 33 34
+25 26 27 28 29 30 31 32 33 34 35
+26 27 28 29 30 31 32 33 34 35 36
+27 28 29 30 31 32 33 34 35 36 37
+28 29 30 31 32 33 34 35 36 37 38
+29 30 31 32 33 34 35 36 37 38 39
+30 31 32 33 34 35 36 37 38 39 40
+31 32 33 34 35 36 37 38 39 40 41
+32 33 34 35 36 37 38 39 40 41 42
+33 34 35 36 37 38 39 40 41 42 43
+34 35 36 37 38 39 40 41 42 43 44
+35 36 37 38 39 40 41 42 43 44 45
+36 37 38 39 40 41 42 43 44 45 46
+37 38 39 40 41 42 43 44 45 46 47
+38 39 40 41 42 43 44 45 46 47 48
+39 40 41 42 43 44 45 46 47 48 49
+40 41 42 43 44 45 46 47 48 49 50
+41 42 43 44 45 46 47 48 49 50 01
+42 43 44 45 46 47 48 49 50 01 02
+43 44 45 46 47 48 49 50 01 02 03
+44 45 46 47 48 49 50 01 02 03 04
+45 46 47 48 49 50 01 02 03 04 05
+46 47 48 49 50 01 02 03 04 05 06
+47 48 49 50 01 02 03 04 05 06 07
+48 49 50 01 02 03 04 05 06 07 08
+49 50 01 02 03 04 05 06 07 08 09
+50 01 02 03 04 05 06 07 08 09 10
+
+
+
+filter --infile 50_5.txt --filter "filename(FILTER.txt)level(>=5)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > A1.txt
+01 02 03 04 05
+01 06 07 08 09
+01 41 42 43 44
+01 45 46 47 48
+02 06 10 11 12
+02 07 47 49 50
+04 07 10 13 14
+05 08 11 13 15
+07 12 15 16 17
+09 10 15 18 19
+11 14 16 18 20
+12 13 18 21 22
+13 17 19 20 23
+14 15 21 23 24
+16 19 21 25 26
+17 18 24 25 27
+19 22 24 28 29
+20 21 27 28 30
+22 23 25 30 31
+23 26 27 29 32
+24 26 30 33 34
+25 28 32 33 35
+27 31 33 36 37
+29 30 35 36 38
+30 32 37 39 40
+31 32 34 38 41
+
+
+filter --infile 50_2.txt --filter "filename(FILTER.txt)level(>=2)score(>0)" --filter "filename(A1.txt)level(>=2)score(0)" --globalFailure "0" > REMAINING.txt
+
+
+filter --infile 50_5.txt --filter "filename(FILTER.txt)level(>=5)score(>0)" --filter "filename(A1.txt)level(>=3)score(0)" --filter "filename(A1.txt)level(=2)score(<=2)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
+filter --infile 50_2.txt --filter "filename(FILTER.txt)level(>=2)score(>0)" --globalFailure "0" > COVER.txt
+
+filter --infile 50_5.txt --filter "filename(FILTER.txt)level(>=5)score(>0)" --filter "filename(COVER.txt)level(>=2)score(10)"  --globalFailure "0"
 
 
 
@@ -284,6 +377,30 @@ type GAME1.txt
 
 filter --infile 22_8.txt  --filter "filename(GAME1.txt)level(>0)score(0)" --globalFailure "0" --printfullhits
 
+
+
+
+
+
+
+combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
+combination --total 50 --size 4 --file KENOFR_70.txt > 50_4.txt
+combination --total 50 --size 3 --file KENOFR_70.txt > 50_3.txt
+combination --total 50 --size 2 --file KENOFR_70.txt > 50_2.txt
+
+
+cat FILTER.txt
+01 02 03 04 05 06 07 08 09 10 11 12 13
+14 15 16 17 18 19 20 21 22 23 24 25 26
+27 28 29 30 31 32 33 34 35 36 37 38
+39 40 41 42 43 44 45 46 47 48 49 50
+
+
+filter --infile 50_2.txt --filter "filename(FILTER.txt)level(>=2)score(>0)" --globalFailure "0" > COVER.txt
+
+
+filter --infile 50_5.txt --filter "filename(FILTER.txt)level(>=5)score(>0)"  --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(2)score(<=4)"  --globalFailure "0" > AA.txt
+filter --infile 50_5.txt --filter "filename(AA.txt)level(>=2)score(0)"  --globalFailure "0"
 
 
 
