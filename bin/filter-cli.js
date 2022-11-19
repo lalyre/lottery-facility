@@ -18,7 +18,6 @@ const cli = meow(`
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
-	  --slice            Defines the number of first elements of the tested combination that will be added to the ongoing selection. Default value is -1, and the whole tested combination is added.
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
 	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
@@ -27,7 +26,7 @@ const cli = meow(`
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)".
+	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)".
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
@@ -37,7 +36,10 @@ const cli = meow(`
 	* weight
 	With "weight(x)", the filter score is computed as the multiplication of the number of filter lines that match the required level (hit count) by the weight value.
 	If not specified, the default value is 1.
-
+	
+	* slice
+	With "slice(a,b,..,x)", the numbers at index a,b,..., x of the input combination are selected from the input combination, and used for comparisons. If not specified the whole input combination is taken by default.
+	
 	* length
 	With "length(<x)",   only input combinations with less than x numbers are considered.
 	With "length(<=x)",  only input combinations with less than or equal x numbers are considered.
@@ -113,12 +115,6 @@ const cli = meow(`
 			isMultiple: false,
 			default: -1,
 		},
-		slice: {
-			type: 'number',
-			isRequired: false,
-			isMultiple: false,
-			default: -1,
-		},
 		addition: {
 			type: 'boolean',
 			isRequired: false,
@@ -143,7 +139,6 @@ const cli = meow(`
 
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
-let additionsSlice = cli.flags.slice;
 
 
 let infile = cli.flags.infile.trim();
@@ -213,10 +208,11 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)length(d)
+// filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,...,y)
 let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
+let slice = [];
 let testLevelSelection = [];
 let testLevel = [];
 let testLengthSelection = [];
@@ -263,6 +259,25 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 		default:
 			weight.push(1);		// Default value is 1.
+			break;
+	}
+
+
+	// Parsing SLICE
+	switch (true) {
+		case /slice\((.+)\)/.test(filterCommand[i].trim()):
+			let match = /slice\((.*)\)/.exec(filterCommand[i]);
+			let exp = (match[1]).trim();
+			if (! /^(?:,)*(?:\d+)(?:,+\d+)*(?:,)*$/.test(exp)) {
+				console.error(`Wrong <slice> (#${i+1}) syntax.`);
+				process.exit(1);
+			}
+			let indexes = exp.split(/,+/g).filter(Boolean).map( x => +x);
+			slice.push(indexes);
+			break;
+
+		default:
+			slice.push(null);
 			break;
 	}
 
@@ -669,10 +684,9 @@ let rl = readline.createInterface({
 
 
 	// Add the tested combination to the ongoing selection
-	let selectedComb = (additionsSlice > 0) ? testedCombination.sort().slice(0, additionsSlice) : testedCombination;
-	printOutput(inputLinesCount, selectedComb, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+	printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-		selectedCombinations.push(selectedComb); additions++;
+		selectedCombinations.push(testedCombination); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}
