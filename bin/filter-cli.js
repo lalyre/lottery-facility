@@ -479,8 +479,15 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
+		let slicedCombination = testedCombination
+		if (slice[i] != null) {
+			let indexes = slice[i];
+			slicedCombination = indexes.map(i => testedCombination[i]).filter(e => typeof e !== 'undefined');
+		}
+		
+		
 		for (let j = 0; j < currentFilterCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(testedCombination, currentFilterCombinations[j]);
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j]);
 
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
