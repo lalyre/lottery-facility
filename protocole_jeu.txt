@@ -13,7 +13,8 @@ filter --infile 50_5.txt --filter "filename(AA.txt)level(>=2)score(0)" --globalF
 
 2) solution n°2
 > AA.txt
-filter --infile 50_5.txt --selection AA.txt --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(=1)score(<=3)slice(0)" --filter "filename(_selection)level(=1)score(<=3)slice(1)" --filter "filename(_selection)level(=1)score(<=3)slice(2)" --filter "filename(_selection)level(=1)score(<=3)slice(3)" --filter "filename(_selection)level(=1)score(<=3)slice(4)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --selection AA.txt --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(=2)score(<=1)" --filter "filename(_selection)level(=1)score(<=2)slice(0)"  --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --selection AA.txt --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(=2)score(<=1)" --filter "filename(_selection)level(=1)score(<=2)slice(4)"  --globalFailure "0" >> AA.txt
 filter --infile 50_5.txt --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
 
 
