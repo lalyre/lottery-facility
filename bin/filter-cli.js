@@ -13,6 +13,8 @@ const cli = meow(`
 	
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
+	  --globalnum        All items that can be used in combinations, separated by '|' or ' '.
+	  --globalfile       File containing one item per line that are used in combinations of <file> file, and possibly others items.
 	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
@@ -25,6 +27,9 @@ const cli = meow(`
 	Description
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
+	
+	The input file <file> contains one combination per line. Those combinations are written with items of the <global> alphabet.
+	The <global> alphabet can be declared either with <globalnum> or <globalfile> parameters.
 	
 	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)".
 	You can put as many <filter> commands as you need on the command line.
@@ -98,6 +103,21 @@ const cli = meow(`
 	With --globalFailure ">x",  only combinations with more than x failed filters are selected.
 `, {
 	flags: {
+		globalfile: {
+			type: 'string',
+			isRequired: (input, flags) => {
+				if (input.globalnum) {
+					return false;
+				}
+				return true;
+			},
+			isMultiple: false,
+		},
+		globalnum: {
+			type: 'string',
+			isRequired: false,
+			isMultiple: false,
+		},
 		infile: {
 			type: 'string',
 			alias: 'in',
@@ -161,6 +181,18 @@ let infile = cli.flags.infile.trim();
 if (!fs.existsSync(infile)) {
 	console.error(`File ${infile} does not exist`);
 	process.exit(1);
+}
+
+
+let global_alphabet = null;
+if (cli.flags.globalnum) {
+	global_alphabet = cli.flags.globalnum.trim().split(/[\| ]/);
+} else {
+	if (!fs.existsSync(cli.flags.globalfile)) {
+		console.error(`File ${cli.flags.globalfile} does not exist`);
+		process.exit(1);
+	}
+	global_alphabet = fs.readFileSync(cli.flags.globalfile).toString().trim().split(/\r?\n/);
 }
 
 
@@ -484,6 +516,53 @@ let rl = readline.createInterface({
 		}
 
 
+		// Combi min_gap scope
+		let minGap = lotteryFacility.Combination.minimum_gap(global_alphabet, testedCombination);
+		let selectMingapScope = true;
+		switch (true) {
+			case (testMingapSelection[i] == null):
+				break; // No rule
+
+			case /^<$/.test(testMingapSelection[i]):
+				if (!(minGap < testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			case /^=<$/.test(testMingapSelection[i]):
+			case /^<=$/.test(testMingapSelection[i]):
+				if (!(minGap <= testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			case /^=$/.test(testMingapSelection[i]):
+				if (!(minGap == testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			case /^!=$/.test(testMingapSelection[i]):
+				if (!(minGap != testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			case /^=>$/.test(testMingapSelection[i]):
+			case /^>=$/.test(testMingapSelection[i]):
+				if (!(minGap >= testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			case /^>$/.test(testMingapSelection[i]):
+				if (!(minGap > testmingap[i])) selectMingapScope = false; // reject this combination
+				break;
+
+			default:
+				selectMingapScope = false; // reject this combination
+				break;
+		}
+		if (!selectMingapScope) {
+			hitsCount = -1;
+			limitHitsCount = -1;
+			combiFilterScore[i] = -1;
+			combiFilterFailure[i] = 1; combiGlobalFailure++;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
+			continue;		// next filter command
+		}
+
+
 		// Check whether computing a score is relevant or not
 		if (testLevelSelection[i] == null) {
 			hitsCount = -1;
@@ -508,11 +587,9 @@ let rl = readline.createInterface({
 
 		// Get current filter combinations
 		let currentFilterCombinations = [];
-		////let currentFilterCombinationsScore = [];
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
 				currentFilterCombinations = selectedCombinations;
-				////currentFilterCombinationsScore = new Array(currentFilterCombinations.length).fill(0);
 				break;
 			
 			default:
@@ -522,7 +599,6 @@ let rl = readline.createInterface({
 					if (numbers[0] == 0) continue;				// next filter command
 					if (numbers.join("") == '') continue;		// next filter command
 					currentFilterCombinations.push(numbers);
-					////currentFilterCombinationsScore.push(0);
 				}
 				break;
 		}
@@ -545,7 +621,6 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -555,7 +630,6 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -564,7 +638,6 @@ let rl = readline.createInterface({
 						hitsCount++;
 						limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -572,7 +645,6 @@ let rl = readline.createInterface({
 					if (nb_collisions != testLevel[i]) {
 						hitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -582,7 +654,6 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 
@@ -591,7 +662,6 @@ let rl = readline.createInterface({
 						hitsCount++;
 						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
-						////currentFilterCombinationsScore[j] += weight[i];
 					}
 					break;
 

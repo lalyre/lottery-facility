@@ -77,6 +77,22 @@ describe('Combination module', () => {
 	});
 
 
+	test('Combination.minimum_gap test', () => {
+		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+		let c1 = [3, 4, 8, 12];
+		let g1 = Combination.minimum_gap(alphabet, c1);
+		expect(g1).toBe(1);
+
+		let c2 = [3, 8, 11, 16];
+		let g2 = Combination.minimum_gap(alphabet, c2);
+		expect(g2).toBe(3);
+
+		let c3 = [2, 7, 12, 19];
+		let g3 = Combination.minimum_gap(alphabet, c3);
+		expect(g3).toBe(3);
+	});
+
+
 	test('Combination.complement test', () => {
 		let a = [8, 3, 1, 7, 8, 6, 5, 3, 7, 1];
 		let c = Combination.complement(9, a);
