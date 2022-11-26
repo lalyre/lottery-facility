@@ -16,7 +16,7 @@ const cli = meow(`
 	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
@@ -26,7 +26,7 @@ const cli = meow(`
 	This script selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
-	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)".
+	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)".
 	You can put as many <filter> commands as you need on the command line.
 	
 	* filename
@@ -47,6 +47,22 @@ const cli = meow(`
 	With "length(!=x)",  only input combinations with not x numbers are considered.
 	With "length(>=x)",  only input combinations with more than or equal x numbers are considered.
 	With "length(>x)",   only input combinations with more than x numbers are considered.
+	
+	* min_gap
+	With "min_gap(<x)",   only input combinations with minimum gap less than x are considered.
+	With "min_gap(<=x)",  only input combinations with minimum gap less than or equal x are considered.
+	With "min_gap(=x)" or "level(x)", only input combinations with minimum gap equal to x are considered.
+	With "min_gap(!=x)",  only input combinations with minimum gap not equal to x are considered.
+	With "min_gap(>=x)",  only input combinations with minimum gap  more than or equal x are considered.
+	With "min_gap(>x)",   only input combinations with minimum gap  more than x are considered.
+	
+	* max_gap
+	With "max_gap(<x)",   only input combinations with maximum gap less than x are considered.
+	With "max_gap(<=x)",  only input combinations with maximum gap less than or equal x are considered.
+	With "max_gap(=x)" or "level(x)", only input combinations with maximum gap equal to x are considered.
+	With "max_gap(!=x)",  only input combinations with maximum gap not equal to x are considered.
+	With "max_gap(>=x)",  only input combinations with maximum gap  more than or equal x are considered.
+	With "max_gap(>x)",   only input combinations with maximum gap  more than x are considered.
 
 	* level
 	With "level(<x)",    only filter lines with less than x collisions with the current input combination are considered.
@@ -208,7 +224,7 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,...,y)
+// filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,...,y)min_gap(x)max_gap(x)
 let filterCommand= cli.flags.filter;
 let filename = [];
 let weight = [];
@@ -217,6 +233,10 @@ let testLevelSelection = [];
 let testLevel = [];
 let testLengthSelection = [];
 let testLength = [];
+let testMingapSelection = [];
+let testMingap = [];
+let testMaxgapSelection = [];
+let testMaxgap = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
 let globalScore = 0;
@@ -293,6 +313,36 @@ for (let i = 0; i < filterCommand.length; i++) {
 		default:
 			testLengthSelection.push(null)
 			testLength.push(-1);
+			break;
+	}
+
+
+	// Parsing MIN_GAP
+	switch (true) {
+		case /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
+			let match = /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
+			if (match[1] == null) testMingapSelection.push('='); else testMingapSelection.push(match[1]);
+			testMingap.push(+match[2]);
+			break;
+		
+		default:
+			testMingapSelection.push(null)
+			testMingap.push(-1);
+			break;
+	}
+
+
+	// Parsing MAX_GAP
+	switch (true) {
+		case /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
+			let match = /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
+			if (match[1] == null) testMaxgapSelection.push('='); else testMaxgapSelection.push(match[1]);
+			testMaxgap.push(+match[2]);
+			break;
+		
+		default:
+			testMaxgapSelection.push(null)
+			testMaxgap.push(-1);
 			break;
 	}
 
