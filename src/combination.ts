@@ -131,6 +131,44 @@ export class Combination {
 
 
 	/**
+	 * Give the maximum gap of a lottery combination relatively to a global alphabet
+	 * The maximum gap is the sum of distances between consecutives items of the input combination,
+	 * minus the biggest distance.
+	 * @param alphabet      array of balls number.
+	 * @param combination   array of balls number.
+	 * @return              maximum gap.
+	 */
+	 public static maximum_gap(alphabet:number[], combination:number[]): number {
+		if (!alphabet) return -1;
+		if (!combination) return -1;
+		if (combination.length <= 0) return 0;
+		combination.sort((a, b) => {
+			return alphabet.indexOf(a) - alphabet.indexOf(b);
+		});
+		
+		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		let max = gap;
+		let sum = gap;
+		
+		for (let j = 1; j < combination.length-1; j++) {
+			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
+			let gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+			if (gap > max) max = gap;
+			sum += gap;
+		}
+		
+		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
+		if (gap > max) max = gap;
+		sum += gap;
+		
+		return (sum - max);
+	}
+
+
+	/**
 	 * Compute the complement combination of a lottery combination relatively to maximum number value
 	 * @param max       the maximum possible number value used in balls numbers.
 	 * @param numbers   array of balls number.

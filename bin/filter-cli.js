@@ -522,7 +522,11 @@ let rl = readline.createInterface({
 		switch (true) {
 			case (testMingapSelection[i] == null):
 				break; // No rule
-
+				
+			case (minGap < 0):
+				selectMingapScope = false; // reject this combination
+				break;
+				
 			case /^<$/.test(testMingapSelection[i]):
 				if (!(minGap < testmingap[i])) selectMingapScope = false; // reject this combination
 				break;

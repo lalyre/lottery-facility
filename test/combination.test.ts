@@ -93,6 +93,22 @@ describe('Combination module', () => {
 	});
 
 
+	test('Combination.maximum_gap test', () => {
+		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+		let c1 = [1, 4, 8, 11];
+		let g1 = Combination.maximum_gap(alphabet, c1);
+		expect(g1).toBe(10);
+
+		let c2 = [8, 11, 14, 16];
+		let g2 = Combination.maximum_gap(alphabet, c2);
+		expect(g2).toBe(8);
+
+		let c3 = [18, 3, 5, 6];
+		let g3 = Combination.maximum_gap(alphabet, c3);
+		expect(g3).toBe(8);
+	});
+
+
 	test('Combination.complement test', () => {
 		let a = [8, 3, 1, 7, 8, 6, 5, 3, 7, 1];
 		let c = Combination.complement(9, a);
