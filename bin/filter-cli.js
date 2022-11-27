@@ -567,6 +567,57 @@ let rl = readline.createInterface({
 		}
 
 
+		// Combi max_gap scope
+		let maxGap = lotteryFacility.Combination.maximum_gap(global_alphabet, testedCombination);
+		let selectMaxgapScope = true;
+		switch (true) {
+			case (testMaxgapSelection[i] == null):
+				break; // No rule
+				
+			case (maxGap < 0):
+				selectMaxgapScope = false; // reject this combination
+				break;
+				
+			case /^<$/.test(testMaxgapSelection[i]):
+				if (!(maxGap < testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			case /^=<$/.test(testMaxgapSelection[i]):
+			case /^<=$/.test(testMaxgapSelection[i]):
+				if (!(maxGap <= testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			case /^=$/.test(testMaxgapSelection[i]):
+				if (!(maxGap == testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			case /^!=$/.test(testMaxgapSelection[i]):
+				if (!(maxGap != testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			case /^=>$/.test(testMaxgapSelection[i]):
+			case /^>=$/.test(testMaxgapSelection[i]):
+				if (!(maxGap >= testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			case /^>$/.test(testMaxgapSelection[i]):
+				if (!(maxGap > testmingap[i])) selectMaxgapScope = false; // reject this combination
+				break;
+
+			default:
+				selectMaxgapScope = false; // reject this combination
+				break;
+		}
+		if (!selectMaxgapScope) {
+			hitsCount = -1;
+			limitHitsCount = -1;
+			combiFilterScore[i] = -1;
+			combiFilterFailure[i] = 1; combiGlobalFailure++;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
+			continue;		// next filter command
+		}
+
+
 		// Check whether computing a score is relevant or not
 		if (testLevelSelection[i] == null) {
 			hitsCount = -1;
