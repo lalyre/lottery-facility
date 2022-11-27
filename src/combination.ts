@@ -50,7 +50,7 @@ export class Combination {
 	 */
 	public static union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
 		if (!arr1 && !arr2) return [];
-		
+
 		if (duplicate) {
 			if (!arr1) return arr2;
 			if (!arr2) return arr1;
@@ -110,22 +110,22 @@ export class Combination {
 		combination.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
-		
+
 		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
 		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
 		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
 		let minGap = gap;
-		
+
 		for (let j = 1; j < combination.length-1; j++) {
 			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
 			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			let gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
 			if (gap < minGap) minGap = gap;
 		}
-		
+
 		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
 		if (gap < minGap) minGap = gap;
-		
+
 		return minGap;
 	}
 
@@ -145,25 +145,25 @@ export class Combination {
 		combination.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
-		
+
 		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
 		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
 		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
 		let max = gap;
 		let sum = gap;
-		
+
 		for (let j = 1; j < combination.length-1; j++) {
 			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
 			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			let gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
 			if (gap > max) max = gap;
 			sum += gap;
 		}
-		
+
 		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
 		if (gap > max) max = gap;
 		sum += gap;
-		
+
 		return (sum - max);
 	}
 
