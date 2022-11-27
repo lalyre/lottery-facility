@@ -528,29 +528,29 @@ let rl = readline.createInterface({
 				break;
 				
 			case /^<$/.test(testMingapSelection[i]):
-				if (!(minGap < testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap < testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			case /^=<$/.test(testMingapSelection[i]):
 			case /^<=$/.test(testMingapSelection[i]):
-				if (!(minGap <= testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap <= testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			case /^=$/.test(testMingapSelection[i]):
-				if (!(minGap == testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap == testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			case /^!=$/.test(testMingapSelection[i]):
-				if (!(minGap != testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap != testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			case /^=>$/.test(testMingapSelection[i]):
 			case /^>=$/.test(testMingapSelection[i]):
-				if (!(minGap >= testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap >= testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			case /^>$/.test(testMingapSelection[i]):
-				if (!(minGap > testmingap[i])) selectMingapScope = false; // reject this combination
+				if (!(minGap > testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
 
 			default:
@@ -579,29 +579,29 @@ let rl = readline.createInterface({
 				break;
 				
 			case /^<$/.test(testMaxgapSelection[i]):
-				if (!(maxGap < testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap < testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			case /^=<$/.test(testMaxgapSelection[i]):
 			case /^<=$/.test(testMaxgapSelection[i]):
-				if (!(maxGap <= testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap <= testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			case /^=$/.test(testMaxgapSelection[i]):
-				if (!(maxGap == testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap == testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			case /^!=$/.test(testMaxgapSelection[i]):
-				if (!(maxGap != testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap != testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			case /^=>$/.test(testMaxgapSelection[i]):
 			case /^>=$/.test(testMaxgapSelection[i]):
-				if (!(maxGap >= testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap >= testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			case /^>$/.test(testMaxgapSelection[i]):
-				if (!(maxGap > testmingap[i])) selectMaxgapScope = false; // reject this combination
+				if (!(maxGap > testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
 
 			default:
