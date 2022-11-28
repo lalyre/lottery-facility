@@ -10,7 +10,7 @@
   "typesVersions": {
     ">=4.7": {
       "*": [
-        "ts4.7/*"
+        "ts4.9/*"
       ]
     }
   },
@@ -20,7 +20,7 @@
     "dist/**.txt",
     "dist/**.csv",
     "dist/**.js",
-    "ts4.7/"
+    "ts4.9/"
   ],
   "type": "mmmmmmmmmmmmmodule",
   "private": false,
