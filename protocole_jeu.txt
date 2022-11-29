@@ -78,8 +78,23 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(
 
 
 2) solution n°2
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(<=10)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > AA.txt
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=05)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=06)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=07)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=08)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=09)" --globalFailure "0" >> AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=3)score(<=0)"  --filter "filename(_selection)max_gap(<=10)" --globalFailure "0" >> AA.txt
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)"  --globalFailure "0"
+
+
+
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)"  --filter "filename(_selection)max_gap(<=10)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
 
 
 
@@ -160,7 +175,6 @@ cat A1.txt
 48 49 50 01 02 03 04 05 06 07 08
 49 50 01 02 03 04 05 06 07 08 09
 50 01 02 03 04 05 06 07 08 09 10
-
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(A1.txt)level(>=2)score(=0)" --globalFailure "0"
 

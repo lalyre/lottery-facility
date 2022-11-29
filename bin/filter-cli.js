@@ -25,7 +25,7 @@ const cli = meow(`
 	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
 	
 	Description
-	This script selects combinations from an input file according to filters restrictions.
+	This script is a combinations filtering intelligence tool. It selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
 	
 	The input file <file> contains one combination per line. Those combinations are written with items of the <global> alphabet.
