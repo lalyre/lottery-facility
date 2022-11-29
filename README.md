@@ -364,6 +364,18 @@ npm publish --access public
 ```
 
 
+Depracation of NPM package versions
+
+```sh
+npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.0 "obsolete"
+npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.1 "obsolete"
+```
+
+
+
+
+
+
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
