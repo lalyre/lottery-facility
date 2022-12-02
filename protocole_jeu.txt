@@ -6,6 +6,9 @@ combination --total 50 --size 3 --file KENOFR_70.txt > 50_3.txt
 combination --total 50 --size 2 --file KENOFR_70.txt > 50_2.txt
 combination --total 50 --size 1 --file KENOFR_70.txt > 50_1.txt
 
+combination --total 11 --size 5 --file KENOFR_70.txt > 11_5.txt
+combination --total 11 --size 2 --file KENOFR_70.txt > 11_2.txt
+
 
 1) solution n°1
 
@@ -184,5 +187,72 @@ cat A1.txt
 
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(A1.txt)level(>=2)score(=0)" --globalFailure "0"
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(11_2.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
+
+combination --numbers "01_02_03|04_05|06_07_08|09_10_11" --size 2 --total 4
+
+filter --infile 11_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
+
+filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(11_2.txt)level(>=2)score(>=8)"  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
+
+
+
+> AA.txt
+combination --total 11 --size 5 --file KENOFR_70.txt > 11_5.txt
+combination --total 11 --size 2 --file KENOFR_70.txt > 11_2.txt
+cat 11_2.txt > BB.txt
+
+filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(>=2)score(>=10)"  --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" >> AA.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(=0)" --globalFailure "0" > temp.txt
+cat temp.txt > BB.txt
+
+
+filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(>=2)score(>=8)"  --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" >> AA.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(=0)" --globalFailure "0" > temp.txt
+cat temp.txt > BB.txt
+
+filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(>=2)score(>=8)"  --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" >> AA.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(=0)" --globalFailure "0" > temp.txt
+cat temp.txt > BB.txt
+
+filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(>=2)score(>=5)"  --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" >> AA.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(=0)" --globalFailure "0" > temp.txt
+cat temp.txt > BB.txt
+
+
+cat AA.txt > COVER.txt
+translate --file AA.txt --originnum "01 02 03 04 05 06 07 08 09 10 11" --targetnum "12 13 14 15 16 17 18 19 20 21 22" >> COVER.txt
+translate --file AA.txt --originnum "01 02 03 04 05 06 07 08 09 10 11" --targetnum "23 24 25 26 27 28 29 30 31 32 33" >> COVER.txt
+translate --file AA.txt --originnum "01 02 03 04 05 06 07 08 09 10 11" --targetnum "34 35 36 37 38 39 40 41 42 43 44" >> COVER.txt
+translate --file AA.txt --originnum "01 02 03 04 05 06 07 08 09 10 11" --targetnum "01 02 03 04 05 45 46 47 48 49 50" >> COVER.txt
+
+
+
+
+01 		02 03 04 05 06		07 08 09 10 11
+		02 03 04 05 06							13 14 15 16 17
+							07 08 09 10 11		13 14 15 16 17
+12 												13 14 15 16 17		18 19 20 21 22
+																	18 19 20 21 22		24 25 26 27 28
+												13 14 15 16 17							24 25 26 27 28
+																	18 19 20 21 22							29 30 31 32 33
+23 																						24 25 26 27 28		29 30 31 32 33
+																											29 30 31 32 33		35 36 37 38 39
+34 																																35 36 37 38 39		40 41 42 43 44
+																																					40 41 42 43 44		46 47 48 49 50
+																																35 36 37 38 39							46 47 48 49 50
+45		46 47 48 49 50
+
+01 12 23 34 45
+
 
 
