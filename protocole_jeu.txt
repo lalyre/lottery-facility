@@ -201,9 +201,14 @@ filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(11_2.txt)leve
 
 
 
+cat FILTER1.txt
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
 
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(>=4)" --filter "filename(_selection)max_gap(<=10)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
 
 
 > AA.txt

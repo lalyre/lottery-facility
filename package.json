@@ -1,7 +1,7 @@
 {
   "name": "lottery-facility",
   "version": "0.0.1-alpha.8",
-  "description": "Some APIs for designing lottery cracking systems.",
+  "description": "Some APIs and CLI tools for designing lottery cracking systems.",
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
   "exports": {
     ".": "./dist/lotteryfacility-nodebundle.umd.js"
@@ -38,7 +38,7 @@
     "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
     "lint:ts": "tslint -c tslint.json -p ./tsconfig.json \"src/**/*.ts\" -t stylish -e \"node_modules/**/*.ts\" -e \"**/*.d.ts\"",
     "tsc": "tsc",
-    "clean": "rimraf build dist lib coverage types ts4.7 ts4.8 ts4.9",
+    "clean": "rimraf build dist lib coverage types ts4.4 ts4.5 ts4.6 ts4.7 ts4.8 ts4.9",
     "prebuild": "npm run clean && npm run lint:ts",
     "start:dev": "webpack --mode=development --watch --progress",
     "build": "tsc",
