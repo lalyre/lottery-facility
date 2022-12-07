@@ -55,7 +55,7 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)le
 04 40 44 48 50
 05 06 13 15 20
 05 07 12 14 21
-05 08 11 1    7 18
+05 08 11 17 18
 05 09 10 16 19
 05 22 29 31 36
 05 23 28 30 37
@@ -201,7 +201,6 @@ filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(11_2.txt)leve
 
 
 
-
 cat FILTER1.txt
 01 02 03 04 05 06 07 08 09 10 11
 12 13 14 15 16 17 18 19 20 21 22
@@ -209,27 +208,185 @@ cat FILTER1.txt
 34 35 36 37 38 39 40 41 42 43 44
 45 46 47 48 49 50 01 02 03 04 05
 
-11 12 13 14 15 16 17 18 19 20 21
-22 23 24 25 26 27 28 29 30 31 32
-33 34 35 36 37 38 39 40 41 42 43
-44 45 46 47 48 49 50 01 02 03 04
-05 06 07 08 09 10 11 12 13 14 15
+06 12
+06 13
+06 14
+06 15
+06 16
 
+06 46
+06 50
 
-06 07 08 09 10 11 12 13 14 15 16
-17 18 19 20 21 22 23 24 25 26 27
-28 29 30 31 32 33 34 35 36 37 38
-39 40 41 42 43 44 45 46 47 48 49
-50 01 02 03 04 05 06 07 08 09 10
+07 12
+07 13
+07 14
+07 15
+07 16
 
+07 50
 
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0" > dd.txt
+08 12
+08 13
+08 14
+08 15
+08 16
 
+09 12
+09 13
+09 14
+09 15
+09 16
+
+10 12
+10 13
+10 14
+10 15
+10 16
+
+11 12
+11 13
+11 14
+11 15
+11 16
+
+17 23
+17 24
+17 25
+17 26
+17 27
+
+18 23
+18 24
+18 25
+18 26
+18 27
+
+19 23
+19 24
+19 25
+19 26
+19 27
+
+20 23
+20 24
+20 25
+20 26
+20 27
+
+21 23
+21 24
+21 25
+21 26
+21 27
+
+22 23
+22 24
+22 25
+22 26
+22 27
+
+28 34
+28 35
+28 36
+28 37
+28 38
+28 39
+
+29 34
+29 35
+29 36
+29 37
+29 38
+29 39
+
+30 34
+30 35
+30 36
+30 37
+30 38
+30 39
+
+31 34
+31 35
+31 36
+31 37
+31 38
+31 39
+
+32 34
+32 35
+32 36
+32 37
+32 38
+32 39
+
+33 34
+33 35
+33 36
+33 37
+33 38
+33 39
+
+39 45
+39 46
+39 47
+39 48
+39 49
+
+40 45
+40 46
+40 47
+40 48
+40 49
+40 50
+
+41 45
+41 46
+41 47
+41 48
+41 49
+41 50
+
+42 45
+42 46
+42 47
+42 48
+42 49
+42 50
+
+43 45
+43 46
+43 47
+43 48
+43 49
+43 50
+
+44 45
+44 46
+44 47
+44 48
+44 49
+44 50
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
 
 
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(<=10)" --globalFailure "0" > AA.txt
+filter --infile AA.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=1)score(<=20)" --globalFailure "0" --printhits
+filter --infile AA.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=1)score(<=18)" --globalFailure "0" > dd.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(dd.txt)level(>=2)score(0)" --globalFailure "0"
 
-filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(<=10)" --filter "filename(_selection)min_gap(>=4)" --globalFailure "0"
+
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(>=4)" --filter "filename(_selection)max_gap(<=10)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)max_gap(<=10)" --globalFailure "0"
+
+
+
 
 > AA.txt
 combination --total 11 --size 5 --file KENOFR_70.txt > 11_5.txt
@@ -279,5 +436,32 @@ translate --file AA.txt --originnum "01 02 03 04 05 06 07 08 09 10 11" --targetn
 
 01 12 23 34 45
 
+
+
+01 02 03 04 05 06
+07 08 09 10 11
+12 13 14 15 16 17
+18 19 20 21 22
+23 24 25 26 27 28
+29 30 31 32 33
+34 35 36 37 38 39
+40 41 42 43 44
+45 46 47 48 49 50
+
+
+cat FILTER1.txt
+01 02 03 04 05 06 07 08 09 10 11
+07 08 09 10 11 12 13 14 15 16 17
+12 13 14 15 16 17 18 19 20 21 22
+18 19 20 21 22 23 24 25 26 27 28
+23 24 25 26 27 28 29 30 31 32 33
+29 30 31 32 33 34 35 36 37 38 39
+34 35 36 37 38 39 40 41 42 43 44
+40 41 42 43 44 45 46 47 48 49 50
+45 46 47 48 49 50 01 02 03 04 05 06
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
 
 

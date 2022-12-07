@@ -1,5 +1,5 @@
 # lottery-facility
-Some APIs for designing lottery cracking systems.
+Some APIs and CLI tools for designing lottery cracking systems.
 
 
 <!-- TOC -->
