@@ -465,8 +465,3 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)l
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
 
 
-
-
-
-
-
