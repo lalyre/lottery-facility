@@ -465,3 +465,55 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)l
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(>0)" --globalFailure "0"
 
 
+
+cat dd.txt
+01 02 30 37 47
+01 08 23 37 48
+01 20 37 38 42
+02 08 20 22 35
+02 23 38 42 48
+03 05 16 21 43
+03 07 16 27 29
+03 09 25 28 35
+03 16 18 19 24
+04 06 15 31 41
+04 10 15 32 44
+04 15 34 36 46
+05 07 19 21 24
+05 18 21 27 29
+06 10 31 32 34
+06 31 36 44 46
+07 09 18 43 50
+08 30 38 42 47
+09 11 22 28 33
+09 12 13 35 39
+09 14 17 35 40
+09 26 35 45 49
+10 32 36 41 46
+11 12 17 33 49
+11 13 33 40 45
+11 14 26 33 39
+11 25 33 35 50
+12 14 22 25 45
+12 26 28 40 50
+13 14 28 49 50
+13 17 22 25 26
+17 28 39 45 50
+19 24 27 29 43
+20 23 30 47 48
+22 25 39 40 49
+22 34 41 44 50
+
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(dd.txt)level(>=2)score(>0)" --globalFailure "0"  > AA.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=1)score(<=5)" --globalFailure "0" --printhits
+
+
+
+
+
+
+
+
+
