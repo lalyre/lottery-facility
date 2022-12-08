@@ -1,3 +1,5 @@
+Plafond Euromillions de 240 millions d’euros
+
 Obtenir un système réducteur qui donne 2/5 si 5/50
 
 combination --total 50 --size 5 --file KENOFR_70.txt > 50_5.txt
