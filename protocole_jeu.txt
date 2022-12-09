@@ -561,13 +561,86 @@ filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)ma
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=6)" --globalFailure "0" >> AA.txt
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=7)" --globalFailure "0" >> AA.txt
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=8)" --globalFailure "0" >> AA.txt
-filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=9)" --globalFailure "0" >> AA.txt
-
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
 
-filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(>=4)" --filter "filename(_selection)max_gap(<=10)" --globalFailure "0"
+
+cat AA.txt
+01 11 21 31 41
+02 12 22 32 42
+03 13 23 33 43
+04 14 24 34 44
+05 15 25 35 45
+06 16 26 36 46
+07 17 27 37 47
+08 18 28 38 48
+09 19 29 39 49
+10 20 30 40 50
+
+01 10 19 28 37
+01 15 24 33 42
+02 11 20 29 38
+02 16 25 34 43
+03 12 21 30 39
+03 17 26 35 44
+04 13 22 31 40
+04 18 27 36 45
+05 14 23 32 41
+05 19 28 37 46
+06 15 24 33 42
+06 20 29 38 47
+07 16 25 34 43
+07 21 30 39 48
+08 17 26 35 44
+08 22 31 40 49
+09 18 27 36 45
+09 18 27 41 50
+
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=1)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=2)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=3)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=4)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=5)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=6)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=7)" --globalFailure "0" >> AA.txt
+
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+cat AA.txt
+01 11 21 31 41
+02 12 22 32 42
+03 13 23 33 43
+04 14 24 34 44
+05 15 25 35 45
+06 16 26 36 46
+07 17 27 37 47
+08 18 28 38 48
+09 19 29 39 49
+10 20 30 40 50
+
+01 10 19 28 37
+01 15 24 33 42
+02 11 20 29 38
+02 16 25 34 43
+03 12 21 30 39
+03 17 26 35 44
+04 13 22 31 40
+04 18 27 36 45
+05 14 23 32 41
+05 19 28 37 46
+06 15 24 33 42
+06 20 29 38 47
+07 16 25 34 43
+07 21 30 39 48
+08 17 26 35 44
+08 22 31 40 49
+09 18 27 36 45
+09 18 27 41 50
+
+
+
 
 
 
