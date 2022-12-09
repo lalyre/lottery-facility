@@ -524,12 +524,50 @@ cat dd.txt
 
 
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(dd.txt)level(>=2)score(>0)" --globalFailure "0"  > AA.txt
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0"
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=1)score(<=5)" --globalFailure "0" --printhits
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --globalFailure "0" --printhits
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --globalFailure "0" > BB.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(<=0)score(>7100)" --globalFailure "0" --printhits
 
 
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=3)score(<=1)" --globalFailure "0" --printhits
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" > uu1.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(uu1.txt)level(>=3)score(<=0)" --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=2)score(<=0)" --filter "filename(_selection)level(=1)score(<=1)" --globalFailure "0"  > uu2.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(uu1.txt)level(>=4)score(<=0)" --filter "filename(uu2.txt)level(>=4)score(<=0)" --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=2)score(<=0)" --filter "filename(_selection)level(=1)score(<=2)" --globalFailure "0" > uu3.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(uu1.txt)level(>=4)score(<=0)" --filter "filename(uu2.txt)level(>=4)score(<=0)" --filter "filename(uu3.txt)level(>=4)score(<=0)" --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=2)score(<=0)" --filter "filename(_selection)level(=1)score(<=2)" --globalFailure "0" > uu4.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(uu1.txt)level(>=4)score(<=0)" --filter "filename(uu2.txt)level(>=4)score(<=0)" --filter "filename(uu3.txt)level(>=4)score(<=0)" --filter "filename(uu4.txt)level(>=4)score(<=0)" --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=2)score(<=0)" --filter "filename(_selection)level(=1)score(<=2)" --globalFailure "0" > uu5.txt
+filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(uu1.txt)level(>=4)score(<=0)" --filter "filename(uu2.txt)level(>=4)score(<=0)" --filter "filename(uu3.txt)level(>=4)score(<=0)" --filter "filename(uu4.txt)level(>=4)score(<=0)" --filter "filename(uu5.txt)level(>=4)score(<=0)" --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=2)score(<=0)" --filter "filename(_selection)level(=1)score(<=2)" --globalFailure "0" > uu6.txt
+
+cat uu1.txt uu2.txt uu3.txt uu4.txt uu5.txt uu6.txt > uu.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(uu.txt)level(>=2)score(0)" --globalFailure "0"
 
 
+cat AA.txt
+01 11 21 31 41
+02 12 22 32 42
+03 13 23 33 43
+04 14 24 34 44
+05 15 25 35 45
+06 16 26 36 46
+07 17 27 37 47
+08 18 28 38 48
+09 19 29 39 49
+10 20 30 40 50
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=1)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=2)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=3)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=4)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=5)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=6)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=7)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=8)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=9)" --globalFailure "0" >> AA.txt
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(>=4)" --filter "filename(_selection)max_gap(<=10)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
 
 
 
