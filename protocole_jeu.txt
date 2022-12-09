@@ -643,6 +643,48 @@ cat AA.txt
 
 
 
+> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=2)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=3)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=4)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=5)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=6)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=7)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=8)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=9)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=10)" --globalFailure "0" >> AA.txt
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+
+cat AA.txt
+01 02 03 04 05
+06 07 08 09 10
+11 12 13 14 15
+16 17 18 19 20
+21 22 23 24 25
+26 27 28 29 30
+31 32 33 34 35
+36 37 38 39 40
+41 42 43 44 45
+46 47 48 49 50
+50 01 23 35 36
+15 16 30 31 35
+25 26 40 41
+05 06 20 21
+
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=3)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=4)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=5)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=6)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=7)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=8)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=9)" --globalFailure "0" >> AA.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=10)" --globalFailure "0" >> AA.txt
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(0)" --globalFailure "0"
+
 
 
 
