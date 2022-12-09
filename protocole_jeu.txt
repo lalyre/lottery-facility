@@ -526,7 +526,7 @@ cat dd.txt
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(dd.txt)level(>=2)score(>0)" --globalFailure "0"  > AA.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --globalFailure "0" --printhits
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(>=2)score(>=10)" --globalFailure "0" > BB.txt
-filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(<=0)score(>7100)" --globalFailure "0" --printhits
+
 
 
 filter --infile BB.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(<=0)score(>7000)" --filter "filename(_selection)level(>=3)score(<=1)" --globalFailure "0" --printhits
