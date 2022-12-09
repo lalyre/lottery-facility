@@ -673,6 +673,7 @@ cat AA.txt
 15 16 30 31 35
 25 26 40 41
 05 06 20 21
+45 46
 
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=3)" --globalFailure "0" >> AA.txt
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(_selection)max_gap(=4)" --globalFailure "0" >> AA.txt
