@@ -296,8 +296,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			break;
 			
 		default:
-			console.error(`No <filename> (#${i+1}) value.`);
-			process.exit(1);
+			filename.push(null);
 			break;
 	}
 
@@ -619,7 +618,7 @@ let rl = readline.createInterface({
 
 
 		// Check whether computing a score is relevant or not
-		if (testLevelSelection[i] == null) {
+		if (filename[i] === null || testLevelSelection[i] === null) {
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
