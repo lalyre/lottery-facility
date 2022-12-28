@@ -148,22 +148,24 @@ export class Combination {
 		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
 		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
 		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
-		let max = gap;
-		let sum = gap;
+		let maxGap = gap;
+		let previousGap = gap;
 
 		for (let j = 1; j < combination.length-1; j++) {
 			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
 			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
 			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
-			if (gap > max) max = gap;
-			sum += gap;
+			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
+			else if (gap > previousGap) { previousGap = gap; }
+			else if (previousGap === maxGap) { previousGap = gap; }
 		}
 
 		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
-		if (gap > max) max = gap;
-		sum += gap;
+		if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
+		else if (gap > previousGap) { previousGap = gap; }
+		else if (previousGap === maxGap) { previousGap = gap; }
 
-		return (sum - max);
+		return previousGap;
 	}
 
 

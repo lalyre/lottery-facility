@@ -1,4 +1,5 @@
 'use strict';
+import { copyFile } from 'fs';
 import {
      Combination,
 } from '../src/main';
@@ -90,6 +91,16 @@ describe('Combination module', () => {
 		let c3 = [2, 7, 12, 19];
 		let g3 = Combination.minimum_gap(alphabet, c3);
 		expect(g3).toBe(3);
+
+
+		let alphabet2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+		let c4 = [2, 21, 40];
+		let g4 = Combination.minimum_gap(alphabet2, c4);
+		expect(g4).toBe(12);
+
+		let c5 = [2, 20, 32];
+		let g5 = Combination.minimum_gap(alphabet2, c5);
+		expect(g5).toBe(12);
 	});
 
 
@@ -97,15 +108,33 @@ describe('Combination module', () => {
 		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 		let c1 = [1, 4, 8, 11];
 		let g1 = Combination.maximum_gap(alphabet, c1);
-		expect(g1).toBe(10);
+		expect(g1).toBe(4);
 
 		let c2 = [8, 11, 14, 16];
 		let g2 = Combination.maximum_gap(alphabet, c2);
-		expect(g2).toBe(8);
+		expect(g2).toBe(3);
 
 		let c3 = [18, 3, 5, 6];
 		let g3 = Combination.maximum_gap(alphabet, c3);
-		expect(g3).toBe(8);
+		expect(g3).toBe(5);
+
+
+		let alphabet2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+		let c4 = [1, 2, 20, 21, 40];
+		let g4 = Combination.maximum_gap(alphabet2, c4);
+		expect(g4).toBe(18);
+
+		let c5 = [1, 2, 20, 31, 32];
+		let g5 = Combination.maximum_gap(alphabet2, c5);
+		expect(g5).toBe(18);
+
+		let c6 = [1, 2, 3, 34, 44];
+		let g6 = Combination.maximum_gap(alphabet2, c6);
+		expect(g6).toBe(10);
+
+		let c7 = [50, 3];
+		let g7 = Combination.maximum_gap(alphabet2, c7);
+		expect(g7).toBe(3);
 	});
 
 
