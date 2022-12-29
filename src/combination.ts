@@ -132,7 +132,7 @@ export class Combination {
 
 	/**
 	 * Give the maximum gap of a lottery combination relatively to a global alphabet
-	 * The maximum gap is the sum of distances between consecutives items of the input combination minus the biggest distance (great-circle distance or spherical distance).
+	 * The maximum gap is the biggest distance between consecutives items of the input combination (great-circle distance or spherical distance).
 	 * @param alphabet      array of balls number.
 	 * @param combination   array of balls number.
 	 * @return              maximum gap.
