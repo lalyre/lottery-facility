@@ -149,7 +149,7 @@ export class Combination {
 		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
 		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
 		let maxGap = gap;
-		let previousGap = gap;
+		let previousGap = 0;
 
 		for (let j = 1; j < combination.length-1; j++) {
 			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
@@ -157,13 +157,11 @@ export class Combination {
 			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
 			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
 			else if (gap > previousGap) { previousGap = gap; }
-			else if (previousGap === maxGap) { previousGap = gap; }
 		}
 
 		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
 		if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
 		else if (gap > previousGap) { previousGap = gap; }
-		else if (previousGap === maxGap) { previousGap = gap; }
 
 		return previousGap;
 	}

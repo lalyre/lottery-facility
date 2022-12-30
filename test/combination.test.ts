@@ -135,6 +135,10 @@ describe('Combination module', () => {
 		let c7 = [50, 3];
 		let g7 = Combination.maximum_gap(alphabet2, c7);
 		expect(g7).toBe(3);
+
+		let c8 = [1, 20, 24, 28, 47]
+		let g8 = Combination.maximum_gap(alphabet2, c8);
+		expect(g8).toBe(19);
 	});
 
 
