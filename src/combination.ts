@@ -106,7 +106,7 @@ export class Combination {
 	 public static minimum_gap(alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
-		if (combination.length <= 0) return 0;
+		if (combination.length <= 1) return 0;
 		combination.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
@@ -140,7 +140,7 @@ export class Combination {
 	 public static maximum_gap(alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
-		if (combination.length <= 0) return 0;
+		if (combination.length <= 1) return 0;
 		combination.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
