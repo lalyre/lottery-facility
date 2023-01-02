@@ -458,6 +458,7 @@ let rl = readline.createInterface({
 	let combiGlobalFailure = 0;
 	let combiFilterScore = new Array(filterCommand.length).fill(0);
 	let combiFilterFailure = new Array(filterCommand.length).fill(0);
+	let slicedCombination = testedCombination
 
 
 	// Loop on all filter commands
@@ -628,6 +629,13 @@ let rl = readline.createInterface({
 		}
 
 
+		// Get current sliced combination
+		if (slice[i] != null) {
+			let indexes = slice[i];
+			slicedCombination = indexes.map(i => testedCombination[i]).filter(e => typeof e !== 'undefined');
+		}
+
+
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && selectedCombinations.length === 0) {
 			hitsCount = -1;
@@ -659,13 +667,6 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
-		let slicedCombination = testedCombination
-		if (slice[i] != null) {
-			let indexes = slice[i];
-			slicedCombination = indexes.map(i => testedCombination[i]).filter(e => typeof e !== 'undefined');
-		}
-		
-		
 		for (let j = 0; j < currentFilterCombinations.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j]);
 
@@ -865,9 +866,9 @@ let rl = readline.createInterface({
 
 
 	// Add the tested combination to the ongoing selection
-	printOutput(inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+	printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-		selectedCombinations.push(testedCombination); additions++;
+		selectedCombinations.push(slicedCombination); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}

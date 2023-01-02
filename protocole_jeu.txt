@@ -860,3 +860,14 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)l
 filter --infile toto.txt --globalfile 50_1.txt  --filter "filename(tata.txt)level(>=2)score(>0)" --globalScore ">=190" --globalFailure "0" --printhits
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
 
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)slice(0,1)" --globalFailure "0" > FILTER1.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(=0)" --globalFailure "0"
+
+
+> FILTER1.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > AA.txt
+cut -d" " -f1,2 AA.txt
+
+
