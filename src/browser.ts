@@ -1,4 +1,9 @@
 'use strict';
+
+export function isBrowser() {
+	return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
+}
+
 export * from './version';
 export * from './random';
 export * from './drawbox';
