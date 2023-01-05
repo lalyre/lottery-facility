@@ -958,3 +958,13 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(FILTER1.txt)l
 cut -d" " -f1,2 AA.txt
 
 
+
+
+
+filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=1)score(<=100)" --globalFailure "0" --printhits
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(>=10)" --globalFailure "0"
+
+
+
+
