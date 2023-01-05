@@ -811,7 +811,7 @@ filter --infile AA.txt --globalfile 50_1.txt  --filter "filename(_selection)leve
 
 
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(SOLUTION1.txt)level(>=2)score(=0)" --globalFailure "0" --printhits
-
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --globalFailure "0" --printhits
 
 
 cat AA.txt
