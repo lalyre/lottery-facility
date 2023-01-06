@@ -197,6 +197,7 @@ if (cli.flags.globalnum) {
 
 
 let selectedCombinations = [];
+let preSelectedCombinations = [];
 if (cli.flags.selection) {
 	let selectionFile = cli.flags.selection.trim();
 	if (!fs.existsSync(selectionFile)) {
@@ -207,7 +208,7 @@ if (cli.flags.selection) {
 	for (var line of preselections) {
 		var numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
-		selectedCombinations.push(numbers);
+		preSelectedCombinations.push(numbers);
 	}
 }
 
@@ -648,10 +649,10 @@ let rl = readline.createInterface({
 
 
 		// Get current filter combinations
-		let currentFilterCombinations = [];
+		let currentFilterCombinations = preSelectedCombinations;
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
-				currentFilterCombinations = selectedCombinations;
+				currentFilterCombinations.concat(selectedCombinations);
 				break;
 			
 			default:
