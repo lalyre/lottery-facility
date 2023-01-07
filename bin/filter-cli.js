@@ -649,7 +649,8 @@ let rl = readline.createInterface({
 
 
 		// Get current filter combinations
-		let currentFilterCombinations = preSelectedCombinations;
+		let currentFilterCombinations = [];
+		currentFilterCombinations.concat(preSelectedCombinations);
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
 				currentFilterCombinations.concat(selectedCombinations);
