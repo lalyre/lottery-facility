@@ -258,7 +258,8 @@ switch (true) {
 
 
 // filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,...,y)min_gap(x)max_gap(x)
-let filterCommand= cli.flags.filter;
+let filterCommand = cli.flags.filter;
+let filterCombinations = [];
 let filename = [];
 let weight = [];
 let slice = [];
@@ -293,6 +294,15 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (!fs.existsSync(filename[i].trim())) {
 				console.error(`File ${filename[i]} does not exist.`);
 				process.exit(1);
+			}
+			
+			filterCombinations.push([]);
+			let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
+			for (let filter_line of filter_lines) {
+				let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+				if (numbers[0] == 0) continue;				// next filter command
+				if (numbers.join("") == '') continue;		// next filter command
+				filterCombinations[i].push(numbers);
 			}
 			break;
 			
@@ -650,20 +660,14 @@ let rl = readline.createInterface({
 
 		// Get current filter combinations
 		let currentFilterCombinations = [];
-		currentFilterCombinations.concat(preSelectedCombinations);
+		currentFilterCombinations.push.apply(currentFilterCombinations, preSelectedCombinations);
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
 				currentFilterCombinations.concat(selectedCombinations);
 				break;
 			
 			default:
-				let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
-				for (let filter_line of filter_lines) {
-					let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
-					if (numbers[0] == 0) continue;				// next filter command
-					if (numbers.join("") == '') continue;		// next filter command
-					currentFilterCombinations.push(numbers);
-				}
+				currentFilterCombinations.push.apply(currentFilterCombinations, filterCombinations[i]);
 				break;
 		}
 
