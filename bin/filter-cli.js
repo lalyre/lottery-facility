@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max-old-space-size=8192
 'use strict';
 const fs = require('fs');
 const readline = require('readline');
@@ -660,14 +660,14 @@ let rl = readline.createInterface({
 
 		// Get current filter combinations
 		let currentFilterCombinations = [];
-		currentFilterCombinations.push.apply(currentFilterCombinations, preSelectedCombinations);
+		currentFilterCombinations = [...currentFilterCombinations, ...preSelectedCombinations];
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
-				currentFilterCombinations.push.apply(currentFilterCombinations, selectedCombinations);
+				currentFilterCombinations = [...currentFilterCombinations, ...selectedCombinations];
 				break;
 			
 			default:
-				currentFilterCombinations.push.apply(currentFilterCombinations, filterCombinations[i]);
+				currentFilterCombinations = [...currentFilterCombinations, ...filterCombinations[i]];
 				break;
 		}
 

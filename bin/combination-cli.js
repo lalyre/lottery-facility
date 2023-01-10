@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max-old-space-size=8192
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -10,6 +10,8 @@ const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 const FILE_LIMIT = 500000;
 
 
+// export NODE_OPTIONS="--max-old-space-size=8192"
+// export NODE_OPTIONS="--max-old-space-size=16384"
 const cli = meow(`
 	Usage
 	  $ combination

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --max-old-space-size=8192
 'use strict'
 const JSZip = require("jszip");
 const meow = require('meow');
