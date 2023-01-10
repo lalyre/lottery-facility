@@ -663,7 +663,7 @@ let rl = readline.createInterface({
 		currentFilterCombinations.push.apply(currentFilterCombinations, preSelectedCombinations);
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
-				currentFilterCombinations.concat(selectedCombinations);
+				currentFilterCombinations.push.apply(currentFilterCombinations, selectedCombinations);
 				break;
 			
 			default:
