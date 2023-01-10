@@ -1,4 +1,8 @@
 # lottery-facility
+
+[![npm](https://img.shields.io/npm/v/lottery-facility.svg)](http://npm.im/lottery-facility)]
+[![Test]]
+
 Some APIs and CLI tools for designing lottery cracking systems.
 
 
