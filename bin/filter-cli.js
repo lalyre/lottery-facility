@@ -648,7 +648,7 @@ let rl = readline.createInterface({
 
 
 		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && selectedCombinations.length === 0) {
+		if (filename[i] === '_selection' && preSelectedCombinations.length == 0 && selectedCombinations.length === 0) {
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
