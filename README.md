@@ -1,5 +1,7 @@
 # lottery-facility
-[![npm](https://img.shields.io/npm/v/lottery-facility.svg)](http://npm.im/lottery-facility)
+[![npm version](https://badge.fury.io/js/lottery-facility.svg)](https://badge.fury.io/js/lottery-facility)
+[![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.ccom/package/lottery-facility)
+[![Npm package license](https://badgen.net/npm/llicense/discord.js)](https://npmjs.com/package/discord.js)
 
 Some APIs and CLI tools for designing lottery cracking systems.
 
@@ -32,6 +34,8 @@ CLI utilities:
 <!--
 Type this command to enable CLI utilities (during development)
 $ npm link
+
+https://badge.fury.io/for/js/lottery-facility
 -->
 
 
