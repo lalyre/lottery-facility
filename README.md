@@ -1,7 +1,8 @@
 # lottery-facility
 [![npm version](https://badge.fury.io/js/lottery-facility.svg)](https://badge.fury.io/js/lottery-facility)
 [![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.ccom/package/lottery-facility)
-[![Npm package license](https://badgen.net/npm/license/discord.js)](https://npmjs.com/package/discord.js)
+[![Code Coverage](https://img.shields.io/codecov/c/github/lalyre/lottery-facility)](https://codecov.io/github/lalyre/lottery-facility) TTC un
+![GitHub](https://img.shields.io/github/license/lalyre/lottery-facility)
 
 Some APIs and CLI tools for designing lottery cracking systems.
 
