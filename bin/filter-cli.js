@@ -157,6 +157,12 @@ const cli = meow(`
 			isMultiple: false,
 			default: true,
 		},
+		cover: {
+			type: 'boolean',
+			isRequired: false,
+			isMultiple: false,
+			default: false,
+		},
 		printhits: {
 			type: 'boolean',
 			isRequired: false,
@@ -174,6 +180,7 @@ const cli = meow(`
 
 
 let additionMode = cli.flags.addition;
+let coverMode = cli.flags.cover;
 let additionsLimit = cli.flags.limit;
 
 
@@ -277,12 +284,23 @@ let globalScore = 0;
 let globalFailure = 0;
 
 
+// Cover mode goal is to extract statistics on filter file
+if (coverMode && filterCommand.length > 1) {
+	console.error(`Only one signle filter command can be used in <cover> mode.`);
+	process.exit(1);
+}
+
+
 for (let i = 0; i < filterCommand.length; i++) {
 	// Parsing FILENAME
 	switch (true) {
 		case /filename\(_selection\)/.test(filterCommand[i].trim()):
 			if (!additionMode) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
+				process.exit(1);
+			}
+			if (coverMode) {
+				console.error(`You cannot use <cover> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
 			filename.push('_selection')
@@ -648,7 +666,7 @@ let rl = readline.createInterface({
 
 
 		// Init the ongoing selection in case of "_selection" logical file
-		if (filename[i] === '_selection' && preSelectedCombinations.length == 0 && selectedCombinations.length === 0) {
+		if (filename[i] === '_selection' && preSelectedCombinations.length === 0 && selectedCombinations.length === 0) {
 			hitsCount = -1;
 			limitHitsCount = -1;
 			combiFilterScore[i] = -1;
