@@ -2,7 +2,6 @@
 [![npm version](https://badge.fury.io/js/lottery-facility.svg)](https://badge.fury.io/js/lottery-facility)
 [![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.ccom/package/lottery-facility)
 [![Npm package license](https://badgen.net/npm/license/discord.js)](https://npmjs.com/package/discord.js)
-[![GitHub license](https://img.shields.io/github/license/lottery-facility/StrapDown.js.svg)](https://github.com/lottery-facility/StrapDown.js/blob/master/LICENSE)
 
 Some APIs and CLI tools for designing lottery cracking systems.
 
