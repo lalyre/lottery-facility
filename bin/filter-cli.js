@@ -21,6 +21,7 @@ const cli = meow(`
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
+	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering stat on filter lines it matches with.
 	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
 	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
 	
@@ -157,7 +158,7 @@ const cli = meow(`
 			isMultiple: false,
 			default: true,
 		},
-		cover: {
+		coverstats: {
 			type: 'boolean',
 			isRequired: false,
 			isMultiple: false,
@@ -180,7 +181,7 @@ const cli = meow(`
 
 
 let additionMode = cli.flags.addition;
-let coverMode = cli.flags.cover;
+let coverStatsMode = cli.flags.coverstats;
 let additionsLimit = cli.flags.limit;
 
 
@@ -215,7 +216,7 @@ if (cli.flags.selection) {
 	for (var line of preselections) {
 		var numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
-		preSelectedCombinations.push(numbers);
+		preSelectedCombinations.push({combinations: numbers, covering: 0, value: 0, preselected: true, });
 	}
 }
 
@@ -284,13 +285,6 @@ let globalScore = 0;
 let globalFailure = 0;
 
 
-// Cover mode goal is to extract statistics on filter file
-if (coverMode && filterCommand.length > 1) {
-	console.error(`Only one signle filter command can be used in <cover> mode.`);
-	process.exit(1);
-}
-
-
 for (let i = 0; i < filterCommand.length; i++) {
 	// Parsing FILENAME
 	switch (true) {
@@ -299,8 +293,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 				console.error(`You must enable <addition> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
-			if (coverMode) {
-				console.error(`You cannot use <cover> mode in conjonction with "_selection" filter.`);
+			if (coverStatsMode) {
+				console.error(`You cannot use <coverstats> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
 			filename.push('_selection')
@@ -320,7 +314,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 				let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
-				filterCombinations[i].push(numbers);
+				filterCombinations[i].push({combinations: numbers, covering: 0, value: 0, preselected: false, });
 			}
 			break;
 			
@@ -692,14 +686,14 @@ let rl = readline.createInterface({
 
 		// Get current tested combination's score
 		for (let j = 0; j < currentFilterCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j]);
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j].combinations);
 
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
 					if (nb_collisions < testLevel[i]) {
 						hitsCount++;
 						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
 
@@ -708,7 +702,7 @@ let rl = readline.createInterface({
 					if (nb_collisions <= testLevel[i]) {
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -716,14 +710,14 @@ let rl = readline.createInterface({
 					if (nb_collisions == testLevel[i]) {
 						hitsCount++;
 						limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^!=$/.test(testLevelSelection[i]):
 					if (nb_collisions != testLevel[i]) {
 						hitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -732,7 +726,7 @@ let rl = readline.createInterface({
 					if (nb_collisions >= testLevel[i]) {
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -740,7 +734,7 @@ let rl = readline.createInterface({
 					if (nb_collisions > testLevel[i]) {
 						hitsCount++;
 						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j]) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
@@ -892,7 +886,7 @@ let rl = readline.createInterface({
 	// Add the tested combination to the ongoing selection
 	printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 	if (additionMode) {
-		selectedCombinations.push(slicedCombination); additions++;
+		selectedCombinations.push({combinations: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
 		if (additionsLimit != -1 && additions >= additionsLimit) {
 			process.exit(1);
 		}
