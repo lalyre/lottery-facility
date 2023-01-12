@@ -906,7 +906,7 @@ let rl = readline.createInterface({
 	if (coverStatsMode) {
 		for (let i = 0; i < filterCommand.length; i++)
 		{
-			console.log("Filter #" + (i+1));
+			console.log(`Filter #${i+1} on file ${filename[i]}`);
 			for (let j = 0; j < filterCombinations[i].length; j++)
 			{
 				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combinations)}: ${filterCombinations[i][j].covering}`);
