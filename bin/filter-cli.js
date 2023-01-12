@@ -691,6 +691,7 @@ let rl = readline.createInterface({
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
 					if (nb_collisions < testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
@@ -700,6 +701,7 @@ let rl = readline.createInterface({
 				case /^=<$/.test(testLevelSelection[i]):
 				case /^<=$/.test(testLevelSelection[i]):
 					if (nb_collisions <= testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
@@ -708,6 +710,7 @@ let rl = readline.createInterface({
 
 				case /^=$/.test(testLevelSelection[i]):
 					if (nb_collisions == testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
@@ -716,6 +719,7 @@ let rl = readline.createInterface({
 
 				case /^!=$/.test(testLevelSelection[i]):
 					if (nb_collisions != testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
@@ -724,6 +728,7 @@ let rl = readline.createInterface({
 				case /^=>$/.test(testLevelSelection[i]):
 				case /^>=$/.test(testLevelSelection[i]):
 					if (nb_collisions >= testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
@@ -732,6 +737,7 @@ let rl = readline.createInterface({
 
 				case /^>$/.test(testLevelSelection[i]):
 					if (nb_collisions > testLevel[i]) {
+						currentFilterCombinations[j].covering++;
 						hitsCount++;
 						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
 						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
@@ -749,6 +755,7 @@ let rl = readline.createInterface({
 		// Combi score scope
 		let selectScoreScope = true;
 		switch (true) {
+			case (coverStatsMode):
 			case (testCombiFilterScoreSelection[i] == null):
 				break; // No rule
 
@@ -796,6 +803,7 @@ let rl = readline.createInterface({
 	// Combi global score scope
 	let selectScoreScope = true;
 	switch (true) {
+		case (coverStatsMode):
 		case (testGlobalScoreSelection == null):
 			break; // No rule
 
@@ -884,15 +892,31 @@ let rl = readline.createInterface({
 
 
 	// Add the tested combination to the ongoing selection
-	printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
-	if (additionMode) {
-		selectedCombinations.push({combinations: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
-		if (additionsLimit != -1 && additions >= additionsLimit) {
-			process.exit(1);
+	if (!coverStatsMode) {
+		printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+		if (additionMode) {
+			selectedCombinations.push({combinations: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
+			if (additionsLimit != -1 && additions >= additionsLimit) {
+				process.exit(1);
+			}
 		}
 	}
 })
 .on('close', () => {
+	if (coverStatsMode) {
+		for (let i = 0; i < filterCommand.length; i++)
+		{
+			console.log("Filter #" + (i+1));
+			for (let j = 0; j < filterCombinations[i].length; j++)
+			{
+				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combinations)}: ${filterCombinations[i][j].covering}`);
+			}
+			console.log();
+		}
+
+		return;
+	}
+
 	console.warn("Nb selected:   "  + selectedCombinations.length);
 	console.warn("Total score:   "  + globalScore);
 	console.warn("Total failure: "  + globalFailure);
