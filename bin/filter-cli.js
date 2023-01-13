@@ -219,7 +219,7 @@ if (cli.flags.selection) {
 		if (numbers[0] == 0) continue;
 		if (numbers.join("") == '') continue;
 		var value = (!y) ? -1 : +y.trim();
-		preSelectedCombinations.push({combinations: numbers, covering: 0, value: value, preselected: true, });
+		preSelectedCombinations.push({combination: numbers, covering: 0, value: value, preselected: true, });
 	}
 }
 
@@ -319,7 +319,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
 				var value = (!y) ? -1 : +y.trim();
-				filterCombinations[i].push({combinations: numbers, covering: 0, value: value, preselected: false, });
+				filterCombinations[i].push({combination: numbers, covering: 0, value: value, preselected: false, });
 			}
 			break;
 			
@@ -486,6 +486,9 @@ let rl = readline.createInterface({
 	let combiGlobalFailure = 0;
 	let combiFilterScore = new Array(filterCommand.length).fill(0);
 	let combiFilterFailure = new Array(filterCommand.length).fill(0);
+	let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
+	let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
+	let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
 	let slicedCombination = testedCombination
 
 
@@ -537,6 +540,9 @@ let rl = readline.createInterface({
 		if (!selectLengthScope) {
 			hitsCount = -1;
 			limitHitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -588,6 +594,9 @@ let rl = readline.createInterface({
 		if (!selectMingapScope) {
 			hitsCount = -1;
 			limitHitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -639,6 +648,9 @@ let rl = readline.createInterface({
 		if (!selectMaxgapScope) {
 			hitsCount = -1;
 			limitHitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -650,6 +662,9 @@ let rl = readline.createInterface({
 		if (filename[i] === null || testLevelSelection[i] === null) {
 			hitsCount = -1;
 			limitHitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -668,6 +683,9 @@ let rl = readline.createInterface({
 		if (filename[i] === '_selection' && preSelectedCombinations.length === 0 && selectedCombinations.length === 0) {
 			hitsCount = -1;
 			limitHitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -690,68 +708,161 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
-		for (let j = 0; j < currentFilterCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j].combinations);
+		let withValue = true;
+		combiFilterSumValue[i] = 0;
 
+		for (let j = 0; j < currentFilterCombinations.length; j++) {
+			if (currentFilterCombinations[j].value == -1) withValue = false;
+
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j].combination);
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
 					if (nb_collisions < testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
 						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 					}
 					break;
 
 				case /^=<$/.test(testLevelSelection[i]):
 				case /^<=$/.test(testLevelSelection[i]):
 					if (nb_collisions <= testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^=$/.test(testLevelSelection[i]):
 					if (nb_collisions == testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
 						limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^!=$/.test(testLevelSelection[i]):
 					if (nb_collisions != testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^=>$/.test(testLevelSelection[i]):
 				case /^>=$/.test(testLevelSelection[i]):
 					if (nb_collisions >= testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
 						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				case /^>$/.test(testLevelSelection[i]):
 					if (nb_collisions > testLevel[i]) {
-						currentFilterCombinations[j].covering++;
+						if (!currentFilterCombinations[j].preselected) {
+							currentFilterCombinations[j].covering++;
+
+							if (withValue)
+							{
+								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+								combiFilterSumValue[i] += currentFilterCombinations[j].value;
+							}
+						}
+
 						hitsCount++;
 						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combinations) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
 					}
 					break;
 
 				default:
 					break;
 			}
+		}
+		if (!withValue) {
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 		}
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -900,7 +1011,7 @@ let rl = readline.createInterface({
 	if (!coverStatsMode) {
 		printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 		if (additionMode) {
-			selectedCombinations.push({combinations: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
+			selectedCombinations.push({combination: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
 			if (additionsLimit != -1 && additions >= additionsLimit) {
 				process.exit(1);
 			}
@@ -914,7 +1025,7 @@ let rl = readline.createInterface({
 			console.log(`Filter #${i+1} on file ${filename[i]}`);
 			for (let j = 0; j < filterCombinations[i].length; j++)
 			{
-				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combinations)}: ${filterCombinations[i][j].covering}`);
+				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 			}
 			console.log();
 		}
