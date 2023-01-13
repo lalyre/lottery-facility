@@ -21,7 +21,7 @@ const cli = meow(`
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
-	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering stat on filter lines it matches with.
+	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering count on filter lines it matches with.
 	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
 	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
 	
@@ -214,9 +214,12 @@ if (cli.flags.selection) {
 	}
 	let preselections = fs.readFileSync(selectionFile).toString().split(/\r?\n/);
 	for (var line of preselections) {
-		var numbers = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+		var [x, y] = line.trim().split(/:/);
+		var numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
-		preSelectedCombinations.push({combinations: numbers, covering: 0, value: 0, preselected: true, });
+		if (numbers.join("") == '') continue;
+		var value = (!y) ? -1 : +y.trim();
+		preSelectedCombinations.push({combinations: numbers, covering: 0, value: value, preselected: true, });
 	}
 }
 
@@ -311,10 +314,12 @@ for (let i = 0; i < filterCommand.length; i++) {
 			filterCombinations.push([]);
 			let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
 			for (let filter_line of filter_lines) {
-				let numbers = filter_line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+				var [x, y] = filter_line.trim().split(/:/);
+				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
-				filterCombinations[i].push({combinations: numbers, covering: 0, value: 0, preselected: false, });
+				var value = (!y) ? -1 : +y.trim();
+				filterCombinations[i].push({combinations: numbers, covering: 0, value: value, preselected: false, });
 			}
 			break;
 			
