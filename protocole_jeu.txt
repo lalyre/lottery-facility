@@ -1025,7 +1025,7 @@ filter --infile SELECTION1.txt --selection SOLUTION2.txt --globalfile 50_1.txt  
 
 
 
-filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=3)score(<5)" --globalFailure "0" > toto.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=3)score(<8)" --globalFailure "0" > toto.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(=2)score(<2)" --globalFailure "0" > toto.txt
 filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(<=0)" --globalFailure "0"
 
