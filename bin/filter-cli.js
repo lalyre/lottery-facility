@@ -77,6 +77,15 @@ const cli = meow(`
 	With "level(!=x)",   only filter lines with not x collisions with the current input combination are considered.
 	With "level(>=x)",   only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",    only filter lines with more than x collisions with the current input combination are considered.
+	
+	
+	* min_val
+	With "min_val(<x)",    only input combinations with min value less than x are considered.
+	With "min_val(<=x)",   only input combinations with min value less than or equal x are considered.
+	With "min_val(=x)" or "min_val(x)", only input combinations with min value equal to x are considered.
+	With "min_val(!=x)",   only input combinations with min value different from x are considered.
+	With "min_val(>=x)",   only input combinations with min value greater than or equal to x considered.
+	With "min_val(>x)",    only input combinations with min value greater than x are considered.
 
 	* score
 	With "score(<x)",    only input combinations with score less than x are considered.
@@ -268,7 +277,7 @@ switch (true) {
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,...,y)min_gap(x)max_gap(x)
+// filename(<filename>)weight(a)level(b)score(c)min_val(c)length(d)slice(a,b,...,y)min_gap(x)max_gap(x)
 let filterCommand = cli.flags.filter;
 let filterCombinations = [];
 let filename = [];
@@ -284,6 +293,12 @@ let testMaxgapSelection = [];
 let testMaxgap = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
+let testCombiFilterMinValSelection = [];
+let testCombiFilterMinVal = [];
+let testCombiFilterMaxValSelection = [];
+let testCombiFilterMaxVal = [];
+let testCombiFilterSumValSelection = [];
+let testCombiFilterSumVal = [];
 let globalScore = 0;
 let globalFailure = 0;
 
@@ -437,6 +452,21 @@ for (let i = 0; i < filterCommand.length; i++) {
 		default:
 			testCombiFilterScoreSelection.push(null);
 			testCombiFilterScore.push(-1);
+			break;
+	}
+	
+	
+	// Parsing MIN_VAL
+	switch (true) {
+		case /min_val\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
+			let match = /min_val\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.exec(filterCommand[i]);
+			if (match[1] == null) testCombiFilterMinValSelection.push('='); else testCombiFilterMinValSelection.push(match[1]);
+			testCombiFilterMinVal.push(+match[2]);
+			break;
+
+		default:
+			testCombiFilterMinValSelection.push(null);
+			testCombiFilterMinVal.push(-1);
 			break;
 	}
 }
@@ -865,7 +895,7 @@ let rl = readline.createInterface({
 			combiFilterSumValue[i] = -1;
 		}
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
-		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
+		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 
 
 		// Combi score scope
@@ -1020,11 +1050,9 @@ let rl = readline.createInterface({
 })
 .on('close', () => {
 	if (coverStatsMode) {
-		for (let i = 0; i < filterCommand.length; i++)
-		{
+		for (let i = 0; i < filterCommand.length; i++) {
 			console.log(`Filter #${i+1} on file ${filename[i]}`);
-			for (let j = 0; j < filterCombinations[i].length; j++)
-			{
+			for (let j = 0; j < filterCombinations[i].length; j++) {
 				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 			}
 			console.log();
