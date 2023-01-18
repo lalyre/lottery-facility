@@ -55,19 +55,20 @@ let displayDate = cli.flags.date;
 let displayStars = cli.flags.stars;
 
 
-// https://media.fdj.fr/static/csv/euromillions/euromillions_200402.zip
-// https://media.fdj.fr/static/csv/euromillions/euromillions_201105.zip
-// https://media.fdj.fr/static/csv/euromillions/euromillions_201402.zip
-// https://media.fdj.fr/static/csv/euromillions/euromillions_201609.zip
-// https://media.fdj.fr/static/csv/euromillions/euromillions_201902.zip
-// https://media.fdj.fr/static/csv/euromillions/euromillions_202002.zip
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201902.zip
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201609.zip
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201402.zip
+
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201105.zip
+// https://media.fdj.fr/static-draws/csv/euromillions/euromillions_200402.zip
 
 
 /*
  * https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/statistiques
- * https://media.fdj.fr/static/csv/euromillions/euromillions_202002.zip
+ * https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip
  */
-const euromillionsArchive = 'https://media.fdj.fr/static/csv/euromillions/euromillions_202002.zip';
+const euromillionsArchive = 'https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip';
 getBuffer(euromillionsArchive)
 .then((buffer) => {
 	return JSZip.loadAsync(buffer)

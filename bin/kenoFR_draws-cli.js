@@ -52,25 +52,26 @@ let displayDate = cli.flags.date;
 // SuperEnalotto	http://lottoscar.altervista.org/ArchivioSuper.zip
 
 
-// https://media.fdj.fr/static/csv/loto/loto_197605.zip
-// https://media.fdj.fr/static/csv/loto/loto_200810.zip
-// https://media.fdj.fr/static/csv/loto/loto_201703.zip
-// https://media.fdj.fr/static/csv/loto/loto_201902.zip
-// https://media.fdj.fr/static/csv/loto/loto_201911.zip
+// https://www.fdj.fr/jeux-de-tirage/loto/statistiques
+// https://media.fdj.fr/static-draws/csv/loto/loto_201911.zip
+// https://media.fdj.fr/static-draws/csv/loto/loto_201902.zip
+// https://media.fdj.fr/static-draws/csv/loto/loto_201703.zip
+// https://media.fdj.fr/static-draws/csv/loto/loto_200810.zip
+// https://media.fdj.fr/static-draws/csv/loto/loto_197605.zip
 
 
-// https://media.fdj.fr/static/csv/keno/keno_199309.zip
-// https://media.fdj.fr/static/csv/keno/keno_201302.zip
-// https://media.fdj.fr/static/csv/keno/keno_201811.zip
-// https://media.fdj.fr/static/csv/keno/keno_202010.zip
+
+// https://www.fdj.fr/jeux-de-tirage/keno/historique
+// https://www.fdj.fr/jeux-de-tirage/keno/statistiques
+// https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip
+// https://media.fdj.fr/static-draws/csv/keno/keno_201811.zip
+// https://media.fdj.fr/static-draws/csv/keno/keno_201302.zip
+// https://media.fdj.fr/static-draws/csv/keno/keno_199309.zip
 
 
 
 // Download from https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
-//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_199309.zip';
-//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201302.zip';
-//const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_201811.zip';
-const kenoArchive = 'https://media.fdj.fr/static/csv/keno/keno_202010.zip';
+const kenoArchive = 'https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip';
 getBuffer(kenoArchive)
 .then((buffer) => {
 	return JSZip.loadAsync(buffer)
