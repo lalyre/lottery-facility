@@ -5,6 +5,7 @@ export function isBrowser() {
 }
 
 export * from './version';
+export * from './utilities';
 export * from './random';
 export * from './drawbox';
 export * from './combination';
