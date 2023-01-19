@@ -3,8 +3,8 @@
 
 /**
  * Get GMT date YYYY-MM-DD HH:MM:SS.NNNZ from Javascript date
- * @param date			a Javascript date object
- * @return				a string representing the date in format 'YYYY-MM-DD HH:MM:SS.NNNZ'
+ * @param date  a Javascript date object
+ * @return      a string representing the date in format 'YYYY-MM-DD HH:MM:SS.NNNZ'
  */
 export function displayUTCDateTime(date: Date): string|null {
 	if (!date) {
@@ -24,8 +24,8 @@ export function displayUTCDateTime(date: Date): string|null {
 
 /**
  * Get GMT date YYYYMMDDHHMMSSNNN from Javascript date
- * @param date			a Javascript date object
- * @return				a string representing the date in format 'YYYYMMDDHHMMSSNNN'
+ * @param date  a Javascript date object
+ * @return      a string representing the date in format 'YYYYMMDDHHMMSSNNN'
  */
 export function displayUTCDateTimeYYYYMMDDHHMMSSNNN(date: Date): string|null {
 	if (!date) {
