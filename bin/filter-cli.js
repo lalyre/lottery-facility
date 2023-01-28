@@ -528,7 +528,6 @@ let rl = readline.createInterface({
 	for (let i = 0; i < filterCommand.length; i++)
 	{
 		let hitsCount = 0;
-		let limitHitsCount = 0;
 		
 		
 		// Combi length scope
@@ -569,7 +568,6 @@ let rl = readline.createInterface({
 		}
 		if (!selectLengthScope) {
 			hitsCount = -1;
-			limitHitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
@@ -623,7 +621,6 @@ let rl = readline.createInterface({
 		}
 		if (!selectMingapScope) {
 			hitsCount = -1;
-			limitHitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
@@ -677,7 +674,6 @@ let rl = readline.createInterface({
 		}
 		if (!selectMaxgapScope) {
 			hitsCount = -1;
-			limitHitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
@@ -691,7 +687,6 @@ let rl = readline.createInterface({
 		// Check whether computing a score is relevant or not
 		if (filename[i] === null || testLevelSelection[i] === null) {
 			hitsCount = -1;
-			limitHitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
@@ -712,7 +707,6 @@ let rl = readline.createInterface({
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && preSelectedCombinations.length === 0 && selectedCombinations.length === 0) {
 			hitsCount = -1;
-			limitHitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
@@ -791,8 +785,8 @@ let rl = readline.createInterface({
 					break;
 			}
 
-
 			if (match) {
+				if (!currentFilterCombinations[j].preselected && currentFilterCombinations[j].covering >= 1) alreadyCovered = true;
 				matchingCombinations.push (currentFilterCombinations[j]);
 			}
 		}
@@ -803,16 +797,9 @@ let rl = readline.createInterface({
 		}
 		
 		
-		// TODO CL
-		if (coverStatsMode && alreadyCovered) {
-			
-		}
-		
-		
 		for (let j = 0; j < matchingCombinations.length; j++) {
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, matchingCombinations[j].combination);
 			if (!matchingCombinations[j].preselected) {
-				if (matchingCombinations[j].covering >= 1) alreadyCovered = true;
 				matchingCombinations[j].covering++;
 
 				if (withValue)
@@ -828,7 +815,6 @@ let rl = readline.createInterface({
 			}
 
 			hitsCount++;
-			if (nb_collisions == testLevel[i]-1) limitHitsCount++;
 			hits_filters_string += lotteryFacility.Combination.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 		}
 		
