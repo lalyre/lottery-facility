@@ -742,6 +742,7 @@ let rl = readline.createInterface({
 		let withValue = true;
 		combiFilterSumValue[i] = 0;
 
+		let matchingCombinations = [];
 		for (let j = 0; j < currentFilterCombinations.length; j++) {
 			if (currentFilterCombinations[j].value == -1) withValue = false;
 
@@ -792,25 +793,7 @@ let rl = readline.createInterface({
 
 
 			if (match) {
-				if (!currentFilterCombinations[j].preselected) {
-					if (currentFilterCombinations[j].covering >= 1) alreadyCovered = true;
-					currentFilterCombinations[j].covering++;
-
-					if (withValue)
-					{
-						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-						else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-						else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-						combiFilterSumValue[i] += currentFilterCombinations[j].value;
-					}
-				}
-
-				hitsCount++;
-				if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-				hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+				matchingCombinations.push (currentFilterCombinations[j]);
 			}
 		}
 		if (!withValue) {
@@ -818,6 +801,38 @@ let rl = readline.createInterface({
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
 		}
+		
+		
+		// TODO CL
+		if (coverStatsMode && alreadyCovered) {
+			
+		}
+		
+		
+		for (let j = 0; j < matchingCombinations.length; j++) {
+			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, matchingCombinations[j].combination);
+			if (!matchingCombinations[j].preselected) {
+				if (matchingCombinations[j].covering >= 1) alreadyCovered = true;
+				matchingCombinations[j].covering++;
+
+				if (withValue)
+				{
+					if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+					else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+
+					if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+					else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+
+					combiFilterSumValue[i] += matchingCombinations[j].value;
+				}
+			}
+
+			hitsCount++;
+			if (nb_collisions == testLevel[i]-1) limitHitsCount++;
+			hits_filters_string += lotteryFacility.Combination.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+		}
+		
+		
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 
