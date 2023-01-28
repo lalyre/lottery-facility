@@ -738,155 +738,79 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
+		let alreadyCovered = false;
 		let withValue = true;
 		combiFilterSumValue[i] = 0;
 
 		for (let j = 0; j < currentFilterCombinations.length; j++) {
 			if (currentFilterCombinations[j].value == -1) withValue = false;
 
+			let match = false;
 			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j].combination);
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
 					if (nb_collisions < testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						if (nb_collisions == testLevel[i]-1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+						match = true;
 					}
 					break;
 
 				case /^=<$/.test(testLevelSelection[i]):
 				case /^<=$/.test(testLevelSelection[i]):
 					if (nb_collisions <= testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						match = true;
 					}
 					break;
 
 				case /^=$/.test(testLevelSelection[i]):
 					if (nb_collisions == testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						match = true;
 					}
 					break;
 
 				case /^!=$/.test(testLevelSelection[i]):
 					if (nb_collisions != testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						match = true;
 					}
 					break;
 
 				case /^=>$/.test(testLevelSelection[i]):
 				case /^>=$/.test(testLevelSelection[i]):
 					if (nb_collisions >= testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						if (nb_collisions == testLevel[i]) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]`  + '\n';
+						match = true;
 					}
 					break;
 
 				case /^>$/.test(testLevelSelection[i]):
 					if (nb_collisions > testLevel[i]) {
-						if (!currentFilterCombinations[j].preselected) {
-							currentFilterCombinations[j].covering++;
-
-							if (withValue)
-							{
-								if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
-
-								if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-								else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
-
-								combiFilterSumValue[i] += currentFilterCombinations[j].value;
-							}
-						}
-
-						hitsCount++;
-						if (nb_collisions == testLevel[i]+1) limitHitsCount++;
-						hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [nb_collisions: ${nb_collisions} ]`  + '\n';
+						match = true;
 					}
 					break;
 
 				default:
 					break;
+			}
+
+
+			if (match) {
+				if (!currentFilterCombinations[j].preselected) {
+					if (currentFilterCombinations[j].covering >= 1) alreadyCovered = true;
+					currentFilterCombinations[j].covering++;
+
+					if (withValue)
+					{
+						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+						else if (combiFilterMinValue[i] > currentFilterCombinations[j].value) { combiFilterMinValue[i] = currentFilterCombinations[j].value; }
+
+						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+						else if (combiFilterMaxValue[i] < currentFilterCombinations[j].value) { combiFilterMaxValue[i] = currentFilterCombinations[j].value; }
+
+						combiFilterSumValue[i] += currentFilterCombinations[j].value;
+					}
+				}
+
+				hitsCount++;
+				if (nb_collisions == testLevel[i]-1) limitHitsCount++;
+				hits_filters_string += lotteryFacility.Combination.toString(currentFilterCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 			}
 		}
 		if (!withValue) {
