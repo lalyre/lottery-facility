@@ -732,7 +732,6 @@ let rl = readline.createInterface({
 
 
 		// Get current tested combination's score
-		let alreadyCovered = false;
 		let withValue = true;
 		combiFilterSumValue[i] = 0;
 
@@ -786,7 +785,6 @@ let rl = readline.createInterface({
 			}
 
 			if (match) {
-				if (!currentFilterCombinations[j].preselected && currentFilterCombinations[j].covering >= 1) alreadyCovered = true;
 				matchingCombinations.push (currentFilterCombinations[j]);
 			}
 		}
