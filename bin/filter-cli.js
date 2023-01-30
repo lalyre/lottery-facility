@@ -315,7 +315,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 				console.error(`You cannot use <coverstats> mode in conjonction with "_selection" filter.`);
 				process.exit(1);
 			}
-			filename.push('_selection')
+			filename.push('_selection');
+			filterCombinations.push(null);
 			break;
 		
 		case /filename\(([\w|\.]*)\)/.test(filterCommand[i].trim()):
