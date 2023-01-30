@@ -325,7 +325,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 				console.error(`File ${filename[i]} does not exist.`);
 				process.exit(1);
 			}
-			
+
 			filterCombinations.push([]);
 			let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
 			for (let filter_line of filter_lines) {
@@ -340,6 +340,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			
 		default:
 			filename.push(null);
+			filterCombinations.push(null);
 			break;
 	}
 
@@ -726,7 +727,7 @@ let rl = readline.createInterface({
 				break;
 			
 			default:
-				currentFilterCombinations = [...currentFilterCombinations, ...filterCombinations[i]];
+				if (filterCombinations[i]) currentFilterCombinations = [...currentFilterCombinations, ...filterCombinations[i]];
 				break;
 		}
 

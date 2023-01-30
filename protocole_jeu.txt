@@ -1053,11 +1053,12 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(A1.txt)level(
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=4)score(<=0)" --globalFailure "0"
 
-filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(<=0)" --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0"
+> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "max_gap(<=10)" --filter "filename(toto.txt)level(>=2)score(<=0)" --filter "filename(_selection)level(>=1)score(<=0)" --globalFailure "0" >> toto.txt
 
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(=0)" --globalFailure "0"
-
+filter --infile toto.txt --globalfile 50_1.txt  --filter "filename(50_2.txt)level(>=2)score(>0)" --globalFailure "0"
 
 
 
