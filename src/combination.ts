@@ -45,7 +45,7 @@ export class Combination {
 	 * Give the union between 2 lottery combinations
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
-	 * @param duplicate if true then duplicate balls number are kept. Otherwise only unique numbers are returned.
+	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
 	 * @return          array containing all balls inside arr1 and arr2.
 	 */
 	public static union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
