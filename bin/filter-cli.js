@@ -77,8 +77,7 @@ const cli = meow(`
 	With "level(!=x)",   only filter lines with not x collisions with the current input combination are considered.
 	With "level(>=x)",   only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",    only filter lines with more than x collisions with the current input combination are considered.
-	
-	
+
 	* min_val
 	With "min_val(<x)",    only input combinations with min value less than x are considered.
 	With "min_val(<=x)",   only input combinations with min value less than or equal x are considered.
