@@ -1073,10 +1073,16 @@ cat tata.txt
 filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(tata.txt)level(>=2)score(>0)" --globalFailure "0" > toto.txt
 
 
+> aa1.txt
+filter --infile 50_3.txt --globalfile 50_1.txt  --selection aa1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" >> aa1.txt 
+
+> aa1.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --selection aa1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" | cut -d" " -f1,2 >> aa1.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --selection aa1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" | cut -d" " -f1,2 >> aa1.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --selection aa1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" | cut -d" " -f1,2 >> aa1.txt
 
 
-
-
-
+cut -d" " -f1,2 aa1.txt > aa2.txt
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(aa1.txt)level(>=2)score(=0)" --globalFailure "0"
 
 
