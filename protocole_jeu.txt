@@ -1086,3 +1086,5 @@ cut -d" " -f1,2 aa1.txt > aa2.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(aa1.txt)level(>=2)score(=0)" --globalFailure "0"
 
 
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=1)score(>0)" --globalFailure "0" --printhits
+
