@@ -1,7 +1,7 @@
 'use strict';
 
 
-export class Combination {
+export class CombinationHelper {
 	/**
 	 * Get lottery combination string
 	 * @param numbers   array of balls number.
@@ -36,7 +36,7 @@ export class Combination {
 	 * @return          number of balls both inside arr1 and arr2.
 	 */
 	public static collisionsCount(arr1:number[], arr2:number[]): number {
-		const merge = Combination.intersection(arr1, arr2);
+		const merge = CombinationHelper.intersection(arr1, arr2);
 		return merge.length;
 	}
 
@@ -195,11 +195,11 @@ export class Combination {
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:number = Combination.binomial(max, len);
+		let rank:number = CombinationHelper.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			if (numbers[len-i] > max) return -1;
-			rank -= Combination.binomial(max-numbers[len-i]+1, i);
-			if (i > 1) rank += Combination.binomial(max-numbers[len-i], i-1);
+			rank -= CombinationHelper.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += CombinationHelper.binomial(max-numbers[len-i], i-1);
 		}
 		rank++;
 		return rank;
@@ -217,14 +217,14 @@ export class Combination {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
-		if (rank <= 0 || rank > Combination.binomial(max, length)) return [];
+		if (rank <= 0 || rank > CombinationHelper.binomial(max, length)) return [];
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
 		for (let i = 0; i < length; i++) {
 			for (let k = max; k >= length; k--) {
 				let m = k;
 				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (Combination.combinationToRank(max, numbers) <= rank) break;
+				if (CombinationHelper.combinationToRank(max, numbers) <= rank) break;
 			}
 		}
 		return numbers;
@@ -255,9 +255,9 @@ export class Combination {
 		if (n > max) return -1;
 		if (n === 0) return 1;
 		if (n === max) return 1;
-		let ret:number = Combination.factorial(max);
-		ret /= Combination.factorial(n);
-		ret /= Combination.factorial(max-n);
+		let ret:number = CombinationHelper.factorial(max);
+		ret /= CombinationHelper.factorial(n);
+		ret /= CombinationHelper.factorial(max-n);
 		return ret;
 	}
 
@@ -269,8 +269,8 @@ export class Combination {
 	 * @return          great common divisor value of "a" and "b"
 	 */
 	 public static gcd(a:number, b:number): number {
-		if (a < b) return Combination.gcd(b,a);
-		const r:number = a%b; if (r !== 0) return Combination.gcd(b,r);
+		if (a < b) return CombinationHelper.gcd(b,a);
+		const r:number = a%b; if (r !== 0) return CombinationHelper.gcd(b,r);
 		return b;
 	}
 
@@ -282,7 +282,7 @@ export class Combination {
 	 * @return          least common multiplier value of "a" and "b"
 	 */
 	 public static lcm(a:number, b:number): number {
-		return a*b/Combination.gcd(a,b);
+		return a*b/CombinationHelper.gcd(a,b);
 	}
 }
 

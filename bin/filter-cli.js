@@ -476,11 +476,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 const printOutput = function (inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string) {
 	// Display output
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.Combination.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.CombinationHelper.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
-		console.log(lotteryFacility.Combination.toString(testedCombination.sort()));
+		console.log(lotteryFacility.CombinationHelper.toString(testedCombination.sort()));
 	}
 }
 
@@ -580,7 +580,7 @@ let rl = readline.createInterface({
 
 
 		// Combi min_gap scope
-		let minGap = lotteryFacility.Combination.minimum_gap(global_alphabet, testedCombination);
+		let minGap = lotteryFacility.CombinationHelper.minimum_gap(global_alphabet, testedCombination);
 		let selectMingapScope = true;
 		switch (true) {
 			case (testMingapSelection[i] == null):
@@ -633,7 +633,7 @@ let rl = readline.createInterface({
 
 
 		// Combi max_gap scope
-		let maxGap = lotteryFacility.Combination.maximum_gap(global_alphabet, testedCombination);
+		let maxGap = lotteryFacility.CombinationHelper.maximum_gap(global_alphabet, testedCombination);
 		let selectMaxgapScope = true;
 		switch (true) {
 			case (testMaxgapSelection[i] == null):
@@ -741,7 +741,7 @@ let rl = readline.createInterface({
 			if (currentFilterCombinations[j].value == -1) withValue = false;
 
 			let match = false;
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, currentFilterCombinations[j].combination);
+			let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, currentFilterCombinations[j].combination);
 			switch (true) {
 				case /^<$/.test(testLevelSelection[i]):
 					if (nb_collisions < testLevel[i]) {
@@ -797,7 +797,7 @@ let rl = readline.createInterface({
 		
 		
 		for (let j = 0; j < matchingCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.Combination.collisionsCount(slicedCombination, matchingCombinations[j].combination);
+			let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, matchingCombinations[j].combination);
 			if (!matchingCombinations[j].preselected) {
 				matchingCombinations[j].covering++;
 
@@ -814,7 +814,7 @@ let rl = readline.createInterface({
 			}
 
 			hitsCount++;
-			hits_filters_string += lotteryFacility.Combination.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 		}
 		
 		
@@ -977,7 +977,7 @@ let rl = readline.createInterface({
 		for (let i = 0; i < filterCommand.length; i++) {
 			console.log(`Filter #${i+1} on file ${filename[i]}`);
 			for (let j = 0; j < filterCombinations[i].length; j++) {
-				console.log(`${lotteryFacility.Combination.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
+				console.log(`${lotteryFacility.CombinationHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 			}
 			console.log();
 		}

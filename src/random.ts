@@ -45,3 +45,8 @@ export class Random {
 	}
 }
 
+
+/**
+ * number is in a range from (-2^53 + 1) to (2^53 - 1).
+ */
+
