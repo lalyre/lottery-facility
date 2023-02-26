@@ -1092,10 +1092,37 @@ combination --total 20 --size 6 --file KENOFR_70.txt > 20_6.txt
 combination --total 20 --size 3 --file KENOFR_70.txt > 20_3.txt
 combination --total 20 --size 2 --file KENOFR_70.txt > 20_2.txt
 
-filter --infile 20_3.txt --globalfile 50_1.txt  --filter "filename(20_6.txt)level(>=3)score(>=2)" --globalFailure "0" --printhits --coverstats
-filter --infile 20_3.txt --globalfile 50_1.txt  --filter "filename(20_6.txt)level(>=3)score(>=2)" --globalFailure "0" --printhits
+
+
+copy 20_6.txt  DD.txt
+filter --infile 20_3.txt --globalfile 50_1.txt  --filter "filename(DD.txt)level(>=3)score(>=2)" --globalFailure "0" --printhits --coverstats
+
+filter --infile DD.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=3)score(>0)"  --globalFailure "0" --coverstats
+
+
 
 filter --infile 20_6.txt --globalfile 50_1.txt  --filter "filename(GAME.txt)level(>=3)score(>=2)" --filter "filename(20_6.txt)level(<=2)score(0)" --globalFailure "0"
+
+
+
+
+filter --infile 20_3.txt --globalfile 50_1.txt  --filter "filename(DD.txt)level(>=3)score(>=2)" --globalFailure "0" --printhits 
+
+
+filter --infile 20_6.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0"
+
+filter --infile 20_6.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=3)score(=0)"  --globalFailure "0" > DD.txt
+filter --infile 20_3.txt --globalfile 50_1.txt  --filter "filename(DD.txt)level(>=3)score(>=2)" --globalFailure ">0"  > GG.txt
+filter --infile DD.txt --globalfile 50_1.txt  --filter "filename(20_3.txt)level(>=3)score(>0)" --globalFailure "0" --coverstats
+
+filter --infile DD.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=3)score(=0)"  --globalFailure "0" > DD1.txt
+filter --infile GG.txt --globalfile 50_1.txt  --filter "filename(DD1.txt)level(>=3)score(=0)" --globalFailure "0"  > GG1.txt
+
+
+
+
+
+
 
 
 
