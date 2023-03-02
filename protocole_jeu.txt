@@ -1120,6 +1120,89 @@ filter --infile GG.txt --globalfile 50_1.txt  --filter "filename(DD1.txt)level(>
 
 
 
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE1.txt
+filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(SPACE1.txt)level(>=2)score(0)" --globalFailure "0"
+echo "49 50" > GAME1.txt
+echo "01 02 03 04 05" >> GAME1.txt
+
+
+filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION2.txt
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(SELECTION2.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE2.txt
+filter --infile SELECTION2.txt --globalfile 50_1.txt  --filter "filename(SPACE2.txt)level(>=2)score(0)" --globalFailure "0"
+echo "01 06 07 08 09" >> GAME1.txt
+
+
+filter --infile SELECTION2.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION3.txt
+filter --infile SPACE2.txt --globalfile 50_1.txt  --filter "filename(SELECTION3.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE3.txt
+filter --infile SELECTION3.txt --globalfile 50_1.txt  --filter "filename(SPACE3.txt)level(>=2)score(0)" --globalFailure "0"
+echo "01 10 11 12 13" >> GAME1.txt
+
+
+filter --infile SELECTION3.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION4.txt
+filter --infile SPACE3.txt --globalfile 50_1.txt  --filter "filename(SELECTION4.txt)level(>=2)score(>=9)" --globalFailure "0" > SPACE4.txt
+filter --infile SELECTION4.txt --globalfile 50_1.txt  --filter "filename(SPACE4.txt)level(>=2)score(0)" --globalFailure "0"
+echo "01 10 14 15 16" >> GAME1.txt
+
+
+filter --infile SELECTION4.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION5.txt
+filter --infile SPACE4.txt --globalfile 50_1.txt  --filter "filename(SELECTION5.txt)level(>=2)score(>=9)" --globalFailure "0" > SPACE5.txt
+filter --infile SELECTION5.txt --globalfile 50_1.txt  --filter "filename(SPACE5.txt)level(>=2)score(0)" --globalFailure "0"
+echo "02 03 04 05 10" >> GAME1.txt
+echo "06 07 08 09 10" >> GAME1.txt
+
+
+filter --infile SELECTION5.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION6.txt
+filter --infile SPACE5.txt --globalfile 50_1.txt  --filter "filename(SELECTION6.txt)level(>=2)score(>=9)" --globalFailure "0" > SPACE6.txt
+filter --infile SELECTION6.txt --globalfile 50_1.txt  --filter "filename(SPACE6.txt)level(>=2)score(0)" --globalFailure "0"
+echo "02 06 11 12 14" >> GAME1.txt 
+
+
+filter --infile SELECTION6.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION7.txt
+filter --infile SPACE6.txt --globalfile 50_1.txt  --filter "filename(SELECTION7.txt)level(>=2)score(>=9)" --globalFailure "0" > SPACE7.txt
+filter --infile SELECTION7.txt --globalfile 50_1.txt  --filter "filename(SPACE7.txt)level(>=2)score(0)" --globalFailure "0"
+echo "02 07 13 15 16" >> GAME1.txt 
+
+
+filter --infile SELECTION7.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION8.txt
+filter --infile SPACE7.txt --globalfile 50_1.txt  --filter "filename(SELECTION8.txt)level(>=2)score(>=7)" --globalFailure "0" > SPACE8.txt
+filter --infile SELECTION8.txt --globalfile 50_1.txt  --filter "filename(SPACE8.txt)level(>=2)score(0)" --globalFailure "0"
+echo "02 07 08 09 14" >> GAME1.txt
+
+
+filter --infile SELECTION8.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION9.txt
+filter --infile SPACE8.txt --globalfile 50_1.txt  --filter "filename(SELECTION9.txt)level(>=2)score(>=7)" --globalFailure "0" > SPACE9.txt
+filter --infile SELECTION9.txt --globalfile 50_1.txt  --filter "filename(SPACE9.txt)level(>=2)score(0)" --globalFailure "0"
+echo "03 06 13 15 16" >> GAME1.txt
+
+
+filter --infile SELECTION9.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION10.txt
+filter --infile SPACE9.txt --globalfile 50_1.txt  --filter "filename(SELECTION10.txt)level(>=2)score(>=8)" --globalFailure "0" > SPACE10.txt
+filter --infile SELECTION10.txt --globalfile 50_1.txt  --filter "filename(SPACE10.txt)level(>=2)score(0)" --globalFailure "0"
+echo "04 05 06 14" >> GAME1.txt
+echo "03 04 07 13 14" >> GAME1.txt 
+
+
+filter --infile SELECTION10.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION11.txt
+filter --infile SPACE10.txt --globalfile 50_1.txt  --filter "filename(SELECTION11.txt)level(>=2)score(>=8)" --globalFailure "0" > SPACE11.txt
+filter --infile SELECTION11.txt --globalfile 50_1.txt  --filter "filename(SPACE12.txt)level(>=2)score(0)" --globalFailure "0"
+echo "03 08 11 12 15" >> GAME1.txt
+
+
+filter --infile SELECTION11.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION12.txt
+filter --infile SPACE11.txt --globalfile 50_1.txt  --filter "filename(SELECTION12.txt)level(>=2)score(>=7)" --globalFailure "0" > SPACE12.txt
+filter --infile SELECTION12.txt --globalfile 50_1.txt  --filter "filename(SPACE12.txt)level(>=2)score(0)" --globalFailure "0"
+echo "04 08 11 12 16" >> GAME1.txt 
+
+
+filter --infile SELECTION12.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION13.txt
+filter --infile SPACE12.txt --globalfile 50_1.txt  --filter "filename(SELECTION13.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE13.txt
+
+
+
+
+
+
+
 
 
 
