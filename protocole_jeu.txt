@@ -1121,6 +1121,42 @@ filter --infile GG.txt --globalfile 50_1.txt  --filter "filename(DD1.txt)level(>
 
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE1.txt
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > GAME1.txt
+filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --globalFailure "0" > SELECTION2.txt
+
+
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(SELECTION2.txt)level(>=2)score(>=9)" --globalFailure "0" > SPACE2.txt
+
+filter --infile SPACE2.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(<=5)" --globalFailure "0" > toto.txt
+filter --infile SELECTION2.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=3)score(0)" --globalFailure "0" > SPACE2.txt
+filter --infile SELECTION2.txt --globalfile 50_1.txt  --filter "filename(SPACE2.txt)level(>=2)score(0)" --globalFailure "0"
+49 50
+01 14
+17 30
+33 46
+01 15
+17 31
+33 47
+01 16
+17 32
+33 48
+filter --infile SPACE2.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+filter --infile SELECTION2.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=3)score(<=0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto.txt
+filter --infile SPACE1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=3)score(<=0)" --filter "filename(GAME1.txt)level(=2)score(<=1)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto.txt
+
+filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(GAME1.txt)level(>=2)score(0)" --filter "filename(toto.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(SELECTION1.txt)level(>=2)score(>=10)" --globalFailure "0" > SPACE1.txt
 filter --infile SELECTION1.txt --globalfile 50_1.txt  --filter "filename(SPACE1.txt)level(>=2)score(0)" --globalFailure "0"
 echo "49 50" > GAME1.txt
 echo "01 02 03 04 05" >> GAME1.txt
