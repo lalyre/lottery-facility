@@ -14,7 +14,7 @@ const cli = meow(`
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalnum        All items that can be used in combinations, separated by '|' or ' '.
-	  --globalfile       File containing one item per line that are used in combinations of <file> file, and possibly others items.
+	  --globalfile       File containing one item per line that are used in combinations of <infile> file, and possibly others items.
 	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
