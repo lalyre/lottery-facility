@@ -1249,12 +1249,14 @@ filter --infile SPACE12.txt --globalfile 50_1.txt  --filter "filename(SELECTION1
 
 
 
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto1.txt
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=4)score(0)"  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto2.txt
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=4)score(0)"  --filter "filename(toto2.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto3.txt
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=4)score(0)"  --filter "filename(toto2.txt)level(>=4)score(0)" --filter "filename(toto3.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > toto4.txt
 
 
-
-
-
-
+filter --infile 20_2.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=2)score(>0)" --filter "filename(toto2.txt)level(>=2)score(>0)" --filter "filename(toto3.txt)level(>=2)score(>0)"  --filter "filename(toto4.txt)level(>=2)score(>0)" --globalScore ">=2"  > titi.txt
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(titi.txt)level(>=2)score(0)" --globalFailure "0"
 
 
 

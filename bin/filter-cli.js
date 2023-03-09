@@ -521,6 +521,7 @@ let rl = readline.createInterface({
 	let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
 	let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
 	let slicedCombination = testedCombination
+	let withOngoingSelection = false;
 
 
 	// Loop on all filter commands
@@ -707,6 +708,7 @@ let rl = readline.createInterface({
 
 		// Init the ongoing selection in case of "_selection" logical file
 		if (filename[i] === '_selection' && preSelectedCombinations.length === 0 && selectedCombinations.length === 0) {
+			withOngoingSelection = true;
 			hitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
@@ -723,6 +725,7 @@ let rl = readline.createInterface({
 		currentFilterCombinations = [...currentFilterCombinations, ...preSelectedCombinations];
 		switch (true) {
 			case /^_selection$/.test(filename[i].trim()):
+				withOngoingSelection = true;
 				currentFilterCombinations = [...currentFilterCombinations, ...selectedCombinations];
 				break;
 			
@@ -877,7 +880,7 @@ let rl = readline.createInterface({
 		case (testGlobalScoreSelection == null):
 			break; // No rule
 
-		case (selectedCombinations.length === 0 && combiGlobalScore === 0):
+		case (withOngoingSelection && selectedCombinations.length === 0 && combiGlobalScore === 0):
 			break;
 
 		case /^<$/.test(testGlobalScoreSelection):
@@ -890,7 +893,7 @@ let rl = readline.createInterface({
 			break;
 
 		case /^=$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore == testGlobalScore)) selectScoreScope = false; // reject this combination
+			if (!(combiGlobalScore === testGlobalScore)) selectScoreScope = false; // reject this combination
 			break;
 
 		case /^!=$/.test(testGlobalScoreSelection):
