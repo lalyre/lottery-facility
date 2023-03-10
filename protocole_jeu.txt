@@ -1261,3 +1261,11 @@ filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(titi.txt)level
 
 
 filter --infile 20_5.txt --globalfile 50_1.txt --filter "filename(toto3.txt)level(>=5)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
+
+> toto0.txt
+filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(toto0.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0" > toto1.txt
+filter --infile 20_7.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0" > toto2.txt
+filter --infile 20_6.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=3)score(0)" --filter "filename(toto2.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0" > toto3.txt
+filter --infile 20_5.txt --globalfile 50_1.txt --filter "filename(toto1.txt)level(>=3)score(0)" --filter "filename(toto2.txt)level(>=3)score(0)" --filter "filename(toto3.txt)level(>=4)score(0)" --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0"  > toto4.txt
+
