@@ -141,12 +141,12 @@ const cli = meow(`
 		globalScore: {
 			type: 'string',
 			isRequired: false,
-			isMultiple: false,
+			isMultiple: true,
 		},
 		globalFailure: {
 			type: 'string',
 			isRequired: false,
-			isMultiple: false,
+			isMultiple: true,
 		},
 		filter: {
 			type: 'string',
@@ -232,47 +232,55 @@ if (cli.flags.selection) {
 }
 
 
-let testGlobalScoreSelection = null;
-let testGlobalScore = -1;
+let testGlobalScoreSelection = [];
+let testGlobalScore = [];
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(-?\d*)$/;
-switch (true) {
-	case cli.flags.globalScore === null:
-	case cli.flags.globalScore === undefined:
-		break;
+for (let i = 0; i < cli.flags.globalScore.length; i++) {
+	switch (true) {
+		case cli.flags.globalScore[i] === null:
+		case cli.flags.globalScore[i] === undefined:
+			testGlobalScoreSelection.push(null);
+			testGlobalScore.push(-1);
+			break;
 
-	case regexp1.test(cli.flags.globalScore):
-		let match = regexp1.exec(cli.flags.globalScore);
-		testGlobalScoreSelection = match[1];
-		testGlobalScore = +match[2];
-		if (testGlobalScoreSelection ==  null) testGlobalScoreSelection = '=';
-		break;
+		case regexp1.test(cli.flags.globalScore[i].trim()):
+			let match = regexp1.exec(cli.flags.globalScore[i]);
+			if (match[1] == null) testGlobalScoreSelection.push('=');
+			else testGlobalScoreSelection.push(match[1]);
+			testGlobalScore.push(+match[2]);
+			break;
 
-	default:
-		console.error(`Wrong <globalScore> value.`);
-		process.exit(1);
-		break;
+		default:
+			console.error(`Wrong <globalScore> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
 }
 
 
-let testGlobalFailureSelection = null;
-let testGlobalFailure = -1;
+let testGlobalFailureSelection = [];
+let testGlobalFailure = [];
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
-switch (true) {
-	case cli.flags.globalFailure === null:
-	case cli.flags.globalFailure === undefined:
-		break;
+for (let i = 0; i < cli.flags.globalFailure.length; i++) {
+	switch (true) {
+		case cli.flags.globalFailure[i] === null:
+		case cli.flags.globalFailure[i] === undefined:
+			testGlobalFailureSelection.push(null);
+			testGlobalFailure.push(-1);
+			break;
 
-	case regexp2.test(cli.flags.globalFailure):
-		let match = regexp2.exec(cli.flags.globalFailure);
-		testGlobalFailureSelection = match[1];
-		testGlobalFailure = +match[2];
-		if (testGlobalFailureSelection == null) testGlobalFailureSelection = '=';
-		break;
+		case regexp2.test(cli.flags.globalFailure[i].trim()):
+			let match = regexp2.exec(cli.flags.globalFailure[i]);
+			if (match[1] == null) testGlobalFailureSelection.push('=');
+			else testGlobalFailureSelection.push(match[1]);
+			testGlobalFailure.push(+match[2]);
+			break;
 
-	default:
-		console.error(`Wrong <globalFailure> value.`);
-		process.exit(1);
-		break;
+		default:
+			console.error(`Wrong <globalFailure> (#${i+1}) value.`);
+			process.exit(1);
+			break;
+	}
 }
 
 
@@ -875,6 +883,9 @@ let rl = readline.createInterface({
 
 	// Combi global score scope
 	let selectScoreScope = true;
+
+// TODO CL
+
 	switch (true) {
 		case (coverStatsMode):
 		case (testGlobalScoreSelection == null):
@@ -920,6 +931,10 @@ let rl = readline.createInterface({
 
 	// Combi global failure scope
 	let selectFailureScope = true;
+	
+	
+// TODO CL
+	
 	switch (true) {
 		case (testGlobalFailureSelection == null):
 			break; // No rule

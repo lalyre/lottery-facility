@@ -1,4 +1,4 @@
-import { Random } from '../src/random';
+import { RandomHelper } from '../src/random';
 
 
 describe('Random module', () => {
@@ -9,8 +9,8 @@ describe('Random module', () => {
 
 
     test('Random.randomNumberRange test', () => {
-        const a = Random.randomNumberRange(1, 2000);
-        const b = Random.randomNumberRange(1, 2000);
+        const a = RandomHelper.randomNumberRange(1, 2000);
+        const b = RandomHelper.randomNumberRange(1, 2000);
         console.log("a: " + a);
         console.log("b: " + b);
 
@@ -23,7 +23,7 @@ describe('Random module', () => {
 
 
     test('Random.randomNumber test', () => {
-        const a = Random.randomNumber();
+        const a = RandomHelper.randomNumber();
         console.log("a: " + a);
     });
 

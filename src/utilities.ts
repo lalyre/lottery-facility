@@ -7,9 +7,7 @@
  * @return      a string representing the date in format 'YYYY-MM-DD HH:MM:SS.NNNZ'
  */
 export function displayUTCDateTime(date: Date): string|null {
-	if (!date) {
-		return null;
-	}
+	if (!date) return null;
 	const year = date.getUTCFullYear();
 	const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
 	const day = date.getUTCDate().toString().padStart(2, '0');
@@ -28,9 +26,7 @@ export function displayUTCDateTime(date: Date): string|null {
  * @return      a string representing the date in format 'YYYYMMDDHHMMSSNNN'
  */
 export function displayUTCDateTimeYYYYMMDDHHMMSSNNN(date: Date): string|null {
-	if (!date) {
-		return null;
-	}
+	if (!date) return null;
 	const year = date.getUTCFullYear();
 	const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
 	const day = date.getUTCDate().toString().padStart(2, '0');

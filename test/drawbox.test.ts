@@ -1,6 +1,6 @@
 'use strict';
 import {
-     Random,
+     RandomHelper,
      DrawBox,
 } from '../src/main';
 

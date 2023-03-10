@@ -1,5 +1,5 @@
 'use strict';
-import { Random } from './random';
+import { RandomHelper } from './random';
 
 
 export class DrawBox {
@@ -54,7 +54,7 @@ export class DrawBox {
 	 */
 	private shuffle(nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
-			const a = Random.randomNumberRange(1, this._count);
+			const a = RandomHelper.randomNumberRange(1, this._count);
 			this.swapBalls(1+i%this._count, a);
 		}
 	}
