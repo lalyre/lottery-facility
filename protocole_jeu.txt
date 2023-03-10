@@ -1260,3 +1260,4 @@ filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(titi.txt)level
 
 
 
+filter --infile 20_5.txt --globalfile 50_1.txt --filter "filename(toto3.txt)level(>=5)score(>0)" --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"

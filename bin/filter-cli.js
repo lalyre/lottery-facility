@@ -235,7 +235,7 @@ if (cli.flags.selection) {
 let testGlobalScoreSelection = [];
 let testGlobalScore = [];
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(-?\d*)$/;
-for (let i = 0; i < cli.flags.globalScore.length; i++) {
+for (let i = 0; cli.flags.globalScore && i < cli.flags.globalScore.length; i++) {
 	switch (true) {
 		case cli.flags.globalScore[i] === null:
 		case cli.flags.globalScore[i] === undefined:
@@ -261,7 +261,7 @@ for (let i = 0; i < cli.flags.globalScore.length; i++) {
 let testGlobalFailureSelection = [];
 let testGlobalFailure = [];
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
-for (let i = 0; i < cli.flags.globalFailure.length; i++) {
+for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i++) {
 	switch (true) {
 		case cli.flags.globalFailure[i] === null:
 		case cli.flags.globalFailure[i] === undefined:
@@ -883,94 +883,92 @@ let rl = readline.createInterface({
 
 	// Combi global score scope
 	let selectScoreScope = true;
+	for (let i = 0; i < testGlobalScoreSelection.length; i++)
+	{
+		switch (true) {
+			case (coverStatsMode):
+			case (testGlobalScoreSelection[i] == null):
+				break; // No rule
 
-// TODO CL
+			case (withOngoingSelection && selectedCombinations.length === 0 && combiGlobalScore === 0):
+				break;
 
-	switch (true) {
-		case (coverStatsMode):
-		case (testGlobalScoreSelection == null):
-			break; // No rule
+			case /^<$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore < testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
 
-		case (withOngoingSelection && selectedCombinations.length === 0 && combiGlobalScore === 0):
-			break;
+			case /^=<$/.test(testGlobalScoreSelection[i]):
+			case /^<=$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore <= testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
 
-		case /^<$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore < testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
+			case /^=$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore === testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
 
-		case /^=<$/.test(testGlobalScoreSelection):
-		case /^<=$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore <= testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
+			case /^!=$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore != testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
 
-		case /^=$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore === testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
+			case /^=>$/.test(testGlobalScoreSelection[i]):
+			case /^>=$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore >= testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
 
-		case /^!=$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore != testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
-
-		case /^=>$/.test(testGlobalScoreSelection):
-		case /^>=$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore >= testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
-
-		case /^>$/.test(testGlobalScoreSelection):
-			if (!(combiGlobalScore > testGlobalScore)) selectScoreScope = false; // reject this combination
-			break;
-	
-		default:
-			selectScoreScope = false; // reject this combination
-			break;
+			case /^>$/.test(testGlobalScoreSelection[i]):
+				if (!(combiGlobalScore > testGlobalScore[i])) selectScoreScope = false; // reject this combination
+				break;
+		
+			default:
+				selectScoreScope = false; // reject this combination
+				break;
+		}
+		if (!selectScoreScope) {
+			return;			// next tested combination
+		}
 	}
-	if (!selectScoreScope) {
-		return;			// next tested combination
-	}
-
 
 	// Combi global failure scope
 	let selectFailureScope = true;
-	
-	
-// TODO CL
-	
-	switch (true) {
-		case (testGlobalFailureSelection == null):
-			break; // No rule
+	for (let i = 0; i < testGlobalFailureSelection.length; i++)
+	{
+		switch (true) {
+			case (testGlobalFailureSelection[i] == null):
+				break; // No rule
 
-		case /^<$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure < testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^<$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure < testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		case /^=<$/.test(testGlobalFailureSelection):
-		case /^<=$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure <= testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^=<$/.test(testGlobalFailureSelection[i]):
+			case /^<=$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure <= testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		case /^=$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure == testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^=$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure == testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		case /^!=$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure != testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^!=$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure != testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		case /^=>$/.test(testGlobalFailureSelection):
-		case /^>=$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure >= testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^=>$/.test(testGlobalFailureSelection[i]):
+			case /^>=$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure >= testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		case /^>$/.test(testGlobalFailureSelection):
-			if (!(combiGlobalFailure > testGlobalFailure)) selectFailureScope = false; // reject this combination
-			break;
+			case /^>$/.test(testGlobalFailureSelection[i]):
+				if (!(combiGlobalFailure > testGlobalFailure[i])) selectFailureScope = false; // reject this combination
+				break;
 
-		default:
-			selectFailureScope = false; // reject this combination
-			break;
-	}
-	if (!selectFailureScope) {
-		return;			// next tested combination
+			default:
+				selectFailureScope = false; // reject this combination
+				break;
+		}
+		if (!selectFailureScope) {
+			return;			// next tested combination
+		}
 	}
 
 
