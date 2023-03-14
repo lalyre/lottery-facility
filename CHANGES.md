@@ -1,6 +1,6 @@
 Roadmap
 =======
-* adding CombinationsRegistry class for stacking combinations collisions information rather than combinations themselves, and capable of answering collisions requests quickly.
+* adding ConnectionsRegistry class for stacking combinations collisions information rather than combinations themselves, and capable of answering collisions requests quickly.
 * add Web features to the library.
 * draws statistics.
 * draws prediction algorithms.

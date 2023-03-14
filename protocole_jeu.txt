@@ -1277,7 +1277,7 @@ filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(_selection)lev
 filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(_selection)level(>=4)score(0)" --globalFailure "0" > 20_8_4.txt
 filter --infile 20_8.txt --globalfile 50_1.txt --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0" > 20_8_3.txt
 
-filter --infile 20_5.txt --globalfile 50_1.txt --filter "filename(20_8_5.txt)level(>=5)score(=1)" --filter "filename(_selection)level(>=3)score(0)" --globalFailure "0"
+filter --infile 20_6.txt --globalfile 50_1.txt --filter "filename(20_8_6.txt)level(>=6)score(=1)" --filter "filename(_selection)level(>=4)score(0)" --globalFailure "0"
 
 
 
