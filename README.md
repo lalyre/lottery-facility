@@ -19,7 +19,7 @@ Features:
 * Random numbers generator
 * Random selections of numbers
 * Draws statistics (TODO)
-* Draws prediction algorithms (TODO)
+* Draws prediction heuristics (TODO)
 
 CLI utilities:
 * flash

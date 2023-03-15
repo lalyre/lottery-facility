@@ -172,6 +172,12 @@ const cli = meow(`
 			isMultiple: false,
 			default: false,
 		},
+		coverlines: {
+			type: 'boolean',
+			isRequired: false,
+			isMultiple: false,
+			default: false,
+		},
 		printhits: {
 			type: 'boolean',
 			isRequired: false,
@@ -189,8 +195,17 @@ const cli = meow(`
 
 
 let additionMode = cli.flags.addition;
-let coverStatsMode = cli.flags.coverstats;
 let additionsLimit = cli.flags.limit;
+let coverStatsMode = cli.flags.coverstats;
+let coverLinesMode = cli.flags.coverlines;
+if (coverStatsMode && coverLinesMode) {
+	console.error("Either choose <coverstats> or <coverlines>, but not both !");
+	process.exit(1);
+}
+if (coverLinesMode && cli.flags.filter.length > 1) {
+	console.error("Only one filter allowed with <coverlines> mode !");
+	process.exit(1);
+}
 
 
 let infile = cli.flags.infile.trim();
@@ -221,13 +236,15 @@ if (cli.flags.selection) {
 		process.exit(1);
 	}
 	let preselections = fs.readFileSync(selectionFile).toString().split(/\r?\n/);
+	let lineNum = 0;
 	for (var line of preselections) {
 		var [x, y] = line.trim().split(/:/);
 		var numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
 		if (numbers.join("") == '') continue;
 		var value = (!y) ? -1 : +y.trim();
-		preSelectedCombinations.push({combination: numbers, covering: 0, value: value, preselected: true, });
+		lineNum++;
+		preSelectedCombinations.push({lineNum: lineNum, combination: numbers, covering: 0, value: value, preselected: true, });
 	}
 }
 
@@ -336,13 +353,15 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 			filterCombinations.push([]);
 			let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
+			let line = 0;
 			for (let filter_line of filter_lines) {
 				var [x, y] = filter_line.trim().split(/:/);
 				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
 				var value = (!y) ? -1 : +y.trim();
-				filterCombinations[i].push({combination: numbers, covering: 0, value: value, preselected: false, });
+				line++;
+				filterCombinations[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
 			}
 			break;
 			
@@ -528,7 +547,8 @@ let rl = readline.createInterface({
 	let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
 	let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
 	let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
-	let slicedCombination = testedCombination
+	let slicedCombination = testedCombination;
+	let coveredLines = "";
 	let withOngoingSelection = false;
 
 
@@ -647,11 +667,11 @@ let rl = readline.createInterface({
 		switch (true) {
 			case (testMaxgapSelection[i] == null):
 				break; // No rule
-				
+
 			case (maxGap < 0):
 				selectMaxgapScope = false; // reject this combination
 				break;
-				
+
 			case /^<$/.test(testMaxgapSelection[i]):
 				if (!(maxGap < testMaxgap[i])) selectMaxgapScope = false; // reject this combination
 				break;
@@ -805,8 +825,7 @@ let rl = readline.createInterface({
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
 		}
-		
-		
+
 		for (let j = 0; j < matchingCombinations.length; j++) {
 			let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, matchingCombinations[j].combination);
 			if (!matchingCombinations[j].preselected) {
@@ -826,6 +845,8 @@ let rl = readline.createInterface({
 
 			hitsCount++;
 			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+			coveredLines += matchingCombinations[j].lineNum;
+			coveredLines += " ";
 		}
 		
 		
@@ -837,6 +858,7 @@ let rl = readline.createInterface({
 		let selectScoreScope = true;
 		switch (true) {
 			case (coverStatsMode):
+			case (coverLinesMode):
 			case (testCombiFilterScoreSelection[i] == null):
 				break; // No rule
 
@@ -887,6 +909,7 @@ let rl = readline.createInterface({
 	{
 		switch (true) {
 			case (coverStatsMode):
+			case (coverLinesMode):
 			case (testGlobalScoreSelection[i] == null):
 				break; // No rule
 
@@ -933,6 +956,8 @@ let rl = readline.createInterface({
 	for (let i = 0; i < testGlobalFailureSelection.length; i++)
 	{
 		switch (true) {
+			case (coverStatsMode):
+			case (coverLinesMode):
 			case (testGlobalFailureSelection[i] == null):
 				break; // No rule
 
@@ -972,13 +997,19 @@ let rl = readline.createInterface({
 	}
 
 
+	// Print covered lines
+	if (coverLinesMode) {
+		console.log(coveredLines)
+	}
+
+
 	// Select the tested combination and get global track records
 	globalScore += combiGlobalScore;
 	globalFailure += combiGlobalFailure;
 
 
 	// Add the tested combination to the ongoing selection
-	if (!coverStatsMode) {
+	if (!coverStatsMode && !coverLinesMode) {
 		printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 		if (additionMode) {
 			selectedCombinations.push({combination: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
