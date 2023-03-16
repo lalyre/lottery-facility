@@ -1012,7 +1012,8 @@ let rl = readline.createInterface({
 	if (!coverStatsMode && !coverLinesMode) {
 		printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
 		if (additionMode) {
-			selectedCombinations.push({combination: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
+			let lineNum = preSelectedCombinations.length + selectedCombinations.length + 1;
+			selectedCombinations.push({lineNum: lineNum, combination: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
 			if (additionsLimit != -1 && additions >= additionsLimit) {
 				process.exit(1);
 			}
@@ -1028,7 +1029,6 @@ let rl = readline.createInterface({
 			}
 			console.log();
 		}
-
 		return;
 	}
 
