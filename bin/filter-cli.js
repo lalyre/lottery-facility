@@ -536,7 +536,7 @@ let rl = readline.createInterface({
 	if (testedCombination[0] == 0) return;
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
-	//console.log(testedCombination);
+	//console.log("testedCombination " + testedCombination);
 
 
 	// Init tested combination track records
