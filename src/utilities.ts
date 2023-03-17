@@ -37,3 +37,40 @@ export function displayUTCDateTimeYYYYMMDDHHMMSSNNN(date: Date): string|null {
 	const display = `${year}${month}${day}${hour}${minute}${second}${millis}`;
 	return display;
 }
+
+
+/**
+ * Get GMT date YYYYMMDDHHMMSS from Javascript date
+ * @param date  a Javascript date object
+ * @return      a string representing the date in format 'YYYYMMDDHHMMSS'
+ */
+export function displayUTCDateTimeYYYYMMDDHHMMSS(date: Date): string|null {
+	if (!date) return null;
+	const display = displayUTCDateTimeYYYYMMDDHHMMSSNNN(date);
+	return display.substring(0, display.length-3);
+}
+
+
+/**
+ * Get GMT date YYYYMMDDHHMM from Javascript date
+ * @param date  a Javascript date object
+ * @return      a string representing the date in format 'YYYYMMDDHHMM'
+ */
+export function displayUTCDateTimeYYYYMMDDHHMM(date: Date): string|null {
+	if (!date) return null;
+	const display = displayUTCDateTimeYYYYMMDDHHMMSSNNN(date);
+	return display.substring(0, display.length-5);
+}
+
+
+/**
+ * Get GMT date YYYYMMDD from Javascript date
+ * @param date  a Javascript date object
+ * @return      a string representing the date in format 'YYYYMMDD'
+ */
+export function displayUTCDateTimeYYYYMMDD(date: Date): string|null {
+	if (!date) return null;
+	const display = displayUTCDateTimeYYYYMMDDHHMMSSNNN(date);
+	return display.substring(0, display.length-9);
+}
+
