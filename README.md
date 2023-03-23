@@ -148,7 +148,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 --total, -t     Total number of arranged packets of items.
 --size, -s      Number of assembled packets of items.
 --file, -f      A file containing one item of combination per line.
---numbers, -n   Items of combinations separated by '|', or ' '.
+--numbers, -n   Items of combinations separated by '|'.
 --step          Size of a packet of items. Default value 1.
 ```
 
@@ -162,7 +162,7 @@ Only the first `step*total` items of `file` or `numbers` are used to build combi
 Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
 
 ```sh
-$ combination --size 3 --total 5 --numbers "01 02 03 04 05 06 07 08 09 10"
+$ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
 01 02 03
 01 02 04
 01 02 05

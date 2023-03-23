@@ -22,7 +22,7 @@ const cli = meow(`
 	  --total, -t     Total number of arranged packets of items.
 	  --size, -s      Number of assembled packets of items.
 	  --file, -f      A file containing one item of combination per line.
-	  --numbers, -n   Items of combinations separated by '|', or ' '.
+	  --numbers, -n   Items of combinations separated by '|'.
 	  --step          Size of a packet of items. Default value 1.
 
 	Description
@@ -115,7 +115,7 @@ let SEP = (separator) ? '|' : ' ';
 
 
 if (cli.flags.numbers) {
-	numbers = cli.flags.numbers.trim().split(/[\| ]/);
+	numbers = cli.flags.numbers.trim().split(/[\|]/);
 } else {
 	if (!fs.existsSync(cli.flags.file)) {
 		console.error(`File ${cli.flags.file} does not exist`);
