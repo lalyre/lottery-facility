@@ -14,7 +14,7 @@ Roadmap
 * combination CLI enhancement with production of balanced and count limited combinations.
 * combination CLI enhancement with starting combination and/or ending combination.
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
-* adding an optimised "cover" CLI selection feature.
+* adding a minimal_cover CLI tool.
 
 
 2023-xx-xx, Version 0.0.1-alpha.9
