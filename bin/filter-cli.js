@@ -16,6 +16,7 @@ const cli = meow(`
 	  --globalnum        All items that can be used in combinations, separated by '|' or ' '.
 	  --globalfile       File containing one item per line that are used in combinations of <infile> file, and possibly others items.
 	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
+	  --selectionSkip    Defines the number of tested combinations to skip from being entered in the ongoing selection.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
 	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)").
@@ -138,6 +139,12 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 		},
+		selectionSkip: {
+			type: 'number',
+			isRequired: false,
+			isMultiple: false,
+			default: -1,
+		},
 		globalScore: {
 			type: 'string',
 			isRequired: false,
@@ -196,6 +203,7 @@ const cli = meow(`
 
 let additionMode = cli.flags.addition;
 let additionsLimit = cli.flags.limit;
+let selectionSkip = cli.flags.selectionSkip;
 let coverStatsMode = cli.flags.coverstats;
 let coverLinesMode = cli.flags.coverlines;
 if (coverStatsMode && coverLinesMode) {
@@ -994,6 +1002,12 @@ let rl = readline.createInterface({
 		if (!selectFailureScope) {
 			return;			// next tested combination
 		}
+	}
+
+	// Skip some tested combinations
+	while (selectionSkip > 0) {
+		--selectionSkip;
+		return;			// next tested combination
 	}
 
 
