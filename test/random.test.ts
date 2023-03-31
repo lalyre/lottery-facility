@@ -1,14 +1,14 @@
 import { RandomHelper } from '../src/random';
 
 
-describe('Random module', () => {
+describe('RandomHelper module', () => {
 
 
     beforeEach(() => {
     });
 
 
-    test('Random.randomNumberRange test', () => {
+    test('RandomHelper.randomNumberRange test', () => {
         const a = RandomHelper.randomNumberRange(1, 2000);
         const b = RandomHelper.randomNumberRange(1, 2000);
         console.log("a: " + a);
@@ -22,9 +22,14 @@ describe('Random module', () => {
     });
 
 
-    test('Random.randomNumber test', () => {
+    test('RandomHelper.randomNumber test', () => {
         const a = RandomHelper.randomNumber();
         console.log("a: " + a);
     });
+	
 
+	test('RandomHelper.randomHEXString test', () => {
+        const a = RandomHelper.randomHEXString(8);
+        console.log("hexString: " + a);
+    });
 });
