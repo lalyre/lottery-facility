@@ -19,6 +19,7 @@ Roadmap
 
 2023-xx-xx, Version 0.0.1-alpha.9
 =================================
+* Enhancement of filter CLI utility, add a "extract()" feature for testing on parts of tested combination rather than the tested combination itself.
 * Enhancement of filter CLI utility, add a "selectionSkip" feature for skipping x tested combinations that was able to be selected.
 * Enhancement of filter CLI utility, add a "coverlines" feature for displaying filter's matching lines as one big combination of line numbers.
 * Enhancement of filter CLI utility, load a pre-selection file of combinations.
