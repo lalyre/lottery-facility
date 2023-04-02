@@ -617,7 +617,7 @@ let rl = readline.createInterface({
 
 
 		// Combi min_gap scope
-		let minGap = lotteryFacility.CombinationHelper.minimum_gap(global_alphabet, testedCombination);
+		let minGap = lotteryFacility.CombinationHelper.minimum_right_gap(global_alphabet, testedCombination);
 		let selectMingapScope = true;
 		switch (true) {
 			case (testMingapSelection[i] == null):
@@ -670,7 +670,7 @@ let rl = readline.createInterface({
 
 
 		// Combi max_gap scope
-		let maxGap = lotteryFacility.CombinationHelper.maximum_gap(global_alphabet, testedCombination);
+		let maxGap = lotteryFacility.CombinationHelper.maximum_right_gap(global_alphabet, testedCombination);
 		let selectMaxgapScope = true;
 		switch (true) {
 			case (testMaxgapSelection[i] == null):

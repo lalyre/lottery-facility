@@ -131,6 +131,37 @@ export class CombinationHelper {
 
 
 	/**
+	 * Give the minimum right gap of a lottery combination relatively to a global alphabet
+	 * The minimum right gap is the smallest distance between two consecutive items on the right of the input combination.
+	 * @param alphabet      array of balls number.
+	 * @param combination   array of balls number.
+	 * @return              minimum gap.
+	 */
+	 public static minimum_right_gap(alphabet:number[], combination:number[]): number {
+		if (!alphabet) return -1;
+		if (!combination) return -1;
+		if (combination.length <= 1) return 0;
+		combination.sort((a, b) => {
+			return alphabet.indexOf(a) - alphabet.indexOf(b);
+		});
+
+		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		let minGap = gap;
+
+		for (let j = 1; j < combination.length-1; j++) {
+			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
+			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+			if (gap < minGap) minGap = gap;
+		}
+
+		return minGap;
+	}
+
+
+	/**
 	 * Give the maximum gap of a lottery combination relatively to a global alphabet
 	 * The maximum gap is the biggest distance between consecutives items of the input combination (great-circle distance or spherical distance).
 	 * @param alphabet      array of balls number.
@@ -162,6 +193,39 @@ export class CombinationHelper {
 		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
 		if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
 		else if (gap > previousGap) { previousGap = gap; }
+
+		return previousGap;
+	}
+
+
+	/**
+	 * Give the maximum right gap of a lottery combination relatively to a global alphabet
+	 * The maximum right gap is the biggest distance between consecutives items on the right of the input combination.
+	 * @param alphabet      array of balls number.
+	 * @param combination   array of balls number.
+	 * @return              maximum gap.
+	 */
+	 public static maximum_right_gap(alphabet:number[], combination:number[]): number {
+		if (!alphabet) return -1;
+		if (!combination) return -1;
+		if (combination.length <= 1) return 0;
+		combination.sort((a, b) => {
+			return alphabet.indexOf(a) - alphabet.indexOf(b);
+		});
+
+		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		let maxGap = gap;
+		let previousGap = 0;
+
+		for (let j = 1; j < combination.length-1; j++) {
+			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
+			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
+			else if (gap > previousGap) { previousGap = gap; }
+		}
 
 		return previousGap;
 	}

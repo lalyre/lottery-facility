@@ -14,12 +14,12 @@ Roadmap
 * combination CLI enhancement with production of balanced and count limited combinations.
 * combination CLI enhancement with starting combination and/or ending combination.
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
+* Enhancement of filter CLI utility, add a "extract(len)" feature for testing on parts of tested combination rather than the tested combination itself.
 * adding a minimal_cover CLI tool.
 
 
 2023-xx-xx, Version 0.0.1-alpha.9
 =================================
-* Enhancement of filter CLI utility, add a "extract()" feature for testing on parts of tested combination rather than the tested combination itself.
 * Enhancement of filter CLI utility, add a "selectionSkip" feature for skipping x tested combinations that was able to be selected.
 * Enhancement of filter CLI utility, add a "coverlines" feature for displaying filter's matching lines as one big combination of line numbers.
 * Enhancement of filter CLI utility, load a pre-selection file of combinations.
