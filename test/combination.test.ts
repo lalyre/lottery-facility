@@ -108,6 +108,36 @@ describe('CombinationHelper module', () => {
 	});
 
 
+	test('CombinationHelper.minimum_right_gap test', () => {
+		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+		let c1 = [3, 6, 10, 12];
+		let g1 = CombinationHelper.minimum_right_gap(alphabet, c1);
+		expect(g1).toBe(2);
+
+		let c2 = [3, 8, 11, 16];
+		let g2 = CombinationHelper.minimum_right_gap(alphabet, c2);
+		expect(g2).toBe(3);
+
+		let c3 = [2, 10, 12, 19];
+		let g3 = CombinationHelper.minimum_right_gap(alphabet, c3);
+		expect(g3).toBe(2);
+
+
+		let alphabet2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+		let c4 = [2, 21, 50];
+		let g4 = CombinationHelper.minimum_right_gap(alphabet2, c4);
+		expect(g4).toBe(19);
+
+		let c5 = [2, 20, 32];
+		let g5 = CombinationHelper.minimum_right_gap(alphabet2, c5);
+		expect(g5).toBe(12);
+		
+		let c6 = [32];
+		let g6 = CombinationHelper.minimum_right_gap(alphabet2, c6);
+		expect(g6).toBe(0);
+	});
+
+
 	test('CombinationHelper.maximum_gap test', () => {
 		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 		let c1 = [1, 4, 8, 11];
@@ -146,6 +176,48 @@ describe('CombinationHelper module', () => {
 		
 		let c9 = [24]
 		let g9 = CombinationHelper.maximum_gap(alphabet2, c9);
+		expect(g9).toBe(0);
+	});
+
+
+	test('CombinationHelper.maximum_right_gap test', () => {
+		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+		let c1 = [1, 4, 8, 11];
+		let g1 = CombinationHelper.maximum_right_gap(alphabet, c1);
+		expect(g1).toBe(4);
+
+		let c2 = [8, 11, 14, 16];
+		let g2 = CombinationHelper.maximum_right_gap(alphabet, c2);
+		expect(g2).toBe(3);
+
+		let c3 = [18, 3, 5, 6];
+		let g3 = CombinationHelper.maximum_right_gap(alphabet, c3);
+		expect(g3).toBe(12);
+
+
+		let alphabet2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+		let c4 = [1, 2, 20, 21, 40];
+		let g4 = CombinationHelper.maximum_right_gap(alphabet2, c4);
+		expect(g4).toBe(19);
+
+		let c5 = [1, 2, 20, 31, 32];
+		let g5 = CombinationHelper.maximum_right_gap(alphabet2, c5);
+		expect(g5).toBe(18);
+
+		let c6 = [1, 2, 3, 34, 44];
+		let g6 = CombinationHelper.maximum_right_gap(alphabet2, c6);
+		expect(g6).toBe(31);
+
+		let c7 = [50, 3];
+		let g7 = CombinationHelper.maximum_right_gap(alphabet2, c7);
+		expect(g7).toBe(47);
+
+		let c8 = [1, 20, 24, 30, 47]
+		let g8 = CombinationHelper.maximum_right_gap(alphabet2, c8);
+		expect(g8).toBe(19);
+		
+		let c9 = [24]
+		let g9 = CombinationHelper.maximum_right_gap(alphabet2, c9);
 		expect(g9).toBe(0);
 	});
 

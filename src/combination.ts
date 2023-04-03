@@ -217,17 +217,17 @@ export class CombinationHelper {
 		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
 		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
 		let maxGap = gap;
-		let previousGap = 0;
 
 		for (let j = 1; j < combination.length-1; j++) {
 			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
 			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
 			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
-			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
-			else if (gap > previousGap) { previousGap = gap; }
+			if (gap > maxGap) {
+				maxGap = gap;
+			}
 		}
 
-		return previousGap;
+		return maxGap;
 	}
 
 
