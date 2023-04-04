@@ -219,6 +219,10 @@ describe('CombinationHelper module', () => {
 		let c9 = [24]
 		let g9 = CombinationHelper.maximum_right_gap(alphabet2, c9);
 		expect(g9).toBe(0);
+		
+		let c10 = [1, 2, 3, 15, 18]
+		let g10 = CombinationHelper.maximum_right_gap(alphabet2, c10);
+		expect(g10).toBe(12);
 	});
 
 
