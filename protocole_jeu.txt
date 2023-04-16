@@ -1285,6 +1285,20 @@ filter --infile 20_4.txt --globalfile 50_1.txt --filter "filename(20_8_6.txt)lev
 
 
 
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "length(5)max_gap(<=10)"  --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)max_gap(<=10)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)" --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(1)score(<=1)max_gap(<=10)"  --globalFailure "0"
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(GAME.txt)level(>=2)score(0)" --globalFailure "0"
+
+
+
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)"  --filter "filename(toto.txt)level(1)score(>=5)length(5)max_gap(<=10)" --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(2)score(<=1)"  --globalFailure "0" > GAME.txt
+
+
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=12)" --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=12)" --filter "filename(_selection)level(>=4)score(0)" --filter "filename(_selection)level(3)score(<=2)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=10)" --filter "filename(_selection)level(>=4)score(0)" --filter "filename(_selection)level(3)score(<=2)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
