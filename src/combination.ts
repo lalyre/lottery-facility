@@ -97,6 +97,28 @@ export class CombinationHelper {
 
 
 	/**
+	 * Give the distance of a lottery combination relatively to a global alphabet
+	 * The distance is the difference between the two furthest items of the input combination.
+	 * @param alphabet      array of balls number.
+	 * @param combination   array of balls number.
+	 * @return              minimum gap.
+	 */
+	public static distance(alphabet:number[], combination:number[]): number {
+		if (!alphabet) return -1;
+		if (!combination) return -1;
+		if (combination.length <= 1) return 0;
+		combination.sort((a, b) => {
+			return alphabet.indexOf(a) - alphabet.indexOf(b);
+		});
+
+		if (alphabet.indexOf(combination[0]) === -1) return -1;						// Item not in alphabet
+		if (alphabet.indexOf(combination[combination.length-1]) === -1) return -1;	// Item not in alphabet
+		const distance = alphabet.indexOf(combination[combination.length-1]) - alphabet.indexOf(combination[0]);
+		return distance;
+	}
+
+
+	/**
 	 * Give the minimum gap of a lottery combination relatively to a global alphabet
 	 * The minimum gap is the smallest distance between two consecutive items of the input combination.
 	 * @param alphabet      array of balls number.

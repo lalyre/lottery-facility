@@ -226,6 +226,30 @@ describe('CombinationHelper module', () => {
 	});
 
 
+	test('CombinationHelper.distance test', () => {
+		let alphabet2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+		let c4 = [1, 2, 20, 21, 40];
+		let g4 = CombinationHelper.distance(alphabet2, c4);
+		expect(g4).toBe(39);
+
+		let c5 = [1, 2, 20, 31, 32];
+		let g5 = CombinationHelper.distance(alphabet2, c5);
+		expect(g5).toBe(31);
+
+		let c6 = [34, 44];
+		let g6 = CombinationHelper.distance(alphabet2, c6);
+		expect(g6).toBe(10);
+
+		let c7 = [50, 3];
+		let g7 = CombinationHelper.distance(alphabet2, c7);
+		expect(g7).toBe(47);
+		
+		let c9 = [24]
+		let g9 = CombinationHelper.distance(alphabet2, c9);
+		expect(g9).toBe(0);
+	});
+
+
 	test('CombinationHelper.complement test', () => {
 		let a = [8, 3, 1, 7, 8, 6, 5, 3, 7, 1];
 		let c = CombinationHelper.complement(9, a);

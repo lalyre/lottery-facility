@@ -55,6 +55,14 @@ const cli = meow(`
 	With "length(>=x)",  only input combinations with more than or equal x numbers are considered.
 	With "length(>x)",   only input combinations with more than x numbers are considered.
 	
+	* distance
+	With "distance(<x)",   only input combinations with distance less than x are considered.
+	With "distance(<=x)",  only input combinations with distance less than or equal x are considered.
+	With "distance(=x)" or "level(x)", only input combinations with distance x are considered.
+	With "distance(!=x)",  only input combinations with not distance x are considered.
+	With "distance(>=x)",  only input combinations with more than or equal distance x are considered.
+	With "distance(>x)",   only input combinations with more than distance x are considered.
+
 	* min_gap
 	With "min_gap(<x)",   only input combinations with minimum gap less than x are considered.
 	With "min_gap(<=x)",  only input combinations with minimum gap less than or equal x are considered.
@@ -309,7 +317,7 @@ for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)min_val(c)length(d)slice(a,b,...,y)min_gap(x)max_gap(x)
+// filename(<filename>)weight(a)level(b)score(c)min_val(c)length(d)distance(d)slice(a,b,...,y)min_gap(x)max_gap(x)
 let filterCommand = cli.flags.filter;
 let filterCombinations = [];
 let filename = [];
@@ -319,6 +327,8 @@ let testLevelSelection = [];
 let testLevel = [];
 let testLengthSelection = [];
 let testLength = [];
+let testDistanceSelection = [];
+let testDistance = [];
 let testMingapSelection = [];
 let testMingap = [];
 let testMaxgapSelection = [];
@@ -423,6 +433,21 @@ for (let i = 0; i < filterCommand.length; i++) {
 		default:
 			testLengthSelection.push(null)
 			testLength.push(-1);
+			break;
+	}
+
+
+	// Parsing DISTANCE
+	switch (true) {
+		case /distance\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
+			let match = /distance\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
+			if (match[1] == null) testDistanceSelection.push('='); else testDistanceSelection.push(match[1]);
+			testDistance.push(+match[2]);
+			break;
+		
+		default:
+			testDistanceSelection.push(null)
+			testDistance.push(-1);
 			break;
 	}
 
@@ -605,6 +630,55 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectLengthScope) {
+			hitsCount = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
+			combiFilterScore[i] = -1;
+			combiFilterFailure[i] = 1; combiGlobalFailure++;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
+			continue;		// next filter command
+		}
+
+
+		// Combi distance scope
+		let distance = lotteryFacility.CombinationHelper.distance(global_alphabet, testedCombination);
+		let selectDistanceScope = true;
+		switch (true) {
+			case (testDistanceSelection[i] == null):
+				break; // No rule
+
+			case /^<$/.test(testDistanceSelection[i]):
+				if (!(distance < testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			case /^=<$/.test(testDistanceSelection[i]):
+			case /^<=$/.test(testDistanceSelection[i]):
+				if (!(distance <= testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			case /^=$/.test(testDistanceSelection[i]):
+				if (!(distance == testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			case /^!=$/.test(testDistanceSelection[i]):
+				if (!(distance != testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			case /^=>$/.test(testDistanceSelection[i]):
+			case /^>=$/.test(testDistanceSelection[i]):
+				if (!(distance >= testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			case /^>$/.test(testDistanceSelection[i]):
+				if (!(distance > testDistance[i])) selectDistanceScope = false; // reject this combination
+				break;
+
+			default:
+				selectDistanceScope = false; // reject this combination
+				break;
+		}
+		if (!selectDistanceScope) {
 			hitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
