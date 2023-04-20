@@ -14,7 +14,7 @@ export class DrawBox {
 	 * PS:
 	 * do not consider the item at index 0.
 	 */
-	public constructor(count: number) {
+	public constructor (count: number) {
 		// super();
 
 		if (count === undefined) throw new Error('Need to pass a count parameter');
@@ -40,7 +40,7 @@ export class DrawBox {
 	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
 	 * @return          a random selection of numbers picked in the draw box.
 	 */
-	public draw(size:number, nbSwap:number = 50): number[] {
+	public draw (size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		this.shuffle(nbSwap);
 		return this._balls.slice(1, size+1);
@@ -52,7 +52,7 @@ export class DrawBox {
 	 * @param nbSwap    number of shuffle operations.
 	 * @return          none.
 	 */
-	private shuffle(nbSwap:number): void {
+	private shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
 			const a = RandomHelper.randomNumberRange(1, this._count);
 			this.swapBalls(1+i%this._count, a);
@@ -60,7 +60,7 @@ export class DrawBox {
 	}
 
 
-	private swapBalls(a:number, b:number): void {
+	private swapBalls (a:number, b:number): void {
 		if (a === b) return;
 		const aux = this._balls[a];
 		this._balls[a] = this._balls[b];

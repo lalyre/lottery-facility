@@ -6,7 +6,7 @@
  * @param date  a Javascript date object
  * @return      a string representing the date in format 'YYYY-MM-DD hh:mm:ss.NNNZ'
  */
-export function displayUTCDateTime(date: Date): string|null {
+export function displayUTCDateTime (date: Date): string|null {
 	if (!date) return null;
 	const year = date.getUTCFullYear();
 	const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
@@ -25,7 +25,7 @@ export function displayUTCDateTime(date: Date): string|null {
  * @param date  a Javascript date object
  * @return      a string representing the date in format 'YYYYMMDDhhmmssNNN'
  */
-export function displayUTCDateTimeYYYYMMDDhhmmssNNN(date: Date): string|null {
+export function displayUTCDateTimeYYYYMMDDhhmmssNNN (date: Date): string|null {
 	if (!date) return null;
 	const year = date.getUTCFullYear();
 	const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
@@ -44,7 +44,7 @@ export function displayUTCDateTimeYYYYMMDDhhmmssNNN(date: Date): string|null {
  * @param date  a Javascript date object
  * @return      a string representing the date in format 'YYYYMMDDhhmmss'
  */
-export function displayUTCDateTimeYYYYMMDDhhmmss(date: Date): string|null {
+export function displayUTCDateTimeYYYYMMDDhhmmss (date: Date): string|null {
 	const display = displayUTCDateTimeYYYYMMDDhhmmssNNN(date);
 	if (!display) return null;
 	return display.substring(0, display.length-3);
@@ -56,7 +56,7 @@ export function displayUTCDateTimeYYYYMMDDhhmmss(date: Date): string|null {
  * @param date  a Javascript date object
  * @return      a string representing the date in format 'YYYYMMDDhhmm'
  */
-export function displayUTCDateTimeYYYYMMDDhhmm(date: Date): string|null {
+export function displayUTCDateTimeYYYYMMDDhhmm (date: Date): string|null {
 	const display = displayUTCDateTimeYYYYMMDDhhmmssNNN(date);
 	if (!display) return null;
 	return display.substring(0, display.length-5);
@@ -68,7 +68,7 @@ export function displayUTCDateTimeYYYYMMDDhhmm(date: Date): string|null {
  * @param date  a Javascript date object
  * @return      a string representing the date in format 'YYYYMMDD'
  */
-export function displayUTCDateTimeYYYYMMDD(date: Date): string|null {
+export function displayUTCDateTimeYYYYMMDD (date: Date): string|null {
 	const display = displayUTCDateTimeYYYYMMDDhhmmssNNN(date);
 	if (!display) return null;
 	return display.substring(0, display.length-9);

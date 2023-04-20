@@ -8,7 +8,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toString(numbers:number[], sep:string = ' '): string {
+	public static toString (numbers:number[], sep:string = ' '): string {
 		if (!numbers) return '';
 		const display = numbers.map(x => x.toString().padStart(2, '0')).join(sep);
 		return display;
@@ -21,7 +21,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toCanonicalString(numbers:number[], sep:string = ' '): string {
+	public static toCanonicalString (numbers:number[], sep:string = ' '): string {
 		if (!numbers) return '';
 		const arr = numbers.filter((element, index, array) => array.indexOf(element) === index).sort((a, b) => {return a - b;});
 		const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);
@@ -35,7 +35,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          number of balls both inside arr1 and arr2.
 	 */
-	public static collisionsCount(arr1:number[], arr2:number[]): number {
+	public static collisionsCount (arr1:number[], arr2:number[]): number {
 		const merge = CombinationHelper.intersection(arr1, arr2);
 		return merge.length;
 	}
@@ -48,7 +48,7 @@ export class CombinationHelper {
 	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
 	 * @return          array containing all balls inside arr1 and arr2.
 	 */
-	public static union(arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
+	public static union (arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
 		if (!arr1 && !arr2) return [];
 
 		if (duplicate) {
@@ -74,7 +74,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls both inside arr1 and arr2.
 	 */
-	public static intersection(arr1:number[], arr2:number[]): number[] {
+	public static intersection (arr1:number[], arr2:number[]): number[] {
 		if (!arr1 || !arr2) return [];
 		const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1);
 		return intersec;
@@ -88,7 +88,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls of arr1 that are not inside arr2.
 	 */
-	 public static difference(arr1:number[], arr2:number[]): number[] {
+	 public static difference (arr1:number[], arr2:number[]): number[] {
 		if (!arr1) return [];
 		if (!arr2) return arr1;
 		const diff = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) === -1);
@@ -103,7 +103,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static distance(alphabet:number[], combination:number[]): number {
+	public static distance (alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -125,7 +125,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	 public static minimum_gap(alphabet:number[], combination:number[]): number {
+	 public static minimum_gap (alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -159,7 +159,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	 public static minimum_right_gap(alphabet:number[], combination:number[]): number {
+	 public static minimum_right_gap (alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -190,7 +190,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              maximum gap.
 	 */
-	 public static maximum_gap(alphabet:number[], combination:number[]): number {
+	 public static maximum_gap (alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -227,7 +227,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              maximum gap.
 	 */
-	 public static maximum_right_gap(alphabet:number[], combination:number[]): number {
+	 public static maximum_right_gap (alphabet:number[], combination:number[]): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -259,7 +259,7 @@ export class CombinationHelper {
 	 * @param numbers   array of balls number.
 	 * @return          array containing balls numbers of the complement combination.
 	 */
-	public static complement(max:number, numbers:number[]): number[] {
+	public static complement (max:number, numbers:number[]): number[] {
 		if (max <= 0) return [];
 		if (!numbers) return [];
 		const complement:number[] = [];
@@ -275,7 +275,7 @@ export class CombinationHelper {
 	 * @param numbers   array of balls number (combination).
 	 * @return          the rank of the combination.
 	 */
-	public static combinationToRank(max:number, numbers:number[]): number {
+	public static combinationToRank (max:number, numbers:number[]): number {
 		if (max < 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
@@ -299,7 +299,7 @@ export class CombinationHelper {
 	 * @param rank      the rank of the combination to be returned.
 	 * @return          the combination corresponding to the given rank.
 	 */
-	public static rankToCombination(max:number, length:number, rank:number): number[] {
+	public static rankToCombination (max:number, length:number, rank:number): number[] {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
@@ -322,7 +322,7 @@ export class CombinationHelper {
 	 * @param n         integer value
 	 * @return          factorial value of n
 	 */
-	public static factorial(n:number): number {
+	public static factorial (n:number): number {
 		if (n < 0) return -1;
 		let ret:number = 1;
 		for (let i = 1; i <= n; i++) { ret *= i; }
@@ -336,7 +336,7 @@ export class CombinationHelper {
 	 * @param n         integer value
 	 * @return          binomial coefficient value of (max, n)
 	 */
-	public static binomial(max:number, n:number): number {
+	public static binomial (max:number, n:number): number {
 		if (max < 0) return -1;
 		if (n > max) return -1;
 		if (n === 0) return 1;
@@ -354,7 +354,7 @@ export class CombinationHelper {
 	 * @param b         integer value
 	 * @return          great common divisor value of "a" and "b"
 	 */
-	 public static gcd(a:number, b:number): number {
+	 public static gcd (a:number, b:number): number {
 		if (a < b) return CombinationHelper.gcd(b,a);
 		const r:number = a%b; if (r !== 0) return CombinationHelper.gcd(b,r);
 		return b;
@@ -367,7 +367,7 @@ export class CombinationHelper {
 	 * @param b         integer value
 	 * @return          least common multiplier value of "a" and "b"
 	 */
-	 public static lcm(a:number, b:number): number {
+	 public static lcm (a:number, b:number): number {
 		return a*b/CombinationHelper.gcd(a,b);
 	}
 }

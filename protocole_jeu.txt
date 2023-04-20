@@ -1326,6 +1326,9 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(GAME.txt)leve
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)"  --filter "filename(toto.txt)level(1)score(>=5)length(5)max_gap(<=10)" --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(2)score(<=1)"  --globalFailure "0" > GAME.txt
 
 
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(aa.txt)level(>=2)score(0)"  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=12)" --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=12)" --filter "filename(_selection)level(>=4)score(0)" --filter "filename(_selection)level(3)score(<=2)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=1)score(<=3)max_gap(<=10)" --filter "filename(_selection)level(>=4)score(0)" --filter "filename(_selection)level(3)score(<=2)" --filter "filename(_selection)level(2)score(<=4)" --globalFailure "0" > GAME.txt
@@ -1334,6 +1337,9 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(GAME.txt)leve
 
 
 
+
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(aa.txt)level(>=5)score(1)distance(<=10)" --globalFailure "0" > bb.txt
+filter --infile bb.txt --globalfile 50_1.txt  --filter "filename(bb.txt)level(>=2)score(1)" --globalFailure "0"
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=3)score(0)" --filter "filename(_selection)level(1)score(<=3)distance(<=10)" --globalFailure "0" > GAME.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(GAME.txt)level(>=2)score(0)" --globalFailure "0"

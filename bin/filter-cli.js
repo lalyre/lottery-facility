@@ -19,7 +19,7 @@ const cli = meow(`
 	  --selectionSkip    Defines the number of tested combinations to skip from being entered in the ongoing selection.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)").
+	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)distance(x)min_gap(x)max_gap(x)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering count on filter lines it matches with.
