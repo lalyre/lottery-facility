@@ -19,7 +19,7 @@ Roadmap
 * adding a minimal_cover CLI tool.
 
 
-2023-xx-xx, Version 0.0.1-alpha.9
+2023-04-21, Version 0.0.1-alpha.9
 =================================
 * Enhancement of filter CLI utility, add a "selectionSkip" feature for skipping x tested combinations that was able to be selected.
 * Enhancement of filter CLI utility, add a "coverlines" feature for displaying filter's matching lines as one big combination of line numbers.
