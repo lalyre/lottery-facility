@@ -24,14 +24,14 @@ export class DrawBox {
 	}
 
 
-	/*get Count(): number {
+	get count(): number {
 		return this._count;
 	}
 
 
-	get Balls(): number[] {
+	get balls(): number[] {
 		return this._balls;
-	}*/
+	}
 
 
 	/**
