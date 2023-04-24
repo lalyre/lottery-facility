@@ -1,3 +1,4 @@
+'use strict';
 import { api_version } from '../src/version';
 
 

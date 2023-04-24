@@ -1,3 +1,4 @@
+'use strict';
 import { RandomHelper } from '../src/random';
 
 
