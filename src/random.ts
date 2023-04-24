@@ -47,7 +47,12 @@ export class RandomHelper {
 	}
 
 
-	private static randomBytes (len:number): Int8Array {
+	/**
+	 * Return a random array of bytes
+	 * @param len        length of random generated array of bytes.
+	 * @return           random array of bytes.
+	 */
+	public static randomBytes (len:number): Int8Array {
 		if (len < 1 || len > 32) throw new Error('Invalid len parameter');
 		// const rand = Date.now().toString(2) + Math.random().toString(2);
 		const rand = Date.now().toString() + Math.random().toString().substring(2);

@@ -55,12 +55,12 @@ export class DrawBox {
 	private shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
 			const a = RandomHelper.randomNumberRange(1, this._count);
-			this.swapBalls(1+i%this._count, a);
+			this._swapBalls(1+i%this._count, a);
 		}
 	}
 
 
-	private swapBalls (a:number, b:number): void {
+	private _swapBalls (a:number, b:number): void {
 		if (a === b) return;
 		const aux = this._balls[a];
 		this._balls[a] = this._balls[b];
