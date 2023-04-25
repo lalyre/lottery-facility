@@ -52,7 +52,7 @@ export class DrawBox {
 	 * @param nbSwap    number of shuffle operations.
 	 * @return          none.
 	 */
-	private shuffle (nbSwap:number): void {
+	public shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
 			const a = RandomHelper.randomNumberRange(1, this._count);
 			this._swapBalls(1+i%this._count, a);
