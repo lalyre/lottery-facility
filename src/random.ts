@@ -9,7 +9,7 @@ export class RandomHelper {
 	 * @param b          integer value.
 	 * @return           random number between a and b.
 	 */
-	public static randomNumberRange (a: number, b: number): number {
+	public static randomNumberInRange (a: number, b: number): number {
 		const min = (a < b) ? a : b;
 		const max = (a >= b) ? a : b;
 		const spread = max - min + 1;

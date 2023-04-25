@@ -54,7 +54,7 @@ export class DrawBox {
 	 */
 	public shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
-			const a = RandomHelper.randomNumberRange(1, this._count);
+			const a = RandomHelper.randomNumberInRange(1, this._count);
 			this._swapBalls(1+i%this._count, a);
 		}
 	}

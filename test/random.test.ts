@@ -9,9 +9,9 @@ describe('RandomHelper module', () => {
     });
 
 
-    test('RandomHelper.randomNumberRange test', () => {
-        const a = RandomHelper.randomNumberRange(1, 2000);
-        const b = RandomHelper.randomNumberRange(1, 2000);
+    test('RandomHelper.randomNumberInRange test', () => {
+        const a = RandomHelper.randomNumberInRange(1, 2000);
+        const b = RandomHelper.randomNumberInRange(1, 2000);
         console.log("a: " + a);
         console.log("b: " + b);
 
