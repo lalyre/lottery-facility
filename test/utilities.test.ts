@@ -15,7 +15,7 @@ describe('Utilities module', () => {
 
 
     test('displayUTCDateTime test', () => {
-        const a  = 1682328936354;
+        const a = 1682328936354;
         const b = displayUTCDateTime(new Date(a));
         console.log(b);
         expect(b).toBe('2023-04-24 09:35:36.354Z');
@@ -23,7 +23,7 @@ describe('Utilities module', () => {
 
 
     test('displayUTCDateTimeYYYYMMDDhhmmssNNN test', () => {
-        const a  = 1682328936354;
+        const a = 1682328936354;
         const b = displayUTCDateTimeYYYYMMDDhhmmssNNN(new Date(a));
         console.log(b);
         expect(b).toBe('20230424093536354');
@@ -31,7 +31,7 @@ describe('Utilities module', () => {
 	
 
     test('displayUTCDateTimeYYYYMMDDhhmmss test', () => {
-        const a  = 1682328936354;
+        const a = 1682328936354;
         const b = displayUTCDateTimeYYYYMMDDhhmmss(new Date(a));
         console.log(b);
         expect(b).toBe('20230424093536');
@@ -39,7 +39,7 @@ describe('Utilities module', () => {
 
 
     test('displayUTCDateTimeYYYYMMDDhhmm test', () => {
-        const a  = 1682328936354;
+        const a = 1682328936354;
         const b = displayUTCDateTimeYYYYMMDDhhmm(new Date(a));
         console.log(b);
         expect(b).toBe('202304240935');
@@ -47,9 +47,10 @@ describe('Utilities module', () => {
 
 
     test('displayUTCDateTimeYYYYMMDD test', () => {
-        const a  = 1682328936354;
+        const a = 1682328936354;
         const b = displayUTCDateTimeYYYYMMDD(new Date(a));
         console.log(b);
         expect(b).toBe('20230424');
     });
 });
+
