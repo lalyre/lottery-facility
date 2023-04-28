@@ -7,7 +7,7 @@ export class RandomHelper {
 	 * Return a random number within a range of integers
 	 * @param a          integer value.
 	 * @param b          integer value.
-	 * @return           random number between a and b.
+	 * @return           random number between a and b, both included.
 	 */
 	public static randomNumberInRange (a: number, b: number): number {
 		const min = (a < b) ? a : b;
