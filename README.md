@@ -119,7 +119,7 @@ All the following documentation is available in the tools by running `--help` on
 
 **Description**<br>
 
-This script generates a random selection of lottery balls, taken from `1` to `total` balls.
+This script generates a random selection of lottery balls of `size` size, taken from `1` to `total` balls.
 The optional parameter `sort` sorts combinations items in ascending order.
 You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.
 
