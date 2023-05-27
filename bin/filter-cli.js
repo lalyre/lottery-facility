@@ -317,10 +317,12 @@ for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i
 }
 
 
-// filename(<filename>)weight(a)level(b)score(c)min_val(c)length(d)distance(d)slice(a,b,...,y)min_gap(x)max_gap(x)
+// filename(<filename>)restrictions(<filename>)weight(a)level(b)score(c)min_val(c)length(d)distance(d)slice(a,b,...,y)min_gap(x)max_gap(x)
 let filterCommand = cli.flags.filter;
 let filterCombinations = [];
 let filename = [];
+let filterRestrictions = [];
+let restrictions = [];
 let weight = [];
 let slice = [];
 let testLevelSelection = [];
@@ -386,6 +388,37 @@ for (let i = 0; i < filterCommand.length; i++) {
 		default:
 			filename.push(null);
 			filterCombinations.push(null);
+			break;
+	}
+
+
+	// Parsing RESTRICTIONS
+	switch (true) {
+		case /restrictions\(([\w|\.]*)\)/.test(filterCommand[i].trim()):
+			let match = /restrictions\(([\w|\.]*)\)/.exec(filterCommand[i]);
+			restrictions.push(match[1]);
+			if (!fs.existsSync(restrictions[i].trim())) {
+				console.error(`File ${restrictions[i]} does not exist.`);
+				process.exit(1);
+			}
+
+			filterRestrictions.push([]);
+			let restriction_lines = fs.readFileSync(restrictions[i].trim()).toString().split(/\r?\n/);
+			let line = 0;
+			for (let restriction_line of restriction_lines) {
+				var [x, y] = restriction_line.trim().split(/:/);
+				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+				if (numbers[0] == 0) continue;				// next filter command
+				if (numbers.join("") == '') continue;		// next filter command
+				var value = (!y) ? -1 : +y.trim();
+				line++;
+				filterRestrictions[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
+			}
+			break;
+			
+		default:
+			restrictions.push(null);
+			filterRestrictions.push(null);
 			break;
 	}
 
@@ -843,141 +876,231 @@ let rl = readline.createInterface({
 				if (filterCombinations[i]) currentFilterCombinations = [...currentFilterCombinations, ...filterCombinations[i]];
 				break;
 		}
+		
+		
+		// Get restrictions
+		let matchingRestrictions = [];
+		if (filterRestrictions[i] == null || filterRestrictions[i].length == 0) {
+			matchingRestrictions.push (slicedCombination);
+		} else {
+			for (let j = 0; j < filterRestrictions[i].length; j++) {
+				let match = false;
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, filterRestrictions[i][j].combination);
+				switch (true) {
+					case /^<$/.test(testLevelSelection[i]):
+						if (nb_collisions < testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=<$/.test(testLevelSelection[i]):
+					case /^<=$/.test(testLevelSelection[i]):
+						if (nb_collisions <= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=$/.test(testLevelSelection[i]):
+						if (nb_collisions == testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^!=$/.test(testLevelSelection[i]):
+						if (nb_collisions != testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=>$/.test(testLevelSelection[i]):
+					case /^>=$/.test(testLevelSelection[i]):
+						if (nb_collisions >= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^>$/.test(testLevelSelection[i]):
+						if (nb_collisions > testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				if (match) {
+					matchingRestrictions.push (filterRestrictions[i][j].combination);
+				}
+			}
+		}
 
 
 		// Get current tested combination's score
 		let withValue = true;
 		combiFilterSumValue[i] = 0;
+		hitsCount = 0;
 
-		let matchingCombinations = [];
-		for (let j = 0; j < currentFilterCombinations.length; j++) {
-			if (currentFilterCombinations[j].value == -1) withValue = false;
 
-			let match = false;
-			let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, currentFilterCombinations[j].combination);
+		let selectScoreScope = true;
+		for (let k = 0; k < matchingRestrictions.length; k++)
+		{
+			let nbHits = 0;
+			let score = 0;
+			
+			let matchingCombinations = [];
+			for (let j = 0; j < currentFilterCombinations.length; j++) {
+				let match = false;
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], currentFilterCombinations[j].combination);
+				
+				
+				// TODO CL
+				//console.log("matchingRestrictions[k] " + matchingRestrictions[k]);
+				//console.log("currentFilterCombinations[j].combination " + currentFilterCombinations[j].combination);
+				//console.log("nb_collisions" + nb_collisions);
+				
+				
+				
+				switch (true) {
+					case /^<$/.test(testLevelSelection[i]):
+						if (nb_collisions < testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=<$/.test(testLevelSelection[i]):
+					case /^<=$/.test(testLevelSelection[i]):
+						if (nb_collisions <= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=$/.test(testLevelSelection[i]):
+						if (nb_collisions == testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^!=$/.test(testLevelSelection[i]):
+						if (nb_collisions != testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=>$/.test(testLevelSelection[i]):
+					case /^>=$/.test(testLevelSelection[i]):
+						if (nb_collisions >= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^>$/.test(testLevelSelection[i]):
+						if (nb_collisions > testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				if (match) {
+					matchingCombinations.push (currentFilterCombinations[j]);
+				}
+			}
+			if (!withValue) {
+				combiFilterMinValue[i] = -1;
+				combiFilterMaxValue[i] = -1;
+				combiFilterSumValue[i] = -1;
+			}
+
+
+			// TODO CL
+			//console.log("matchingCombinations " + JSON.stringify(matchingCombinations));
+
+
+
+			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k].combination) + '\n';
+			for (let j = 0; j < matchingCombinations.length; j++) {
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k].combination, matchingCombinations[j].combination);
+				if (!matchingCombinations[j].preselected) {
+					matchingCombinations[j].covering++;
+
+					if (withValue)
+					{
+						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+						else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+
+						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+						else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+
+						combiFilterSumValue[i] += matchingCombinations[j].value;
+					}
+				}
+
+				nbHits++;
+				hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+				coveredLines += matchingCombinations[j].lineNum;
+				coveredLines += " ";
+			}
+			
+			
+			score = nbHits * weight[i];
+			hits_count_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k].combination) + '\n';
+			hits_count_string += `[hits: ${nbHits} - score: ${score} ] `;
+
+
+			// Combi score scope
 			switch (true) {
-				case /^<$/.test(testLevelSelection[i]):
-					if (nb_collisions < testLevel[i]) {
-						match = true;
-					}
+				case (coverStatsMode):
+				case (coverLinesMode):
+				case (testCombiFilterScoreSelection[i] == null):
+					break; // No rule
+
+				case /^<$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score < testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 					break;
 
-				case /^=<$/.test(testLevelSelection[i]):
-				case /^<=$/.test(testLevelSelection[i]):
-					if (nb_collisions <= testLevel[i]) {
-						match = true;
-					}
+				case /^=<$/.test(testCombiFilterScoreSelection[i]):
+				case /^<=$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score <= testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 					break;
 
-				case /^=$/.test(testLevelSelection[i]):
-					if (nb_collisions == testLevel[i]) {
-						match = true;
-					}
+				case /^=$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score == testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 					break;
 
-				case /^!=$/.test(testLevelSelection[i]):
-					if (nb_collisions != testLevel[i]) {
-						match = true;
-					}
+				case /^!=$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score != testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 					break;
 
-				case /^=>$/.test(testLevelSelection[i]):
-				case /^>=$/.test(testLevelSelection[i]):
-					if (nb_collisions >= testLevel[i]) {
-						match = true;
-					}
+				case /^=>$/.test(testCombiFilterScoreSelection[i]):
+				case /^>=$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score >= testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
 					break;
 
-				case /^>$/.test(testLevelSelection[i]):
-					if (nb_collisions > testLevel[i]) {
-						match = true;
-					}
+				case /^>$/.test(testCombiFilterScoreSelection[i]):
+					if (!(score > testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
+					break;
+
+				case /^\*$/.test(testCombiFilterScoreSelection[i]):
+					if (!(nbHits == currentFilterCombinations.length)) selectScoreScope = false; // reject this combination
 					break;
 
 				default:
+					selectScoreScope = false; // reject this combination
 					break;
 			}
-
-			if (match) {
-				matchingCombinations.push (currentFilterCombinations[j]);
-			}
-		}
-		if (!withValue) {
-			combiFilterMinValue[i] = -1;
-			combiFilterMaxValue[i] = -1;
-			combiFilterSumValue[i] = -1;
-		}
-
-		for (let j = 0; j < matchingCombinations.length; j++) {
-			let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, matchingCombinations[j].combination);
-			if (!matchingCombinations[j].preselected) {
-				matchingCombinations[j].covering++;
-
-				if (withValue)
-				{
-					if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
-					else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
-
-					if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-					else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-
-					combiFilterSumValue[i] += matchingCombinations[j].value;
-				}
-			}
-
-			hitsCount++;
-			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
-			coveredLines += matchingCombinations[j].lineNum;
-			coveredLines += " ";
+			if (!selectScoreScope) break;
+			hitsCount += nbHits;
 		}
 		
 		
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
+		hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
 		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
-
-
-		// Combi score scope
-		let selectScoreScope = true;
-		switch (true) {
-			case (coverStatsMode):
-			case (coverLinesMode):
-			case (testCombiFilterScoreSelection[i] == null):
-				break; // No rule
-
-			case /^<$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] < testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^=<$/.test(testCombiFilterScoreSelection[i]):
-			case /^<=$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] <= testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^=$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] == testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^!=$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] != testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^=>$/.test(testCombiFilterScoreSelection[i]):
-			case /^>=$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] >= testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^>$/.test(testCombiFilterScoreSelection[i]):
-				if (!(combiFilterScore[i] > testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
-				break;
-
-			case /^\*$/.test(testCombiFilterScoreSelection[i]):
-				if (!(hitsCount == currentFilterCombinations.length)) selectScoreScope = false; // reject this combination
-				break;
-
-			default:
-				selectScoreScope = false; // reject this combination
-				break;
-		}
+		
+		
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			continue;		// next filter command
@@ -1033,6 +1156,7 @@ let rl = readline.createInterface({
 		}
 	}
 
+
 	// Combi global failure scope
 	let selectFailureScope = true;
 	for (let i = 0; i < testGlobalFailureSelection.length; i++)
@@ -1077,6 +1201,7 @@ let rl = readline.createInterface({
 			return;			// next tested combination
 		}
 	}
+
 
 	// Skip some tested combinations
 	while (selectionSkip > 0) {
