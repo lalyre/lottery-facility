@@ -35,6 +35,9 @@ CLI utilities:
 Type this command to enable CLI utilities (during development)
 $ npm link
 
+$ npm install -g flash-cli
+$ npm uninstall -g flash-cli
+
 https://badge.fury.io/for/js/lottery-facility
 -->
 
