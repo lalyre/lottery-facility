@@ -10,7 +10,7 @@ const SELECTION_LIMIT = 500000;
 const cli = meow(`
 	Usage
 	  $ filter
-	
+
 	Parameters
 	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
 	  --globalnum        All items that can be used in combinations, separated by '|' or ' '.
@@ -25,28 +25,28 @@ const cli = meow(`
 	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering count on filter lines it matches with.
 	  --printhits        Displays the hit counts/scores/failures for each filter in their declarative order.
 	  --printfullhits    Displays the hit counts/scores/failures for each filter in their declarative order, and the filter lines that are collided.
-	
+
 	Description
 	This script is a combinations filtering intelligence tool. It selects combinations from an input file according to filters restrictions.
 	The selected combinations are printed, and also added to the current ongoing selection of input combinations if the <addition> mode is enabled.
-	
+
 	The input file <file> contains one combination per line. Those combinations are written with items of the <global> alphabet.
 	The <global> alphabet can be declared either with <globalnum> or <globalfile> parameters.
-	
+
 	The filter command is in that form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)min_gap(x)max_gap(x)".
 	You can put as many <filter> commands as you need on the command line.
-	
+
 	* filename
 	The filter instruction contains a filename to read combinations from, with the form "filename(XXX)", that will be confronted against the current tested combination of the input file.
 	You can use "_selection" value for filename value if you want to perform filtering against the current ongoing selection of input combinations.
-	
+
 	* weight
 	With "weight(x)", the filter score is computed as the multiplication of the number of filter lines that match the required level (hit count) by the weight value.
 	If not specified, the default value is 1.
-	
+
 	* slice
 	With "slice(a,b,..,x)", the numbers at index a,b,..., x of the input combination are selected from the input combination, and used for comparisons. If not specified the whole input combination is taken by default.
-	
+
 	* length
 	With "length(<x)",   only input combinations with less than x numbers are considered.
 	With "length(<=x)",  only input combinations with less than or equal x numbers are considered.
@@ -54,7 +54,7 @@ const cli = meow(`
 	With "length(!=x)",  only input combinations with not x numbers are considered.
 	With "length(>=x)",  only input combinations with more than or equal x numbers are considered.
 	With "length(>x)",   only input combinations with more than x numbers are considered.
-	
+
 	* distance
 	With "distance(<x)",   only input combinations with distance less than x are considered.
 	With "distance(<=x)",  only input combinations with distance less than or equal x are considered.
@@ -70,7 +70,7 @@ const cli = meow(`
 	With "min_gap(!=x)",  only input combinations with minimum gap not equal to x are considered.
 	With "min_gap(>=x)",  only input combinations with minimum gap  more than or equal x are considered.
 	With "min_gap(>x)",   only input combinations with minimum gap  more than x are considered.
-	
+
 	* max_gap
 	With "max_gap(<x)",   only input combinations with maximum gap less than x are considered.
 	With "max_gap(<=x)",  only input combinations with maximum gap less than or equal x are considered.
@@ -111,7 +111,7 @@ const cli = meow(`
 	With --globalScore   "!=x", only combinations with global score not equal to x are selected.
 	With --globalScore   ">=x", only combinations with global score greater than or equal to x are selected.
 	With --globalScore   ">x",  only combinations with global score greater than x are selected.
-	
+
 	* globalFailure
 	With --globalFailure "<x",  only combinations with less than x failed filters are selected.
 	With --globalFailure "<=x", only combinations with less than or equal x failed filters are selected..
@@ -362,7 +362,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			filename.push('_selection');
 			filterCombinations.push(null);
 			break;
-		
+
 		case /filename\(([\w|\.]*)\)/.test(filterCommand[i].trim()):
 			let match = /filename\(([\w|\.]*)\)/.exec(filterCommand[i]);
 			filename.push(match[1]);
@@ -384,7 +384,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 				filterCombinations[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
 			}
 			break;
-			
+
 		default:
 			filename.push(null);
 			filterCombinations.push(null);
@@ -394,6 +394,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 	// Parsing RESTRICTIONS
 	switch (true) {
+		case /restrictions\(_selection\)/.test(filterCommand[i].trim()):
+			restrictions.push('_selection');
+			filterRestrictions.push(null);
+			break;
+
 		case /restrictions\(([\w|\.]*)\)/.test(filterCommand[i].trim()):
 			let match = /restrictions\(([\w|\.]*)\)/.exec(filterCommand[i]);
 			restrictions.push(match[1]);
@@ -415,7 +420,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 				filterRestrictions[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
 			}
 			break;
-			
+
 		default:
 			restrictions.push(null);
 			filterRestrictions.push(null);
@@ -462,7 +467,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (match[1] == null) testLengthSelection.push('='); else testLengthSelection.push(match[1]);
 			testLength.push(+match[2]);
 			break;
-		
+
 		default:
 			testLengthSelection.push(null)
 			testLength.push(-1);
@@ -477,7 +482,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (match[1] == null) testDistanceSelection.push('='); else testDistanceSelection.push(match[1]);
 			testDistance.push(+match[2]);
 			break;
-		
+
 		default:
 			testDistanceSelection.push(null)
 			testDistance.push(-1);
@@ -492,7 +497,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (match[1] == null) testMingapSelection.push('='); else testMingapSelection.push(match[1]);
 			testMingap.push(+match[2]);
 			break;
-		
+
 		default:
 			testMingapSelection.push(null)
 			testMingap.push(-1);
@@ -507,7 +512,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (match[1] == null) testMaxgapSelection.push('='); else testMaxgapSelection.push(match[1]);
 			testMaxgap.push(+match[2]);
 			break;
-		
+
 		default:
 			testMaxgapSelection.push(null)
 			testMaxgap.push(-1);
@@ -522,7 +527,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			if (match[1] == null) testLevelSelection.push('='); else testLevelSelection.push(match[1]);
 			testLevel.push(+match[2]);
 			break;
-		
+
 		default:
 			testLevelSelection.push(null)
 			testLevel.push(-1);
@@ -548,8 +553,8 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterScore.push(-1);
 			break;
 	}
-	
-	
+
+
 	// Parsing MIN_VAL
 	switch (true) {
 		case /min_val\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
@@ -624,8 +629,8 @@ let rl = readline.createInterface({
 	for (let i = 0; i < filterCommand.length; i++)
 	{
 		let hitsCount = 0;
-		
-		
+
+
 		// Combi length scope
 		let selectLengthScope = true;
 		switch (true) {
@@ -729,11 +734,11 @@ let rl = readline.createInterface({
 		switch (true) {
 			case (testMingapSelection[i] == null):
 				break; // No rule
-				
+
 			case (minGap < 0):
 				selectMingapScope = false; // reject this combination
 				break;
-				
+
 			case /^<$/.test(testMingapSelection[i]):
 				if (!(minGap < testMingap[i])) selectMingapScope = false; // reject this combination
 				break;
@@ -871,15 +876,19 @@ let rl = readline.createInterface({
 				withOngoingSelection = true;
 				currentFilterCombinations = [...currentFilterCombinations, ...selectedCombinations];
 				break;
-			
+
 			default:
 				if (filterCombinations[i]) currentFilterCombinations = [...currentFilterCombinations, ...filterCombinations[i]];
 				break;
 		}
-		
-		
+
+
 		// Get restrictions
 		let matchingRestrictions = [];
+		if (restrictions[i] != null && restrictions[i].trim() == "_selection") {
+			filterRestrictions[i] = [...selectedCombinations];
+		}
+
 		if (filterRestrictions[i] == null || filterRestrictions[i].length == 0) {
 			matchingRestrictions.push (slicedCombination);
 		} else {
@@ -947,20 +956,20 @@ let rl = readline.createInterface({
 		{
 			let nbHits = 0;
 			let score = 0;
-			
+
 			let matchingCombinations = [];
 			for (let j = 0; j < currentFilterCombinations.length; j++) {
 				let match = false;
 				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], currentFilterCombinations[j].combination);
-				
-				
+
+
 				// TODO CL
 				//console.log("matchingRestrictions[k] " + matchingRestrictions[k]);
 				//console.log("currentFilterCombinations[j].combination " + currentFilterCombinations[j].combination);
 				//console.log("nb_collisions" + nb_collisions);
-				
-				
-				
+
+
+
 				switch (true) {
 					case /^<$/.test(testLevelSelection[i]):
 						if (nb_collisions < testLevel[i]) {
@@ -1043,8 +1052,8 @@ let rl = readline.createInterface({
 				coveredLines += matchingCombinations[j].lineNum;
 				coveredLines += " ";
 			}
-			
-			
+
+
 			score = nbHits * weight[i];
 			hits_count_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
 			hits_count_string += `[hits: ${nbHits} - score: ${score} ] `;
@@ -1094,13 +1103,13 @@ let rl = readline.createInterface({
 			if (!selectScoreScope) break;
 			hitsCount += nbHits;
 		}
-		
-		
+
+
 		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
 		hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
 		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
-		
-		
+
+
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			continue;		// next filter command
@@ -1146,7 +1155,7 @@ let rl = readline.createInterface({
 			case /^>$/.test(testGlobalScoreSelection[i]):
 				if (!(combiGlobalScore > testGlobalScore[i])) selectScoreScope = false; // reject this combination
 				break;
-		
+
 			default:
 				selectScoreScope = false; // reject this combination
 				break;
