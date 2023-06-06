@@ -1020,9 +1020,9 @@ let rl = readline.createInterface({
 
 
 
-			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k].combination) + '\n';
+			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
 			for (let j = 0; j < matchingCombinations.length; j++) {
-				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k].combination, matchingCombinations[j].combination);
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
 				if (!matchingCombinations[j].preselected) {
 					matchingCombinations[j].covering++;
 
@@ -1046,7 +1046,7 @@ let rl = readline.createInterface({
 			
 			
 			score = nbHits * weight[i];
-			hits_count_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k].combination) + '\n';
+			hits_count_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
 			hits_count_string += `[hits: ${nbHits} - score: ${score} ] `;
 
 
