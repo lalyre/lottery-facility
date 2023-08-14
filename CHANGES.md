@@ -16,6 +16,8 @@ Roadmap
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
 * filter CLI enhancement, adding a selection based on line numbers given in a list.
 * complete refactoring of filter CLI utility for a more clean and more simple code.
+* Enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
+* Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
 * adding a minimal_cover CLI tool.
 
 
