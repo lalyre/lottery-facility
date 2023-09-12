@@ -18,6 +18,8 @@ Roadmap
 * complete refactoring of filter CLI utility for a more clean and more simple code.
 * Enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
 * Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
+* Rewrite combination CLI to have a more simple usage.
+* Write a transposition CLI tool that rewrite data lines to columns.
 * adding a minimal_cover CLI tool.
 
 
