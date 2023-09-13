@@ -255,8 +255,8 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 ```sh
 --file, -f    A file containing one combination per line to calculate the difference to.
 --globalnum   All items that can be used in combinations, separated by '|' or ' '.
---globalfile  File containing one item of combination per line, items used in combinations of <file> file,
-              but possibly others items.
+--globalfile  File containing one item of combination per line, items used in combinations
+              of <file> file, but possibly others items.
 ```
 
 **Description**<br>

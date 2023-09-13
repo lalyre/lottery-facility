@@ -20,6 +20,7 @@ Roadmap
 * Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
 * Rewrite combination CLI to have a more simple usage.
 * Write a transposition CLI tool that rewrite data lines to columns.
+* Write a complement CLI tool that computes complement combinations of input file.
 * adding a minimal_cover CLI tool.
 
 
