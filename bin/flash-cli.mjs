@@ -1,6 +1,6 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict'
-//const fs = require('fs');
+import fs from 'fs';
 import path from 'path';
 import meow from 'meow';
 import colors from 'ansi-colors';

@@ -429,6 +429,7 @@ npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.1 "obsolete"
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
+
 ## Contact
 The project's website is located at https://github.com/lalyre/lottery-facility.<br>
 Author: Claude Lalyre (claude.lalyre@gmail.com)
@@ -436,3 +437,4 @@ Author: Claude Lalyre (claude.lalyre@gmail.com)
 
 ## Contributors
 * [All Contributors](./AUTHORS)
+
