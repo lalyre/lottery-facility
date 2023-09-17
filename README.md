@@ -27,8 +27,8 @@ CLI utilities:
 * translate
 * difference
 * filter
-* euromillions_draws (TODO)
-* kenoFR_draws (TODO)
+* euromillions (TODO)
+* kenoFR (TODO)
 
 
 <!--
@@ -142,6 +142,7 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 11 20 23 33 40 | 09 12
 ```
 
+<!--
 ### 2. combination
 **Parameters**<br>
 
@@ -178,6 +179,10 @@ $ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
 03 04 05
 ```
 
+-->
+
+
+<!--
 ### 3. translate
 **Overview**<br>
 In order to win lottery games, you both need a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
@@ -249,6 +254,10 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 28 34 52 61 68 70
 ```
 
+-->
+
+<!--
+
 ### 4. difference
 **Parameters**<br>
 
@@ -294,6 +303,8 @@ $ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 06 07 10
 08 09 10
 ```
+
+-->
 
 ### 5. filter
 
