@@ -22,6 +22,12 @@ Roadmap
 * Write a transposition CLI tool that rewrite data lines to columns.
 * Write a complement CLI tool that computes complement combinations of input file.
 * adding a minimal_cover CLI tool.
+* Move difference CLI to an ESM module.
+* Move combination CLI to an ESM module.
+* Move translate CLI to an ESM module.
+* Move filter CLI to an ESM module.
+* Move euromillions_draws CLI to an ESM module.
+* Move kenoFR_draws CLI to an ESM module.
 
 
 2023-xx-xx, Version 0.0.1-alpha.10

@@ -48,13 +48,13 @@
     "test0": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "flash": "./bin/flash-cli.js",
-    "combination": "./bin/combination-cli.js",
-    "translate": "./bin/translate-cli.js",
-    "difference": "./bin/difference-cli.js",
-    "filter": "./bin/filter-cli.js",
-    "euromillions_draws": "./bin/euromillions_draws-cli.js",
-    "kenoFR_draws": "./bin/kenoFR_draws-cli.js"
+    "flash": "./bin/flash-cli.mjs",
+    "combination": "./bin/combination-cli.mjs",
+    "translate": "./bin/translate-cli.mjs",
+    "difference": "./bin/difference-cli.mjs",
+    "filter": "./bin/filter-cli.mjs",
+    "euromillions_draws": "./bin/euromillions_draws-cli.mjs",
+    "kenoFR_draws": "./bin/kenoFR_draws-cli.mjs"
   },
   "repository": {
     "type": "git",

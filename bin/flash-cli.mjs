@@ -1,11 +1,11 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict'
-const fs = require('fs');
-const path = require('path');
-const meow = require('meow');
-const colors = require('ansi-colors');
-const cliProgress = require('cli-progress');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+//const fs = require('fs');
+import path from 'path';
+import meow from 'meow';
+import colors from 'ansi-colors';
+import cliProgress from 'cli-progress';
+import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 const FILE_LIMIT = 500000;
 
 
@@ -28,6 +28,7 @@ const cli = meow(`
 
 	You can put <total> and <size> multiple times for random selection into multiple draw boxes.
 `, {
+	importMeta: import.meta,
 	flags: {
 		verbose: {
 			type: 'boolean',
@@ -40,13 +41,13 @@ const cli = meow(`
 		},
 		total: {
 			type: 'number',
-			alias: 't',
+			shortFlag: 't',
 			isRequired: (input, flags) => true,
 			isMultiple: true,
 		},
 		size: {
 			type: 'number',
-			alias: 's',
+			shortFlag: 's',
 			isRequired: (input, flags) => true,
 			isMultiple: true,
 		},
