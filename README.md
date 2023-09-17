@@ -23,12 +23,16 @@ Features:
 
 CLI utilities:
 * flash
+<!--
 * combination
 * translate
 * difference
 * filter
 * euromillions (TODO)
 * kenoFR (TODO)
+-->
+
+
 
 
 <!--
@@ -306,19 +310,45 @@ $ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 
 -->
 
+
+<!--
 ### 5. filter
 
+-->
+
+
+
+
+<!--
 ### 6. cartesian_product
 
+-->
+
+
+<!--
 ### 7. paste
 
+-->
+
+
+<!--
 ### 8. cut
 
-### 9. euromillions_draws
-
-### 10. kenoFR_draws
+-->
 
 
+
+<!--
+### 9. euromillions
+
+-->
+
+
+
+<!--
+### 10. kenoFR
+
+-->
 
 
 
