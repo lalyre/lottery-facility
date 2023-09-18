@@ -1,5 +1,5 @@
 'use strict';
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const webpack = require("webpack");
 const nodeExternals = require('webpack-node-externals');
@@ -11,6 +11,7 @@ const generalConfig = {
 	resolve: {
 		fallback: {
 			"fs": false,
+			"fs-extra": false,
 			"tls": false,
 			"net": false,
 			"path": false,
