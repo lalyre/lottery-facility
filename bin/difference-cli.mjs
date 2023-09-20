@@ -1,9 +1,9 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict'
-const fs = require('fs');
-const readline = require('readline');
-const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+import fs from 'fs-extra';
+import readline from 'readline';
+import meow from 'meow';
+import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
 
 const cli = meow(`
@@ -21,6 +21,7 @@ const cli = meow(`
 
 	The <global> alphabet can be declared either with <globalnum> or <globalfile> parameters.
 `, {
+	importMeta: import.meta,
 	flags: {
 		globalfile: {
 			type: 'string',
@@ -39,7 +40,7 @@ const cli = meow(`
 		},
 		file: {
 			type: 'string',
-			alias: 'f',
+			shortFlag: 'f',
 			isRequired: true,
 			isMultiple: false,
 		},
@@ -84,8 +85,6 @@ let rl = readline.createInterface({
 	console.log(result_line);
 })
 .on('close', () => {
-	//console.log('Have a great day!');
-	//process.exit(0);
 	fileStream.close();
 });
 
