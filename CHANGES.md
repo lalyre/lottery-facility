@@ -23,7 +23,6 @@ Roadmap
 * Write a complement CLI tool that computes complement combinations of input file.
 * adding a minimal_cover CLI tool.
 * Move combination CLI to an ESM module.
-* Move translate CLI to an ESM module.
 * Move filter CLI to an ESM module.
 * Move euromillions CLI to an ESM module.
 * Move kenoFR CLI to an ESM module.
