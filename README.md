@@ -23,10 +23,10 @@ Features:
 
 CLI utilities:
 * flash
+* difference
+* translate
 <!--
 * combination
-* translate
-* difference
 * filter
 * euromillions (TODO)
 * kenoFR (TODO)
@@ -146,47 +146,54 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 11 20 23 33 40 | 09 12
 ```
 
-<!--
-### 2. combination
+
+### 2. difference
 **Parameters**<br>
 
 ```sh
---verbose, -v   Verbose mode (default true).
---outfile       Output filename (optional).
---total, -t     Total number of arranged packets of items.
---size, -s      Number of assembled packets of items.
---file, -f      A file containing one item of combination per line.
---numbers, -n   Items of combinations separated by '|'.
---step          Size of a packet of items. Default value 1.
+--file, -f    A file containing one combination per line to calculate the difference to.
+--globalnum   All items that can be used in combinations, separated by '|' or ' '.
+--globalfile  File containing one item of combination per line, items used in combinations
+              of <file> file, but possibly others items.
 ```
 
 **Description**<br>
 
-This script generates combinations of packets of items taken in file `file` or list `numbers`, of size `size` packets, implementing choice of `size` packets among `total` packets.
-Only the first `step*total` items of `file` or `numbers` are used to build combinations.
+This script takes an input file `file` containing one combination per line, combinations written with items of the `global` alphabet,
+and returns the difference between the global alphabet and each combination.<br>
+The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
 **Exemple**<br>
 
-Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
+We start with a `GAME.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
 
 ```sh
-$ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
+$ cat GAME.txt
+04 05 06 07 08 09 10
+03 05 06 07 08 09 10
+03 04 06 07 08 09 10
+01 02 06 07 08 09 10
+01 02 03 04 05 09 10
+01 02 03 04 05 08 10
+01 02 03 04 05 08 09
+01 02 03 04 05 06 07
+```
+
+Computation of the difference of file `GAME.txt` relatively to the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 01 02 03
 01 02 04
 01 02 05
-01 03 04
-01 03 05
-01 04 05
-02 03 04
-02 03 05
-02 04 05
 03 04 05
+06 07 08
+06 07 09
+06 07 10
+08 09 10
 ```
 
--->
 
-
-<!--
 ### 3. translate
 **Overview**<br>
 In order to win lottery games, you both need a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
@@ -258,57 +265,49 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 28 34 52 61 68 70
 ```
 
--->
+
 
 <!--
-
-### 4. difference
+### 2. combination
 **Parameters**<br>
 
 ```sh
---file, -f    A file containing one combination per line to calculate the difference to.
---globalnum   All items that can be used in combinations, separated by '|' or ' '.
---globalfile  File containing one item of combination per line, items used in combinations
-              of <file> file, but possibly others items.
+--verbose, -v   Verbose mode (default true).
+--outfile       Output filename (optional).
+--total, -t     Total number of arranged packets of items.
+--size, -s      Number of assembled packets of items.
+--file, -f      A file containing one item of combination per line.
+--numbers, -n   Items of combinations separated by '|'.
+--step          Size of a packet of items. Default value 1.
 ```
 
 **Description**<br>
 
-This script takes an input file `file` containing one combination per line, combinations written with items of the `global` alphabet,
-and returns the difference between the global alphabet and each combination.<br>
-The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
+This script generates combinations of packets of items taken in file `file` or list `numbers`, of size `size` packets, implementing choice of `size` packets among `total` packets.
+Only the first `step*total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
 
-We start with a `GAME.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
+Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
 
 ```sh
-$ cat GAME.txt
-04 05 06 07 08 09 10
-03 05 06 07 08 09 10
-03 04 06 07 08 09 10
-01 02 06 07 08 09 10
-01 02 03 04 05 09 10
-01 02 03 04 05 08 10
-01 02 03 04 05 08 09
-01 02 03 04 05 06 07
-```
-
-Computation of the difference of file `GAME.txt` relatively to the global alphabet `01 02 03 04 05 06 07 08 09 10`
-
-```sh
-$ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
+$ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
 01 02 03
 01 02 04
 01 02 05
+01 03 04
+01 03 05
+01 04 05
+02 03 04
+02 03 05
+02 04 05
 03 04 05
-06 07 08
-06 07 09
-06 07 10
-08 09 10
 ```
 
 -->
+
+
+
 
 
 <!--
