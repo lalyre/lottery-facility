@@ -49,12 +49,12 @@
   },
   "bin": {
     "flash": "./bin/flash-cli.mjs",
-    "combination": "./bin/combination-cli.mjs",
-    "translate": "./bin/translate-cli.mjs",
     "difference": "./bin/difference-cli.mjs",
+    "translate": "./bin/translate-cli.mjs",
+    "combination": "./bin/combination-cli.mjs",
     "filter": "./bin/filter-cli.mjs",
-    "euromillions_draws": "./bin/euromillions-cli.mjs",
-    "kenoFR_draws": "./bin/kenoFR-cli.mjs"
+    "euromillions": "./bin/euromillions-cli.mjs",
+    "kenoFR": "./bin/kenoFR-cli.mjs"
   },
   "repository": {
     "type": "git",

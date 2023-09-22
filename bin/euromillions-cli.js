@@ -10,7 +10,7 @@ const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 const cli = meow(`
 	Usage
-	  $ euromillions_draws
+	  $ euromillions
 
 	Parameters
 	  --num, -n     It retrieves the last <num> draws of Euromillions lottery in ascending order

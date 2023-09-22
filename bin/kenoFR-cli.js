@@ -10,7 +10,7 @@ const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
 
 const cli = meow(`
 	Usage
-	  $ kenoFR_draws
+	  $ kenoFR
 
 	Parameters
 	  --num, -n     It retrieves the last <num> draws of Keno FR lottery in ascending order
