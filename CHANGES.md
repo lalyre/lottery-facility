@@ -8,6 +8,7 @@ Roadmap
 * cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
+* join CLI utility.
 * for filter CLI utility, add feature for saving the final selection of combinations.
 * manage all history databases of Euromillions draws for euromillions.
 * manage all history databases of Keno draws for kenoFR.
