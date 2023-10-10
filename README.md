@@ -154,8 +154,8 @@ $ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
 ```sh
 --file, -f    A file containing one combination per line to calculate the difference to.
 --globalnum   All items that can be used in combinations, separated by '|' or ' '.
---globalfile  File containing one item of combination per line, items used in combinations
-              of <file> file, but possibly others items.
+--globalfile  File containing one item of combination per line, items that are used
+              in combinations of <file> file, but possibly others items.
 ```
 
 **Description**<br>
@@ -200,14 +200,15 @@ $ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 ```sh
 --file, -f    A file containing one combination per line to calculate the complement from.
 --globalnum   All items that can be used in combinations, separated by '|' or ' '.
---globalfile  File containing one item per line that are used in combinations of <file> file, and possibly others items.
+--globalfile  File containing one item of combination per line, items that are used
+              in combinations of <file> file, but possibly others items.
 ```
 
 **Description**<br>
 
 This script takes an input file `file` containing one combination per line, combinations written with items of
 the `global` alphabet, and returns the complement of each combination relatively to the global alphabet.<br>
-The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.
+The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
 **Exemple**<br>
 
