@@ -8,7 +8,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toString (numbers:number[], sep:string = ' '): string {
+	public static toString (numbers:number[]|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const display = numbers.map(x => x.toString().padStart(2, '0')).join(sep);
 		return display;
@@ -21,7 +21,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toCanonicalString (numbers:number[], sep:string = ' '): string {
+	public static toCanonicalString (numbers:number[]|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const arr = numbers.filter((element, index, array) => array.indexOf(element) === index).sort((a, b) => {return a - b;});
 		const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);
@@ -254,17 +254,24 @@ export class CombinationHelper {
 
 
 	/**
-	 * Compute the complement combination of a lottery combination relatively to maximum number value
-	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param numbers   array of balls number.
-	 * @return          array containing balls numbers of the complement combination.
+	 * Compute the complement combination of a lottery combination relatively to a global alphabet
+	 * @param alphabet      array of balls number.
+	 * @param combination   array of balls number.
+	 * @return              array containing balls numbers of the complement combination.
 	 */
-	public static complement (max:number, numbers:number[]): number[] {
-		if (max <= 0) return [];
-		if (!numbers) return [];
+	public static complement (alphabet:number[], combination:number[]): number[]|null {
+		if (!alphabet) return null;
+		if (!combination) return null;
+
 		const complement:number[] = [];
-		complement.length = numbers.length;
-		for (let j = 0; j < numbers.length; j++) { complement[j] = (max+1 - numbers[j]); }
+		complement.length = combination.length;
+
+		for (let j = 0; j < combination.length; j++) {
+			if (alphabet.indexOf(combination[j]) === -1) return null;		// Item not in alphabet
+
+			const pos:number = alphabet.indexOf(combination[j]);
+			complement[j] = alphabet[alphabet.length-1 - pos];
+		}
 		return complement;
 	}
 

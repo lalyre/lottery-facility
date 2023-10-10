@@ -251,10 +251,15 @@ describe('CombinationHelper module', () => {
 
 
 	test('CombinationHelper.complement test', () => {
-		let a = [8, 3, 1, 7, 8, 6, 5, 3, 7, 1];
-		let c = CombinationHelper.complement(9, a);
-		let s = CombinationHelper.toString(c, " ");
-		expect(s).toBe("02 07 09 03 02 04 05 07 03 09");
+		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+		let a1 = [8, 3, 1];
+		let a2 = [10, 2, 4, 5];
+		let c1 = CombinationHelper.complement(alphabet, a1);
+		let c2 = CombinationHelper.complement(alphabet, a2);
+		let s1 = CombinationHelper.toString(c1, " ");
+		let s2 = CombinationHelper.toString(c2, " ");
+		expect(s1).toBe("03 08 10");
+		expect(s2).toBe("01 09 07 06");
 	});
 
 

@@ -50,6 +50,7 @@
   "bin": {
     "flash": "./bin/flash-cli.mjs",
     "difference": "./bin/difference-cli.mjs",
+    "complement": "./bin/complement-cli.mjs",
     "translate": "./bin/translate-cli.mjs",
     "combination": "./bin/combination-cli.mjs",
     "filter": "./bin/filter-cli.mjs",
@@ -105,7 +106,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.49.0",
+    "eslint": "^8.51.0",
     "jest": "^29.7.0",
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.1",

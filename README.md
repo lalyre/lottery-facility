@@ -24,6 +24,7 @@ Features:
 CLI utilities:
 * flash
 * difference
+* complement
 * translate
 <!--
 * combination
@@ -193,8 +194,43 @@ $ difference --file GAME.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 08 09 10
 ```
 
+### 3. complement
+**Parameters**<br>
 
-### 3. translate
+```sh
+--file, -f    A file containing one combination per line to calculate the complement from.
+--globalnum   All items that can be used in combinations, separated by '|' or ' '.
+--globalfile  File containing one item per line that are used in combinations of <file> file, and possibly others items.
+```
+
+**Description**<br>
+
+This script takes an input file `file` containing one combination per line, combinations written with items of
+the `global` alphabet, and returns the complement of each combination relatively to the global alphabet.<br>
+The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.
+
+**Exemple**<br>
+
+We start with a `FILE.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ cat FILE.txt
+01 02 03 04
+05 06
+07 08 09 10
+```
+
+Computation of the complement of file `FILE.txt` relatively to the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ complement --file FILE.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
+10 09 08 07
+06 05
+04 03 02 01
+```
+
+
+### 4. translate
 **Overview**<br>
 In order to win lottery games, you both need a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
 First, you have to find good numbers with high probability to draw. The more you have winning numbers in your selection the better it is for you.
