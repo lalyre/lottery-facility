@@ -21,6 +21,7 @@ const cli = meow(`
 	  --sort         Display ordered combinations (optional).
 	  --nb           Number of generated combinations.
 	  --nbSwap       Number of shuffle operations. Default value 200.
+	  --sep          Separator of draw boxes random selection (optional).
 
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.
@@ -33,6 +34,7 @@ const cli = meow(`
 		verbose: {
 			type: 'boolean',
 			default: true,
+			isMultiple: false,
 		},
 		outfile: {
 			type: 'string',
@@ -54,14 +56,22 @@ const cli = meow(`
 		sort: {
 			type: 'boolean',
 			default: false,
+			isMultiple: false,
 		},
 		nb: {
 			type: 'number',
 			default: 1,
+			isMultiple: false,
 		},
 		nbSwap: {
 			type: 'number',
 			default: 200,
+			isMultiple: false,
+		},
+		sep: {
+			type: 'string',
+			default: ' | ',
+			isMultiple: false,
 		},
 	}
 });
@@ -155,7 +165,7 @@ for (let i = 0; i < nb; i++) {
 	let ballsSet = [];
 	for (let j = 0; j < totals.length; j++) {
 		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
-		if (j > 0) str += " | ";
+		if (j > 0) str += cli.flags.sep;
 		str += (cli.flags.sort) ? lotteryFacility.CombinationHelper.toCanonicalString(ballsSet[j], " ") : lotteryFacility.CombinationHelper.toString(ballsSet[j], " ");
 	}
 	
