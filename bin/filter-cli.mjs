@@ -1,9 +1,12 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict';
-const fs = require('fs');
-const readline = require('readline');
-const meow = require('meow');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+import fs from 'fs-extra';
+import readline from 'readline';
+import path from 'path';
+import meow from 'meow';
+import colors from 'ansi-colors';
+import cliProgress from 'cli-progress';
+import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 const SELECTION_LIMIT = 500000;
 
 
@@ -120,6 +123,7 @@ const cli = meow(`
 	With --globalFailure ">=x", only combinations with more than or equal x failed filters are selected.
 	With --globalFailure ">x",  only combinations with more than x failed filters are selected.
 `, {
+	importMeta: import.meta,
 	flags: {
 		globalfile: {
 			type: 'string',
@@ -138,7 +142,7 @@ const cli = meow(`
 		},
 		infile: {
 			type: 'string',
-			alias: 'in',
+			shortFlag: 'in',
 			isRequired: true,
 			isMultiple: false,
 		},
@@ -165,7 +169,7 @@ const cli = meow(`
 		},
 		filter: {
 			type: 'string',
-			alias: 'f',
+			shortFlag: 'f',
 			isRequired: true,
 			isMultiple: true,
 		},
