@@ -1,12 +1,12 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict';
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const meow = require('meow');
-const colors = require('ansi-colors');
-const cliProgress = require('cli-progress');
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+import fs from 'fs-extra';
+import readline from 'readline';
+import path from 'path';
+import meow from 'meow';
+import colors from 'ansi-colors';
+import cliProgress from 'cli-progress';
+import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 const FILE_LIMIT = 500000;
 
 
@@ -30,6 +30,7 @@ const cli = meow(`
 	implementing choice of <size> packets among <total> packets.
 	Only the first <step>*<total> items of <file> or <numbers> are used to build combinations.
 `, {
+	importMeta: import.meta,
 	flags: {
 		verbose: {
 			type: 'boolean',
@@ -42,19 +43,19 @@ const cli = meow(`
 		},
 		total: {
 			type: 'number',
-			alias: 't',
+			shortFlag: 't',
 			isRequired: true,
 			isMultiple: false,
 		},
 		size: {
 			type: 'number',
-			alias: 's',
+			shortFlag: 's',
 			isRequired: true,
 			isMultiple: false,
 		},
 		file: {
 			type: 'string',
-			alias: 'f',
+			shortFlag: 'f',
 			isRequired: (input, flags) => {
 				if (input.numbers) {
 					return false;
@@ -65,7 +66,7 @@ const cli = meow(`
 		},
 		numbers: {
 			type: 'string',
-			alias: 'n',
+			shortFlag: 'n',
 			isRequired: false,
 			isMultiple: false,
 		},
