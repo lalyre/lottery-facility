@@ -19,16 +19,16 @@ const cli = meow(`
 	Parameters
 	  --verbose, -v   Verbose mode (default true).
 	  --outfile       Output filename (optional).
-	  --total, -t     Total number of arranged packets of items.
-	  --size, -s      Number of assembled packets of items.
+	  --total, -t     Total number of items.
+	  --size, -s      Number of assembled items.
 	  --file, -f      A file containing one item of combination per line.
 	  --numbers, -n   Items of combinations separated by '|'.
-	  --step          Size of a packet of items. Default value 1.
+	  --sep           Separator of items (optional).
 
 	Description
-	This script generates combinations of packets of items taken in <file> or <numbers>, of size <size> packets,
-	implementing choice of <size> packets among <total> packets.
-	Only the first <step>*<total> items of <file> or <numbers> are used to build combinations.
+	This script generates combinations of items taken in <file> or <numbers>, of size <size> items,
+	implementing choice of <size> items among <total> items.
+	Only the first <total> items of <file> or <numbers> are used to build combinations.
 `, {
 	importMeta: import.meta,
 	flags: {
@@ -70,11 +70,10 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 		},
-		step: {
-			type: 'number',
-			isRequired: false,
+		sep: {
+			type: 'string',
+			default: ' | ',
 			isMultiple: false,
-			default: 1,
 		},
 	}
 });
@@ -110,9 +109,9 @@ let verboseMode = cli.flags.verbose;
 let numbers = null;
 let size = cli.flags.size;
 let total = cli.flags.total;
-let step = cli.flags.step;
-let separator = false;
-let SEP = (separator) ? '|' : ' ';
+//let step = cli.flags.step;
+//let separator = false;
+//let SEP = (separator) ? '|' : ' ';
 
 
 if (cli.flags.numbers) {
@@ -194,8 +193,10 @@ do {
 	lineNum++;
 	
 	// Computation
-	var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(SEP));
-	var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
+	//var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(cli.flags.sep));
+	var temp_array = iterators.map(x => numbers[x-1]).join(cli.flags.sep);
+	//var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
+	var result_line = temp_array;
 	
 	// Output
 	if (verboseMode) {
