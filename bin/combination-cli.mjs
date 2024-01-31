@@ -160,6 +160,8 @@ const nextCombination = function (tab) {
 }
 
 
+//let global_alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
+
 let bar = null;
 let outfd = null;
 let file = null;
@@ -198,9 +200,17 @@ do {
 	//var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
 	var result_line = temp_array;
 	
+	
+	//var iterators2 = lotteryFacility.CombinationHelper.complement(global_alphabet, iterators);
+	//var temp_array2 = iterators2.map(x => numbers[x-1]).join(cli.flags.sep);
+	//var result_line2 = temp_array2;
+	
+	
+	
 	// Output
 	if (verboseMode) {
 		console.log(result_line);
+		console.log(result_line2);
 	}
 	if (outfd) {
 		fs.writeSync(outfd, result_line);
