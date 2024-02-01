@@ -210,7 +210,7 @@ do {
 	// Output
 	if (verboseMode) {
 		console.log(result_line);
-		console.log(result_line2);
+		//console.log(result_line2);
 	}
 	if (outfd) {
 		fs.writeSync(outfd, result_line);

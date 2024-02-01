@@ -2,7 +2,7 @@ Plafond Euromillions de 240 millions d’euros
 
 Obtenir un système réducteur qui donne 2/5 si 5/50
 
-combination --total 50 --size 5 --file KENOFR_70.txt --sep " " > 50_5.txt
+combination --total 50 --size 5 --file KENOFR_70.txt --sep " "  > 50_5.txt
 combination --total 50 --size 4 --file KENOFR_70.txt --sep " "  > 50_4.txt
 combination --total 50 --size 3 --file KENOFR_70.txt --sep " "  > 50_3.txt
 combination --total 50 --size 2 --file KENOFR_70.txt --sep " "  > 50_2.txt
@@ -82,7 +82,40 @@ filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(AA.txt)level(
 
 
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --filter "filename(_selection)level(=1)restrictions(50_1.txt)score(<=4)" --globalFailure "0"
+
+
+combination --total 50 --size 5 --file KENOFR_70.txt --sep " "  > 50_5.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(1)max_gap(1)" --globalFailure "0" > toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(2)max_gap(2)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(3)max_gap(3)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(4)max_gap(4)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(5)max_gap(5)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(6)max_gap(6)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(7)max_gap(7)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(8)max_gap(8)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(9)max_gap(9)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(10)max_gap(10)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(11)max_gap(11)"  --globalFailure "0" >> toto.txt
+filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min_gap(12)max_gap(12)"  --globalFailure "0" >> toto.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+filter --infile toto.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0"
+filter --infile titi.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=2)score(0)" --globalFailure "0" > tutu.txt
 filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(toto.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(tutu.txt)level(>=2)score(0)" --globalFailure "0"
+filter --infile 50_2.txt --globalfile 50_1.txt  --filter "filename(titi.txt)level(>=2)score(0)" --globalFailure "0"
+
 
 
 
