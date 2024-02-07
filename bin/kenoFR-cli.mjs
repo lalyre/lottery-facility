@@ -1,11 +1,11 @@
 #!/usr/bin/env node --max-old-space-size=8192
 'use strict'
-const JSZip = require("jszip");
-const meow = require('meow');
-const bent = require('bent')
+import JSZip from 'jszip';
+import meow from 'meow';
+import bent from 'bent';
 const getJSON = bent('json')
 const getBuffer = bent('buffer')
-const lotteryFacility = require('../dist/lotteryfacility-nodebundle.umd');
+//import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
 
 const cli = meow(`
