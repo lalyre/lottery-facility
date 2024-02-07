@@ -21,10 +21,11 @@ const cli = meow(`
 	Description
 	This script gives last draws of Euromillions lottery in ascending order.
 `, {
+	importMeta: import.meta,
 	flags: {
 		num: {
 			type: 'string',
-			alias: 'n',
+			shortFlag: 'n',
 			isRequired: true,
 			isMultiple: false,
 		},
