@@ -1,0 +1,208 @@
+{
+  "lots": [
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 10,
+		"gain": 200000
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 9,
+		"gain": 2000
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 8,
+		"gain": 100
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 7,
+		"gain": 10
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 6,
+		"gain": 5
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 5,
+		"gain": 2
+    },
+    {	  
+		"mise": 1,
+		"cochés": 10,
+		"gagnants": 0,
+		"gain": 2
+    },
+    {
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 9,
+		"gain": 40000
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 8,
+		"gain": 100
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 7,
+		"gain": 20
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 6,
+		"gain": 8
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 5,
+		"gain": 2
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 4,
+		"gain": 1
+    },
+    {	  
+		"mise": 1,
+		"cochés": 9,
+		"gagnants": 0,
+		"gain": 1
+    },
+    {	  
+		"mise": 1,
+		"cochés": 8,
+		"gagnants": 8,
+		"gain": 8000
+    },
+    {	  
+		"mise": 1,
+		"cochés": 8,
+		"gagnants": 7,
+		"gain": 100
+    },
+    {	  
+		"mise": 1,
+		"cochés": 8,
+		"gagnants": 6,
+		"gain": 30
+    },
+    {	  
+		"mise": 1,
+		"cochés": 8,
+		"gagnants": 5,
+		"gain": 5
+    },
+    {	  
+		"mise": 1,
+		"cochés": 8,
+		"gagnants": 0,
+		"gain": 2
+    },
+    {	  
+		"mise": 1,
+		"cochés": 7,
+		"gagnants": 7,
+		"gain": 3000
+    },
+    {	  
+		"mise": 1,
+		"cochés": 7,
+		"gagnants": 6,
+		"gain": 70
+    },
+    {	  
+		"mise": 1,
+		"cochés": 7,
+		"gagnants": 5,
+		"gain": 5
+    },
+    {	  
+		"mise": 1,
+		"cochés": 7,
+		"gagnants": 4,
+		"gain": 2
+    },
+    {
+		"mise": 1,
+		"cochés": 6,
+		"gagnants": 6,
+		"gain": 900
+    },
+    {	  
+		"mise": 1,
+		"cochés": 6,
+		"gagnants": 5,
+		"gain": 30
+    },
+    {	  
+		"mise": 1,
+		"cochés": 6,
+		"gagnants": 4,
+		"gain": 3
+    }, 
+    {	  
+		"mise": 1,
+		"cochés": 5,
+		"gagnants": 5,
+		"gain": 80
+    },
+    {	  
+		"mise": 1,
+		"cochés": 5,
+		"gagnants": 4,
+		"gain": 10
+    },
+    {
+		"mise": 1,
+		"cochés": 5,
+		"gagnants": 3,
+		"gain": 2
+    },
+    {	  
+		"mise": 1,
+		"cochés": 4,
+		"gagnants": 4,
+		"gain": 50
+    },
+    {	  
+		"mise": 1,
+		"cochés": 4,
+		"gagnants": 3,
+		"gain": 5
+    },
+    {	  
+		"mise": 1,
+		"cochés": 3,
+		"gagnants": 3,
+		"gain": 10
+    },
+    {	  
+		"mise": 1,
+		"cochés": 3,
+		"gagnants": 2,
+		"gain": 2
+    },
+    {	  
+		"mise": 1,
+		"cochés": 2,
+		"gagnants": 2,
+		"gain": 6
+    }
+  ]
+}
