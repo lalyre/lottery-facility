@@ -1,208 +1,243 @@
 {
   "lots": [
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 10,
-		"gain": 200000
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 10,
+		"winnings": 200000€,
+		"description": "10/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 9,
-		"gain": 2000
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 9,
+		"winnings": 2000€,
+		"description": "9/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 8,
-		"gain": 100
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 8,
+		"winnings": 100€,
+		"description": "8/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 7,
-		"gain": 10
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 7,
+		"winnings": 10€,
+		"description": "7/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 6,
-		"gain": 5
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 6,
+		"winnings": 5€,
+		"description": "6/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 5,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 5,
+		"winnings": 2€,
+		"description": "5/10 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 10,
-		"gagnants": 0,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 10,
+		"winning numbers": 0,
+		"winnings": 2€,
+		"description": "0/10 winning numbers"
     },
     {
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 9,
-		"gain": 40000
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 9,
+		"winnings": 40000€,
+		"description": "9/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 8,
-		"gain": 100
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 8,
+		"winnings": 100€,
+		"description": "8/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 7,
-		"gain": 20
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 7,
+		"winnings": 20€,
+		"description": "7/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 6,
-		"gain": 8
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 6,
+		"winnings": 8€,
+		"description": "6/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 5,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 5,
+		"winnings": 2€,
+		"description": "5/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 4,
-		"gain": 1
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 4,
+		"winnings": 1€,
+		"description": "4/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 9,
-		"gagnants": 0,
-		"gain": 1
+		"bet": 1€,
+		"played numbers": 9,
+		"winning numbers": 0,
+		"winnings": 1€,
+		"description": "4/9 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 8,
-		"gagnants": 8,
-		"gain": 8000
+		"bet": 1€,
+		"played numbers": 8,
+		"winning numbers": 8,
+		"winnings": 8000€,
+		"description": "8/8 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 8,
-		"gagnants": 7,
-		"gain": 100
+		"bet": 1€,
+		"played numbers": 8,
+		"winning numbers": 7,
+		"winnings": 100€,
+		"description": "7/8 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 8,
-		"gagnants": 6,
-		"gain": 30
+		"bet": 1€,
+		"played numbers": 8,
+		"winning numbers": 6,
+		"winnings": 30€,
+		"description": "6/8 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 8,
-		"gagnants": 5,
-		"gain": 5
+		"bet": 1€,
+		"played numbers": 8,
+		"winning numbers": 5,
+		"winnings": 5€,
+		"description": "5/8 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 8,
-		"gagnants": 0,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 8,
+		"winning numbers": 0,
+		"winnings": 2€,
+		"description": "0/8 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 7,
-		"gagnants": 7,
-		"gain": 3000
+		"bet": 1€,
+		"played numbers": 7,
+		"winning numbers": 7,
+		"winnings": 3000€,
+		"description": "7/7 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 7,
-		"gagnants": 6,
-		"gain": 70
+		"bet": 1€,
+		"played numbers": 7,
+		"winning numbers": 6,
+		"winnings": 70€,
+		"description": "6/7 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 7,
-		"gagnants": 5,
-		"gain": 5
+		"bet": 1€,
+		"played numbers": 7,
+		"winning numbers": 5,
+		"winnings": 5€,
+		"description": "5/7 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 7,
-		"gagnants": 4,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 7,
+		"winning numbers": 4,
+		"winnings": 2€,
+		"description": "4/7 winning numbers"
     },
     {
-		"mise": 1,
-		"cochés": 6,
-		"gagnants": 6,
-		"gain": 900
+		"bet": 1€,
+		"played numbers": 6,
+		"winning numbers": 6,
+		"winnings": 900€,
+		"description": "6/6 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 6,
-		"gagnants": 5,
-		"gain": 30
+		"bet": 1€,
+		"played numbers": 6,
+		"winning numbers": 5,
+		"winnings": 30€,
+		"description": "5/6 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 6,
-		"gagnants": 4,
-		"gain": 3
+		"bet": 1€,
+		"played numbers": 6,
+		"winning numbers": 4,
+		"winnings": 3€,
+		"description": "4/6 winning numbers"
     }, 
     {	  
-		"mise": 1,
-		"cochés": 5,
-		"gagnants": 5,
-		"gain": 80
+		"bet": 1€,
+		"played numbers": 5,
+		"winning numbers": 5,
+		"winnings": 80€,
+		"description": "5/5 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 5,
-		"gagnants": 4,
-		"gain": 10
+		"bet": 1€,
+		"played numbers": 5,
+		"winning numbers": 4,
+		"winnings": 10€,
+		"description": "4/5 winning numbers"
     },
     {
-		"mise": 1,
-		"cochés": 5,
-		"gagnants": 3,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 5,
+		"winning numbers": 3,
+		"winnings": 2€,
+		"description": "3/5 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 4,
-		"gagnants": 4,
-		"gain": 50
+		"bet": 1€,
+		"played numbers": 4,
+		"winning numbers": 4,
+		"winnings": 50€,
+		"description": "4/4 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 4,
-		"gagnants": 3,
-		"gain": 5
+		"bet": 1€,
+		"played numbers": 4,
+		"winning numbers": 3,
+		"winnings": 5€,
+		"description": "3/4 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 3,
-		"gagnants": 3,
-		"gain": 10
+		"bet": 1€,
+		"played numbers": 3,
+		"winning numbers": 3,
+		"winnings": 10€,
+		"description": "3/3 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 3,
-		"gagnants": 2,
-		"gain": 2
+		"bet": 1€,
+		"played numbers": 3,
+		"winning numbers": 2,
+		"winnings": 2€,
+		"description": "2/3 winning numbers"
     },
     {	  
-		"mise": 1,
-		"cochés": 2,
-		"gagnants": 2,
-		"gain": 6
+		"bet": 1€,
+		"played numbers": 2,
+		"winning numbers": 2,
+		"winnings": 6€,
+		"description": "2/2 winning numbers"
     }
   ]
 }
+
