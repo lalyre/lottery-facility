@@ -12,23 +12,21 @@ Roadmap
 * for filter CLI utility, add feature for saving the final selection of combinations.
 * manage all history databases of Euromillions draws for euromillions.
 * manage all history databases of Keno draws for kenoFR.
+* manage all history databases of Lottery draws in JSON format.
 * combination CLI enhancement with production of balanced and count limited combinations.
 * combination CLI enhancement with starting combination and/or ending combination.
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
 * filter CLI enhancement, adding a selection based on line numbers given in a list.
 * complete refactoring of filter CLI utility for a more clean and more simple code.
 * Enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
-* Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
+* Enhancement of combination CLI utility, specify a base to prefix on output combinations.
 * Rewrite combination CLI to have a more simple usage.
+* Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
 * Write a transposition CLI tool that rewrite data lines to columns.
-* adding a minimal_cover CLI tool.
-* Move combination CLI to an ESM module.
-* Move filter CLI to an ESM module.
-* Move euromillions CLI to an ESM module.
-* Move kenoFR CLI to an ESM module.
+* Adding a minimal_cover CLI tool.
 
 
-2023-xx-xx, Version 0.0.1-alpha.10
+2024-xx-xx, Version 0.0.1-alpha.10
 ==================================
 * Adding complement CLI utility.
 * Documentation update.
