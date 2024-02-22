@@ -474,3 +474,18 @@ Author: Claude Lalyre (claude.lalyre@gmail.com)
 ## Contributors
 * [All Contributors](./AUTHORS)
 
+
+## Sponsors
+
+<!--
+Thank you to all our sponsors! ([becoming a sponsor](https://opencollective.com/csvtojson#sponsor))
+-->
+Thank you to all our sponsors! ([becoming a sponsor](https://google.com))
+
+
+## Paypal 
+
+<!--
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DUBQLRPJADJFQ)
+-->
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.google.com)
