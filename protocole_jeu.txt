@@ -100,7 +100,7 @@ filter --infile 50_2.txt --globalfile 50_1.txt --filter "filename(_selection)min
 
 
 
-
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(BB.txt)level(>=1)restrictions(50_1.txt)score(>=5)" --globalFailure "0"
 
 
 
@@ -1597,4 +1597,44 @@ translate --file 11_5.txt --originnum "11 10 09 08 07 06 05 04 03 02 01"  --targ
 filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(_selection)level(>=3)score(>0)" --globalFailure "0"
 
 
+
+
+
+
+Algorithm: Splitting Sorted Couples with Minimal Leftover
+
+Input:
+- List of all 1225 couples (sorted alphabetically or using another consistent method)
+
+Output:
+- Group G1 containing approximately 612 couples
+- Group G2 containing approximately 613 couples
+- Minimal leftover couples (likely 1 or 2)
+
+Steps:
+1. Initialize counters n1 (number of couples in G1) and n2 (number of couples in G2) to 0.
+2. Iterate through the list of couples:
+	If n1 < n2:
+		- Add the current couple to G1.
+		- Increment n1.
+		
+	If n1 == n2:
+		- Let C be the current couple.
+		- Calculate the number of couples formed by the next 5 numbers in the sorted list (excluding the numbers in C). This represents the potential leftover if C is assigned to G1.
+		- Calculate the potential leftover if C is assigned to G2 (similarly, excluding the numbers in C).
+		If the potential leftover for assigning C to G1 is less than or equal to the potential leftover for assigning C to G2:
+			- Add C to G1.
+			- Increment n1.
+		Otherwise:
+			- Add C to G2.
+			- Increment n2.
+		If n1 > n2:
+			- Add the current couple to G2.
+			- Increment n2.
+
+Note:
+This method prioritizes minimizing the leftover couples while maintaining a well-balanced overall distribution between G1 and G2.
+
+Testing:
+You can implement this algorithm in your preferred programming language or use a spreadsheet to simulate the couple assignment process. By running the algorithm multiple times, you can get an idea of how often you achieve a leftover of 1 or 2 couples.
 
