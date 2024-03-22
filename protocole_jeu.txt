@@ -1705,3 +1705,59 @@ console.log("Group G1:", G1);
 console.log("Group G2:", G2);
 
 
+Algorithme de Gale-Shapley
+Algorithme de Hungarian
+
+
+function generateMinimalWinningPairs(numbers, numDrawn) {
+    const pairs = [];
+    for (let i = 0; i < numbers.length; i++) {
+        for (let j = i + 1; j < numbers.length; j++) {
+            const pair = [Math.min(numbers[i], numbers[j]), Math.max(numbers[i], numbers[j])];
+            if (!pairs.some(p => p[0] === pair[0] && p[1] === pair[1])) {
+                pairs.push(pair);
+            }
+        }
+    }
+    pairs.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    return pairs.slice(0, numDrawn * (numDrawn - 1) / 2); // Sélectionner les paires suffisantes pour garantir au moins un couple gagnant
+}
+
+function main() {
+    const numbers = Array.from({ length: 10 }, (_, i) => i + 1); // Liste de 10 numéros de 1 à 10
+    const numDrawn = 3; // Nombre de numéros tirés au hasard
+    const minimalPairs = generateMinimalWinningPairs(numbers, numDrawn);
+    console.log(`Minimal Winning Pairs for ${numDrawn} randomly drawn numbers:`);
+    minimalPairs.forEach(pair => console.log(pair));
+}
+
+main();
+
+
+
+
+function generateMinimalWinningPairs(numbers) {
+    const pairs = [];
+    for (let i = 0; i < numbers.length; i++) {
+        for (let j = i + 1; j < numbers.length; j++) {
+            const pair = [Math.min(numbers[i], numbers[j]), Math.max(numbers[i], numbers[j])];
+            if (!pairs.some(p => p[0] === pair[0] && p[1] === pair[1])) {
+                pairs.push(pair);
+            }
+        }
+    }
+    pairs.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    return pairs;
+}
+
+function main() {
+    const numbers = Array.from({ length: 50 }, (_, i) => i + 1); // Liste de 10 numéros de 1 à 10
+    const minimalPairs = generateMinimalWinningPairs(numbers);
+    console.log("Minimal Winning Pairs:");
+    minimalPairs.forEach(pair => console.log(pair));
+}
+
+main();
+
+
+
