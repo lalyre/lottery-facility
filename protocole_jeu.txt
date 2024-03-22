@@ -1598,6 +1598,7 @@ filter --infile 11_5.txt --globalfile 50_1.txt  --filter "filename(_selection)le
 
 
 
+filter --infile 50_5.txt --globalfile 50_1.txt  --filter "filename(G1.txt)level(=2)score(>=4)" --globalFailure "0"
 
 
 
@@ -1637,4 +1638,70 @@ This method prioritizes minimizing the leftover couples while maintaining a well
 
 Testing:
 You can implement this algorithm in your preferred programming language or use a spreadsheet to simulate the couple assignment process. By running the algorithm multiple times, you can get an idea of how often you achieve a leftover of 1 or 2 couples.
+
+
+
+const fs = require('fs');
+const couples = [];
+const fileContent = fs.readFileSync('50_2.txt', 'utf8');
+const lines = fileContent.split('\n');
+
+for (const line of lines) {
+  const couple = line.split(' ');
+  couples.push(couple);
+}
+
+function splitCouples(couples) {
+  let n1 = 0;
+  let n2 = 0;
+
+  for (const couple of couples) {
+    if (n1 < n2) {
+      // Add to G1
+      G1.push(couple);
+      n1++;
+    } else if (n1 === n2) {
+      // Calculate potential leftover for each group
+      const leftoverG1 = calculateLeftover(couples, n1 + 1, couple);
+      const leftoverG2 = calculateLeftover(couples, n2 + 1, couple);
+
+      if (leftoverG1 <= leftoverG2) {
+        // Add to G1
+        G1.push(couple);
+        n1++;
+      } else {
+        // Add to G2
+        G2.push(couple);
+        n2++;
+      }
+    } else {
+      // n1 > n2, always add to G2
+      G2.push(couple);
+      n2++;
+    }
+  }
+
+  return { G1, G2 };
+}
+
+function calculateLeftover(couples, startIndex, excludedCouple) {
+  let leftover = 0;
+  for (let i = startIndex; i < startIndex + 5; i++) {
+    if (i >= couples.length) {
+      break;
+    }
+    const [name1, name2] = couples[i];
+    if (name1 !== excludedCouple[0] && name2 !== excludedCouple[1] && name1 !== excludedCouple[1] && name2 !== excludedCouple[0]) {
+      leftover++;
+    }
+  }
+  return leftover;
+}
+
+// Assuming you have a function to read the couples data from "50_2.txt" and store it in an array named 'couples'
+const { G1, G2 } = splitCouples(couples);
+
+console.log("Group G1:", G1);
+console.log("Group G2:", G2);
+
 
