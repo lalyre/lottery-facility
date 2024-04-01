@@ -76,6 +76,8 @@ export class CombinationHelper {
 	 */
 	public static intersection (arr1:number[], arr2:number[]): number[] {
 		if (!arr1 || !arr2) return [];
+		//arr1.sort((a, b) => a - b);
+		//arr2.sort((a, b) => a - b);
 		const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1);
 		return intersec;
 	}
