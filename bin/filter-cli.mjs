@@ -612,6 +612,14 @@ let rl = readline.createInterface({
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
 	//console.log("testedCombination " + testedCombination);
+	
+	
+	// TODO CL
+	/*if (inputLinesCount < 257400) {
+		console.log("Line " + inputLinesCount);
+		return;
+	}*/
+
 
 
 	// Init tested combination track records
@@ -1090,10 +1098,12 @@ let rl = readline.createInterface({
 				case /^=>$/.test(testCombiFilterScoreSelection[i]):
 				case /^>=$/.test(testCombiFilterScoreSelection[i]):
 					if (!(score >= testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
+					//else testCombiFilterScore[i] = score;
 					break;
 
 				case /^>$/.test(testCombiFilterScoreSelection[i]):
 					if (!(score > testCombiFilterScore[i])) selectScoreScope = false; // reject this combination
+					//else testCombiFilterScore[i] = score;
 					break;
 
 				case /^\*$/.test(testCombiFilterScoreSelection[i]):
