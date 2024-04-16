@@ -34,6 +34,48 @@ CLI utilities:
 -->
 
 
+<!--
+
+// npm install svg.js
+var svg = new SVG({
+  'element': document.getElementById('svgElement'),
+  'width': 300,
+  'height': 150
+});
+
+// Définir les polices
+var font = {
+  'family': 'Arial, sans-serif',
+  'size': 120,
+  'weight': 400
+};
+
+// Créer le texte "1"
+var text1 = svg.text('1')
+  .attr(font)
+  .fill('red')
+  .move(50, 50);
+
+// Créer le texte "2"
+var text2 = svg.text('2')
+  .attr(font)
+  .fill('green')
+  .move(120, 50);
+
+// Créer le texte "3"
+var text3 = svg.text('3')
+  .attr(font)
+  .fill('blue')
+  .move(190, 50);
+
+// Ajouter les éléments au SVG
+svg.add(text1, text2, text3);
+
+// Sauvegarder le SVG dans un fichier
+svg.svg('img001.svg');
+
+-->
+
 
 
 <!--
