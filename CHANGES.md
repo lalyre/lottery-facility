@@ -5,7 +5,6 @@ Roadmap
 * draws statistics.
 * draws prediction algorithms.
 * enhance library by incorporating CLI features.
-* cartesian_product CLI utility.
 * paste CLI utility.
 * cut CLI utility.
 * join CLI utility.
@@ -29,6 +28,7 @@ Roadmap
 2024-xx-xx, Version 0.0.1-alpha.10
 ==================================
 * Adding complement CLI utility.
+* Adding cartesian_product CLI utility.
 * Documentation update.
 
 
