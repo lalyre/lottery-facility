@@ -26,8 +26,8 @@ CLI utilities:
 * difference
 * complement
 * translate
-<!--
 * combination
+<!--
 * filter
 * euromillions (TODO)
 * kenoFR (TODO)
@@ -345,32 +345,30 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 ```
 
 
-
-<!--
-### 2. combination
+### 5. combination
 **Parameters**<br>
 
 ```sh
 --verbose, -v   Verbose mode (default true).
 --outfile       Output filename (optional).
---total, -t     Total number of arranged packets of items.
---size, -s      Number of assembled packets of items.
+--total, -t     Total number of items.
+--size, -s      Number of assembled items.
 --file, -f      A file containing one item of combination per line.
 --numbers, -n   Items of combinations separated by '|'.
---step          Size of a packet of items. Default value 1.
+--sep           Separator of items (optional).
 ```
 
 **Description**<br>
 
-This script generates combinations of packets of items taken in file `file` or list `numbers`, of size `size` packets, implementing choice of `size` packets among `total` packets.
-Only the first `step*total` items of `file` or `numbers` are used to build combinations.
+This script generates combinations of items taken in file `file` or list `numbers`, implementing choice of `size` items among `total` items.
+Only the first `total` items of `file` or `numbers` are used to build combinations.
 
 **Exemple**<br>
 
 Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
 
 ```sh
-$ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
+$ combination --sep " " --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
 01 02 03
 01 02 04
 01 02 05
@@ -383,7 +381,6 @@ $ combination --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09|10"
 03 04 05
 ```
 
--->
 
 
 
