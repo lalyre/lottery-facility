@@ -42,6 +42,39 @@ export class CombinationHelper {
 
 
 	/**
+	 * Split an array in nbParts
+	 * @param numbers      array of balls number.
+	 * @param nbParts      count of returned arrays.
+	 * @return             array of parts of entry array.
+	 */
+	public static split (numbers:number[], nbParts:number): number[][] {
+		if (nbParts <= 0) throw new Error('Invalid nbParts parameter')
+		if (nbParts === 1) return numbers;
+		if (!numbers) return [];
+		if (numbers.length < nbParts) return [];
+
+		const [chunkSize, remainder] = [Math.floor(numbers.length / nbParts), numbers.length % nbParts];
+		const result: number[][] = [];
+		const partsSize = new Array(nbParts).fill(chunkSize);
+		
+		for (let i = 0; i < remainder; i++) {
+			partsSize[i] += 1;
+		}
+		
+		let startIndex = 0;
+		for (let i = 0; i < nbParts; i++) {
+			const endIndex = startIndex + partsSize[i] - 1;
+			const chunk = numbers.slice(startIndex, endIndex);
+			result.push(chunk);
+			
+			startIndex += partsSize[i];
+		}
+
+		return result;
+	}
+
+
+	/**
 	 * Give the union between 2 lottery combinations
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
