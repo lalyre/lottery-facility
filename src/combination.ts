@@ -57,9 +57,7 @@ export class CombinationHelper {
 		const result: number[][] = [];
 		const partsSize = new Array(nbParts).fill(chunkSize);
 		
-		for (let i = 0; i < remainder; i++) {
-			partsSize[i] += 1;
-		}
+		for (let i = 0; i < remainder; i++) { partsSize[i] += 1; }
 		
 		let startIndex = 0;
 		for (let i = 0; i < nbParts; i++) {
@@ -413,5 +411,107 @@ export class CombinationHelper {
 	public static lcm (a:number, b:number): number {
 		return a*b/CombinationHelper.gcd(a,b);
 	}
+}
+
+
+export class CartesianProduct {
+	private readonly _parts: number[][];
+	private readonly _nbParts: number;
+	private readonly _lastIndex: number;
+	private _partsIndexes: number[];
+	private _partsValues: number[];
+	private _currentIndex: number;
+
+
+	/**
+	 */
+	public constructor (...parts: number[][]) {
+		// super();
+		
+		this._parts = parts;
+		this._nbParts = parts.length;
+		this._partsIndexes= new Array(this._nbParts).fill(0);
+		this._partsValues = new Array(this._nbParts).fill(0);
+		this._currentIndex = 0;
+		this._lastIndex = 1;
+		for (let i = 0; i < this._nbParts; i++) {
+			this._partsValues[i] = this._parts[i][0];
+			this._lastIndex *= this._parts[i].length;
+		}
+		this._lastIndex -= 1;
+	}
+
+
+	get nbParts(): number {
+		return this._nbParts;
+	}
+
+
+	get lastIndex(): number {
+		return this._lastIndex;
+	}
+
+
+	get currentCombination(): number[] {
+		return this._partsValues;
+	}
+
+
+	public start(): void {
+		this._currentIndex = 0;
+		
+		for (let i = 0; i < this._nbParts; i++) {
+			this._partsIndexes[i] = 0;
+			this._partsValues[i] = this._parts[i][0];
+		}
+	}
+
+
+	public end(): void {
+		this._currentIndex = this._lastIndex;
+		
+		for (let i = 0; i < this._nbParts; i++) {
+			this._partsIndexes[i] = this._parts[i].length - 1;
+			this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+		}
+	}
+
+
+	public previous(): number[]|null {
+		if (this._currentIndex <= 0) return null;
+		this._currentIndex--;
+		
+		for (let i = this._nbParts-1; i >= 0; i--) {
+			if (this._partsIndexes[i] === 0) {
+				this._partsIndexes[i] = this._parts[i].length - 1;
+				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+			} else {
+				this._partsIndexes[i] -= 1;
+				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+				break;
+			}
+		}
+		return this._partsValues;
+	}
+
+
+	public next(): number[]|null {
+		if (this._currentIndex >= this._lastIndex) return null;
+		this._currentIndex++;
+		
+		for (let i = this._nbParts-1; i >= 0; i--) {
+			if (this._partsIndexes[i] === this._parts[i].length - 1) {
+				this._partsIndexes[i] = 0;
+				this._partsValues[i] = this._parts[i][0];
+			} else {
+				this._partsIndexes[i] += 1;
+				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+				break;
+			}
+		}
+		return this._partsValues;
+	}
+
+
 }
 
