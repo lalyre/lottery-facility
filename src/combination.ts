@@ -418,6 +418,7 @@ export class CartesianProduct {
 	private readonly _parts: number[][];
 	private readonly _nbParts: number;
 	private readonly _lastIndex: number;
+	private readonly _count: number;
 	private _partsIndexes: number[];
 	private _partsValues: number[];
 	private _currentIndex: number;
@@ -433,17 +434,22 @@ export class CartesianProduct {
 		this._partsIndexes= new Array(this._nbParts).fill(0);
 		this._partsValues = new Array(this._nbParts).fill(0);
 		this._currentIndex = 0;
-		this._lastIndex = 1;
+		this._count = 1;
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsValues[i] = this._parts[i][0];
-			this._lastIndex *= this._parts[i].length;
+			this._count *= this._parts[i].length;
 		}
-		this._lastIndex -= 1;
+		this._lastIndex = this._count - 1;
 	}
 
 
 	get nbParts(): number {
 		return this._nbParts;
+	}
+
+
+	get count(): number {
+		return this._count;
 	}
 
 
@@ -511,7 +517,5 @@ export class CartesianProduct {
 		}
 		return this._partsValues;
 	}
-
-
 }
 

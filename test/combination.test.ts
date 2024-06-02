@@ -1,7 +1,8 @@
 'use strict';
 import { copyFile } from 'fs';
 import {
-     CombinationHelper,
+	CombinationHelper,
+	CartesianProduct,
 } from '../src/main';
 
 
@@ -345,5 +346,19 @@ describe('CombinationHelper module', () => {
 		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toStrictEqual([[1, 2, 3], [4, 5], [6, 7], [8, 9]]);
 		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toStrictEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
 	});
+});
+
+
+describe('CartesianProduct module', () => {
+	beforeEach(() => {
+	});
+
+
+	test('CartesianProduct.count test', () => {
+		//let a = [8, 3, 1, 7, 6, 5];
+		//let s = CombinationHelper.toString(a, " ");
+		//expect(s).toBe("08 03 01 07 06 05");
+	});
+	
 });
 
