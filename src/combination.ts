@@ -63,7 +63,7 @@ export class CombinationHelper {
 		
 		let startIndex = 0;
 		for (let i = 0; i < nbParts; i++) {
-			const endIndex = startIndex + partsSize[i] - 1;
+			const endIndex = startIndex + partsSize[i];
 			const chunk = numbers.slice(startIndex, endIndex);
 			result.push(chunk);
 			
