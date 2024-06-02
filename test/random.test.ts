@@ -33,4 +33,9 @@ describe('RandomHelper module', () => {
         const a = RandomHelper.randomHEXString(8);
         console.log("hexString: " + a);
     });
+
+
+	test('RandomHelper.randomBytes test', () => {
+		expect(() => { RandomHelper.randomBytes(48); }).toThrow(Error);
+    });
 });

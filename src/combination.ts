@@ -48,8 +48,8 @@ export class CombinationHelper {
 	 * @return             array of parts of entry array.
 	 */
 	public static split (numbers:number[], nbParts:number): number[][] {
-		if (nbParts <= 0) throw new Error('Invalid nbParts parameter')
-		if (nbParts === 1) return numbers;
+		if (nbParts <= 0) throw new Error('Invalid nbParts parameter');
+		if (nbParts === 1) return [numbers];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
 

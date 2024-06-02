@@ -334,5 +334,16 @@ describe('CombinationHelper module', () => {
 		expect(CombinationHelper.rankToCombination(5, 3, 9)).toStrictEqual([2, 4, 5]);
 		expect(CombinationHelper.rankToCombination(5, 3, 10)).toStrictEqual([3, 4, 5]);
 	});
+
+
+	test('CombinationHelper.split test', () => {
+		expect(() => { CombinationHelper.split([5], -1); }).toThrow(Error);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 15)).toStrictEqual([]);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 1)).toStrictEqual([[1, 2, 3, 4, 5, 6, 7, 8, 9]]);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 2)).toStrictEqual([[1, 2, 3, 4, 5], [6, 7, 8, 9]]);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 3)).toStrictEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toStrictEqual([[1, 2, 3], [4, 5], [6, 7], [8, 9]]);
+		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toStrictEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
+	});
 });
 
