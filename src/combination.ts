@@ -70,6 +70,36 @@ export class CombinationHelper {
 
 		return result;
 	}
+	
+	
+	/**
+	 */
+	public static merge (...parts: Array<number[]>): number[] {
+		if (!parts.every(part => Array.isArray(part) && part.every(element => typeof element === 'number'))) {
+			throw new Error('Invalid parameters');
+		}
+
+		const mergedArray: number[] = [];
+		for (const part of parts) {
+			mergedArray.push(...part);
+		}
+
+		/*
+const mergedArrays: number[][] = [];
+for (let i = 0; i < parts.length; i++) {
+	//const excludedPart = parts[i];
+	const remainingParts = parts.filter((part, index) => index !== i);
+
+	const mergedArray: number[] = [];
+	for (const arr of remainingParts) {
+		mergedArray.push(...arr);
+	}
+	mergedArrays.push(mergedArray);
+}
+		*/
+
+		return mergedArray;
+	}
 
 
 	/**
@@ -425,21 +455,24 @@ export class CartesianProduct {
 
 
 	/**
-	 */
-	public constructor (...parts: number[][]) {
-		// super();
-		
+	 */	
+	public constructor (...parts: Array<number[]>) {
+		// super();	
+		if (!parts.every(part => Array.isArray(part) && part.every(element => typeof element === 'number'))) {
+			throw new Error('Invalid parameters');
+		}
+
 		this._parts = parts;
 		this._nbParts = parts.length;
 		this._partsIndexes= new Array(this._nbParts).fill(0);
 		this._partsValues = new Array(this._nbParts).fill(0);
 		this._currentIndex = 0;
-		this._count = 1;
+		this._count = this._parts.reduce((acc, part) => acc * part.length, 1);
+		this._lastIndex = this._count - 1;
+		
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsValues[i] = this._parts[i][0];
-			this._count *= this._parts[i].length;
 		}
-		this._lastIndex = this._count - 1;
 	}
 
 
