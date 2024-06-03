@@ -570,3 +570,8 @@ export class CartesianProduct {
 	}
 }
 
+
+export class BinomialDistribution {
+
+}
+
