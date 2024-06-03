@@ -47,14 +47,14 @@ export class CombinationHelper {
 	 * @param nbParts      count of returned arrays.
 	 * @return             array of parts of entry array.
 	 */
-	public static split (numbers:number[], nbParts:number): number[][] {
+	public static split (numbers:number[], nbParts:number): Array<number[]> {
 		if (nbParts <= 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts === 1) return [numbers];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
 
 		const [chunkSize, remainder] = [Math.floor(numbers.length / nbParts), numbers.length % nbParts];
-		const result: number[][] = [];
+		const result: Array<number[]> = [];
 		const partsSize = new Array(nbParts).fill(chunkSize);
 		
 		for (let i = 0; i < remainder; i++) { partsSize[i] += 1; }
@@ -70,15 +70,14 @@ export class CombinationHelper {
 
 		return result;
 	}
-	
-	
+
+
 	/**
+	 * Merge several arrays of balls number into one single array of balls number
+	 * @param parts       array of arrays of balls number.
+	 * @return            concatenation of all input arrays.
 	 */
 	public static merge (...parts: Array<number[]>): number[] {
-		if (!parts.every(part => Array.isArray(part) && part.every(element => typeof element === 'number'))) {
-			throw new Error('Invalid parameters');
-		}
-
 		const mergedArray: number[] = [];
 		for (const part of parts) {
 			mergedArray.push(...part);
@@ -455,12 +454,10 @@ export class CartesianProduct {
 
 
 	/**
+	 * Build a cartesian product calculator
 	 */	
 	public constructor (...parts: Array<number[]>) {
 		// super();	
-		if (!parts.every(part => Array.isArray(part) && part.every(element => typeof element === 'number'))) {
-			throw new Error('Invalid parameters');
-		}
 
 		this._parts = parts;
 		this._nbParts = parts.length;
@@ -469,10 +466,7 @@ export class CartesianProduct {
 		this._currentIndex = 0;
 		this._count = this._parts.reduce((acc, part) => acc * part.length, 1);
 		this._lastIndex = this._count - 1;
-		
-		for (let i = 0; i < this._nbParts; i++) {
-			this._partsValues[i] = this._parts[i][0];
-		}
+		for (let i = 0; i < this._nbParts; i++) { this._partsValues[i] = this._parts[i][0]; }
 	}
 
 
@@ -496,26 +490,44 @@ export class CartesianProduct {
 	}
 
 
-	public start(): void {
+	/**
+	 * Gives the first combination
+	 * @param        none
+	 * @return       first combination
+	 */
+	public start(): number[] {
 		this._currentIndex = 0;
 		
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndexes[i] = 0;
 			this._partsValues[i] = this._parts[i][0];
 		}
+		return this._partsValues;
 	}
 
 
-	public end(): void {
+	/**
+	 * Gives the last combination
+	 * @param        none
+	 * @return       last combination
+	 */
+	public end(): number[] {
 		this._currentIndex = this._lastIndex;
 		
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndexes[i] = this._parts[i].length - 1;
 			this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
 		}
+		return this._partsValues;
 	}
 
 
+	/**
+	 * Gives the previous combination or null if
+	 * there is no more previous combination
+	 * @param        none
+	 * @return       previous combination
+	 */
 	public previous(): number[]|null {
 		if (this._currentIndex <= 0) return null;
 		this._currentIndex--;
@@ -534,6 +546,12 @@ export class CartesianProduct {
 	}
 
 
+	/**
+	 * Gives the next combination or null if
+	 * there is no more next combination
+	 * @param        none
+	 * @return       next combination
+	 */
 	public next(): number[]|null {
 		if (this._currentIndex >= this._lastIndex) return null;
 		this._currentIndex++;
