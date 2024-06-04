@@ -446,10 +446,9 @@ for (let i = 0; i < parts.length; i++) {
 export class CartesianProduct {
 	private readonly _parts: number[][];
 	private readonly _nbParts: number;
-	private readonly _lastIndex: number;
 	private readonly _count: number;
-	private _partsIndexes: number[];
-	private _partsValues: number[];
+	private _partsIndex: number[];
+	private _partsValue: number[];
 	private _currentIndex: number;
 
 
@@ -457,16 +456,15 @@ export class CartesianProduct {
 	 * Build a cartesian product calculator
 	 */	
 	public constructor (...parts: Array<number[]>) {
-		// super();	
+		// super();
 
 		this._parts = parts;
 		this._nbParts = parts.length;
-		this._partsIndexes= new Array(this._nbParts).fill(0);
-		this._partsValues = new Array(this._nbParts).fill(0);
-		this._currentIndex = 0;
+		this._partsIndex = new Array(this._nbParts).fill(0);
+		this._partsValue = new Array(this._nbParts).fill(0);
 		this._count = this._parts.reduce((acc, part) => acc * part.length, 1);
-		this._lastIndex = this._count - 1;
-		for (let i = 0; i < this._nbParts; i++) { this._partsValues[i] = this._parts[i][0]; }
+		this._currentIndex = 0;
+		for (let i = 0; i < this._nbParts; i++) { this._partsValue[i] = this._parts[i][0]; }
 	}
 
 
@@ -481,12 +479,12 @@ export class CartesianProduct {
 
 
 	get lastIndex(): number {
-		return this._lastIndex;
+		return this._count-1;
 	}
 
 
 	get currentCombination(): number[] {
-		return this._partsValues;
+		return this._partsValue;
 	}
 
 
@@ -499,10 +497,10 @@ export class CartesianProduct {
 		this._currentIndex = 0;
 		
 		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndexes[i] = 0;
-			this._partsValues[i] = this._parts[i][0];
+			this._partsIndex[i] = 0;
+			this._partsValue[i] = this._parts[i][0];
 		}
-		return this._partsValues;
+		return this._partsValue;
 	}
 
 
@@ -512,13 +510,13 @@ export class CartesianProduct {
 	 * @return       last combination
 	 */
 	public end(): number[] {
-		this._currentIndex = this._lastIndex;
+		this._currentIndex = this.lastIndex;
 		
 		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndexes[i] = this._parts[i].length - 1;
-			this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+			this._partsIndex[i] = this._parts[i].length - 1;
+			this._partsValue[i] = this._parts[i][this._partsIndex[i]];
 		}
-		return this._partsValues;
+		return this._partsValue;
 	}
 
 
@@ -533,16 +531,16 @@ export class CartesianProduct {
 		this._currentIndex--;
 		
 		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndexes[i] === 0) {
-				this._partsIndexes[i] = this._parts[i].length - 1;
-				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+			if (this._partsIndex[i] === 0) {
+				this._partsIndex[i] = this._parts[i].length - 1;
+				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
 			} else {
-				this._partsIndexes[i] -= 1;
-				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+				this._partsIndex[i] -= 1;
+				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
 				break;
 			}
 		}
-		return this._partsValues;
+		return this._partsValue;
 	}
 
 
@@ -553,20 +551,20 @@ export class CartesianProduct {
 	 * @return       next combination
 	 */
 	public next(): number[]|null {
-		if (this._currentIndex >= this._lastIndex) return null;
+		if (this._currentIndex >= this.lastIndex) return null;
 		this._currentIndex++;
 		
 		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndexes[i] === this._parts[i].length - 1) {
-				this._partsIndexes[i] = 0;
-				this._partsValues[i] = this._parts[i][0];
+			if (this._partsIndex[i] === this._parts[i].length - 1) {
+				this._partsIndex[i] = 0;
+				this._partsValue[i] = this._parts[i][0];
 			} else {
-				this._partsIndexes[i] += 1;
-				this._partsValues[i] = this._parts[i][this._partsIndexes[i]];
+				this._partsIndex[i] += 1;
+				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
 				break;
 			}
 		}
-		return this._partsValues;
+		return this._partsValue;
 	}
 }
 
