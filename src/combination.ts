@@ -73,11 +73,11 @@ export class CombinationHelper {
 
 
 	/**
-	 * Merge several arrays of balls number into one single array of balls number
+	 * Concatenate several arrays of balls number into one single array of balls number
 	 * @param parts       array of arrays of balls number.
 	 * @return            concatenation of all input arrays.
 	 */
-	public static merge (...parts: Array<number[]>): number[] {
+	public static concat (...parts: Array<number[]>): number[] {
 		const mergedArray: number[] = [];
 		for (const part of parts) {
 			mergedArray.push(...part);
