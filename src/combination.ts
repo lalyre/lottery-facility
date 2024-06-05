@@ -56,7 +56,6 @@ export class CombinationHelper {
 		const [chunkSize, remainder] = [Math.floor(numbers.length / nbParts), numbers.length % nbParts];
 		const result: Array<number[]> = [];
 		const partsSize = new Array(nbParts).fill(chunkSize);
-		
 		for (let i = 0; i < remainder; i++) { partsSize[i] += 1; }
 		
 		let startIndex = 0;
@@ -64,8 +63,7 @@ export class CombinationHelper {
 			const endIndex = startIndex + partsSize[i];
 			const chunk = numbers.slice(startIndex, endIndex);
 			result.push(chunk);
-			
-			startIndex += partsSize[i];
+			startIndex = endIndex;
 		}
 
 		return result;
@@ -566,6 +564,64 @@ export class CartesianProduct {
 		}
 		return this._partsValue;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Give the rank of a given combination
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param numbers   array of balls number (combination).
+	 * @return          the rank of the combination.
+	 */
+	/*public static combinationToRank (max:number, numbers:number[]): number {
+		if (max < 0) return -1;
+		if (!numbers) return -1;
+		const len:number = numbers.length;
+		numbers.sort((a, b) => {return a - b;});
+
+		let rank:number = CombinationHelper.binomial(max, len);
+		for (let i = len; i > 0; i--) {
+			if (numbers[len-i] > max) return -1;
+			rank -= CombinationHelper.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += CombinationHelper.binomial(max-numbers[len-i], i-1);
+		}
+		rank++;
+		return rank;
+	}*/
+
+
+	/**
+	 * Give the combination corresponding to the given rank
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param length    the length of the combination to be returned.
+	 * @param rank      the rank of the combination to be returned.
+	 * @return          the combination corresponding to the given rank.
+	 */
+	/*public static rankToCombination (max:number, length:number, rank:number): number[] {
+		if (max <= 0) return [];
+		if (length <= 0) return [];
+		if (length > max) return [];
+		if (rank <= 0 || rank > CombinationHelper.binomial(max, length)) return [];
+		// eslint-disable-next-line
+		const numbers = Array.from({ length: length }, (_, i) => 0);
+
+		for (let i = 0; i < length; i++) {
+			for (let k = max; k >= length; k--) {
+				let m = k;
+				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
+				if (CombinationHelper.combinationToRank(max, numbers) <= rank) break;
+			}
+		}
+		return numbers;
+	}*/
+	
+	
+	
 }
 
 
