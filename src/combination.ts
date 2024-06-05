@@ -625,7 +625,7 @@ export class CartesianProduct {
 }
 
 
-export class BinomialDistribution {
+export class ChoiceSet {
 
 }
 
