@@ -48,7 +48,8 @@ export class CombinationHelper {
 	 * @return             array of parts of entry array.
 	 */
 	public static split (numbers:number[], nbParts:number): Array<number[]> {
-		if (nbParts <= 0) throw new Error('Invalid nbParts parameter');
+		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
+		if (nbParts === 0) return [];
 		if (nbParts === 1) return [numbers];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
@@ -626,6 +627,11 @@ export class CartesianProduct {
 
 
 export class ChoiceSet {
+
+}
+
+
+export class Permutation {
 
 }
 
