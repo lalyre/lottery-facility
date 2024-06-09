@@ -482,6 +482,11 @@ export class CartesianProduct {
 	}
 
 
+	get currentIndex(): number {
+		return this._currentIndex;
+	}
+
+
 	get currentCombination(): number[] {
 		return this._partsValue;
 	}
@@ -565,14 +570,13 @@ export class CartesianProduct {
 		}
 		return this._partsValue;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	/**
 	 * Give the rank of a given combination
 	 * @param max       the maximum possible number value used in balls numbers.
@@ -626,7 +630,7 @@ export class CartesianProduct {
 }
 
 
-export class ChoiceSet {
+export class ChoiceAmong {
 
 }
 
