@@ -386,6 +386,7 @@ describe('CartesianProduct module', () => {
 		const prod1 = new CartesianProduct(...arr1);
 		console.log(prod1.start());
 		expect(prod1.start()).toStrictEqual([1, 4, 7]);
+		expect(prod1.previous()).toStrictEqual(null);
 		
 		expect(prod1.next()).toStrictEqual([1, 4, 8]);
 		expect(prod1.next()).toStrictEqual([1, 4, 9]);
@@ -404,6 +405,8 @@ describe('CartesianProduct module', () => {
 		const prod1 = new CartesianProduct(...arr1);
 		console.log(prod1.end());
 		expect(prod1.end()).toStrictEqual([3, 6, 9]);
+		expect(prod1.next()).toStrictEqual(null);
+		
 		
 		expect(prod1.previous()).toStrictEqual([3, 6, 8]);
 		expect(prod1.previous()).toStrictEqual([3, 6, 7]);
