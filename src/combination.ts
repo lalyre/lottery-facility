@@ -77,26 +77,23 @@ export class CombinationHelper {
 	 * @return            concatenation of all input arrays.
 	 */
 	public static concat (...parts: Array<number[]>): number[] {
-		const mergedArray: number[] = [];
-		for (const part of parts) {
-			mergedArray.push(...part);
-		}
-
-		/*
-const mergedArrays: number[][] = [];
-for (let i = 0; i < parts.length; i++) {
-	//const excludedPart = parts[i];
-	const remainingParts = parts.filter((part, index) => index !== i);
-
-	const mergedArray: number[] = [];
-	for (const arr of remainingParts) {
-		mergedArray.push(...arr);
+		return ([] as number[]).concat(...parts);
 	}
-	mergedArrays.push(mergedArray);
-}
-		*/
 
-		return mergedArray;
+
+	/**
+	 * All possible extractions of parts minus one
+	 * @param parts       array of arrays of balls number.
+	 * @return            all possible concatenations of input arrays excluding one.
+	 */
+	public static extraction_Nminus1 (...parts: Array<number[]>): Array<number[]> {
+		const result: Array<number[]> = [];
+		for (let i = 0; i < parts.length; i++) {
+			const remainingParts: Array<number[]> = parts.filter((_, index) => index !== i);
+			const mergedArray = CombinationHelper.concat(...remainingParts);
+			result.push(mergedArray);
+		}
+		return result;
 	}
 
 

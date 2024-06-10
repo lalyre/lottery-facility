@@ -346,6 +346,16 @@ describe('CombinationHelper module', () => {
 		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)).toStrictEqual([[1, 2, 3], [4, 5], [6, 7], [8, 9]]);
 		expect(CombinationHelper.split([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)).toStrictEqual([[1, 2], [3, 4], [5, 6], [7, 8], [9]]);
 	});
+
+
+	test('CombinationHelper.extraction_Nminus1 test', () => {
+		expect(CombinationHelper.extraction_Nminus1([1], [2], [3], [4])).toEqual([
+			[2, 3, 4],
+			[1, 3, 4],
+			[1, 2, 4],
+			[1, 2, 3],
+		  ]);
+	});
 });
 
 
