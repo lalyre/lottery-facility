@@ -440,7 +440,7 @@ export class CombinationHelper {
 
 
 export class CartesianProduct {
-	private readonly _parts: number[][];
+	private readonly _parts: Array<number[]>;
 	private readonly _nbParts: number;
 	private readonly _count: number;
 	private _partsIndex: number[];
