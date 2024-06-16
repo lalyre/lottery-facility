@@ -66,7 +66,6 @@ export class CombinationHelper {
 			result.push(chunk);
 			startIndex = endIndex;
 		}
-
 		return result;
 	}
 
