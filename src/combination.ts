@@ -82,11 +82,27 @@ export class CombinationHelper {
 
 
 	/**
+	 * All possible extractions of nbParts of input array minus one
+	 * @param numbers     array of balls number.
+	 * @param nbParts     count of parts to split input array.
+	 * @return            all possible concatenations of nbParts of input array excluding one.
+	 */
+	public static splitAndExtract_Nminus1 (numbers:number[], nbParts:number): Array<number[]> {
+		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
+		if (nbParts === 0) return [];
+		if (!numbers) return [];
+		if (numbers.length <= nbParts) return [];
+		const parts: Array<number[]> = CombinationHelper.split (numbers, nbParts);
+		return CombinationHelper.extract_Nminus1 (...parts);
+	}
+
+
+	/**
 	 * All possible extractions of parts minus one
 	 * @param parts       array of arrays of balls number.
 	 * @return            all possible concatenations of input arrays excluding one.
 	 */
-	public static extraction_Nminus1 (...parts: Array<number[]>): Array<number[]> {
+	public static extract_Nminus1 (...parts: Array<number[]>): Array<number[]> {
 		const result: Array<number[]> = [];
 		for (let i = 0; i < parts.length; i++) {
 			const remainingParts: Array<number[]> = parts.filter((_, index) => index !== i);
@@ -627,7 +643,7 @@ export class CartesianProduct {
 }
 
 
-export class ChoiceAmong {
+export class Selection {
 
 }
 

@@ -348,8 +348,8 @@ describe('CombinationHelper module', () => {
 	});
 
 
-	test('CombinationHelper.extraction_Nminus1 test', () => {
-		expect(CombinationHelper.extraction_Nminus1([1], [2], [3], [4])).toEqual([
+	test('CombinationHelper.extract_Nminus1 test', () => {
+		expect(CombinationHelper.extract_Nminus1([1], [2], [3], [4])).toEqual([
 			[2, 3, 4],
 			[1, 3, 4],
 			[1, 2, 4],
@@ -406,7 +406,6 @@ describe('CartesianProduct module', () => {
 		console.log(prod1.end());
 		expect(prod1.end()).toStrictEqual([3, 6, 9]);
 		expect(prod1.next()).toStrictEqual(null);
-		
 		
 		expect(prod1.previous()).toStrictEqual([3, 6, 8]);
 		expect(prod1.previous()).toStrictEqual([3, 6, 7]);
