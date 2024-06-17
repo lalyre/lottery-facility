@@ -639,6 +639,33 @@ export class CartesianProduct {
 		return numbers;
 	}*/
 	
+
+	/*
+
+const lotteryFacility = require('./dist/lotteryfacility-nodebundle.umd.js');
+
+var a1 = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+41, 42, 43, 44, 45, 46, 47, 48, 49, 50], 3);
+for (let i = 0; i < a1.length; i++) { console.log(a1[i]); }
+
+var a2 = [];
+for (let i = 0; i < a1.length; i++) {
+	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a1[i], 3);
+	a2 = lotteryFacility.CombinationHelper.concat(a2, a);
+}
+//for (let i = 0; i < a2.length; i++) { console.log(a2[i]); }
+
+var a3 = [];
+for (let i = 0; i < a2.length; i++) {
+	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a2[i], 3);
+	a3 = lotteryFacility.CombinationHelper.concat(a3, a);
+}
+//for (let i = 0; i < a3.length; i++) { console.log(a3[i]); }
+
+	*/
 	
 	
 }
