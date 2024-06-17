@@ -349,6 +349,8 @@ describe('CombinationHelper module', () => {
 
 
 	test('CombinationHelper.extract_Nminus1 test', () => {
+		expect(CombinationHelper.extract_Nminus1([])).toEqual([]);
+		expect(CombinationHelper.extract_Nminus1([1, 2, 3])).toEqual([]);
 		expect(CombinationHelper.extract_Nminus1([1], [2], [3], [4])).toEqual([
 			[2, 3, 4],
 			[1, 3, 4],

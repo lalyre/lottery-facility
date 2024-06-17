@@ -88,7 +88,7 @@ export class CombinationHelper {
 	 */
 	public static splitAndExtract_Nminus1 (numbers:number[], nbParts:number): Array<number[]> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
-		if (nbParts === 0) return [];
+		if (nbParts <= 1) return [];
 		if (!numbers) return [];
 		if (numbers.length <= nbParts) return [];
 		const parts: Array<number[]> = CombinationHelper.split (numbers, nbParts);
@@ -102,6 +102,8 @@ export class CombinationHelper {
 	 * @return            all possible concatenations of input arrays excluding one.
 	 */
 	public static extract_Nminus1 (...parts: Array<number[]>): Array<number[]> {
+		if (!parts) return [];
+		if (parts.length <= 1) return [];
 		const result: Array<number[]> = [];
 		for (let i = 0; i < parts.length; i++) {
 			const remainingParts: Array<number[]> = parts.filter((_, index) => index !== i);
