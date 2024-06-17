@@ -644,6 +644,8 @@ export class CartesianProduct {
 
 const lotteryFacility = require('./dist/lotteryfacility-nodebundle.umd.js');
 
+var a1 = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 2);
+
 var a1 = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
@@ -653,7 +655,7 @@ for (let i = 0; i < a1.length; i++) { console.log(a1[i]); }
 
 var a2 = [];
 for (let i = 0; i < a1.length; i++) {
-	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a1[i], 3);
+	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a1[i], 2);
 	a2 = lotteryFacility.CombinationHelper.concat(a2, a);
 }
 //for (let i = 0; i < a2.length; i++) { console.log(a2[i]); }
