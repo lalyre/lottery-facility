@@ -357,6 +357,11 @@ describe('CombinationHelper module', () => {
 			[1, 2, 4],
 			[1, 2, 3],
 		  ]);
+		  expect(CombinationHelper.extract_Nminus1([1, 2, 3], [4, 5, 6], [7, 8, 9])).toEqual([
+			[4, 5, 6, 7, 8, 9],
+			[1, 2, 3, 7, 8, 9],
+			[1, 2, 3, 4, 5, 6],
+		  ]);
 	});
 });
 
