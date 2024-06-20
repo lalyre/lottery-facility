@@ -90,7 +90,7 @@ export class CombinationHelper {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts <= 1) return [];
 		if (!numbers) return [];
-		if (numbers.length <= nbParts) return [];
+		if (numbers.length < nbParts) return [];
 		const parts: Array<number[]> = CombinationHelper.split (numbers, nbParts);
 		return CombinationHelper.extract_Nminus1 (...parts);
 	}
