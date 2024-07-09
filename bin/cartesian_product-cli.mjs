@@ -4,10 +4,10 @@ import fs from 'fs-extra';
 import readline from 'readline';
 import path from 'path';
 import meow from 'meow';
-//import colors from 'ansi-colors';
-//import cliProgress from 'cli-progress';
+import colors from 'ansi-colors';
+import cliProgress from 'cli-progress';
 import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
-//const FILE_LIMIT = 500000;
+const FILE_LIMIT = 500000;
 
 
 // export NODE_OPTIONS="--max-old-space-size=8192"
@@ -19,16 +19,14 @@ const cli = meow(`
 	Parameters
 	  --verbose, -v   Verbose mode (default true).
 	  --outfile       Output filename (optional).
-	  --total, -t     Total number of items.
-	  --size, -s      Number of assembled items.
 	  --file, -f      A file containing one item of combination per line.
 	  --numbers, -n   Items of combinations separated by '|'.
 	  --sep           Separator of items (optional).
 
 	Description
-	This script generates combinations of items taken in <file> or <numbers>, of size <size> items,
-	implementing choice of <size> items among <total> items.
-	Only the first <total> items of <file> or <numbers> are used to build combinations.
+	This script generates cartesian product of items taken in <file> or <numbers>.
+	Each item of <file> or <numbers> is combined with others <file> or <numbers> items.
+	You can put as many <file> or <numbers> as you want.
 `, {
 	importMeta: import.meta,
 	flags: {
@@ -41,18 +39,6 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: false,
 		},
-		total: {
-			type: 'number',
-			shortFlag: 't',
-			isRequired: true,
-			isMultiple: false,
-		},
-		size: {
-			type: 'number',
-			shortFlag: 's',
-			isRequired: true,
-			isMultiple: false,
-		},
 		file: {
 			type: 'string',
 			shortFlag: 'f',
@@ -62,27 +48,37 @@ const cli = meow(`
 				}
 				return true;
 			},
-			isMultiple: false,
+			isMultiple: true,
 		},
 		numbers: {
 			type: 'string',
 			shortFlag: 'n',
 			isRequired: false,
-			isMultiple: false,
+			isMultiple: true,
 		},
 		sep: {
 			type: 'string',
 			default: ' | ',
+			isRequired: false,
 			isMultiple: false,
 		},
 	}
 });
 
 
+const totalArgs = process.argv.length - 2;
+if (totalArgs === 0) {
+    cli.showHelp();
+}
 if (!cli.flags.verbose && !cli.flags.outfile) {
 	console.error("Enable verbose mode or file output mode !");
 	process.exit(1);
 }
+if ((!cli.flags.numbers || cli.flags.numbers.length === 0) && (!cli.flags.file || cli.flags.file.length === 0)) {
+    console.error("You must provide at least one parameter --numbers or --file.");
+	process.exit(1);
+}
+
 
 let outfile = (cli.flags.outfile) ? cli.flags.outfile.trim() : null;
 let extension = (outfile) ? path.extname(outfile) : null;
@@ -90,7 +86,6 @@ if (outfile && outfile.startsWith('.')) {
 	console.error(`Wrong output filename !`);
 	process.exit(1);
 }
-
 let basename = null;
 switch (true) {
 	case (outfile != null && extension != null):
@@ -105,63 +100,28 @@ switch (true) {
 		break;
 }
 
+
 let verboseMode = cli.flags.verbose;
-let numbers = null;
-let size = cli.flags.size;
-let total = cli.flags.total;
-//let step = cli.flags.step;
-//let separator = false;
-//let SEP = (separator) ? '|' : ' ';
+let SEP = cli.flags.sep;
+let parts = [];
 
+for (let i = 0; i < cli.flags.numbers.length; i++) {
+	let nums = cli.flags.numbers[i];
+	parts.push(nums.trim().split(/[\|]/));
+}
 
-if (cli.flags.numbers) {
-	numbers = cli.flags.numbers.trim().split(/[\|]/);
-} else {
-	if (!fs.existsSync(cli.flags.file)) {
-		console.error(`File ${cli.flags.file} does not exist`);
+for (let i = 0; i < cli.flags.file.length; i++) {
+	if (!fs.existsSync(cli.flags.file[i])) {
+		console.error(`File ${cli.flags.file[i]} does not exist`);
 		process.exit(1);
 	}
-	numbers = fs.readFileSync(cli.flags.file).toString().trim().split(/\r?\n/);
-}
-if (total < size) {
-	console.error("Wrong <total> or <size> value.");
-	process.exit(1);
-}
-if (numbers.length < total) {
-	console.error("The numbers file is too short.");
-	process.exit(1);
-}
-
-
-var iterators = [];
-for (var i = 1; i <= size; i++) {
-	iterators.push(i);
-}
-
-
-const nextCombination = function (tab) {
-	var index = size-1;
-	var val = total;
-	
-	while (index >= 0 && tab[index] >= val) {
-		index--;
-		val--;
-	}
-	if (index < 0) {
-		return null;
-	}
-
-	val = tab[index] + 1;
-	for (var j = index; j < size; j++) {
-		tab[j] = val;
-		val++;
-	}
-	return tab;
+	let nums = fs.readFileSync(cli.flags.file[i]).toString().trim().split(/\r?\n/);
+	parts.push(nums.trim().split(/[\|]/));
 }
 
 
 //let global_alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
-
+let cartesianProduct = new lotteryFacility.CartesianProduct(...parts);
 let bar = null;
 let outfd = null;
 let file = null;
@@ -194,23 +154,14 @@ do {
 	}
 	lineNum++;
 	
-	// Computation
-	//var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(cli.flags.sep));
-	var temp_array = iterators.map(x => numbers[x-1]).join(cli.flags.sep);
-	//var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
-	var result_line = temp_array;
-	
-	
-	//var iterators2 = lotteryFacility.CombinationHelper.complement(global_alphabet, iterators);
-	//var temp_array2 = iterators2.map(x => numbers[x-1]).join(cli.flags.sep);
-	//var result_line2 = temp_array2;
-	
+
+	// Get combination
+	let result_line = lotteryFacility.CombinationHelper.toCanonicalString (cartesianProduct.currentCombination, SEP);
 	
 	
 	// Output
 	if (verboseMode) {
 		console.log(result_line);
-		//console.log(result_line2);
 	}
 	if (outfd) {
 		fs.writeSync(outfd, result_line);
@@ -219,10 +170,12 @@ do {
 	if (bar) {
 		bar.increment();
 	}
-	
+
+
 	// Next
-	var ret = nextCombination(iterators);
+	var ret = cartesianProduct.next();
 } while (ret != null);
+
 
 if (outfd) { fs.closeSync(outfd); outfd = null; }
 if (bar) { bar.stop(); }

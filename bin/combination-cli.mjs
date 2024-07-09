@@ -73,6 +73,7 @@ const cli = meow(`
 		sep: {
 			type: 'string',
 			default: ' | ',
+			isRequired: false,
 			isMultiple: false,
 		},
 	}
