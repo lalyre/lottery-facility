@@ -27,6 +27,7 @@ CLI utilities:
 * complement
 * translate
 * combination
+* cartesian_product
 <!--
 * filter
 * euromillions (TODO)
@@ -382,20 +383,55 @@ $ combination --sep " " --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09
 ```
 
 
+### 6. cartesian_product
+**Parameters**<br>
+
+```sh
+--verbose, -v   Verbose mode (default true).
+--outfile       Output filename (optional).
+--file, -f      A file containing one item of combination per line.
+--numbers, -n   Items of combinations separated by '|'.
+--sep           Separator of items (optional).
+```
+
+**Description**<br>
+
+This script generates cartesian product of items taken in <file> or <numbers>.
+Each item of <file> or <numbers> is combined with others <file> or <numbers> items.
+You can put as many <file> or <numbers> as you want.
+
+**Exemple**<br>
+
+We start with a `FILE.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
+
+```sh
+$ cat FILE.txt
+01 02 03 04
+05 06
+07 08 09 10
+```
+
+Computation of the cartesian product of `01 02 03` with `11 12 13`
+
+```sh
+$ cartesian_product --numbers "01|02|03" --numbers "11|12|13" --sep " "
+01 11
+01 12
+01 13
+02 11
+02 12
+02 13
+03 11
+03 12
+03 13
+```
+
 
 
 
 
 <!--
 ### 5. filter
-
--->
-
-
-
-
-<!--
-### 6. cartesian_product
 
 -->
 
