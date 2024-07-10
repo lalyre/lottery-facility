@@ -402,15 +402,6 @@ You can put as many `<file>` or `<numbers>` as you want.
 
 **Exemple**<br>
 
-We start with a `FILE.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
-
-```sh
-$ cat FILE.txt
-01 02 03 04
-05 06
-07 08 09 10
-```
-
 Computation of the cartesian product of `01 02 03` with `11 12 13`
 
 ```sh
