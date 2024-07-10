@@ -396,9 +396,9 @@ $ combination --sep " " --size 3 --total 5 --numbers "01|02|03|04|05|06|07|08|09
 
 **Description**<br>
 
-This script generates cartesian product of items taken in <file> or <numbers>.
-Each item of <file> or <numbers> is combined with others <file> or <numbers> items.
-You can put as many <file> or <numbers> as you want.
+This script generates cartesian product of items taken in `<file>` or `<numbers>`.
+Each item of `<file>` or `<numbers>` is combined with others `<file>` or `<numbers>` items.
+You can put as many `<file>` or `<numbers>` as you want.
 
 **Exemple**<br>
 
