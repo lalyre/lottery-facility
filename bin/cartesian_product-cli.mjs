@@ -42,12 +42,7 @@ const cli = meow(`
 		file: {
 			type: 'string',
 			shortFlag: 'f',
-			isRequired: (input, flags) => {
-				if (input.numbers) {
-					return false;
-				}
-				return true;
-			},
+			isRequired: false,
 			isMultiple: true,
 		},
 		numbers: {
@@ -153,12 +148,12 @@ do {
 		}
 	}
 	lineNum++;
-	
+
 
 	// Get combination
 	let result_line = lotteryFacility.CombinationHelper.toCanonicalString (cartesianProduct.currentCombination, SEP);
-	
-	
+
+
 	// Output
 	if (verboseMode) {
 		console.log(result_line);
