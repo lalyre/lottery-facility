@@ -99,12 +99,10 @@ switch (true) {
 let verboseMode = cli.flags.verbose;
 let SEP = cli.flags.sep;
 let parts = [];
-
 for (let i = 0; i < cli.flags.numbers.length; i++) {
 	let nums = cli.flags.numbers[i];
 	parts.push(nums.trim().split(/[\|]/));
 }
-
 for (let i = 0; i < cli.flags.file.length; i++) {
 	if (!fs.existsSync(cli.flags.file[i])) {
 		console.error(`File ${cli.flags.file[i]} does not exist`);
@@ -113,6 +111,41 @@ for (let i = 0; i < cli.flags.file.length; i++) {
 	let nums = fs.readFileSync(cli.flags.file[i]).toString().trim().split(/\r?\n/);
 	parts.push(nums.trim().split(/[\|]/));
 }
+let size = parts.length;
+
+
+
+
+
+/*
+let iterations = [];
+iterations.push(parts);
+do {
+	let next_iterations = [];
+	for (let i = 0; i < iterations.length; i++) {
+		let gps = iterations[i];
+		process.stdout.write("cartesian_product --sep \" \" ");
+		for (let j = 0; j < gps.length; j++) {
+			process.stdout.write(" -n \"" + lotteryFacility.CombinationHelper.toCanonicalString (gps[j], '|') + "\"");
+		}
+		process.stdout.write("\n");
+		
+		
+		let next_gps = lotteryFacility.CombinationHelper.extract_Nminus1 (...gps);
+		for (let k = 0; k < next_gps.length; k++) {
+			let g = lotteryFacility.CombinationHelper.split (next_gps[k], size);
+			if (g.length > 0) next_iterations.push(g);
+		}
+	}
+	
+	iterations = next_iterations;
+}
+while (iterations.length > 0)
+process.exit(0);
+*/
+
+
+
 
 
 //let global_alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
