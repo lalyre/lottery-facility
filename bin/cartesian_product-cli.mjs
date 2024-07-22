@@ -121,6 +121,7 @@ let size = parts.length;
 let iterations = [];
 iterations.push(parts);
 do {
+	process.stdout.write("***********************\n");
 	let next_iterations = [];
 	for (let i = 0; i < iterations.length; i++) {
 		let gps = iterations[i];
@@ -130,14 +131,12 @@ do {
 		}
 		process.stdout.write("\n");
 		
-		
 		let next_gps = lotteryFacility.CombinationHelper.extract_Nminus1 (...gps);
 		for (let k = 0; k < next_gps.length; k++) {
 			let g = lotteryFacility.CombinationHelper.split (next_gps[k], size);
 			if (g.length > 0) next_iterations.push(g);
 		}
 	}
-	
 	iterations = next_iterations;
 }
 while (iterations.length > 0)
