@@ -105,7 +105,7 @@ export class CombinationHelper {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
 		const result: Array<number[]> = [];
-		for (let i = 0; i < parts.length; i++) {
+		for (let i = parts.length-1; i >= 0; i--) {
 			const remainingParts: Array<number[]> = parts.filter((_, index) => index !== i);
 			const mergedArray = CombinationHelper.concat(...remainingParts);
 			result.push(mergedArray);

@@ -352,15 +352,15 @@ describe('CombinationHelper module', () => {
 		expect(CombinationHelper.extract_Nminus1([])).toEqual([]);
 		expect(CombinationHelper.extract_Nminus1([1, 2, 3])).toEqual([]);
 		expect(CombinationHelper.extract_Nminus1([1], [2], [3], [4])).toEqual([
-			[2, 3, 4],
-			[1, 3, 4],
-			[1, 2, 4],
 			[1, 2, 3],
+			[1, 2, 4],
+			[1, 3, 4],
+			[2, 3, 4],
 		  ]);
 		  expect(CombinationHelper.extract_Nminus1([1, 2, 3], [4, 5, 6], [7, 8, 9])).toEqual([
-			[4, 5, 6, 7, 8, 9],
-			[1, 2, 3, 7, 8, 9],
 			[1, 2, 3, 4, 5, 6],
+			[1, 2, 3, 7, 8, 9],
+			[4, 5, 6, 7, 8, 9],
 		  ]);
 	});
 });
