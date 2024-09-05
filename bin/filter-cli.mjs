@@ -299,6 +299,13 @@ let testGlobalFailureSelection = [];
 let testGlobalFailure = [];
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i++) {
+	
+	
+	
+	//TODO CL
+	//console.log("cli.flags.globalFailure[i] " + cli.flags.globalFailure[i]);
+	
+	
 	switch (true) {
 		case cli.flags.globalFailure[i] === null:
 		case cli.flags.globalFailure[i] === undefined:
@@ -968,6 +975,11 @@ let rl = readline.createInterface({
 		{
 			let nbHits = 0;
 			let score = 0;
+			
+			
+			//TODO CL
+			//console.log("nbHits " + nbHits);
+			
 
 			let matchingCombinations = [];
 			for (let j = 0; j < currentFilterCombinations.length; j++) {
@@ -978,7 +990,7 @@ let rl = readline.createInterface({
 				// TODO CL
 				//console.log("matchingRestrictions[k] " + matchingRestrictions[k]);
 				//console.log("currentFilterCombinations[j].combination " + currentFilterCombinations[j].combination);
-				//console.log("nb_collisions" + nb_collisions);
+				//console.log("nb_collisions " + nb_collisions);
 
 
 
@@ -1071,6 +1083,13 @@ let rl = readline.createInterface({
 			hits_count_string += `[hits: ${nbHits} - score: ${score} ] `;
 
 
+			//TODO CL
+			//console.log("nbHits " + nbHits);
+			//console.log("score " + score);
+			//console.log("testCombiFilterScoreSelection[i] " + testCombiFilterScoreSelection[i]);
+			//console.log("testCombiFilterScore[i] " + testCombiFilterScore[i]);
+			
+
 			// Combi score scope
 			switch (true) {
 				case (coverStatsMode):
@@ -1114,20 +1133,24 @@ let rl = readline.createInterface({
 					selectScoreScope = false; // reject this combination
 					break;
 			}
+			
+			
+			//TODO CL
+			//console.log("selectScoreScope " + selectScoreScope);
+			
+			
 			if (!selectScoreScope) break;
 			hitsCount += nbHits;
 		}
-
-
-		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
-		hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
-		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
-
 
 		if (!selectScoreScope) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			continue;		// next filter command
 		}
+
+		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
+		hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
+		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 	}
 
 
@@ -1178,6 +1201,11 @@ let rl = readline.createInterface({
 			return;			// next tested combination
 		}
 	}
+	
+	
+	// TODO CL
+	//console.log("combiGlobalFailure " + combiGlobalFailure);
+	//console.log("testGlobalFailureSelection.length " + testGlobalFailureSelection.length);
 
 
 	// Combi global failure scope
@@ -1220,6 +1248,12 @@ let rl = readline.createInterface({
 				selectFailureScope = false; // reject this combination
 				break;
 		}
+		
+		
+		//TODO CL
+		//console.log("selectFailureScope " + selectFailureScope);
+		
+		
 		if (!selectFailureScope) {
 			return;			// next tested combination
 		}
