@@ -22,7 +22,7 @@ const cli = meow(`
 	  --selectionSkip    Defines the number of tested combinations to skip from being entered in the ongoing selection.
 	  --globalScore      Defines the global score obtained after passing through all filters to select a combination.
 	  --globalFailure    Defines the global number of filters that are not passed to select a combination.
-	  --filter, -f       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)distance(x)min_gap(x)max_gap(x)").
+	  --select, -s       A filter command used to select input combinations (of form "filename(<filename>)weight(a)level(b)score(c)length(d)slice(a,b,..,x)distance(x)min_gap(x)max_gap(x)").
 	  --limit            Defines the maximum number of additions into the selection of input combinations. Default value is -1 (unlimited).
 	  --addition         If true the selected combinations are added on the fly to the running selection. Otherwise they are simply printed. Default value is true.
 	  --coverstats       If enabled it extracts covering statictics on filter files. The input file is fully scanned, and each line of that file increments a covering count on filter lines it matches with.
@@ -167,9 +167,9 @@ const cli = meow(`
 			isRequired: false,
 			isMultiple: true,
 		},
-		filter: {
+		select: {
 			type: 'string',
-			shortFlag: 'f',
+			shortFlag: 's',
 			isRequired: true,
 			isMultiple: true,
 		},
@@ -222,8 +222,8 @@ if (coverStatsMode && coverLinesMode) {
 	console.error("Either choose <coverstats> or <coverlines>, but not both !");
 	process.exit(1);
 }
-if (coverLinesMode && cli.flags.filter.length > 1) {
-	console.error("Only one filter allowed with <coverlines> mode !");
+if (coverLinesMode && cli.flags.select.length > 1) {
+	console.error("Only one select allowed with <coverlines> mode !");
 	process.exit(1);
 }
 
@@ -329,7 +329,7 @@ for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i
 
 
 // filename(<filename>)restrictions(<filename>)weight(a)level(b)score(c)min_val(c)length(d)distance(d)slice(a,b,...,y)min_gap(x)max_gap(x)
-let filterCommand = cli.flags.filter;
+let filterCommand = cli.flags.select;
 let filterCombinations = [];
 let filename = [];
 let filterRestrictions = [];
