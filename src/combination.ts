@@ -421,9 +421,8 @@ export class CombinationHelper {
 	 */
 	public static binomial (max:number, n:number): number {
 		if (max < 0) return -1;
-		if (n > max) return 0;
-		if (n === 0) return 1;
-		if (n === max) return 1;
+		if (n < 0 || n > max) return 0;
+		if (n === 0 || n === max) return 1;
 		let ret:number = CombinationHelper.factorial(max);
 		ret /= CombinationHelper.factorial(n);
 		ret /= CombinationHelper.factorial(max-n);
