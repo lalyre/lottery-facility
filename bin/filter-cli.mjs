@@ -348,6 +348,8 @@ let testMaxgapSelection = [];
 let testMaxgap = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
+let testCombiFilterRepetitionSelection = [];
+let testCombiFilterRepetition = [];
 let testCombiFilterMinValSelection = [];
 let testCombiFilterMinVal = [];
 let testCombiFilterMaxValSelection = [];
@@ -564,6 +566,21 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterScore.push(-1);
 			break;
 	}
+	
+	
+	// Parsing REPETITION
+	switch (true) {
+		case /repetition\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
+			let match = /repetition\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.exec(filterCommand[i]);
+			if (match[1] == null) testCombiFilterRepetitionSelection.push('='); else testCombiFilterRepetitionSelection.push(match[1]);
+			testCombiFilterRepetition.push(+match[2]);
+			break;
+
+		default:
+			testCombiFilterRepetitionSelection.push(null);
+			testCombiFilterRepetition.push(-1);
+			break;
+	}
 
 
 	// Parsing MIN_VAL
@@ -595,6 +612,7 @@ const printOutput = function (inputLinesCount, testedCombination, combiGlobalSco
 
 
 // Test all combinations of input file
+let globalRepetition = 0;
 let additions = 0;
 let inputLinesCount = 0;
 let fileStream = fs.createReadStream(infile);
@@ -910,7 +928,9 @@ let rl = readline.createInterface({
 
 		if (filterRestrictions[i] == null || filterRestrictions[i].length == 0) {
 			matchingRestrictions.push (slicedCombination);
-		} else {
+		}
+		else
+		{
 			for (let j = 0; j < filterRestrictions[i].length; j++) {
 				let match = false;
 				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, filterRestrictions[i][j].combination);
@@ -970,6 +990,7 @@ let rl = readline.createInterface({
 		hitsCount = 0;
 
 
+		let selectRepetitionScope = true;
 		let selectScoreScope = true;
 		for (let k = 0; k < matchingRestrictions.length; k++)
 		{
@@ -1050,32 +1071,69 @@ let rl = readline.createInterface({
 
 			// TODO CL
 			//console.log("matchingCombinations " + JSON.stringify(matchingCombinations));
-
-
-
 			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
+			let combiRepetition = 0;
 			for (let j = 0; j < matchingCombinations.length; j++) {
-				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
-				if (!matchingCombinations[j].preselected) {
-					matchingCombinations[j].covering++;
-
-					if (withValue)
-					{
-						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
-						else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
-
-						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-						else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-
-						combiFilterSumValue[i] += matchingCombinations[j].value;
-					}
-				}
+				if (matchingCombinations[j].covering >= 1) combiRepetition++;
 
 				nbHits++;
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
 				hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 				coveredLines += matchingCombinations[j].lineNum;
 				coveredLines += " ";
 			}
+
+			//TODO CL
+			//console.log("combiRepetition " + combiRepetition);
+
+			// Combi repetition scope
+			switch (true) {
+				case (testCombiFilterRepetitionSelection[i] == null):
+					break; // No rule
+
+				case /^<$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition < testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				case /^=<$/.test(testCombiFilterRepetitionSelection[i]):
+				case /^<=$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition <= testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				case /^=$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition == testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				case /^!=$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition != testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				case /^=>$/.test(testCombiFilterRepetitionSelection[i]):
+				case /^>=$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition >= testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				case /^>$/.test(testCombiFilterRepetitionSelection[i]):
+					if (!(combiRepetition > testCombiFilterRepetition[i])) selectRepetitionScope = false; // reject this combination
+					break;
+
+				default:
+					selectRepetitionScope = false; // reject this combination
+					break;
+			}
+			
+			
+			//TODO CL
+			//console.log("selectRepetitionScope " + selectRepetitionScope);
+			
+			
+			if (!selectRepetitionScope) {
+				combiFilterFailure[i] = 1; combiGlobalFailure++;
+				break;
+			}
+
+
+
 
 
 			score = nbHits * weight[i];
@@ -1139,18 +1197,40 @@ let rl = readline.createInterface({
 			//console.log("selectScoreScope " + selectScoreScope);
 			
 			
-			if (!selectScoreScope) break;
+			if (!selectScoreScope) {
+				combiFilterFailure[i] = 1; combiGlobalFailure++;
+				break;
+			}
+			
+			
+			
+			
+			
+			for (let j = 0; j < matchingCombinations.length; j++) {
+				if (!matchingCombinations[j].preselected) {
+					matchingCombinations[j].covering++;
+					//globalRepetition++;
+
+					if (withValue)
+					{
+						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+						else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+
+						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+						else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+
+						combiFilterSumValue[i] += matchingCombinations[j].value;
+					}
+				}
+			}
+			
 			hitsCount += nbHits;
+			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
+			hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 		}
 
-		if (!selectScoreScope) {
-			combiFilterFailure[i] = 1; combiGlobalFailure++;
-			continue;		// next filter command
-		}
 
-		combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
-		hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
-		hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 	}
 
 
