@@ -1204,23 +1204,19 @@ let rl = readline.createInterface({
 			
 			
 			
-			
-			
 			for (let j = 0; j < matchingCombinations.length; j++) {
-				if (!matchingCombinations[j].preselected) {
-					matchingCombinations[j].covering++;
-					//globalRepetition++;
+				matchingCombinations[j].covering++;
+				//globalRepetition++;
+				
+				if (withValue)
+				{
+					if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+					else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
 
-					if (withValue)
-					{
-						if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
-						else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
+					if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
+					else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
 
-						if (combiFilterMaxValue[i] == -1) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-						else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
-
-						combiFilterSumValue[i] += matchingCombinations[j].value;
-					}
+					combiFilterSumValue[i] += matchingCombinations[j].value;
 				}
 			}
 			
