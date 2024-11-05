@@ -269,6 +269,10 @@ if (cli.flags.selection) {
 }
 
 
+//TODO CL
+console.log("preSelectedCombinations.length " + preSelectedCombinations.length);
+
+
 let testGlobalScoreSelection = [];
 let testGlobalScore = [];
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(-?\d*)$/;
@@ -611,6 +615,87 @@ const printOutput = function (inputLinesCount, testedCombination, combiGlobalSco
 }
 
 
+
+//
+for (combi in preSelectedCombinations) {
+	
+	let matchingCombinations = [];
+	for (let j = 0; j < currentFilterCombinations.length; j++) {
+		let match = false;
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], currentFilterCombinations[j].combination);
+
+
+				// TODO CL
+				//console.log("matchingRestrictions[k] " + matchingRestrictions[k]);
+				//console.log("currentFilterCombinations[j].combination " + currentFilterCombinations[j].combination);
+				//console.log("nb_collisions " + nb_collisions);
+
+
+
+				switch (true) {
+					case /^<$/.test(testLevelSelection[i]):
+						if (nb_collisions < testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=<$/.test(testLevelSelection[i]):
+					case /^<=$/.test(testLevelSelection[i]):
+						if (nb_collisions <= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=$/.test(testLevelSelection[i]):
+						if (nb_collisions == testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^!=$/.test(testLevelSelection[i]):
+						if (nb_collisions != testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^=>$/.test(testLevelSelection[i]):
+					case /^>=$/.test(testLevelSelection[i]):
+						if (nb_collisions >= testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					case /^>$/.test(testLevelSelection[i]):
+						if (nb_collisions > testLevel[i]) {
+							match = true;
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				if (match) {
+					matchingCombinations.push (currentFilterCombinations[j]);
+				}
+			}
+	
+	
+	
+			for (let j = 0; j < matchingCombinations.length; j++) {
+				if (matchingCombinations[j].covering >= 1) combiRepetition++;
+
+				nbHits++;
+				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
+				hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+				coveredLines += matchingCombinations[j].lineNum;
+				coveredLines += " ";
+			}
+	
+}
+
+
+
 // Test all combinations of input file
 let globalRepetition = 0;
 let additions = 0;
@@ -636,7 +721,7 @@ let rl = readline.createInterface({
 	if (testedCombination[0] == 0) return;
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
-	//console.log("testedCombination " + testedCombination);
+	console.log("testedCombination " + testedCombination);
 	
 	
 	// TODO CL
@@ -1084,7 +1169,7 @@ let rl = readline.createInterface({
 			}
 
 			//TODO CL
-			//console.log("combiRepetition " + combiRepetition);
+			console.log("combiRepetition " + combiRepetition);
 
 			// Combi repetition scope
 			switch (true) {
