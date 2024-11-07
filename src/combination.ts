@@ -351,6 +351,163 @@ export class CombinationHelper {
 	}
 
 
+
+
+
+
+
+
+
+
+
+//TODO CL
+type Combination = number[];
+
+interface CombinationFilter {
+    apply(combination: Combination): boolean;
+}
+
+class CombinationFilterPipeline {
+    private filters: CombinationFilter[] = [];
+
+    addFilter(filter: CombinationFilter): void {
+        this.filters.push(filter);
+    }
+
+    apply(combination: Combination): boolean {
+        return this.filters.every(filter => filter.apply(combination));
+    }
+}
+
+// Exemple de filtre par nombre de numéros
+class NumberCountFilter implements CombinationFilter {
+    constructor(private minCount: number, private maxCount: number) {}
+
+    apply(combination: Combination): boolean {
+        const count = combination.length;
+        return count >= this.minCount && count <= this.maxCount;
+    }
+}
+
+// Exemple de filtre par moyenne
+class AverageFilter implements CombinationFilter {
+    constructor(private minAverage: number, private maxAverage: number) {}
+
+    apply(combination: Combination): boolean {
+        const sum = combination.reduce((acc, num) => acc + num, 0);
+        const avg = sum / combination.length;
+        return avg >= this.minAverage && avg <= this.maxAverage;
+    }
+}
+
+// Filtre de collision basé sur des combinaisons en mémoire
+class CollisionFilter implements CombinationFilter {
+    private combinationSet: Set<string>;
+
+    constructor(combinations: Combination[]) {
+        // Stocker chaque combinaison comme chaîne pour des recherches rapides
+        this.combinationSet = new Set(combinations.map(c => c.join(',')));
+    }
+
+    apply(combination: Combination): boolean {
+        // Vérifie si la combinaison existe dans le jeu de combinaisons
+        return this.combinationSet.has(combination.join(','));
+    }
+}
+
+// Filtre de collision basé sur un fichier de combinaisons
+class FileBasedCollisionFilter implements CombinationFilter {
+    private combinationSet: Set<string> = new Set();
+
+    constructor(filePath: string) {
+        this.loadCombinationsFromFile(filePath);
+    }
+
+    private loadCombinationsFromFile(filePath: string): void {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        const lines = data.split(/\r?\n/);
+        for (const line of lines) {
+            const combination = line.trim().split(/\s+/).map(Number);
+            if (combination.length > 0) {
+                this.combinationSet.add(combination.join(','));
+            }
+        }
+    }
+
+    apply(combination: Combination): boolean {
+        return this.combinationSet.has(combination.join(','));
+    }
+}
+
+// Fonction pour traiter le flux de combinaisons depuis un fichier
+async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+
+    for await (const line of rl) {
+        const combination = line.trim().split(/\s+/).map(Number);
+        if (pipeline.apply(combination)) {
+            onAccept(combination);  // Gestion de la combinaison acceptée
+        }
+    }
+}
+
+// Exemple d'utilisation
+(async () => {
+    const pipeline = new CombinationFilterPipeline();
+
+    // Ajouter des filtres au pipeline
+    pipeline.addFilter(new NumberCountFilter(3, 6));  // Combinaisons de 3 à 6 numéros
+    pipeline.addFilter(new AverageFilter(10, 50));    // Moyenne entre 10 et 50
+
+    // Ajouter un filtre de collision avec des combinaisons en mémoire
+    const memoryCombinations: Combination[] = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ];
+    pipeline.addFilter(new CollisionFilter(memoryCombinations));
+
+    // Ajouter un filtre de collision basé sur un fichier
+    const collisionFilePath = 'path/to/collision_combinations.txt';
+    pipeline.addFilter(new FileBasedCollisionFilter(collisionFilePath));
+
+    // Gestionnaire pour les combinaisons acceptées
+    const acceptedCombinations: Combination[] = [];
+    function handleAcceptedCombination(combination: Combination) {
+        acceptedCombinations.push(combination);
+    }
+
+    // Traitement du fichier contenant les combinaisons d'entrée
+    const inputFilePath = 'path/to/input_combinations.txt';
+    await processCombinationFile(inputFilePath, pipeline, handleAcceptedCombination);
+
+    console.log('Combinaisons acceptées:', acceptedCombinations);
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Give the rank of a given combination
 	 * @param max       the maximum possible number value used in balls numbers.

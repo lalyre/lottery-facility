@@ -262,9 +262,9 @@ if (cli.flags.selection) {
 		var numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 		if (numbers[0] == 0) continue;
 		if (numbers.join("") == '') continue;
-		var value = (!y) ? -1 : +y.trim();
+		var value = (!y) ? 0 : +y.trim();
 		lineNum++;
-		preSelectedCombinations.push({lineNum: lineNum, combination: numbers, covering: 0, value: value, preselected: true, });
+		preSelectedCombinations.push({lineNum: lineNum, combination: numbers, covering: value, value: value, preselected: true, });
 	}
 }
 
@@ -396,9 +396,9 @@ for (let i = 0; i < filterCommand.length; i++) {
 				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
-				var value = (!y) ? -1 : +y.trim();
+				var value = (!y) ? 0 : +y.trim();
 				line++;
-				filterCombinations[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
+				filterCombinations[i].push({lineNum: line, combination: numbers, covering: value, value: value, preselected: false, });
 			}
 			break;
 
@@ -432,9 +432,9 @@ for (let i = 0; i < filterCommand.length; i++) {
 				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
-				var value = (!y) ? -1 : +y.trim();
+				var value = (!y) ? 0 : +y.trim();
 				line++;
-				filterRestrictions[i].push({lineNum: line, combination: numbers, covering: 0, value: value, preselected: false, });
+				filterRestrictions[i].push({lineNum: line, combination: numbers, covering: value, value: value, preselected: false, });
 			}
 			break;
 
