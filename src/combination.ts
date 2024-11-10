@@ -1,6 +1,9 @@
 'use strict';
 
 
+export type Combination = number[];
+
+
 export class CombinationHelper {
 	/**
 	 * Get lottery combination string
@@ -8,7 +11,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toString (numbers:number[]|null, sep:string = ' '): string {
+	public static toString (numbers:Combination|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const display = numbers.map(x => x.toString().padStart(2, '0')).join(sep);
 		return display;
@@ -21,7 +24,7 @@ export class CombinationHelper {
 	 * @param sep       separator (default SPACE).
 	 * @return          combination in string form.
 	 */
-	public static toCanonicalString (numbers:number[]|null, sep:string = ' '): string {
+	public static toCanonicalString (numbers:Combination|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const arr = numbers.filter((element, index, array) => array.indexOf(element) === index).sort((a, b) => {return a - b;});
 		const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);
@@ -35,7 +38,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          number of balls both inside arr1 and arr2.
 	 */
-	public static collisionsCount (arr1:number[], arr2:number[]): number {
+	public static collisionsCount (arr1:Combination, arr2:Combination): number {
 		const merge = CombinationHelper.intersection(arr1, arr2);
 		return merge.length;
 	}
@@ -47,7 +50,7 @@ export class CombinationHelper {
 	 * @param nbParts      count of returned arrays.
 	 * @return             array of parts of entry array.
 	 */
-	public static split (numbers:number[], nbParts:number): Array<number[]> {
+	public static split (numbers:Combination, nbParts:number): Array<Combination> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts === 0) return [];
 		if (nbParts === 1) return [numbers];
@@ -75,8 +78,8 @@ export class CombinationHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            concatenation of all input arrays.
 	 */
-	public static concat (...parts: Array<number[]>): number[] {
-		return ([] as number[]).concat(...parts);
+	public static concat (...parts: Array<Combination>): Combination {
+		return ([] as Combination).concat(...parts);
 	}
 
 
@@ -86,12 +89,12 @@ export class CombinationHelper {
 	 * @param nbParts     count of parts to split input array.
 	 * @return            all possible concatenations of nbParts of input array excluding one.
 	 */
-	public static splitAndExtract_Nminus1 (numbers:number[], nbParts:number): Array<number[]> {
+	public static splitAndExtract_Nminus1 (numbers:Combination, nbParts:number): Array<Combination> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts <= 1) return [];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
-		const parts: Array<number[]> = CombinationHelper.split (numbers, nbParts);
+		const parts: Array<Combination> = CombinationHelper.split (numbers, nbParts);
 		return CombinationHelper.extract_Nminus1 (...parts);
 	}
 
@@ -101,12 +104,12 @@ export class CombinationHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            all possible concatenations of input arrays excluding one.
 	 */
-	public static extract_Nminus1 (...parts: Array<number[]>): Array<number[]> {
+	public static extract_Nminus1 (...parts: Array<Combination>): Array<Combination> {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
-		const result: Array<number[]> = [];
+		const result: Array<Combination> = [];
 		for (let i = parts.length-1; i >= 0; i--) {
-			const remainingParts: Array<number[]> = parts.filter((_, index) => index !== i);
+			const remainingParts: Array<Combination> = parts.filter((_, index) => index !== i);
 			const mergedArray = CombinationHelper.concat(...remainingParts);
 			result.push(mergedArray);
 		}
@@ -121,7 +124,7 @@ export class CombinationHelper {
 	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
 	 * @return          array containing all balls inside arr1 and arr2.
 	 */
-	public static union (arr1:number[], arr2:number[], duplicate:boolean = false): number[] {
+	public static union (arr1:Combination, arr2:Combination, duplicate:boolean = false): Combination {
 		if (!arr1 && !arr2) return [];
 
 		if (duplicate) {
@@ -147,7 +150,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls both inside arr1 and arr2.
 	 */
-	public static intersection (arr1:number[], arr2:number[]): number[] {
+	public static intersection (arr1:Combination, arr2:Combination): Combination {
 		if (!arr1 || !arr2) return [];
 		//arr1.sort((a, b) => a - b);
 		//arr2.sort((a, b) => a - b);
@@ -163,7 +166,7 @@ export class CombinationHelper {
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls of arr1 that are not inside arr2.
 	 */
-	public static difference (arr1:number[], arr2:number[]): number[] {
+	public static difference (arr1:Combination, arr2:Combination): Combination {
 		if (!arr1) return [];
 		if (!arr2) return arr1;
 		const diff = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) === -1);
@@ -178,7 +181,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static distance (alphabet:number[], combination:number[]): number {
+	public static distance (alphabet:Combination, combination:Combination): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -200,7 +203,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_gap (alphabet:number[], combination:number[]): number {
+	public static minimum_gap (alphabet:Combination, combination:Combination): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -234,7 +237,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_right_gap (alphabet:number[], combination:number[]): number {
+	public static minimum_right_gap (alphabet:Combination, combination:Combination): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -265,7 +268,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_gap (alphabet:number[], combination:number[]): number {
+	public static maximum_gap (alphabet:Combination, combination:Combination): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -302,7 +305,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_right_gap (alphabet:number[], combination:number[]): number {
+	public static maximum_right_gap (alphabet:Combination, combination:Combination): number {
 		if (!alphabet) return -1;
 		if (!combination) return -1;
 		if (combination.length <= 1) return 0;
@@ -334,7 +337,7 @@ export class CombinationHelper {
 	 * @param combination   array of balls number.
 	 * @return              array containing balls numbers of the complement combination.
 	 */
-	public static complement (alphabet:number[], combination:number[]): number[]|null {
+	public static complement (alphabet:Combination, combination:Combination): Combination|null {
 		if (!alphabet) return null;
 		if (!combination) return null;
 
@@ -351,170 +354,13 @@ export class CombinationHelper {
 	}
 
 
-
-
-
-
-
-
-
-
-
-//TODO CL
-type Combination = number[];
-
-interface CombinationFilter {
-    apply(combination: Combination): boolean;
-}
-
-class CombinationFilterPipeline {
-    private filters: CombinationFilter[] = [];
-
-    addFilter(filter: CombinationFilter): void {
-        this.filters.push(filter);
-    }
-
-    apply(combination: Combination): boolean {
-        return this.filters.every(filter => filter.apply(combination));
-    }
-}
-
-// Exemple de filtre par nombre de numéros
-class NumberCountFilter implements CombinationFilter {
-    constructor(private minCount: number, private maxCount: number) {}
-
-    apply(combination: Combination): boolean {
-        const count = combination.length;
-        return count >= this.minCount && count <= this.maxCount;
-    }
-}
-
-// Exemple de filtre par moyenne
-class AverageFilter implements CombinationFilter {
-    constructor(private minAverage: number, private maxAverage: number) {}
-
-    apply(combination: Combination): boolean {
-        const sum = combination.reduce((acc, num) => acc + num, 0);
-        const avg = sum / combination.length;
-        return avg >= this.minAverage && avg <= this.maxAverage;
-    }
-}
-
-// Filtre de collision basé sur des combinaisons en mémoire
-class CollisionFilter implements CombinationFilter {
-    private combinationSet: Set<string>;
-
-    constructor(combinations: Combination[]) {
-        // Stocker chaque combinaison comme chaîne pour des recherches rapides
-        this.combinationSet = new Set(combinations.map(c => c.join(',')));
-    }
-
-    apply(combination: Combination): boolean {
-        // Vérifie si la combinaison existe dans le jeu de combinaisons
-        return this.combinationSet.has(combination.join(','));
-    }
-}
-
-// Filtre de collision basé sur un fichier de combinaisons
-class FileBasedCollisionFilter implements CombinationFilter {
-    private combinationSet: Set<string> = new Set();
-
-    constructor(filePath: string) {
-        this.loadCombinationsFromFile(filePath);
-    }
-
-    private loadCombinationsFromFile(filePath: string): void {
-        const data = fs.readFileSync(filePath, 'utf-8');
-        const lines = data.split(/\r?\n/);
-        for (const line of lines) {
-            const combination = line.trim().split(/\s+/).map(Number);
-            if (combination.length > 0) {
-                this.combinationSet.add(combination.join(','));
-            }
-        }
-    }
-
-    apply(combination: Combination): boolean {
-        return this.combinationSet.has(combination.join(','));
-    }
-}
-
-// Fonction pour traiter le flux de combinaisons depuis un fichier
-async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
-    const fileStream = fs.createReadStream(filePath);
-    const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
-
-    for await (const line of rl) {
-        const combination = line.trim().split(/\s+/).map(Number);
-        if (pipeline.apply(combination)) {
-            onAccept(combination);  // Gestion de la combinaison acceptée
-        }
-    }
-}
-
-// Exemple d'utilisation
-(async () => {
-    const pipeline = new CombinationFilterPipeline();
-
-    // Ajouter des filtres au pipeline
-    pipeline.addFilter(new NumberCountFilter(3, 6));  // Combinaisons de 3 à 6 numéros
-    pipeline.addFilter(new AverageFilter(10, 50));    // Moyenne entre 10 et 50
-
-    // Ajouter un filtre de collision avec des combinaisons en mémoire
-    const memoryCombinations: Combination[] = [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-    ];
-    pipeline.addFilter(new CollisionFilter(memoryCombinations));
-
-    // Ajouter un filtre de collision basé sur un fichier
-    const collisionFilePath = 'path/to/collision_combinations.txt';
-    pipeline.addFilter(new FileBasedCollisionFilter(collisionFilePath));
-
-    // Gestionnaire pour les combinaisons acceptées
-    const acceptedCombinations: Combination[] = [];
-    function handleAcceptedCombination(combination: Combination) {
-        acceptedCombinations.push(combination);
-    }
-
-    // Traitement du fichier contenant les combinaisons d'entrée
-    const inputFilePath = 'path/to/input_combinations.txt';
-    await processCombinationFile(inputFilePath, pipeline, handleAcceptedCombination);
-
-    console.log('Combinaisons acceptées:', acceptedCombinations);
-})();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * Give the rank of a given combination
 	 * @param max       the maximum possible number value used in balls numbers.
 	 * @param numbers   array of balls number (combination).
 	 * @return          the rank of the combination.
 	 */
-	public static combinationToRank (max:number, numbers:number[]): number {
+	public static combinationToRank (max:number, numbers:Combination): number {
 		if (max < 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
@@ -538,7 +384,7 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
 	 * @param rank      the rank of the combination to be returned.
 	 * @return          the combination corresponding to the given rank.
 	 */
-	public static rankToCombination (max:number, length:number, rank:number): number[] {
+	public static rankToCombination (max:number, length:number, rank:number): Combination {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
@@ -613,18 +459,18 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
 
 
 export class CartesianProduct {
-	private readonly _parts: Array<number[]>;
+	private readonly _parts: Array<Combination>;
 	private readonly _nbParts: number;
 	private readonly _count: number;
-	private _partsIndex: number[];
-	private _partsValue: number[];
+	private _partsIndex: Combination;
+	private _partsValue: Combination;
 	private _currentIndex: number;
 
 
 	/**
 	 * Build a cartesian product calculator
 	 */	
-	public constructor (...parts: Array<number[]>) {
+	public constructor (...parts: Array<Combination>) {
 		// super();
 
 		this._parts = parts;
@@ -657,7 +503,7 @@ export class CartesianProduct {
 	}
 
 
-	get currentCombination(): number[] {
+	get currentCombination(): Combination {
 		return this._partsValue;
 	}
 
@@ -667,7 +513,7 @@ export class CartesianProduct {
 	 * @param        none
 	 * @return       first combination
 	 */
-	public start(): number[] {
+	public start(): Combination {
 		this._currentIndex = 0;
 		
 		for (let i = 0; i < this._nbParts; i++) {
@@ -683,7 +529,7 @@ export class CartesianProduct {
 	 * @param        none
 	 * @return       last combination
 	 */
-	public end(): number[] {
+	public end(): Combination {
 		this._currentIndex = this.lastIndex;
 		
 		for (let i = 0; i < this._nbParts; i++) {
@@ -700,7 +546,7 @@ export class CartesianProduct {
 	 * @param        none
 	 * @return       previous combination
 	 */
-	public previous(): number[]|null {
+	public previous(): Combination|null {
 		if (this._currentIndex <= 0) return null;
 		this._currentIndex--;
 		
@@ -724,7 +570,7 @@ export class CartesianProduct {
 	 * @param        none
 	 * @return       next combination
 	 */
-	public next(): number[]|null {
+	public next(): Combination|null {
 		if (this._currentIndex >= this.lastIndex) return null;
 		this._currentIndex++;
 		
@@ -824,8 +670,8 @@ for (let i = 0; i < a2.length; i++) {
 //for (let i = 0; i < a3.length; i++) { console.log(a3[i]); }
 
 	*/
-	
-	
+
+
 }
 
 
@@ -837,4 +683,143 @@ export class Selection {
 export class Permutation {
 
 }
+
+
+
+
+
+
+
+
+
+//TODO CL
+import fs from 'fs';
+//import fs from 'fs-extra';
+import readline from 'readline';
+//import path from 'path';
+
+
+interface CombinationFilter {
+    apply(combination: Combination): boolean;
+}
+
+class CombinationFilterPipeline {
+    private filters: CombinationFilter[] = [];
+
+    addFilter(filter: CombinationFilter): void {
+        this.filters.push(filter);
+    }
+
+    apply(combination: Combination): boolean {
+        return this.filters.every(filter => filter.apply(combination));
+    }
+}
+
+// Exemple de filtre par nombre de numéros
+class NumberCountFilter implements CombinationFilter {
+    constructor(private minCount: number, private maxCount: number) {}
+
+    apply(combination: Combination): boolean {
+        const count = combination.length;
+        return count >= this.minCount && count <= this.maxCount;
+    }
+}
+
+// Exemple de filtre par moyenne
+class AverageFilter implements CombinationFilter {
+    constructor(private minAverage: number, private maxAverage: number) {}
+
+    apply(combination: Combination): boolean {
+        const sum = combination.reduce((acc, num) => acc + num, 0);
+        const avg = sum / combination.length;
+        return avg >= this.minAverage && avg <= this.maxAverage;
+    }
+}
+
+// Filtre de collision basé sur des combinaisons en mémoire
+class CollisionFilter implements CombinationFilter {
+    private combinationSet: Set<string>;
+
+    constructor(combinations: Combination[]) {
+        // Stocker chaque combinaison comme chaîne pour des recherches rapides
+        this.combinationSet = new Set(combinations.map(c => c.join(',')));
+    }
+
+    apply(combination: Combination): boolean {
+        // Vérifie si la combinaison existe dans le jeu de combinaisons
+        return this.combinationSet.has(combination.join(','));
+    }
+}
+
+// Filtre de collision basé sur un fichier de combinaisons
+class FileBasedCollisionFilter implements CombinationFilter {
+    private combinationSet: Set<string> = new Set();
+
+    constructor(filePath: string) {
+        this.loadCombinationsFromFile(filePath);
+    }
+
+    private loadCombinationsFromFile(filePath: string): void {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        const lines = data.split(/\r?\n/);
+        for (const line of lines) {
+            const combination = line.trim().split(/\s+/).map(Number);
+            if (combination.length > 0) {
+                this.combinationSet.add(combination.join(','));
+            }
+        }
+    }
+
+    apply(combination: Combination): boolean {
+        return this.combinationSet.has(combination.join(','));
+    }
+}
+
+// Fonction pour traiter le flux de combinaisons depuis un fichier
+async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
+
+    for await (const line of rl) {
+        const combination = line.trim().split(/\s+/).map(Number);
+        if (pipeline.apply(combination)) {
+            onAccept(combination);  // Gestion de la combinaison acceptée
+        }
+    }
+}
+
+// Exemple d'utilisation
+/*(async () => {
+    const pipeline = new CombinationFilterPipeline();
+
+    // Ajouter des filtres au pipeline
+    pipeline.addFilter(new NumberCountFilter(3, 6));  // Combinaisons de 3 à 6 numéros
+    pipeline.addFilter(new AverageFilter(10, 50));    // Moyenne entre 10 et 50
+
+    // Ajouter un filtre de collision avec des combinaisons en mémoire
+    const memoryCombinations: Combination[] = [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ];
+    pipeline.addFilter(new CollisionFilter(memoryCombinations));
+
+    // Ajouter un filtre de collision basé sur un fichier
+    const collisionFilePath = 'path/to/collision_combinations.txt';
+    pipeline.addFilter(new FileBasedCollisionFilter(collisionFilePath));
+
+    // Gestionnaire pour les combinaisons acceptées
+    const acceptedCombinations: Combination[] = [];
+    function handleAcceptedCombination(combination: Combination) {
+        acceptedCombinations.push(combination);
+    }
+
+    // Traitement du fichier contenant les combinaisons d'entrée
+    const inputFilePath = 'path/to/input_combinations.txt';
+    await processCombinationFile(inputFilePath, pipeline, handleAcceptedCombination);
+
+    console.log('Combinaisons acceptées:', acceptedCombinations);
+})();*/
+
+
 
