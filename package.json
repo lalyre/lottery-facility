@@ -4,7 +4,10 @@
   "description": "Some APIs and CLI tools for designing lottery cracking systems.",
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
   "exports": {
-    ".": "./dist/lotteryfacility-nodebundle.umd.js"
+    ".": {
+      "node": "./dist/lotteryfacility-nodebundle.umd.js",
+      "browser": "./dist/lotteryfacility-webbundle.umd.js"
+    }
   },
   "types": "main.d.ts",
   "typesVersions": {

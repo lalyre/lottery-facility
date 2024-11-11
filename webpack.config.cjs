@@ -35,10 +35,28 @@ const generalConfig = {
 			test: /\.min\.[A-Za-z]*\.js$/i,
 		})],
 	},
+	
+	resolve: {
+		extensions: ['.ts', '.tsx', '.js'],  // Resolve .ts and .js files
+		alias: {
+			// This can be helpful to alias paths if needed
+			'@src': path.resolve(__dirname, 'src/'),
+		},
+	},
 
-	externals: [
+	module: {
+		rules: [
+			{
+				test: /\.tsx?$/,
+				use: 'ts-loader',  // Use ts-loader to transpile TypeScript files
+				exclude: /node_modules/,
+			}
+		]
+	}
+
+	/*externals: [
 		//new UglifyJSPlugin(),
-	],
+	],*/
 };
 
 
@@ -67,10 +85,10 @@ const nodeConfig = {
 	experiments: {
 		outputModule: true,
 	},
-
-	externals: [
+	
+	/*externals: [
 		nodeExternals(),	// in order to ignore all modules in node_modules folder
-	],
+	],*/
 };
 
 
@@ -90,11 +108,13 @@ const browserConfig = {
 		library: {
 			name: 'LotteryFacility',
 			type: 'umd',
+			umdNamedDefine: true,
 		},
+		globalObject: 'this',
 	},
 
 	experiments: {
-		outputModule: true,
+		outputModule: false,
 	},
 };
 

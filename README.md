@@ -142,7 +142,10 @@ Import in your browser project from a CDN:
   <script src="https://unpkg.com/lottery-facility@0.0.1-alpha.10/dist/lotteryfacility-webbundle.min.umd.js"></script>
 
   <script>
-  const box = new LotteryFacility.DrawBox(70);
+  console.log(window.LotteryFacility);
+  console.log(window.LotteryFacility.DrawBox);
+
+  const box = new window.LotteryFacility.DrawBox(70);
   const balls = box.draw(20);
   document.write(balls);
   </script>
