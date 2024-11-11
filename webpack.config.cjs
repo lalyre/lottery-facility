@@ -64,6 +64,10 @@ const nodeConfig = {
 		},
 	},
 
+	experiments: {
+		outputModule: true,
+	},
+
 	externals: [
 		nodeExternals(),	// in order to ignore all modules in node_modules folder
 	],
@@ -87,6 +91,10 @@ const browserConfig = {
 			name: 'LotteryFacility',
 			type: 'umd',
 		},
+	},
+
+	experiments: {
+		outputModule: true,
 	},
 };
 

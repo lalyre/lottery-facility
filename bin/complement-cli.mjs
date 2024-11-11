@@ -3,7 +3,7 @@
 import fs from 'fs-extra';
 import readline from 'readline';
 import meow from 'meow';
-import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
+import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
 
 const cli = meow(`

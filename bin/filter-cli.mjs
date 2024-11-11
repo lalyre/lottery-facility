@@ -6,7 +6,7 @@ import path from 'path';
 import meow from 'meow';
 import colors from 'ansi-colors';
 import cliProgress from 'cli-progress';
-import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
+import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 const SELECTION_LIMIT = 500000;
 
 

@@ -5,7 +5,7 @@ import meow from 'meow';
 import bent from 'bent';
 const getJSON = bent('json')
 const getBuffer = bent('buffer')
-//import lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
+//import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
 
 const cli = meow(`
