@@ -23,7 +23,7 @@ const generalConfig = {
 			"crypto": false,
 		},
 		modules: [path.resolve('./src'), "node_modules"],
-		extensions: ['.tsx', '.ts', '.js'],
+		extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
 	},
 
 	context: path.resolve(__dirname),
@@ -35,23 +35,24 @@ const generalConfig = {
 			test: /\.min\.[A-Za-z]*\.js$/i,
 		})],
 	},
-	
-	resolve: {
-		extensions: ['.ts', '.tsx', '.js'],  // Resolve .ts and .js files
-		alias: {
-			// This can be helpful to alias paths if needed
-			'@src': path.resolve(__dirname, 'src/'),
-		},
-	},
 
 	module: {
 		rules: [
 			{
-				test: /\.tsx?$/,
-				use: 'ts-loader',  // Use ts-loader to transpile TypeScript files
+				test: /\.jsx?$/,
 				exclude: /node_modules/,
+				use: 'babel-loader',
+			},
+			{
+				test: /\.tsx?$/,
+				exclude: /node_modules/,
+				use: 'ts-loader',
 			}
 		]
+	},
+
+	stats: {
+		errorDetails: true,
 	}
 
 	/*externals: [
@@ -81,14 +82,10 @@ const nodeConfig = {
 			type: 'umd',
 		},
 	},
-
-	experiments: {
-		outputModule: true,
-	},
 	
-	/*externals: [
+	externals: [
 		nodeExternals(),	// in order to ignore all modules in node_modules folder
-	],*/
+	],
 };
 
 
@@ -111,10 +108,6 @@ const browserConfig = {
 			umdNamedDefine: true,
 		},
 		globalObject: 'this',
-	},
-
-	experiments: {
-		outputModule: false,
 	},
 };
 
