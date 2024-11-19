@@ -693,37 +693,83 @@ export class Permutation {
 
 
 //TODO CL
-import fs from 'fs';
+//import fs from 'fs';
 //import fs from 'fs-extra';
-import readline from 'readline';
+//import readline from 'readline';
 //import path from 'path';
 
 
-interface CombinationFilter {
-    apply(combination: Combination): boolean;
+// operator: keyof typeof comparisonOperators
+// const comparator = comparisonOperators[operator];
+// return comparator(combination.length, reference);
+export const comparisonOperators = {
+	"<": (a: number, b: number) => a < b,
+	"<=": (a: number, b: number) => a <= b,
+	">": (a: number, b: number) => a > b,
+	">=": (a: number, b: number) => a >= b,
+};
+
+
+export interface CombinationFilter {
+	apply(combination: Combination): boolean;
 }
 
-class CombinationFilterPipeline {
-    private filters: CombinationFilter[] = [];
 
-    addFilter(filter: CombinationFilter): void {
-        this.filters.push(filter);
-    }
+export class CombinationFilterPipeline {
+	private _filters: CombinationFilter[] = [];
 
-    apply(combination: Combination): boolean {
-        return this.filters.every(filter => filter.apply(combination));
-    }
+
+	/**
+	 * Add a filter to the pipeline
+	 * @param        filter
+	 * @return       none
+	 */
+	addFilter (filter: CombinationFilter): void {
+		this._filters.push(filter);
+	}
+
+
+	/**
+	 * Test a combination through all filters in the pipeline
+	 * @param combination      combination to be tested
+	 * @return                 true if the combination passes all filters, false otherwise.
+	 */
+	apply (combination: Combination): boolean {
+		return this._filters.every(filter => filter.apply(combination));
+	}
 }
 
-// Exemple de filtre par nombre de numéros
-class NumberCountFilter implements CombinationFilter {
-    constructor(private minCount: number, private maxCount: number) {}
 
-    apply(combination: Combination): boolean {
-        const count = combination.length;
-        return count >= this.minCount && count <= this.maxCount;
-    }
+export class LengthFilter implements CombinationFilter {
+	/**
+	 * Creates a filter for length-based comparisons to a specific length.
+	 * @param _length          the reference length.
+	 * @param comparator       a comparison function
+	 */
+	constructor(private _length: number, private _comparator: (a: number, b: number) => boolean) {
+		if (_length < 0 || !Number.isFinite(_length)) throw new Error('Invalid parameter');
+	}
+
+
+	/**
+	 * Allow combinations lower than a specific length.
+	 * @param combination      the tested combination.
+	 * @return                 true if the combination matches the comparison criteria, false otherwise.
+	 */
+	apply(combination: Combination): boolean {
+		return this._comparator(combination.length, this._length);
+	}
 }
+
+
+
+
+
+
+
+
+
+
 
 // Exemple de filtre par moyenne
 class AverageFilter implements CombinationFilter {
@@ -735,6 +781,7 @@ class AverageFilter implements CombinationFilter {
         return avg >= this.minAverage && avg <= this.maxAverage;
     }
 }
+
 
 // Filtre de collision basé sur des combinaisons en mémoire
 class CollisionFilter implements CombinationFilter {
@@ -750,6 +797,7 @@ class CollisionFilter implements CombinationFilter {
         return this.combinationSet.has(combination.join(','));
     }
 }
+
 
 // Filtre de collision basé sur un fichier de combinaisons
 class FileBasedCollisionFilter implements CombinationFilter {
@@ -775,6 +823,7 @@ class FileBasedCollisionFilter implements CombinationFilter {
     }
 }
 
+
 // Fonction pour traiter le flux de combinaisons depuis un fichier
 async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
     const fileStream = fs.createReadStream(filePath);
@@ -787,6 +836,8 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
         }
     }
 }
+
+
 
 // Exemple d'utilisation
 /*(async () => {
