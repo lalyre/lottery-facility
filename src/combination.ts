@@ -699,19 +699,17 @@ export class Permutation {
 //import path from 'path';
 
 
-// operator: keyof typeof comparisonOperators
-// const comparator = comparisonOperators[operator];
-// return comparator(combination.length, reference);
+
 export const comparisonOperators = {
-	"<": (a: number, b: number) => a < b,
+	 "<": (a: number, b: number) => a  < b,
 	"<=": (a: number, b: number) => a <= b,
-	">": (a: number, b: number) => a > b,
+	 ">": (a: number, b: number) => a  > b,
 	">=": (a: number, b: number) => a >= b,
 };
 
 
 export interface CombinationFilter {
-	apply(combination: Combination): boolean;
+	apply (combination: Combination): boolean;
 }
 
 
@@ -741,22 +739,26 @@ export class CombinationFilterPipeline {
 
 
 export class LengthFilter implements CombinationFilter {
+	private _comparator: (a: number, b: number) => boolean;
+	
+	
 	/**
 	 * Creates a filter for length-based comparisons to a specific length.
 	 * @param _length          the reference length.
-	 * @param comparator       a comparison function
+	 * @param _operator        a comparison operator.
 	 */
-	constructor(private _length: number, private _comparator: (a: number, b: number) => boolean) {
+	constructor (private _length: number, private _operator: keyof typeof comparisonOperators) {		
 		if (_length < 0 || !Number.isFinite(_length)) throw new Error('Invalid parameter');
+		this._comparator = comparisonOperators[_operator];
 	}
 
 
 	/**
-	 * Allow combinations lower than a specific length.
+	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
 	 * @param combination      the tested combination.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise.
 	 */
-	apply(combination: Combination): boolean {
+	apply (combination: Combination): boolean {
 		return this._comparator(combination.length, this._length);
 	}
 }
