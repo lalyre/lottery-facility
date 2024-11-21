@@ -703,13 +703,15 @@ export class Permutation {
 export const comparisonOperators = {
 	 "<": (a: number, b: number) => a  < b,
 	"<=": (a: number, b: number) => a <= b,
+	"==": (a: number, b: number) => a == b,
 	 ">": (a: number, b: number) => a  > b,
 	">=": (a: number, b: number) => a >= b,
 };
 
 
 export interface CombinationFilter {
-	apply (combination: Combination): boolean;
+	setCurrentCombination (combination: Combination): void;
+	apply(): boolean;
 }
 
 
@@ -733,23 +735,37 @@ export class CombinationFilterPipeline {
 	 * @return                 true if the combination passes all filters, false otherwise.
 	 */
 	apply (combination: Combination): boolean {
-		return this._filters.every(filter => filter.apply(combination));
+		return this._filters.every(filter => {
+			filter.setCurrentCombination(combination);
+			return filter.apply();
+		});
 	}
 }
 
 
 export class LengthFilter implements CombinationFilter {
+	private _currentCombination: Combination | null = null;
 	private _comparator: (a: number, b: number) => boolean;
-	
-	
+
+
 	/**
 	 * Creates a filter for length-based comparisons to a specific length.
 	 * @param _length          the reference length.
 	 * @param _operator        a comparison operator.
 	 */
-	constructor (private _length: number, private _operator: keyof typeof comparisonOperators) {		
+	constructor (private _length: number, private _operator: keyof typeof comparisonOperators) {
 		if (_length < 0 || !Number.isFinite(_length)) throw new Error('Invalid parameter');
 		this._comparator = comparisonOperators[_operator];
+	}
+
+
+	/**
+	 * Set the current combination to be tested.
+	 * @param combination      the combination to set
+	 * @return                 none
+	 */
+	setCurrentCombination(combination: Combination): void {
+		this._currentCombination = combination;
 	}
 
 
@@ -758,8 +774,9 @@ export class LengthFilter implements CombinationFilter {
 	 * @param combination      the tested combination.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise.
 	 */
-	apply (combination: Combination): boolean {
-		return this._comparator(combination.length, this._length);
+	apply(): boolean {
+		if (!this._currentCombination) throw new Error("No combination has been set");
+		return this._comparator(this._currentCombination.length, this._length);
 	}
 }
 
@@ -767,36 +784,16 @@ export class LengthFilter implements CombinationFilter {
 
 
 
-
-
-
-
-
-
-// Exemple de filtre par moyenne
-class AverageFilter implements CombinationFilter {
-    constructor(private minAverage: number, private maxAverage: number) {}
-
-    apply(combination: Combination): boolean {
-        const sum = combination.reduce((acc, num) => acc + num, 0);
-        const avg = sum / combination.length;
-        return avg >= this.minAverage && avg <= this.maxAverage;
-    }
-}
-
-
 // Filtre de collision basé sur des combinaisons en mémoire
 class CollisionFilter implements CombinationFilter {
-    private combinationSet: Set<string>;
+	private _hitComparator: (a: number, b: number) => boolean;
 
-    constructor(combinations: Combination[]) {
-        // Stocker chaque combinaison comme chaîne pour des recherches rapides
-        this.combinationSet = new Set(combinations.map(c => c.join(',')));
+    constructor(private _combinations: Combination[], private _level: number, private _levelOperator: keyof typeof comparisonOperators,  private _hits: number, private _hitsOperator: keyof typeof comparisonOperators) {
+		this._hitComparator = comparisonOperators[_hitsOperator];
     }
 
-    apply(combination: Combination): boolean {
-        // Vérifie si la combinaison existe dans le jeu de combinaisons
-        return this.combinationSet.has(combination.join(','));
+    apply(hitsCount: number): boolean {
+		return this._hitComparator(hitsCount, this._length);
     }
 }
 
