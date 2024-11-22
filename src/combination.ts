@@ -710,8 +710,9 @@ export const comparisonOperators = {
 
 
 export interface CombinationFilter {
-	setCurrentCombination (combination: Combination): void;
-	apply(): boolean;
+	setCombination (combination: Combination): void;
+	prepare: () => void;
+	apply: () => boolean;
 }
 
 
@@ -736,7 +737,8 @@ export class CombinationFilterPipeline {
 	 */
 	apply (combination: Combination): boolean {
 		return this._filters.every(filter => {
-			filter.setCurrentCombination(combination);
+			filter.setCombination(combination);
+			filter.prepare();
 			return filter.apply();
 		});
 	}
@@ -744,7 +746,7 @@ export class CombinationFilterPipeline {
 
 
 export class LengthFilter implements CombinationFilter {
-	private _currentCombination: Combination | null = null;
+	private _combination: Combination | null = null;
 	private _comparator: (a: number, b: number) => boolean;
 
 
@@ -764,9 +766,12 @@ export class LengthFilter implements CombinationFilter {
 	 * @param combination      the combination to set
 	 * @return                 none
 	 */
-	setCurrentCombination(combination: Combination): void {
-		this._currentCombination = combination;
+	setCombination(combination: Combination): void {
+		this._combination = combination;
 	}
+	
+	
+	prepare = (): void => {};
 
 
 	/**
@@ -774,10 +779,10 @@ export class LengthFilter implements CombinationFilter {
 	 * @param combination      the tested combination.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise.
 	 */
-	apply(): boolean {
-		if (!this._currentCombination) throw new Error("No combination has been set");
-		return this._comparator(this._currentCombination.length, this._length);
-	}
+	apply = (): boolean => {
+		if (!this._combination) throw new Error("No combination has been set");
+		return this._comparator(this._combination.length, this._length);
+	};
 }
 
 
@@ -792,7 +797,12 @@ class CollisionFilter implements CombinationFilter {
 		this._hitComparator = comparisonOperators[_hitsOperator];
     }
 
-    apply(hitsCount: number): boolean {
+
+	prepare(): void {
+	}
+
+
+    apply(): boolean {
 		return this._hitComparator(hitsCount, this._length);
     }
 }
