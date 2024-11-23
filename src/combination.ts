@@ -39,8 +39,8 @@ export class CombinationHelper {
 	 * @return          number of balls both inside arr1 and arr2.
 	 */
 	public static collisionsCount (arr1:Combination, arr2:Combination): number {
-		const merge = CombinationHelper.intersection(arr1, arr2);
-		return merge.length;
+		const set2 = new Set(arr2);
+		return arr1.filter(item => set2.has(item)).length;
 	}
 
 
@@ -125,22 +125,12 @@ export class CombinationHelper {
 	 * @return          array containing all balls inside arr1 and arr2.
 	 */
 	public static union (arr1:Combination, arr2:Combination, duplicate:boolean = false): Combination {
-		if (!arr1 && !arr2) return [];
+		if (!arr1) return duplicate ? arr2 : Array.from(new Set(arr2));
+		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
 
-		if (duplicate) {
-			if (!arr1) return arr2;
-			if (!arr2) return arr1;
-		} else {
-			if (!arr1) return arr2.filter((item, pos) => arr2.indexOf(item) === pos);
-			if (!arr2) return arr1.filter((item, pos) => arr1.indexOf(item) === pos);
-		}
+		if (duplicate) return [...arr1, ...arr2];
 
-		const union1 = [...arr1, ...arr2];
-		if (duplicate) {
-			return union1;
-		} else {
-			return union1.filter((item, pos) => union1.indexOf(item) === pos);
-		}
+		return Array.from(new Set([...arr1, ...arr2]));
 	}
 
 
@@ -152,10 +142,8 @@ export class CombinationHelper {
 	 */
 	public static intersection (arr1:Combination, arr2:Combination): Combination {
 		if (!arr1 || !arr2) return [];
-		//arr1.sort((a, b) => a - b);
-		//arr2.sort((a, b) => a - b);
-		const intersec = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) !== -1);
-		return intersec;
+		const set2 = new Set(arr2);
+		return arr1.filter(item => set2.has(item));
 	}
 
 
@@ -169,8 +157,8 @@ export class CombinationHelper {
 	public static difference (arr1:Combination, arr2:Combination): Combination {
 		if (!arr1) return [];
 		if (!arr2) return arr1;
-		const diff = arr1.filter((item, pos) => arr1.indexOf(item) === pos && arr2.indexOf(item) === -1);
-		return diff;
+		const set2 = new Set(arr2);
+		return arr1.filter(item => !set2.has(item));
 	}
 
 
@@ -711,8 +699,8 @@ export const comparisonOperators = {
 
 export interface CombinationFilter {
 	setCombination (combination: Combination): void;
-	prepare: () => void;
-	apply: () => boolean;
+	//prepare: () => void;
+	apply(): boolean;
 }
 
 
@@ -738,7 +726,7 @@ export class CombinationFilterPipeline {
 	apply (combination: Combination): boolean {
 		return this._filters.every(filter => {
 			filter.setCombination(combination);
-			filter.prepare();
+			//filter.prepare();
 			return filter.apply();
 		});
 	}
@@ -747,17 +735,17 @@ export class CombinationFilterPipeline {
 
 export class LengthFilter implements CombinationFilter {
 	private _combination: Combination | null = null;
-	private _comparator: (a: number, b: number) => boolean;
+	private _lengthComparator: (a: number, b: number) => boolean;
 
 
 	/**
 	 * Creates a filter for length-based comparisons to a specific length.
-	 * @param _length          the reference length.
-	 * @param _operator        a comparison operator.
+	 * @param _lengthReference      the reference length.
+	 * @param _lengthOperator       a comparison operator.
 	 */
-	constructor (private _length: number, private _operator: keyof typeof comparisonOperators) {
-		if (_length < 0 || !Number.isFinite(_length)) throw new Error('Invalid parameter');
-		this._comparator = comparisonOperators[_operator];
+	constructor (private _lengthReference: number, private _lengthOperator: keyof typeof comparisonOperators) {
+		if (_lengthReference < 0 || !Number.isFinite(_lengthReference)) throw new Error('Invalid parameter');
+		this._lengthComparator = comparisonOperators[_lengthOperator];
 	}
 
 
@@ -769,9 +757,9 @@ export class LengthFilter implements CombinationFilter {
 	setCombination(combination: Combination): void {
 		this._combination = combination;
 	}
-	
-	
-	prepare = (): void => {};
+
+
+	//prepare = (): void => {};
 
 
 	/**
@@ -781,7 +769,7 @@ export class LengthFilter implements CombinationFilter {
 	 */
 	apply = (): boolean => {
 		if (!this._combination) throw new Error("No combination has been set");
-		return this._comparator(this._combination.length, this._length);
+		return this._lengthComparator(this._combination.length, this._lengthReference);
 	};
 }
 
@@ -789,23 +777,124 @@ export class LengthFilter implements CombinationFilter {
 
 
 
-// Filtre de collision basé sur des combinaisons en mémoire
-class CollisionFilter implements CombinationFilter {
-	private _hitComparator: (a: number, b: number) => boolean;
-
-    constructor(private _combinations: Combination[], private _level: number, private _levelOperator: keyof typeof comparisonOperators,  private _hits: number, private _hitsOperator: keyof typeof comparisonOperators) {
-		this._hitComparator = comparisonOperators[_hitsOperator];
-    }
+class InMemoryScoreFilter  implements CombinationFilter {
+	private _scoreComparator: (a: number, b: number) => boolean;
+	private _levelComparator: (a: number, b: number) => boolean;
+	private _combination: Combination | null = null;
+	private score: number = 0;
 
 
-	prepare(): void {
+	constructor(
+		private _combinations: Combination[],
+		private _level: number,
+		private _levelOperator: keyof typeof comparisonOperators,
+		private _scoreReference: number,
+		private _scoreOperator: keyof typeof comparisonOperators,
+		private _weight: number = 1
+	) {
+		this._scoreComparator = comparisonOperators[this._scoreOperator];
+		this._levelComparator = comparisonOperators[this._levelOperator];
 	}
 
 
+	/**
+	 * Set the current combination to be tested.
+	 * @param combination      the combination to set
+	 * @return                 none
+	 */
+	setCombination(combination: Combination): void {
+		if (!combination) {
+			throw new Error("No engaged combination");
+		}
+		this._combination = combination;
+
+		let nbHits: number = 0;
+		for (const filterCombination of this._combinations) {
+			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
+			if (this._levelComparator(collisionsCount, this._level)) nbHits++;;
+		}
+		 this.score = nbHits * this._weight;
+	}
+
+
+	//prepare(): void {}
+
+
+	apply(): boolean {
+		if (!this._combination) {
+			throw new Error("No engaged combination");
+		}
+		return this._scoreComparator(this.score, this._scoreReference);
+	}
+}
+
+
+
+
+
+
+
+class GlobalCoupleRepetitionFilter implements CombinationFilter {
+    private _combination: Combination | null = null;
+    private _coupleCounts: { [key: string]: number } = {};  // Comptage global des couples
+    private _maxCoupleCount: number;  // Limite maximale des répétitions d'un couple
+
+    constructor(
+        private _combinations: Combination[], 
+        private _maxCoupleCount: number = 3 // Limite par défaut à 3 répétitions par couple
+    ) {}
+
+    // Set la combinaison actuelle à tester
+    setCombination(combination: Combination): void {
+        this._combination = combination;
+    }
+
+    // Extraire tous les couples d'une combinaison
+    private extractCouples(combination: Combination): string[] {
+        let couples: string[] = [];
+        for (let i = 0; i < combination.length; i++) {
+            for (let j = i + 1; j < combination.length; j++) {
+                couples.push([combination[i], combination[j]].sort().join('-'));  // Trie pour garantir l'ordre
+            }
+        }
+        return couples;
+    }
+
+    // Compter les répétitions globales des couples à travers toutes les combinaisons
+    private updateCoupleCounts(combination: Combination): void {
+        const couples = this.extractCouples(combination);
+        couples.forEach(couple => {
+            if (this._coupleCounts[couple]) {
+                this._coupleCounts[couple]++;
+            } else {
+                this._coupleCounts[couple] = 1;
+            }
+        });
+    }
+
+    // Applique le filtre pour vérifier si la combinaison respecte le nombre maximal de répétitions de couples dans l'ensemble
     apply(): boolean {
-		return this._hitComparator(hitsCount, this._length);
+        if (!this._combination) throw new Error("No engaged combination");
+
+        // Vérifier les couples dans la combinaison actuelle par rapport aux répétitions globales
+        const couples = this.extractCouples(this._combination);
+        for (let couple of couples) {
+            if (this._coupleCounts[couple] && this._coupleCounts[couple] >= this._maxCoupleCount) {
+                return false;  // Si un couple dépasse la limite, la combinaison est rejetée
+            }
+        }
+
+        // Si tout va bien, on met à jour les répétitions globales
+        this.updateCoupleCounts(this._combination);
+
+        return true;  // La combinaison est valide
     }
 }
+
+
+
+
+
 
 
 // Filtre de collision basé sur un fichier de combinaisons
