@@ -700,7 +700,7 @@ export const comparisonOperators = {
 export interface CombinationFilter {
 	setCombination (combination: Combination): void;
 	//prepare: () => void;
-	apply(): boolean;
+	select(): boolean;
 }
 
 
@@ -723,11 +723,11 @@ export class CombinationFilterPipeline {
 	 * @param combination      combination to be tested
 	 * @return                 true if the combination passes all filters, false otherwise.
 	 */
-	apply (combination: Combination): boolean {
+	select (combination: Combination): boolean {
 		return this._filters.every(filter => {
 			filter.setCombination(combination);
 			//filter.prepare();
-			return filter.apply();
+			return filter.select();
 		});
 	}
 }
@@ -767,7 +767,7 @@ export class LengthFilter implements CombinationFilter {
 	 * @param combination      the tested combination.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise.
 	 */
-	apply = (): boolean => {
+	select = (): boolean => {
 		if (!this._combination) throw new Error("No combination has been set");
 		return this._lengthComparator(this._combination.length, this._lengthReference);
 	};
@@ -820,7 +820,7 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	//prepare(): void {}
 
 
-	apply(): boolean {
+	select(): boolean {
 		if (!this._combination) {
 			throw new Error("No engaged combination");
 		}
@@ -873,7 +873,7 @@ class GlobalCoupleRepetitionFilter implements CombinationFilter {
     }
 
     // Applique le filtre pour vérifier si la combinaison respecte le nombre maximal de répétitions de couples dans l'ensemble
-    apply(): boolean {
+    select(): boolean {
         if (!this._combination) throw new Error("No engaged combination");
 
         // Vérifier les couples dans la combinaison actuelle par rapport aux répétitions globales
@@ -916,7 +916,7 @@ class FileBasedCollisionFilter implements CombinationFilter {
         }
     }
 
-    apply(combination: Combination): boolean {
+    select(combination: Combination): boolean {
         return this.combinationSet.has(combination.join(','));
     }
 }
@@ -929,7 +929,7 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
 
     for await (const line of rl) {
         const combination = line.trim().split(/\s+/).map(Number);
-        if (pipeline.apply(combination)) {
+        if (pipeline.select(combination)) {
             onAccept(combination);  // Gestion de la combinaison acceptée
         }
     }
