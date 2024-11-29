@@ -698,8 +698,8 @@ export const comparisonOperators = {
 
 
 export interface CombinationFilter {
-	setCombination (combination: Combination): void;
-	select(): boolean;
+	setCombination (combination: Combination): void;		// set the current tested combination
+	select(): boolean;										// true if the combination is accepted by the filter, false otherwise
 }
 
 
@@ -709,7 +709,7 @@ export class CombinationFilterPipeline {
 
 	/**
 	 * Add a filter to the pipeline
-	 * @param        filter
+	 * @param        a combination filter
 	 * @return       none
 	 */
 	addFilter (filter: CombinationFilter): void {
@@ -720,7 +720,7 @@ export class CombinationFilterPipeline {
 	/**
 	 * Test a combination through all filters in the pipeline
 	 * @param combination      combination to be tested
-	 * @return                 true if the combination passes all filters, false otherwise.
+	 * @return                 true if the combination passes all filters, false otherwise
 	 */
 	select (combination: Combination): boolean {
 		return this._filters.every(filter => {
@@ -738,8 +738,8 @@ export class LengthFilter implements CombinationFilter {
 
 	/**
 	 * Creates a filter for length-based comparisons to a specific length.
-	 * @param _lengthReference      the reference length.
-	 * @param _lengthOperator       a comparison operator.
+	 * @param _lengthReference      the reference length
+	 * @param _lengthOperator       a comparison operator
 	 */
 	constructor (private _lengthReference: number, private _lengthOperator: keyof typeof comparisonOperators) {
 		if (_lengthReference < 0 || !Number.isFinite(_lengthReference)) throw new Error('Invalid parameter');
@@ -759,12 +759,12 @@ export class LengthFilter implements CombinationFilter {
 
 	/**
 	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
-	 * @return                 true if the combination matches the comparison criteria, false otherwise.
+	 * @return                 true if the combination matches the comparison criteria, false otherwise
 	 */
-	select = (): boolean => {
+	select(): boolean {
 		if (!this._combination) throw new Error("No combination has been set");
 		return this._lengthComparator(this._combination.length, this._lengthReference);
-	};
+	}
 }
 
 
@@ -778,11 +778,11 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	/**
 	 * Creates a filter for length-based comparisons to a specific length.
 	 * @param _combinations         an array of the filter combinations stored in memory
-	 * @param _levelReference       the reference length.
-	 * @param _levelOperator        a comparison operator.
-	 * @param _scoreReference       the reference length.
-	 * @param _scoreOperator        a comparison operator.
-	 * @param _weight               the weight of matching lines of filter, used to compute the score. Default value is 1.
+	 * @param _levelReference       the reference length
+	 * @param _levelOperator        a comparison operator
+	 * @param _scoreReference       the reference length
+	 * @param _scoreOperator        a comparison operator
+	 * @param _weight               the weight of matching lines of filter, used to compute the score (default value is 1)
 	 */
 	constructor(
 		private _combinations: Combination[],
@@ -817,7 +817,7 @@ class InMemoryScoreFilter  implements CombinationFilter {
 
 	/**
 	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
-	 * @return                 true if the combination matches the score criteria, false otherwise.
+	 * @return                 true if the combination matches the score criteria, false otherwise
 	 */
 	select(): boolean {
 		if (!this._combination) throw new Error("No engaged combination");
