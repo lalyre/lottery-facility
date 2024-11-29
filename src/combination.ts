@@ -699,7 +699,6 @@ export const comparisonOperators = {
 
 export interface CombinationFilter {
 	setCombination (combination: Combination): void;
-	//prepare: () => void;
 	select(): boolean;
 }
 
@@ -759,9 +758,6 @@ export class LengthFilter implements CombinationFilter {
 	}
 
 
-	//prepare = (): void => {};
-
-
 	/**
 	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
 	 * @param combination      the tested combination.
@@ -803,9 +799,7 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	 * @return                 none
 	 */
 	setCombination(combination: Combination): void {
-		if (!combination) {
-			throw new Error("No engaged combination");
-		}
+		if (!combination) throw new Error("No engaged combination");
 		this._combination = combination;
 
 		let nbHits: number = 0;
@@ -817,13 +811,8 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	}
 
 
-	//prepare(): void {}
-
-
 	select(): boolean {
-		if (!this._combination) {
-			throw new Error("No engaged combination");
-		}
+		if (!this._combination) throw new Error("No engaged combination");
 		return this._scoreComparator(this.score, this._scoreReference);
 	}
 }
@@ -834,6 +823,7 @@ class InMemoryScoreFilter  implements CombinationFilter {
 
 
 
+/*
 class GlobalCoupleRepetitionFilter implements CombinationFilter {
     private _combination: Combination | null = null;
     private _coupleCounts: { [key: string]: number } = {};  // Comptage global des couples
@@ -890,13 +880,13 @@ class GlobalCoupleRepetitionFilter implements CombinationFilter {
         return true;  // La combinaison est valide
     }
 }
+*/
 
 
 
 
 
-
-
+/*
 // Filtre de collision basé sur un fichier de combinaisons
 class FileBasedCollisionFilter implements CombinationFilter {
     private combinationSet: Set<string> = new Set();
@@ -920,8 +910,9 @@ class FileBasedCollisionFilter implements CombinationFilter {
         return this.combinationSet.has(combination.join(','));
     }
 }
+*/
 
-
+/*
 // Fonction pour traiter le flux de combinaisons depuis un fichier
 async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
     const fileStream = fs.createReadStream(filePath);
@@ -934,6 +925,7 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
         }
     }
 }
+*/
 
 
 
