@@ -692,8 +692,8 @@ export const comparisonOperators = {
 	 "<": (a: number, b: number) => a  < b,
 	"<=": (a: number, b: number) => a <= b,
 	"==": (a: number, b: number) => a == b,
-	 ">": (a: number, b: number) => a  > b,
 	">=": (a: number, b: number) => a >= b,
+	 ">": (a: number, b: number) => a  > b,
 };
 
 
@@ -725,7 +725,6 @@ export class CombinationFilterPipeline {
 	select (combination: Combination): boolean {
 		return this._filters.every(filter => {
 			filter.setCombination(combination);
-			//filter.prepare();
 			return filter.select();
 		});
 	}
@@ -760,7 +759,6 @@ export class LengthFilter implements CombinationFilter {
 
 	/**
 	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
-	 * @param combination      the tested combination.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise.
 	 */
 	select = (): boolean => {
@@ -770,9 +768,6 @@ export class LengthFilter implements CombinationFilter {
 }
 
 
-
-
-
 class InMemoryScoreFilter  implements CombinationFilter {
 	private _scoreComparator: (a: number, b: number) => boolean;
 	private _levelComparator: (a: number, b: number) => boolean;
@@ -780,9 +775,18 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	private score: number = 0;
 
 
+	/**
+	 * Creates a filter for length-based comparisons to a specific length.
+	 * @param _combinations         an array of the filter combinations stored in memory
+	 * @param _levelReference       the reference length.
+	 * @param _levelOperator        a comparison operator.
+	 * @param _scoreReference       the reference length.
+	 * @param _scoreOperator        a comparison operator.
+	 * @param _weight               the weight of matching lines of filter, used to compute the score. Default value is 1.
+	 */
 	constructor(
 		private _combinations: Combination[],
-		private _level: number,
+		private _levelReference: number,
 		private _levelOperator: keyof typeof comparisonOperators,
 		private _scoreReference: number,
 		private _scoreOperator: keyof typeof comparisonOperators,
@@ -795,7 +799,7 @@ class InMemoryScoreFilter  implements CombinationFilter {
 
 	/**
 	 * Set the current combination to be tested.
-	 * @param combination      the combination to set
+	 * @param combination      the combination to set, and computes its score
 	 * @return                 none
 	 */
 	setCombination(combination: Combination): void {
@@ -805,12 +809,16 @@ class InMemoryScoreFilter  implements CombinationFilter {
 		let nbHits: number = 0;
 		for (const filterCombination of this._combinations) {
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (this._levelComparator(collisionsCount, this._level)) nbHits++;;
+			if (this._levelComparator(collisionsCount, this._levelReference)) nbHits++;;
 		}
-		 this.score = nbHits * this._weight;
+		this.score = nbHits * this._weight;
 	}
 
 
+	/**
+	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
+	 * @return                 true if the combination matches the score criteria, false otherwise.
+	 */
 	select(): boolean {
 		if (!this._combination) throw new Error("No engaged combination");
 		return this._scoreComparator(this.score, this._scoreReference);
