@@ -709,8 +709,8 @@ export class CombinationFilterPipeline {
 
 	/**
 	 * Add a filter to the pipeline
-	 * @param        a combination filter
-	 * @return       none
+	 * @param filter      a combination filter
+	 * @return            none
 	 */
 	addFilter (filter: CombinationFilter): void {
 		this._filters.push(filter);
@@ -737,12 +737,16 @@ export class LengthFilter implements CombinationFilter {
 
 
 	/**
-	 * Creates a filter for length-based comparisons to a specific length.
+	 * Creates a filter for length-based comparisons to a specific length reference.
 	 * @param _lengthReference      the reference length
-	 * @param _lengthOperator       a comparison operator
+	 * @param _lengthOperator       a length comparison operator
 	 */
-	constructor (private _lengthReference: number, private _lengthOperator: keyof typeof comparisonOperators) {
+	constructor (
+		private _lengthReference: number,
+		private _lengthOperator: keyof typeof comparisonOperators,
+	) {
 		if (_lengthReference < 0 || !Number.isFinite(_lengthReference)) throw new Error('Invalid parameter');
+		if (!(this._lengthOperator in comparisonOperators)) throw new Error('Invalid length operator');
 		this._lengthComparator = comparisonOperators[_lengthOperator];
 	}
 
@@ -768,20 +772,20 @@ export class LengthFilter implements CombinationFilter {
 }
 
 
-class InMemoryScoreFilter  implements CombinationFilter {
+class InMemoryScoreFilter implements CombinationFilter {
 	private _scoreComparator: (a: number, b: number) => boolean;
 	private _levelComparator: (a: number, b: number) => boolean;
 	private _combination: Combination | null = null;
-	private score: number = 0;
+	private _score: number = 0;
 
 
 	/**
-	 * Creates a filter for length-based comparisons to a specific length.
+	 * Creates a filter for score-based comparisons to a specific score reference.
 	 * @param _combinations         an array of the filter combinations stored in memory
-	 * @param _levelReference       the reference length
-	 * @param _levelOperator        a comparison operator
-	 * @param _scoreReference       the reference length
-	 * @param _scoreOperator        a comparison operator
+	 * @param _levelReference       the reference level of collisions
+	 * @param _levelOperator        a level comparison operator
+	 * @param _scoreReference       the reference score
+	 * @param _scoreOperator        a score comparison operator
 	 * @param _weight               the weight of matching lines of filter, used to compute the score (default value is 1)
 	 */
 	constructor(
@@ -790,8 +794,11 @@ class InMemoryScoreFilter  implements CombinationFilter {
 		private _levelOperator: keyof typeof comparisonOperators,
 		private _scoreReference: number,
 		private _scoreOperator: keyof typeof comparisonOperators,
-		private _weight: number = 1
+		private _weight: number = 1,
 	) {
+		if (!Array.isArray(_combinations) || _combinations.length === 0) throw new Error("Wrong combinations array.");
+		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
+		if (_scoreReference < 0 || !Number.isFinite(_scoreReference)) throw new Error("Invalid score reference.");
 		this._scoreComparator = comparisonOperators[this._scoreOperator];
 		this._levelComparator = comparisonOperators[this._levelOperator];
 	}
@@ -809,9 +816,9 @@ class InMemoryScoreFilter  implements CombinationFilter {
 		let nbHits: number = 0;
 		for (const filterCombination of this._combinations) {
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (this._levelComparator(collisionsCount, this._levelReference)) nbHits++;;
+			if (this._levelComparator(collisionsCount, this._levelReference)) nbHits++;
 		}
-		this.score = nbHits * this._weight;
+		this._score = nbHits * this._weight;
 	}
 
 
@@ -820,11 +827,70 @@ class InMemoryScoreFilter  implements CombinationFilter {
 	 * @return                 true if the combination matches the score criteria, false otherwise
 	 */
 	select(): boolean {
-		if (!this._combination) throw new Error("No engaged combination");
-		return this._scoreComparator(this.score, this._scoreReference);
+		return !!this._combination && this._scoreComparator(this._score, this._scoreReference);
 	}
 }
 
+
+class InMemoryRepetitionFilter implements CombinationFilter {
+	private _repetitionComparator: (a: number, b: number) => boolean;
+	private _levelComparator: (a: number, b: number) => boolean;
+	private _covering: number[];
+	private _combination: Combination | null = null;
+	private _nbRepetitions: number = 0;
+
+
+	/**
+	 * Creates a filter for repetition-based comparisons to a specific repetition reference.
+	 * @param _combinations         an array of the filter combinations stored in memory
+	 * @param _levelReference       the reference level of collisions
+	 * @param _levelOperator        a level comparison operator
+	 * @param _repetitionReference  the reference repetition
+	 * @param _repetitionOperator   a repetition comparison operator
+	 */
+	constructor(
+		private _combinations: Combination[],
+		private _levelReference: number,
+		private _levelOperator: keyof typeof comparisonOperators,
+		private _repetitionReference: number,
+		private _repetitionOperator: keyof typeof comparisonOperators,
+	) {
+		if (!Array.isArray(_combinations) || _combinations.length === 0) throw new Error("Wrong combinations array.");
+		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
+		if (_repetitionReference < 0 || !Number.isFinite(_repetitionReference)) throw new Error("Invalid repetition reference.");
+		this._repetitionComparator = comparisonOperators[this._repetitionOperator];
+		this._levelComparator = comparisonOperators[this._levelOperator];
+		this._covering = new Array(this._combinations.length).fill(0);
+	}
+
+
+	/**
+	 * Set the current combination to be tested.
+	 * @param combination      the combination to set, and computes its score
+	 * @return                 none
+	 */
+	setCombination(combination: Combination): void {
+		if (!combination) throw new Error("No engaged combination");
+		this._combination = combination;
+
+		this._nbRepetitions = 0;
+		for (let i = 0; i < this._combinations.length; i++) {
+			const filterCombination = this._combinations[i];
+			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
+			if (this._levelComparator(collisionsCount, this._levelReference)) this._covering[i]++;
+			if (this._covering[i] > 1) this._nbRepetitions++;
+		}
+	}
+
+
+	/**
+	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
+	 * @return                 true if the combination matches the score criteria, false otherwise
+	 */
+	select(): boolean {
+		return !!this._combination && this._repetitionComparator(this._nbRepetitions, this._repetitionReference);
+	}
+}
 
 
 
