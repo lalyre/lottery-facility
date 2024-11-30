@@ -24,6 +24,8 @@ Roadmap
 
 2024-xx-xx, Version 0.0.1-alpha.10
 ==================================
+* Adding length filter and score filter in the API.
+* Adding filters pipleline in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
 * Documentation update.

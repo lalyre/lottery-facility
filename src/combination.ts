@@ -460,7 +460,6 @@ export class CartesianProduct {
 	 */	
 	public constructor (...parts: Array<Combination>) {
 		// super();
-
 		this._parts = parts;
 		this._nbParts = parts.length;
 		this._partsIndex = new Array(this._nbParts).fill(0);
@@ -745,8 +744,8 @@ export class LengthFilter implements CombinationFilter {
 		private _lengthReference: number,
 		private _lengthOperator: keyof typeof comparisonOperators,
 	) {
+		// super();
 		if (_lengthReference < 0 || !Number.isFinite(_lengthReference)) throw new Error('Invalid parameter');
-		if (!(this._lengthOperator in comparisonOperators)) throw new Error('Invalid length operator');
 		this._lengthComparator = comparisonOperators[_lengthOperator];
 	}
 
@@ -757,6 +756,7 @@ export class LengthFilter implements CombinationFilter {
 	 * @return                 none
 	 */
 	setCombination(combination: Combination): void {
+		if (!combination) throw new Error("No engaged combination");
 		this._combination = combination;
 	}
 
@@ -772,11 +772,16 @@ export class LengthFilter implements CombinationFilter {
 }
 
 
-class InMemoryScoreFilter implements CombinationFilter {
+export class InMemoryScoreFilter implements CombinationFilter {
 	private _scoreComparator: (a: number, b: number) => boolean;
 	private _levelComparator: (a: number, b: number) => boolean;
 	private _combination: Combination | null = null;
 	private _score: number = 0;
+
+
+	get currentScore(): number {
+		return this._score;
+	}
 
 
 	/**
@@ -796,6 +801,7 @@ class InMemoryScoreFilter implements CombinationFilter {
 		private _scoreOperator: keyof typeof comparisonOperators,
 		private _weight: number = 1,
 	) {
+		// super();
 		if (!Array.isArray(_combinations) || _combinations.length === 0) throw new Error("Wrong combinations array.");
 		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
 		if (_scoreReference < 0 || !Number.isFinite(_scoreReference)) throw new Error("Invalid score reference.");
@@ -832,12 +838,17 @@ class InMemoryScoreFilter implements CombinationFilter {
 }
 
 
-class InMemoryRepetitionFilter implements CombinationFilter {
+/*class InMemoryRepetitionFilter implements CombinationFilter {
 	private _repetitionComparator: (a: number, b: number) => boolean;
 	private _levelComparator: (a: number, b: number) => boolean;
 	private _covering: number[];
 	private _combination: Combination | null = null;
 	private _nbRepetitions: number = 0;
+
+
+	get currentRepetitions(): number {
+		return this._nbRepetitions;
+	}
 
 
 	/**
@@ -848,20 +859,21 @@ class InMemoryRepetitionFilter implements CombinationFilter {
 	 * @param _repetitionReference  the reference repetition
 	 * @param _repetitionOperator   a repetition comparison operator
 	 */
-	constructor(
+	/*constructor(
 		private _combinations: Combination[],
 		private _levelReference: number,
 		private _levelOperator: keyof typeof comparisonOperators,
 		private _repetitionReference: number,
 		private _repetitionOperator: keyof typeof comparisonOperators,
 	) {
+		// super();
 		if (!Array.isArray(_combinations) || _combinations.length === 0) throw new Error("Wrong combinations array.");
 		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
 		if (_repetitionReference < 0 || !Number.isFinite(_repetitionReference)) throw new Error("Invalid repetition reference.");
 		this._repetitionComparator = comparisonOperators[this._repetitionOperator];
 		this._levelComparator = comparisonOperators[this._levelOperator];
 		this._covering = new Array(this._combinations.length).fill(0);
-	}
+	}*/
 
 
 	/**
@@ -869,7 +881,7 @@ class InMemoryRepetitionFilter implements CombinationFilter {
 	 * @param combination      the combination to set, and computes its score
 	 * @return                 none
 	 */
-	setCombination(combination: Combination): void {
+	/*setCombination(combination: Combination): void {
 		if (!combination) throw new Error("No engaged combination");
 		this._combination = combination;
 
@@ -877,84 +889,26 @@ class InMemoryRepetitionFilter implements CombinationFilter {
 		for (let i = 0; i < this._combinations.length; i++) {
 			const filterCombination = this._combinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (this._levelComparator(collisionsCount, this._levelReference)) this._covering[i]++;
-			if (this._covering[i] > 1) this._nbRepetitions++;
+			if (this._levelComparator(collisionsCount, this._levelReference)) {
+				this._covering[i]++;
+				if (this._covering[i] > 1) this._nbRepetitions++;
+			}
 		}
-	}
+	}*/
 
 
 	/**
 	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
 	 * @return                 true if the combination matches the score criteria, false otherwise
 	 */
-	select(): boolean {
+	/*select(): boolean {
 		return !!this._combination && this._repetitionComparator(this._nbRepetitions, this._repetitionReference);
 	}
-}
+}*/
 
 
 
 
-
-
-/*
-class GlobalCoupleRepetitionFilter implements CombinationFilter {
-    private _combination: Combination | null = null;
-    private _coupleCounts: { [key: string]: number } = {};  // Comptage global des couples
-    private _maxCoupleCount: number;  // Limite maximale des répétitions d'un couple
-
-    constructor(
-        private _combinations: Combination[], 
-        private _maxCoupleCount: number = 3 // Limite par défaut à 3 répétitions par couple
-    ) {}
-
-    // Set la combinaison actuelle à tester
-    setCombination(combination: Combination): void {
-        this._combination = combination;
-    }
-
-    // Extraire tous les couples d'une combinaison
-    private extractCouples(combination: Combination): string[] {
-        let couples: string[] = [];
-        for (let i = 0; i < combination.length; i++) {
-            for (let j = i + 1; j < combination.length; j++) {
-                couples.push([combination[i], combination[j]].sort().join('-'));  // Trie pour garantir l'ordre
-            }
-        }
-        return couples;
-    }
-
-    // Compter les répétitions globales des couples à travers toutes les combinaisons
-    private updateCoupleCounts(combination: Combination): void {
-        const couples = this.extractCouples(combination);
-        couples.forEach(couple => {
-            if (this._coupleCounts[couple]) {
-                this._coupleCounts[couple]++;
-            } else {
-                this._coupleCounts[couple] = 1;
-            }
-        });
-    }
-
-    // Applique le filtre pour vérifier si la combinaison respecte le nombre maximal de répétitions de couples dans l'ensemble
-    select(): boolean {
-        if (!this._combination) throw new Error("No engaged combination");
-
-        // Vérifier les couples dans la combinaison actuelle par rapport aux répétitions globales
-        const couples = this.extractCouples(this._combination);
-        for (let couple of couples) {
-            if (this._coupleCounts[couple] && this._coupleCounts[couple] >= this._maxCoupleCount) {
-                return false;  // Si un couple dépasse la limite, la combinaison est rejetée
-            }
-        }
-
-        // Si tout va bien, on met à jour les répétitions globales
-        this.updateCoupleCounts(this._combination);
-
-        return true;  // La combinaison est valide
-    }
-}
-*/
 
 
 
