@@ -640,7 +640,7 @@ let rl = readline.createInterface({
 	if (testedCombination[0] == 0) return;
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
-	console.log("testedCombination " + testedCombination);
+	//console.log("testedCombination " + testedCombination);
 	
 	
 	// TODO CL
@@ -1075,11 +1075,12 @@ let rl = readline.createInterface({
 
 			// TODO CL
 			//console.log("matchingCombinations " + JSON.stringify(matchingCombinations));
-			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
-			let combiRepetition = 0;
-			for (let j = 0; j < matchingCombinations.length; j++) {
-				if (matchingCombinations[j].covering >= 1) combiRepetition++;
 
+
+			let combiRepetition = 0;
+			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
+			for (let j = 0; j < matchingCombinations.length; j++) {
+				combiRepetition += (matchingCombinations[j].covering == 0) ? 0 : matchingCombinations[j].covering;
 				nbHits++;
 				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
 				hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
@@ -1087,8 +1088,9 @@ let rl = readline.createInterface({
 				coveredLines += " ";
 			}
 
+
 			//TODO CL
-			console.log("combiRepetition " + combiRepetition);
+			//console.log("combiRepetition " + combiRepetition + "\t" + testedCombination);
 
 			// Combi repetition scope
 			switch (true) {
@@ -1223,6 +1225,8 @@ let rl = readline.createInterface({
 					combiFilterSumValue[i] += matchingCombinations[j].value;
 				}
 			}
+
+			
 			
 			hitsCount += nbHits;
 			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
