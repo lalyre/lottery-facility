@@ -270,7 +270,7 @@ if (cli.flags.selection) {
 
 
 //TODO CL
-console.log("preSelectedCombinations.length " + preSelectedCombinations.length);
+//console.log("preSelectedCombinations.length " + preSelectedCombinations.length);
 
 
 let testGlobalScoreSelection = [];
