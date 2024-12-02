@@ -640,6 +640,8 @@ let rl = readline.createInterface({
 	if (testedCombination[0] == 0) return;
 	if (testedCombination.join("") == '') return;
 	inputLinesCount++;
+
+	//TODO CL
 	//console.log("testedCombination " + testedCombination);
 	
 	
@@ -1074,7 +1076,7 @@ let rl = readline.createInterface({
 
 
 			// TODO CL
-			//console.log("matchingCombinations " + JSON.stringify(matchingCombinations));
+			console.log("matchingCombinations " + JSON.stringify(matchingCombinations));
 
 
 			let combiRepetition = 0;
@@ -1090,7 +1092,8 @@ let rl = readline.createInterface({
 
 
 			//TODO CL
-			//console.log("combiRepetition " + combiRepetition + "\t" + testedCombination);
+			console.log(`combiRepetition #${i}: ` + combiRepetition + "\t" + testedCombination);
+
 
 			// Combi repetition scope
 			switch (true) {
@@ -1148,10 +1151,10 @@ let rl = readline.createInterface({
 
 
 			//TODO CL
-			//console.log("nbHits " + nbHits);
-			//console.log("score " + score);
-			//console.log("testCombiFilterScoreSelection[i] " + testCombiFilterScoreSelection[i]);
-			//console.log("testCombiFilterScore[i] " + testCombiFilterScore[i]);
+			console.log("nbHits " + nbHits);
+			console.log("score " + score);
+			console.log("testCombiFilterScoreSelection[i] " + testCombiFilterScoreSelection[i]);
+			console.log("testCombiFilterScore[i] " + testCombiFilterScore[i]);
 			
 
 			// Combi score scope
