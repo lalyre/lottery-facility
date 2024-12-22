@@ -56,20 +56,19 @@ let displayDate = cli.flags.date;
 let displayStars = cli.flags.stars;
 
 
+// https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66afe6		euromillions_202002
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201902.zip
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201609.zip
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201402.zip
-
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_201105.zip
 // https://media.fdj.fr/static-draws/csv/euromillions/euromillions_200402.zip
 
 
 /*
  * https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/statistiques
- * https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip
  */
-const euromillionsArchive = 'https://media.fdj.fr/static-draws/csv/euromillions/euromillions_202002.zip';
+const euromillionsArchive = 'https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66afe6';
 getBuffer(euromillionsArchive)
 .then((buffer) => {
 	return JSZip.loadAsync(buffer)

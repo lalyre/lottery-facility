@@ -61,9 +61,10 @@ let displayDate = cli.flags.date;
 // https://media.fdj.fr/static-draws/csv/loto/loto_197605.zip
 
 
-
-// https://www.fdj.fr/jeux-de-tirage/keno/historique
+// https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
 // https://www.fdj.fr/jeux-de-tirage/keno/statistiques
+// https://www.fdj.fr/jeux-de-tirage/keno/historique
+// https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66aft6		keno_202010
 // https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip
 // https://media.fdj.fr/static-draws/csv/keno/keno_201811.zip
 // https://media.fdj.fr/static-draws/csv/keno/keno_201302.zip
@@ -71,14 +72,12 @@ let displayDate = cli.flags.date;
 
 
 
-// Download from https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
-const kenoArchive = 'https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip';
+const kenoArchive = 'https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66aft6';
 getBuffer(kenoArchive)
 .then((buffer) => {
 	return JSZip.loadAsync(buffer)
 })
 .then((zipContent) => {
-	//return zipContent.file("keno_201811.csv").async("string");
 	return zipContent.file("keno_202010.csv").async("string");
 })
 .then((text) => {
