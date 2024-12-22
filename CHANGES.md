@@ -22,10 +22,10 @@ Roadmap
 * Write a transposition CLI tool that rewrite data lines to columns.
 
 
-2024-xx-xx, Version 0.0.1-alpha.10
+2025-xx-xx, Version 0.0.1-alpha.10
 ==================================
-* Adding length filter and score filter in the API.
-* Adding filters pipleline in the API.
+* Adding length filter, score filter and repetition filter in the API.
+* Adding filters pipeline in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
 * Documentation update.
