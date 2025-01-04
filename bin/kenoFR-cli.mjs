@@ -51,6 +51,7 @@ let displayDate = cli.flags.date;
 // powerball		https://data.ny.gov/api/views/d6yy-54nr/rows.csv?accessType=DOWNLOAD
 // megamillions		https://data.ny.gov/api/views/5xaw-6ayf/rows.csv?accessType=DOWNLOAD
 // SuperEnalotto	http://lottoscar.altervista.org/ArchivioSuper.zip
+// Eurojackpot		https://www.beatlottery.co.uk/
 
 
 // https://www.fdj.fr/jeux-de-tirage/loto/statistiques
