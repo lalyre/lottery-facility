@@ -117,6 +117,32 @@ export class CombinationHelper {
 	}
 
 
+
+	/**
+	 * Merges consecutive pairs of arrays into a single array
+	 * @param parts       array of arrays of balls number.
+	 * @return            an array that is half the length of the input array, with consecutive pairs of elements merged.
+	 */
+	public static pairwise_merge(...parts: Array<Combination>): Array<Combination> {
+		if (!parts) return [];
+		if (parts.length <= 1) return [];
+		const result: Array<Combination> = [];
+		for (let i = 0; i < parts.length; i += 2) {
+			if (i + 1 < parts.length) {
+				result.push([...parts[i], ...parts[i+1]]);
+			} else {
+				result.push([...parts[i]]);
+			}
+		}
+		return result;
+	}
+
+
+
+
+
+
+
 	/**
 	 * Give the union between 2 lottery combinations
 	 * @param arr1      array of balls number.
