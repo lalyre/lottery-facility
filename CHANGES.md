@@ -1,5 +1,9 @@
 Roadmap
 =======
+* average failure period of a game (lottery grid system), in number of draws
+* maximum failure period of a game (lottery grid system), in number of draws
+* minimum failure period of a game (lottery grid system), in number of draws
+* current failure period of a game (lottery grid system), in number of draws
 * adding ConnectionsRegistry class for stacking combinations collisions information rather than combinations themselves, and capable of answering collisions requests quickly (inspired by neural networks).
 * add Web features to the library.
 * draws statistics.
@@ -16,10 +20,10 @@ Roadmap
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
 * filter CLI enhancement, adding a selection based on line numbers given in a list.
 * complete refactoring of filter CLI utility for a more clean and more simple code.
-* Enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
-* Enhancement of combination CLI utility, specify a base to prefix on output combinations.
-* Enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
-* Write a transposition CLI tool that rewrite data lines to columns.
+* enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
+* enhancement of combination CLI utility, specify a base to prefix on output combinations.
+* enhancement of flash CLI utility, specify a max_gap/min_gap parameter.
+* write a transposition CLI tool that rewrite data lines to columns.
 
 
 2025-xx-xx, Version 0.0.1-alpha.10
