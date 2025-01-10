@@ -19,6 +19,7 @@ Roadmap
 * combination CLI enhancement with starting combination and/or ending combination.
 * filter CLI enhancement with "_selection" mode, adding a sub-combination of the tested combination rather than the tested combination itself as it contains too much connections regarding to the requested constraints.
 * filter CLI enhancement, adding a selection based on line numbers given in a list.
+* filter CLI enhancement, specify a dispersion parameter.
 * complete refactoring of filter CLI utility for a more clean and more simple code.
 * enhancement of combination CLI utility, specify a max_gap/min_gap parameter.
 * enhancement of combination CLI utility, specify a base to prefix on output combinations.
