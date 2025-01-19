@@ -1,9 +1,10 @@
 Roadmap
 =======
-* average failure period of a game (lottery grid system), in number of draws
-* maximum failure period of a game (lottery grid system), in number of draws
-* minimum failure period of a game (lottery grid system), in number of draws
-* current failure period of a game (lottery grid system), in number of draws
+* draws pattern detection on sequence of following draws, observing a set of balls.
+* average failure period of a game (lottery grid system), in number of following draws
+* maximum failure period of a game (lottery grid system), in number of following draws
+* minimum failure period of a game (lottery grid system), in number of following draws
+* current failure period of a game (lottery grid system), in number of following draws
 * adding ConnectionsRegistry class for stacking combinations collisions information rather than combinations themselves, and capable of answering collisions requests quickly (inspired by neural networks).
 * add Web features to the library.
 * draws statistics.

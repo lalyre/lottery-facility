@@ -31,6 +31,7 @@ const cli = meow(`
 		},
 		date: {
 			type: 'boolean',
+			shortFlag: 'd',
 			default: false,
 			isRequired: false,
 			isMultiple: false,
