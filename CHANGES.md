@@ -1,12 +1,14 @@
 Roadmap
 =======
+* in Web application, allow user to store lists of following draws patterns to be detected and notified about after getting the latest draws.
 * draws pattern detection on sequence of following draws, observing a set of balls.
-* average failure period of a game (lottery grid system), in number of following draws
-* maximum failure period of a game (lottery grid system), in number of following draws
-* minimum failure period of a game (lottery grid system), in number of following draws
-* current failure period of a game (lottery grid system), in number of following draws
+* average failure (earnigs consideration) period of a game (lottery grid system), in number of following draws
+* maximum failure (earnigs consideration) period of a game (lottery grid system), in number of following draws
+* minimum failure (earnigs consideration) period of a game (lottery grid system), in number of following draws
+* current failure (earnigs consideration) period of a game (lottery grid system), in number of following draws
 * adding ConnectionsRegistry class for stacking combinations collisions information rather than combinations themselves, and capable of answering collisions requests quickly (inspired by neural networks).
 * add Web features to the library.
+* implement all CLI features in a Web application.
 * draws statistics.
 * draws prediction algorithms.
 * enhance library by incorporating CLI features.
