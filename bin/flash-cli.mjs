@@ -70,7 +70,7 @@ const cli = meow(`
 		},
 		sep: {
 			type: 'string',
-			default: ' | ',
+			default: '|',
 			isMultiple: false,
 		},
 	}
@@ -112,6 +112,7 @@ let totals = cli.flags.total;
 let sizes = cli.flags.size;
 let nb = cli.flags.nb;
 let nbSwap = cli.flags.nbSwap;
+let sep = cli.flags.sep;
 
 
 let boxes = [];
@@ -166,7 +167,7 @@ for (let i = 0; i < nb; i++) {
 	for (let j = 0; j < totals.length; j++) {
 		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
 		if (j > 0) str += cli.flags.sep;
-		str += (cli.flags.sort) ? lotteryFacility.CombinationHelper.toCanonicalString(ballsSet[j], " ") : lotteryFacility.CombinationHelper.toString(ballsSet[j], " ");
+		str += (cli.flags.sort) ? lotteryFacility.CombinationHelper.toCanonicalString(ballsSet[j], sep) : lotteryFacility.CombinationHelper.toString(ballsSet[j], sep);
 	}
 	
 	// Output
