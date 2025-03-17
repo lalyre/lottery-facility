@@ -83,6 +83,13 @@ export class CombinationHelper {
 	}
 
 
+	function rotateArray(array: number[], shift: number): number[] {
+		return array.slice(-shift).concat(array.slice(0, -shift));
+	}
+
+
+
+
 	/**
 	 * Merge two arrays of balls number in an interleaved way
 	 * @param array1      array of balls number.
