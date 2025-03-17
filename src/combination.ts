@@ -84,6 +84,39 @@ export class CombinationHelper {
 
 
 	/**
+	 * Merge two arrays of balls number in an interleaved way
+	 * @param array1      array of balls number.
+	 * @param array2      array of balls number.
+	 * @return            merged array.
+	 */
+	public static interleaved_merge(array1: Combination, array2: Combination): Combination {
+		let mergedArray: Combination = [];
+		let maxLength = Math.max(array1.length, array2.length);
+
+		for (let i = 0; i < maxLength; i++) {
+			if (i < array1.length) mergedArray.push(array1[i]);
+			if (i < array2.length) mergedArray.push(array2[i]);
+		}
+		return mergedArray;
+	}
+
+
+	/**
+	 * Splits an array into multiple lines, each containing a fixed number of elements.
+	 * @param array      The array to split.
+	 * @param size       The number of elements per line.
+	 * @return           A 2D array where each sub-array represents a line.
+	 */
+	public static split_into_lines(array: Combination, size: number): Combination[] {
+		let result: Combination[] = [];
+		for (let i = 0; i < array.length; i += size) {
+			result.push(array.slice(i, i + size));
+		}
+		return result;
+	}
+
+
+	/**
 	 * All possible extractions of nbParts of input array minus one
 	 * @param numbers     array of balls number.
 	 * @param nbParts     count of parts to split input array.
