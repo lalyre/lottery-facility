@@ -94,18 +94,18 @@ export class CombinationHelper {
 
 
 	/**
-	 * Merge two arrays of balls number in an interleaved way
-	 * @param array1      array of balls number.
-	 * @param array2      array of balls number.
-	 * @return            merged array.
+	 * Merge multiple arrays of balls number in an interleaved way
+	 * @param arrays     array of Combination arrays.
+	 * @return           merged array.
 	 */
-	public static interleaved_merge(array1: Combination, array2: Combination): Combination {
+	public static interleaved_merge(arrays: Array<Combination>): Combination {
 		let mergedArray: Combination = [];
-		let maxLength = Math.max(array1.length, array2.length);
+		let maxLength = Math.max(...arrays.map(arr => arr.length));
 
 		for (let i = 0; i < maxLength; i++) {
-			if (i < array1.length) mergedArray.push(array1[i]);
-			if (i < array2.length) mergedArray.push(array2[i]);
+			for (let arr of arrays) {
+				if (i < arr.length) mergedArray.push(arr[i]);
+			}
 		}
 		return mergedArray;
 	}
