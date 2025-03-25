@@ -1,4 +1,4 @@
-#!/usr/bin/env node --max-old-space-size=8192
+#!/usr/bin/env node
 'use strict'
 import JSZip from 'jszip';
 import meow from 'meow';
