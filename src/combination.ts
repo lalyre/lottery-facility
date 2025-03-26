@@ -102,11 +102,9 @@ export class CombinationHelper {
 		let mergedArray: Combination = [];
 		let maxLength = Math.max(...arrays.map(arr => arr.length));
 
-		for (let i = 0; i < maxLength; i++) {
-			for (let arr of arrays) {
+		for (let i = 0; i < maxLength; i++)
+			for (let arr of arrays)
 				if (i < arr.length) mergedArray.push(arr[i]);
-			}
-		}
 		return mergedArray;
 	}
 
