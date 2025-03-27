@@ -116,6 +116,9 @@ export class CombinationHelper {
 				current = (current + gap - 1) % max + 1;
 			}
 
+			// Ajouter le premier élément à la fin pour boucler la série
+			serie.push(start);
+
 			result.push(serie);
 		}
 
@@ -139,19 +142,26 @@ export class CombinationHelper {
 	}
 
 
+
 	/**
-	 * Splits an array into multiple lines, each containing a fixed number of elements.
+	 * Splits an array into multiple lines, each containing a fixed number of elements,
+	 * ensuring that the last element of one sub-array becomes the first of the next.
 	 * @param array      The array to split.
 	 * @param size       The number of elements per line.
 	 * @return           A 2D array where each sub-array represents a line.
 	 */
 	public static split_into_lines(array: Combination, size: number): Combination[] {
 		let result: Combination[] = [];
-		for (let i = 0; i < array.length; i += size) {
-			result.push(array.slice(i, i + size));
+		for (let i = 0; i < array.length; i += (size - 1)) {
+			if (i + size <= array.length) {
+				result.push(array.slice(i, i + size));
+			} else {
+				result.push(array.slice(i));
+			}
 		}
 		return result;
 	}
+
 
 
 	/**
