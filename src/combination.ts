@@ -93,6 +93,36 @@ export class CombinationHelper {
 	}
 
 
+	public static generateGapSeries(max: number, gap: number): Combination[] {
+		const covered = new Set<number>();
+		const result: Combination[] = [];
+
+		while (covered.size < max) {
+			// Trouver le plus petit numéro non couvert
+			let start = 1;
+			for (let i = 1; i <= max; i++) {
+				if (!covered.has(i)) {
+					start = i;
+					break;
+				}
+			}
+
+			const serie: number[] = [];
+			let current = start;
+
+			while (!covered.has(current)) {
+				serie.push(current);
+				covered.add(current);
+				current = (current + gap - 1) % max + 1;
+			}
+
+			result.push(serie);
+		}
+
+		return result;
+	}
+
+
 	/**
 	 * Merge multiple arrays of balls number in an interleaved way
 	 * @param arrays     array of Combination arrays.
