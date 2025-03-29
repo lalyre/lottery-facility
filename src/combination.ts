@@ -152,7 +152,7 @@ export class CombinationHelper {
 	 */
 	public static split_into_lines(array: Combination, size: number): Combination[] {
 		let result: Combination[] = [];
-		for (let i = 0; i < array.length; i += (size - 1)) {
+		for (let i = 0; i < array.length; i += size) {
 			if (i + size <= array.length) {
 				result.push(array.slice(i, i + size));
 			} else {
