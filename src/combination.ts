@@ -58,7 +58,7 @@ export class CombinationHelper {
 		if (numbers.length < nbParts) return [];
 
 		const [chunkSize, remainder] = [Math.floor(numbers.length / nbParts), numbers.length % nbParts];
-		const result: Array<number[]> = [];
+		const result: Array<Combination> = [];
 		const partsSize = new Array(nbParts).fill(chunkSize);
 		for (let i = 0; i < remainder; i++) { partsSize[i] += 1; }
 		
@@ -83,7 +83,7 @@ export class CombinationHelper {
 	}
 
 
-	public static rotateArray(array: number[], shift: number): number[] {
+	public static rotate(array: number[], shift: number): number[] {
 		return array.slice(-shift).concat(array.slice(0, -shift));
 	}
 
@@ -91,6 +91,22 @@ export class CombinationHelper {
 	public static reverse(arr: number[]): number[] {
 		return [...arr].reverse();
 	}
+
+
+	public static transposition(array: Combination[]): Combination[] {
+		if (array.length === 0) return [];
+
+		const rowCount = array.length;
+		const colCount = array[0].length;
+
+		let transposed: number[][] = Array.from({ length: colCount }, () => []);
+
+		for (let i = 0; i < rowCount; i++)
+			for (let j = 0; j < colCount; j++)
+				transposed[j].push(array[i][j]);
+		return transposed;
+	}
+
 
 
 	public static generateGapSeries(max: number, gap: number): Combination[] {
@@ -144,8 +160,7 @@ export class CombinationHelper {
 
 
 	/**
-	 * Splits an array into multiple lines, each containing a fixed number of elements,
-	 * ensuring that the last element of one sub-array becomes the first of the next.
+	 * Splits an array into multiple lines, each containing a fixed number of elements
 	 * @param array      The array to split.
 	 * @param size       The number of elements per line.
 	 * @return           A 2D array where each sub-array represents a line.
