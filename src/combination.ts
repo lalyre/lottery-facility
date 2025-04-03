@@ -83,8 +83,8 @@ export class CombinationHelper {
 	}
 
 
-	public static rotate(array: number[], shift: number): number[] {
-		return array.slice(-shift).concat(array.slice(0, -shift));
+	public static rotate(array: number[], offset: number): number[] {
+		return array.slice(-offset).concat(array.slice(0, -offset));
 	}
 
 
