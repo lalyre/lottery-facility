@@ -83,27 +83,100 @@ export class CombinationHelper {
 	}
 
 
+	/**
+	 * Rotates the elements of an array by a given offset.
+	 * Elements shifted off the end are wrapped around to the beginning.
+	 * 
+	 * @param array   The array of numbers to rotate.
+	 * @param offset  The number of positions to rotate the array by.
+	 * @returns       A new array with elements rotated by the given offset.
+	 *
+	 * Example:
+	 * rotate([1, 2, 3, 4], 1) => [4, 1, 2, 3]
+	 */
 	public static rotate(array: number[], offset: number): number[] {
 		return array.slice(-offset).concat(array.slice(0, -offset));
 	}
 
 
+	/**
+	 * Rotates the elements of an array in a round-robin tournament style.
+	 * The first element stays fixed, and the rest of the array is rotated by the given offset.
+	 * 
+	 * @param array   The array of numbers to rotate.
+	 * @param offset  The number of positions to rotate the elements (excluding the first one).
+	 *                Positive values rotate to the right, negative to the left.
+	 * @returns       A new array with the first element fixed and the rest rotated by the given offset.
+	 *
+	 * Example:
+	 * rotate_roundrobin_tournament([1, 2, 3, 4, 5], 2) => [1, 4, 5, 2, 3]
+	 */
+	public static rotate_roundrobin_tournament(array: number[], offset: number): number[] {
+		if (array.length <= 1) return [...array]; // Nothing to rotate
+
+		const fixed: number = array[0];
+		const rest: number[] = array.slice(1);
+		const rotated_rest: number[] = this.rotate(rest, offset);
+		return [fixed, ...rotated_rest];
+	}
+
+
+
+
+	/**
+	 * Reverses the order of elements in an array.
+	 * 
+	 * @param arr  The array of numbers to reverse.
+	 * @returns    A new array with elements in reversed order.
+	 *
+	 * Example:
+	 * reverse([1, 2, 3]) => [3, 2, 1]
+	 */
 	public static reverse(arr: number[]): number[] {
 		return [...arr].reverse();
 	}
 
 
+	/**
+	 * Transposes an array of arrays (lines to columns and vice versa).
+	 * Converts rows into columns and columns into rows.
+	 * All inner arrays must have the same length.
+	 * 
+	 * @param array  An array of arrays of numbers (e.g., combinations).
+	 * @returns      A new array where each column of the input becomes a row in the output.
+	 *
+	 * Example:
+	 * transposition([
+	 *   [1, 2, 3],
+	 *   [4, 5, 6],
+	 *   [7, 8, 9]
+	 * ]) => [
+	 *   [1, 4, 7],
+	 *   [2, 5, 8],
+	 *   [3, 6, 9]
+	 * ]
+	 *
+	 * @throws Error if inner arrays do not all have the same length.
+	 */
 	public static transposition(array: Combination[]): Combination[] {
 		if (array.length === 0) return [];
 
 		const rowCount = array.length;
 		const colCount = array[0].length;
 
+		// Validate all rows have the same length
+		for (let i = 1; i < rowCount; i++) {
+			if (array[i].length !== colCount) {
+				throw new Error("All sub-arrays must have the same length for transposition.");
+			}
+		}
+
 		let transposed: number[][] = Array.from({ length: colCount }, () => []);
 
 		for (let i = 0; i < rowCount; i++)
 			for (let j = 0; j < colCount; j++)
 				transposed[j].push(array[i][j]);
+
 		return transposed;
 	}
 
@@ -190,8 +263,8 @@ export class CombinationHelper {
 		if (nbParts <= 1) return [];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
-		const parts: Array<Combination> = CombinationHelper.split (numbers, nbParts);
-		return CombinationHelper.extract_Nminus1 (...parts);
+		const parts: Array<Combination> = this.split (numbers, nbParts);
+		return this.extract_Nminus1 (...parts);
 	}
 
 
@@ -206,7 +279,7 @@ export class CombinationHelper {
 		const result: Array<Combination> = [];
 		for (let i = parts.length-1; i >= 0; i--) {
 			const remainingParts: Array<Combination> = parts.filter((_, index) => index !== i);
-			const mergedArray = CombinationHelper.concat(...remainingParts);
+			const mergedArray = this.concat(...remainingParts);
 			result.push(mergedArray);
 		}
 		return result;
@@ -476,11 +549,11 @@ export class CombinationHelper {
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:number = CombinationHelper.binomial(max, len);
+		let rank:number = this.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			if (numbers[len-i] > max) return -1;
-			rank -= CombinationHelper.binomial(max-numbers[len-i]+1, i);
-			if (i > 1) rank += CombinationHelper.binomial(max-numbers[len-i], i-1);
+			rank -= this.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += this.binomial(max-numbers[len-i], i-1);
 		}
 		rank++;
 		return rank;
@@ -498,7 +571,7 @@ export class CombinationHelper {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
-		if (rank <= 0 || rank > CombinationHelper.binomial(max, length)) return [];
+		if (rank <= 0 || rank > this.binomial(max, length)) return [];
 		/* eslint-disable-next-line */
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
@@ -506,7 +579,7 @@ export class CombinationHelper {
 			for (let k = max; k >= length; k--) {
 				let m = k;
 				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (CombinationHelper.combinationToRank(max, numbers) <= rank) break;
+				if (this.combinationToRank(max, numbers) <= rank) break;
 			}
 		}
 		return numbers;
@@ -536,9 +609,9 @@ export class CombinationHelper {
 		if (max < 0) return 0;
 		if (n < 0 || n > max) return 0;
 		if (n === 0 || n === max) return 1;
-		let ret:number = CombinationHelper.factorial(max);
-		ret /= CombinationHelper.factorial(n);
-		ret /= CombinationHelper.factorial(max-n);
+		let ret:number = this.factorial(max);
+		ret /= this.factorial(n);
+		ret /= this.factorial(max-n);
 		return ret;
 	}
 
@@ -550,8 +623,8 @@ export class CombinationHelper {
 	 * @return          great common divisor value of "a" and "b"
 	 */
 	public static gcd (a:number, b:number): number {
-		if (a < b) return CombinationHelper.gcd(b,a);
-		const r:number = a%b; if (r !== 0) return CombinationHelper.gcd(b,r);
+		if (a < b) return this.gcd(b,a);
+		const r:number = a%b; if (r !== 0) return this.gcd(b,r);
 		return b;
 	}
 
@@ -563,7 +636,7 @@ export class CombinationHelper {
 	 * @return          least common multiplier value of "a" and "b"
 	 */
 	public static lcm (a:number, b:number): number {
-		return a*b/CombinationHelper.gcd(a,b);
+		return a*b/this.gcd(a,b);
 	}
 }
 
