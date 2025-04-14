@@ -116,6 +116,8 @@ export class CombinationHelper {
 
 		const fixed: number = array[0];
 		const rest: number[] = array.slice(1);
+		const len = rest.length;
+		offset = offset % len;
 		const rotated_rest: number[] = this.rotate(rest, offset);
 		return [fixed, ...rotated_rest];
 	}
