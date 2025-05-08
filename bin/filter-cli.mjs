@@ -988,6 +988,11 @@ let rl = readline.createInterface({
 				}
 			}
 		}
+		
+		
+		// TODO CL
+		//console.log("restrictions " + matchingRestrictions);
+
 
 
 		// Get current tested combination's score
@@ -1065,6 +1070,11 @@ let rl = readline.createInterface({
 				}
 
 				if (match) {
+					
+					// TODO CL
+					//console.log("--> " + currentFilterCombinations[j].combination + "  /  "  +  matchingRestrictions[k]);
+					
+					
 					matchingCombinations.push (currentFilterCombinations[j]);
 				}
 			}
@@ -1396,3 +1406,20 @@ let rl = readline.createInterface({
 	//console.log("inputLinesCount "  + inputLinesCount);
 	fileStream.close();
 });
+
+
+
+
+/*
+await new Promise(resolve => setTimeout(resolve, 10000));
+
+async function main() {
+    console.log("restrictions " + matchingRestrictions);
+    await new Promise(resolve => setTimeout(resolve, 10000)); // pause 10 secondes
+    console.log("après la pause");
+}
+
+main();
+
+*/
+
