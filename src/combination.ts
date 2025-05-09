@@ -897,7 +897,8 @@ export const comparisonOperators = {
 
 export interface CombinationFilter {
 	setCombination (combination: Combination): void;		// set the current tested combination
-	select(): boolean;										// true if the combination is accepted by the filter, false otherwise
+	isSelected(): boolean;									// true if the combination is accepted by the filter, false otherwise
+	select(): void;											// the combination is selected by the filter
 }
 
 
@@ -920,12 +921,28 @@ export class CombinationFilterPipeline {
 	 * @param combination      combination to be tested
 	 * @return                 true if the combination passes all filters, false otherwise
 	 */
-	select (combination: Combination): boolean {
+	isSelected (combination: Combination): boolean {
 		return this._filters.every(filter => {
 			filter.setCombination(combination);
-			return filter.select();
+			return filter.isSelected();
 		});
 	}
+
+
+	/**
+	 */
+	select(combination: Combination): void {
+		for (const filter of this._filters) {
+			filter.setCombination(combination);
+			if (!filter.isSelected()) {
+				return;
+			}
+		}
+
+		for (const filter of this._filters) {
+			filter.select();
+		}
+	};
 }
 
 
@@ -964,10 +981,15 @@ export class LengthFilter implements CombinationFilter {
 	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
 	 * @return                 true if the combination matches the comparison criteria, false otherwise
 	 */
-	select(): boolean {
+	isSelected(): boolean {
 		if (!this._combination) return false;
 		return this._lengthComparator(this._combination.length, this._lengthReference);
 	}
+
+
+	/**
+	 */
+	select(): void {};
 }
 
 
@@ -1032,10 +1054,15 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
 	 * @return                 true if the combination matches the score criteria, false otherwise
 	 */
-	select(): boolean {
+	isSelected(): boolean {
 		if (!this._combination) return false;
 		return this._scoreComparator(this._score, this._scoreReference);
 	}
+
+
+	/**
+	 */
+	select(): void {};
 }
 
 
@@ -1094,12 +1121,8 @@ class InMemoryCoverageFilter implements CombinationFilter {
 		for (let i = 0; i < this._filterCombinations.length; i++) {
 			const filterCombination = this._filterCombinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (collisionsCount < filterCombination.length) continue;
-
-			if (this._levelComparator(this._filterCovering[i], this._levelReference)) {
-				nbHits++;
-				this._filterCovering[i]++;
-			}
+			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
+			if (this._levelComparator(this._filterCovering[i], this._levelReference)) nbHits++;
 		}
 		this._score = nbHits * this._weight;
 	}
@@ -1109,24 +1132,22 @@ class InMemoryCoverageFilter implements CombinationFilter {
 	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
 	 * @return                 true if the combination matches the score criteria, false otherwise
 	 */
-	select(): boolean {
+	isSelected(): boolean {
 		if (!this._combination) return false;
-		
-		const ret = this._scoreComparator(this._score, this._scoreReference);
-		if (ret) return true;
-		
-		// Rollback filter covering count if combination does not pass selection
+		return this._scoreComparator(this._score, this._scoreReference);
+	}
+
+
+	/**
+	 */
+	select(): void {
 		for (let i = 0; i < this._filterCombinations.length; i++) {
 			const filterCombination = this._filterCombinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (collisionsCount < filterCombination.length) continue;
-
-			if (this._levelComparator(this._filterCovering[i], this._levelReference)) {
-				this._filterCovering[i]--;
-			}
+			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
+			if (this._levelComparator(this._filterCovering[i], this._levelReference)) this._filterCovering[i]++;
 		}
-		return false;
-	}
+	};
 }
 
 
