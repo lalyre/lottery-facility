@@ -1421,5 +1421,38 @@ async function main() {
 
 main();
 
+
+
+filter.json
+{
+  "filters": [
+    {
+      "filename": "myfilters.txt",
+      "weight": 2,
+      "level": ">=3",
+      "score": "<5",
+      "length": "=6",
+      "slice": [0, 2, 4],
+      "distance": "<10",
+      "min_gap": ">1",
+      "max_gap": "<=5"
+    },
+    {
+      "filename": "_selection",
+      "weight": 1,
+      "level": "=4"
+    }
+  ],
+  "globalScore": ">=10",
+  "globalFailure": "<2",
+  "limit": 1000,
+  "addition": true
+}
+
+
+
+$ filter --infile input.txt --globalfile global.txt --config filters.json
+
+
 */
 
