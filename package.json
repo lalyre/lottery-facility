@@ -57,7 +57,7 @@
     "translate": "./bin/translate-cli.mjs",
     "combination": "./bin/combination-cli.mjs",
     "cartesian_product": "./bin/cartesian_product-cli.mjs",
-    "filter": "./bin/filter-cli.mjs",
+    "filter": "./bin/filter-cli_1.mjs",
     "euromillions": "./bin/euromillions-cli.mjs",
     "kenoFR": "./bin/kenoFR-cli.mjs"
   },
