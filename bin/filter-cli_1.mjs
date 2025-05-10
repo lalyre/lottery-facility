@@ -623,8 +623,10 @@ let fileStream = fs.createReadStream(infile);
 let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,
-})
-.on('line', async (line) => {
+});
+
+
+outerLoop: for await (const line of rl) {
 	// Test limit of selection
 	if (selectedCombinations.length >= SELECTION_LIMIT) {
 		console.error("Limit of selection is reached !");
@@ -634,11 +636,11 @@ let rl = readline.createInterface({
 
 	// Get a combination to be selected or not
 	if (!line) {
-		return;
+		continue outerLoop;
 	}
 	let testedCombination = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
-	if (testedCombination[0] == 0) return;
-	if (testedCombination.join("") == '') return;
+	if (testedCombination[0] == 0) continue outerLoop;
+	if (testedCombination.join("") == '') continue outerLoop;
 	inputLinesCount++;
 
 	//TODO CL
@@ -648,7 +650,7 @@ let rl = readline.createInterface({
 	// TODO CL
 	/*if (inputLinesCount < 257400) {
 		console.log("Line " + inputLinesCount);
-		return;
+		continue outerLoop;
 	}*/
 
 
@@ -1295,7 +1297,7 @@ let rl = readline.createInterface({
 				break;
 		}
 		if (!selectScoreScope) {
-			return;			// next tested combination
+			continue outerLoop;			// next tested combination
 		}
 	}
 	
@@ -1352,7 +1354,7 @@ let rl = readline.createInterface({
 		
 		
 		if (!selectFailureScope) {
-			return;			// next tested combination
+			continue outerLoop;			// next tested combination
 		}
 	}
 
@@ -1360,7 +1362,7 @@ let rl = readline.createInterface({
 	// Skip some tested combinations
 	while (selectionSkip > 0) {
 		--selectionSkip;
-		return;			// next tested combination
+		continue outerLoop;			// next tested combination
 	}
 
 
@@ -1386,26 +1388,26 @@ let rl = readline.createInterface({
 			}
 		}
 	}
-})
-.on('close', () => {
-	if (coverStatsMode) {
-		for (let i = 0; i < filterCommand.length; i++) {
-			console.log(`Filter #${i+1} on file ${filename[i]}`);
-			for (let j = 0; j < filterCombinations[i].length; j++) {
-				console.log(`${lotteryFacility.CombinationHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
-			}
-			console.log();
+}
+
+
+if (coverStatsMode) {
+	for (let i = 0; i < filterCommand.length; i++) {
+		console.log(`Filter #${i+1} on file ${filename[i]}`);
+		for (let j = 0; j < filterCombinations[i].length; j++) {
+			console.log(`${lotteryFacility.CombinationHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 		}
-		return;
+		console.log();
 	}
+}
 
-	console.warn("Nb selected:   "  + selectedCombinations.length);
-	console.warn("Total score:   "  + globalScore);
-	console.warn("Total failure: "  + globalFailure);
+console.warn("Nb selected:   "  + selectedCombinations.length);
+console.warn("Total score:   "  + globalScore);
+console.warn("Total failure: "  + globalFailure);
 
-	//console.log("inputLinesCount "  + inputLinesCount);
-	fileStream.close();
-});
+//console.log("inputLinesCount "  + inputLinesCount);
+fileStream.close();
+
 
 
 
