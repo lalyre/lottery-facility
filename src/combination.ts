@@ -1067,7 +1067,7 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 
 
 class InMemoryCoverageFilter implements CombinationFilter {
-	private _filterCovering: number[];
+	private _filterCoverage: number[];
 	private _combination: Combination | null = null;
 	
 	private _levelComparator: (a: number, b: number) => boolean;
@@ -1104,7 +1104,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 		this._scoreComparator = comparisonOperators[this._scoreOperator];
 		this._levelComparator = comparisonOperators[this._levelOperator];
 		
-		this._filterCovering = new Array(this._filterCombinations.length).fill(0);
+		this._filterCoverage = new Array(this._filterCombinations.length).fill(0);
 	}
 
 
@@ -1122,7 +1122,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 			const filterCombination = this._filterCombinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
 			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
-			if (this._levelComparator(this._filterCovering[i], this._levelReference)) nbHits++;
+			if (this._levelComparator(this._filterCoverage[i], this._levelReference)) nbHits++;
 		}
 		this._score = nbHits * this._weight;
 	}
@@ -1145,7 +1145,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 			const filterCombination = this._filterCombinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
 			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
-			if (this._levelComparator(this._filterCovering[i], this._levelReference)) this._filterCovering[i]++;
+			if (this._levelComparator(this._filterCoverage[i], this._levelReference)) this._filterCoverage[i]++;
 		}
 	};
 }
