@@ -32,7 +32,7 @@ Roadmap
 
 2025-xx-xx, Version 0.0.1-alpha.10
 ==================================
-* Adding length filter, score filter and repetition filter in the API.
+* Adding length filter, collision filter and scorage filter in the API.
 * Adding filters pipeline in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
