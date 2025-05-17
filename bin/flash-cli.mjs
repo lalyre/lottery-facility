@@ -166,7 +166,7 @@ for (let i = 0; i < nb; i++) {
 	let ballsSet = [];
 	for (let j = 0; j < totals.length; j++) {
 		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
-		if (j > 0) str += cli.flags.sep;
+		if (j > 0) str += " / ";
 		str += (cli.flags.sort) ? lotteryFacility.CombinationHelper.toCanonicalString(ballsSet[j], sep) : lotteryFacility.CombinationHelper.toString(ballsSet[j], sep);
 	}
 	
