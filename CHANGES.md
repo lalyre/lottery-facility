@@ -1,5 +1,6 @@
 Roadmap
 =======
+* filter CLI enhancement with calculation of common neighbor count/neighborhood overlap/Jaccard similarity coefficient/Jaccard index.
 * in Web application, allow user to store lists of following draws patterns to be detected and notified about after getting the latest draws.
 * draws pattern detection on sequence of following draws, observing a set of balls.
 * average failure (earnigs consideration) period of a game (lottery grid system), in number of following draws
