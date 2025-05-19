@@ -21,7 +21,7 @@ const cli = meow(`
 	  --sort         Display ordered combinations (optional).
 	  --nb           Number of generated combinations.
 	  --nbSwap       Number of shuffle operations. Default value 200.
-	  --sep          Separator of draw boxes random selection (optional).
+	  --sep          Separator of balls (optional).
 
 	Description
 	This script generates a random selection of lottery balls, taken from 1 to <total> balls.

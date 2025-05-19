@@ -182,15 +182,15 @@ You can put `total` and `size` pairs multiple times for random selection into mu
 Generate 8 random games for Euromillions lottery
 
 ```sh
-$ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort
-07 10 12 17 28 | 04 08
-01 10 15 48 50 | 02 10
-03 14 16 30 40 | 07 11
-01 13 19 25 40 | 01 12
-06 11 39 40 48 | 02 03
-05 09 26 32 48 | 01 03
-07 21 31 48 50 | 10 11
-11 20 23 33 40 | 09 12
+$ flash --total 50 --size 5 --total 12 --size 2 --nb 8 --sort --sep " "
+07 10 12 17 28 / 04 08
+01 10 15 48 50 / 02 10
+03 14 16 30 40 / 07 11
+01 13 19 25 40 / 01 12
+06 11 39 40 48 / 02 03
+05 09 26 32 48 / 01 03
+07 21 31 48 50 / 10 11
+11 20 23 33 40 / 09 12
 ```
 
 
