@@ -1066,6 +1066,10 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 }
 
 
+export class InMemoryMaxCollisionFilter implements CombinationFilter {
+}
+
+
 class InMemoryCoverageFilter implements CombinationFilter {
 	private _filterCoverage: number[];
 	private _combination: Combination | null = null;
