@@ -107,6 +107,10 @@ const cli = meow(`
 	With "score(>x)",    only input combinations with score greater than x are considered.
 	With "score(*)",     only input combinations that matches with all filter lines are considered.
 
+
+
+
+	TO BE REMOVED
 	* globalScore
 	With --globalScore   "<x",  only combinations with global score less than x are selected.
 	With --globalScore   "<=x", only combinations with global score less than or equal x are selected..
@@ -122,6 +126,7 @@ const cli = meow(`
 	With --globalFailure "!=x", only combinations with not x failed filters are selected.
 	With --globalFailure ">=x", only combinations with more than or equal x failed filters are selected.
 	With --globalFailure ">x",  only combinations with more than x failed filters are selected.
+	TO BE REMOVED
 `, {
 	importMeta: import.meta,
 	flags: {
@@ -157,7 +162,7 @@ const cli = meow(`
 			isMultiple: false,
 			default: -1,
 		},
-		globalScore: {
+		/*globalScore: {
 			type: 'string',
 			isRequired: false,
 			isMultiple: true,
@@ -166,7 +171,7 @@ const cli = meow(`
 			type: 'string',
 			isRequired: false,
 			isMultiple: true,
-		},
+		},*/
 		select: {
 			type: 'string',
 			shortFlag: 's',
@@ -273,7 +278,7 @@ if (cli.flags.selection) {
 //console.log("preSelectedCombinations.length " + preSelectedCombinations.length);
 
 
-let testGlobalScoreSelection = [];
+/*let testGlobalScoreSelection = [];
 let testGlobalScore = [];
 let regexp1 = /^(<|=<|<=|=|!=|>=|=>|>)?(-?\d*)$/;
 for (let i = 0; cli.flags.globalScore && i < cli.flags.globalScore.length; i++) {
@@ -296,10 +301,10 @@ for (let i = 0; cli.flags.globalScore && i < cli.flags.globalScore.length; i++) 
 			process.exit(1);
 			break;
 	}
-}
+}*/
 
 
-let testGlobalFailureSelection = [];
+/*let testGlobalFailureSelection = [];
 let testGlobalFailure = [];
 let regexp2 = /^(<|=<|<=|=|!=|>=|=>|>)?(\d*)$/;
 for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i++) {
@@ -329,7 +334,7 @@ for (let i = 0; cli.flags.globalFailure && i < cli.flags.globalFailure.length; i
 			process.exit(1);
 			break;
 	}
-}
+}*/
 
 
 // filename(<filename>)restrictions(<filename>)weight(a)level(b)score(c)min_val(c)length(d)distance(d)slice(a,b,...,y)min_gap(x)max_gap(x)
@@ -344,24 +349,24 @@ let testLevelSelection = [];
 let testLevel = [];
 let testLengthSelection = [];
 let testLength = [];
-let testDistanceSelection = [];
-let testDistance = [];
-let testMingapSelection = [];
-let testMingap = [];
-let testMaxgapSelection = [];
-let testMaxgap = [];
+//let testDistanceSelection = [];
+//let testDistance = [];
+//let testMingapSelection = [];
+//let testMingap = [];
+//let testMaxgapSelection = [];
+//let testMaxgap = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
-let testCombiFilterRepetitionSelection = [];
-let testCombiFilterRepetition = [];
-let testCombiFilterMinValSelection = [];
-let testCombiFilterMinVal = [];
-let testCombiFilterMaxValSelection = [];
-let testCombiFilterMaxVal = [];
-let testCombiFilterSumValSelection = [];
-let testCombiFilterSumVal = [];
-let globalScore = 0;
-let globalFailure = 0;
+//let testCombiFilterRepetitionSelection = [];
+//let testCombiFilterRepetition = [];
+//let testCombiFilterMinValSelection = [];
+//let testCombiFilterMinVal = [];
+//let testCombiFilterMaxValSelection = [];
+//let testCombiFilterMaxVal = [];
+//let testCombiFilterSumValSelection = [];
+//let testCombiFilterSumVal = [];
+//let globalScore = 0;
+//let globalFailure = 0;
 
 
 for (let i = 0; i < filterCommand.length; i++) {
@@ -459,7 +464,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 
 	// Parsing SLICE
-	switch (true) {
+	/*switch (true) {
 		case /slice\((.+)\)/.test(filterCommand[i].trim()):
 			let match = /slice\((.*)\)/.exec(filterCommand[i]);
 			let exp = (match[1]).trim();
@@ -474,7 +479,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 		default:
 			slice.push(null);
 			break;
-	}
+	}*/
 
 
 	// Parsing LENGTH
@@ -493,7 +498,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 
 	// Parsing DISTANCE
-	switch (true) {
+	/*switch (true) {
 		case /distance\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
 			let match = /distance\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testDistanceSelection.push('='); else testDistanceSelection.push(match[1]);
@@ -504,11 +509,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testDistanceSelection.push(null)
 			testDistance.push(-1);
 			break;
-	}
+	}*/
 
 
 	// Parsing MIN_GAP
-	switch (true) {
+	/*switch (true) {
 		case /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
 			let match = /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testMingapSelection.push('='); else testMingapSelection.push(match[1]);
@@ -519,11 +524,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testMingapSelection.push(null)
 			testMingap.push(-1);
 			break;
-	}
+	}*/
 
 
 	// Parsing MAX_GAP
-	switch (true) {
+	/*switch (true) {
 		case /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
 			let match = /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testMaxgapSelection.push('='); else testMaxgapSelection.push(match[1]);
@@ -534,7 +539,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testMaxgapSelection.push(null)
 			testMaxgap.push(-1);
 			break;
-	}
+	}*/
 
 
 	// Parsing LEVEL
@@ -573,7 +578,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 	
 	
 	// Parsing REPETITION
-	switch (true) {
+	/*switch (true) {
 		case /repetition\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
 			let match = /repetition\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testCombiFilterRepetitionSelection.push('='); else testCombiFilterRepetitionSelection.push(match[1]);
@@ -584,11 +589,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterRepetitionSelection.push(null);
 			testCombiFilterRepetition.push(-1);
 			break;
-	}
+	}*/
 
 
 	// Parsing MIN_VAL
-	switch (true) {
+	/*switch (true) {
 		case /min_val\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.test(filterCommand[i].trim()):
 			let match = /min_val\((<|=<|<=|=|!=|>=|=>|>)?(-?\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testCombiFilterMinValSelection.push('='); else testCombiFilterMinValSelection.push(match[1]);
@@ -599,14 +604,19 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testCombiFilterMinValSelection.push(null);
 			testCombiFilterMinVal.push(-1);
 			break;
-	}
+	}*/
 }
 
 
-const printOutput = function (inputLinesCount, testedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string) {
+
+let maxCombination = null;
+let maxScore = 0;
+
+
+const printOutput = function (inputLinesCount, testedCombination, hits_count_string, hits_filters_string) {
 	// Display output
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.CombinationHelper.toString(testedCombination.sort()) + " - combi_global_score: " + combiGlobalScore + " - combi_global_failure: " + combiGlobalFailure);
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.CombinationHelper.toString(testedCombination.sort()));
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
@@ -624,6 +634,9 @@ let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,
 });
+
+
+
 
 
 outerLoop: for await (const line of rl) {
@@ -656,13 +669,13 @@ outerLoop: for await (const line of rl) {
 
 
 	// Init tested combination track records
-	let combiGlobalScore = 0;
-	let combiGlobalFailure = 0;
+	//let combiGlobalScore = 0;
+	//let combiGlobalFailure = 0;
 	let combiFilterScore = new Array(filterCommand.length).fill(0);
 	let combiFilterFailure = new Array(filterCommand.length).fill(0);
-	let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
-	let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
-	let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
+	//let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
+	//let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
+	//let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
 	let slicedCombination = testedCombination;
 	let coveredLines = "";
 	let withOngoingSelection = false;
@@ -714,9 +727,9 @@ outerLoop: for await (const line of rl) {
 		}
 		if (!selectLengthScope) {
 			hitsCount = -1;
-			combiFilterMinValue[i] = -1;
-			combiFilterMaxValue[i] = -1;
-			combiFilterSumValue[i] = -1;
+			//combiFilterMinValue[i] = -1;
+			//combiFilterMaxValue[i] = -1;
+			//combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -725,7 +738,7 @@ outerLoop: for await (const line of rl) {
 
 
 		// Combi distance scope
-		let distance = lotteryFacility.CombinationHelper.distance(global_alphabet, testedCombination);
+		/*let distance = lotteryFacility.CombinationHelper.distance(global_alphabet, testedCombination);
 		let selectDistanceScope = true;
 		switch (true) {
 			case (testDistanceSelection[i] == null):
@@ -770,11 +783,11 @@ outerLoop: for await (const line of rl) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
-		}
+		}*/
 
 
 		// Combi min_gap scope
-		let minGap = lotteryFacility.CombinationHelper.minimum_right_gap(global_alphabet, testedCombination);
+		/*let minGap = lotteryFacility.CombinationHelper.minimum_right_gap(global_alphabet, testedCombination);
 		let selectMingapScope = true;
 		switch (true) {
 			case (testMingapSelection[i] == null):
@@ -823,11 +836,11 @@ outerLoop: for await (const line of rl) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
-		}
+		}*/
 
 
 		// Combi max_gap scope
-		let maxGap = lotteryFacility.CombinationHelper.maximum_right_gap(global_alphabet, testedCombination);
+		/*let maxGap = lotteryFacility.CombinationHelper.maximum_right_gap(global_alphabet, testedCombination);
 		let selectMaxgapScope = true;
 		switch (true) {
 			case (testMaxgapSelection[i] == null):
@@ -876,15 +889,15 @@ outerLoop: for await (const line of rl) {
 			combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
 			continue;		// next filter command
-		}
+		}*/
 
 
 		// Check whether computing a score is relevant or not
 		if (filename[i] === null || testLevelSelection[i] === null) {
 			hitsCount = -1;
-			combiFilterMinValue[i] = -1;
-			combiFilterMaxValue[i] = -1;
-			combiFilterSumValue[i] = -1;
+			//combiFilterMinValue[i] = -1;
+			//combiFilterMaxValue[i] = -1;
+			//combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -903,9 +916,9 @@ outerLoop: for await (const line of rl) {
 		if (filename[i] === '_selection' && preSelectedCombinations.length === 0 && selectedCombinations.length === 0) {
 			withOngoingSelection = true;
 			hitsCount = -1;
-			combiFilterMinValue[i] = -1;
-			combiFilterMaxValue[i] = -1;
-			combiFilterSumValue[i] = -1;
+			//combiFilterMinValue[i] = -1;
+			//combiFilterMaxValue[i] = -1;
+			//combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
@@ -998,8 +1011,8 @@ outerLoop: for await (const line of rl) {
 
 
 		// Get current tested combination's score
-		let withValue = true;
-		combiFilterSumValue[i] = 0;
+		//let withValue = true;
+		//combiFilterSumValue[i] = 0;
 		hitsCount = 0;
 
 
@@ -1080,11 +1093,11 @@ outerLoop: for await (const line of rl) {
 					matchingCombinations.push (currentFilterCombinations[j]);
 				}
 			}
-			if (!withValue) {
+			/*if (!withValue) {
 				combiFilterMinValue[i] = -1;
 				combiFilterMaxValue[i] = -1;
 				combiFilterSumValue[i] = -1;
-			}
+			}*/
 
 
 			// TODO CL
@@ -1108,7 +1121,7 @@ outerLoop: for await (const line of rl) {
 
 
 			// Combi repetition scope
-			switch (true) {
+			/*switch (true) {
 				case (testCombiFilterRepetitionSelection[i] == null):
 					break; // No rule
 
@@ -1141,7 +1154,7 @@ outerLoop: for await (const line of rl) {
 				default:
 					selectRepetitionScope = false; // reject this combination
 					break;
-			}
+			}*/
 			
 			
 			//TODO CL
@@ -1149,7 +1162,7 @@ outerLoop: for await (const line of rl) {
 			
 			
 			if (!selectRepetitionScope) {
-				combiFilterFailure[i] = 1; combiGlobalFailure++;
+				//combiFilterFailure[i] = 1; combiGlobalFailure++;
 				break;
 			}
 
@@ -1163,10 +1176,19 @@ outerLoop: for await (const line of rl) {
 
 
 			//TODO CL
+			//console.log("testedCombination " + testedCombination);
 			//console.log("nbHits " + nbHits);
 			//console.log("score " + score);
 			//console.log("testCombiFilterScoreSelection[i] " + testCombiFilterScoreSelection[i]);
 			//console.log("testCombiFilterScore[i] " + testCombiFilterScore[i]);
+			
+			/*if (score > maxScore) {
+				maxCombination = testedCombination;
+				maxScore = score;
+				
+				console.log("testedCombination " + testedCombination);
+				console.log("score " + score);
+			}*/
 			
 
 			// Combi score scope
@@ -1219,17 +1241,17 @@ outerLoop: for await (const line of rl) {
 			
 			
 			if (!selectScoreScope) {
-				combiFilterFailure[i] = 1; combiGlobalFailure++;
-				break;
+				//combiFilterFailure[i] = 1; combiGlobalFailure++;
+				continue outerLoop;			// next tested combination
 			}
 			
 			
 			
-			for (let j = 0; j < matchingCombinations.length; j++) {
-				matchingCombinations[j].covering++;
+			//for (let j = 0; j < matchingCombinations.length; j++) {
+				//matchingCombinations[j].covering++;
 				//globalRepetition++;
 				
-				if (withValue)
+				/*if (withValue)
 				{
 					if (combiFilterMinValue[i] == -1) { combiFilterMinValue[i] = matchingCombinations[j].value; }
 					else if (combiFilterMinValue[i] > matchingCombinations[j].value) { combiFilterMinValue[i] = matchingCombinations[j].value; }
@@ -1238,15 +1260,26 @@ outerLoop: for await (const line of rl) {
 					else if (combiFilterMaxValue[i] < matchingCombinations[j].value) { combiFilterMaxValue[i] = matchingCombinations[j].value; }
 
 					combiFilterSumValue[i] += matchingCombinations[j].value;
-				}
-			}
+				}*/
+			//}
 
+			//TODO CL
+			//console.log("nbHits " + nbHits);
+			//console.log("score " + score);
 			
 			
 			hitsCount += nbHits;
-			combiFilterScore[i] = hitsCount * weight[i]; combiGlobalScore += combiFilterScore[i];
+			combiFilterScore[i] = hitsCount * weight[i]; //combiGlobalScore += combiFilterScore[i];
 			hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
-			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
+			//hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
+			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] `;
+			
+			
+			
+			
+			
+			
+			
 		}
 
 
@@ -1254,7 +1287,7 @@ outerLoop: for await (const line of rl) {
 
 
 	// Combi global score scope
-	let selectScoreScope = true;
+	/*let selectScoreScope = true;
 	for (let i = 0; i < testGlobalScoreSelection.length; i++)
 	{
 		switch (true) {
@@ -1299,7 +1332,7 @@ outerLoop: for await (const line of rl) {
 		if (!selectScoreScope) {
 			continue outerLoop;			// next tested combination
 		}
-	}
+	}*/
 	
 	
 	// TODO CL
@@ -1308,7 +1341,7 @@ outerLoop: for await (const line of rl) {
 
 
 	// Combi global failure scope
-	let selectFailureScope = true;
+	/*let selectFailureScope = true;
 	for (let i = 0; i < testGlobalFailureSelection.length; i++)
 	{
 		switch (true) {
@@ -1356,7 +1389,7 @@ outerLoop: for await (const line of rl) {
 		if (!selectFailureScope) {
 			continue outerLoop;			// next tested combination
 		}
-	}
+	}*/
 
 
 	// Skip some tested combinations
@@ -1373,13 +1406,13 @@ outerLoop: for await (const line of rl) {
 
 
 	// Select the tested combination and get global track records
-	globalScore += combiGlobalScore;
-	globalFailure += combiGlobalFailure;
+	//globalScore += combiGlobalScore;
+	//globalFailure += combiGlobalFailure;
 
 
 	// Add the tested combination to the ongoing selection
 	if (!coverStatsMode && !coverLinesMode) {
-		printOutput(inputLinesCount, slicedCombination, combiGlobalScore, combiGlobalFailure, hits_count_string, hits_filters_string);
+		printOutput(inputLinesCount, slicedCombination, hits_count_string, hits_filters_string);
 		if (additionMode) {
 			let lineNum = preSelectedCombinations.length + selectedCombinations.length + 1;
 			selectedCombinations.push({lineNum: lineNum, combination: slicedCombination, covering: 0, value: 0, preselected: false, }); additions++;
@@ -1402,8 +1435,8 @@ if (coverStatsMode) {
 }
 
 console.warn("Nb selected:   "  + selectedCombinations.length);
-console.warn("Total score:   "  + globalScore);
-console.warn("Total failure: "  + globalFailure);
+//console.warn("Total score:   "  + globalScore);
+//console.warn("Total failure: "  + globalFailure);
 
 //console.log("inputLinesCount "  + inputLinesCount);
 fileStream.close();
@@ -1454,6 +1487,28 @@ filter.json
 
 
 $ filter --infile input.txt --globalfile global.txt --config filters.json
+
+
+better-sqlite3 
+
+
+CREATE TABLE tirages (
+  id INTEGER PRIMARY KEY,
+  date TEXT,
+  nums JSON
+);
+
+insert.run(JSON.stringify({ date: '2025-05-22', nums: [3, 7, 12, 22, 45] }));
+
+SELECT t.*
+FROM tirages t, json_each(t.nums)
+WHERE json_each.value = 12;
+
+
+SELECT json_extract(nums, '$[1]') FROM tirages;
+
+
+SELECT id, json_array_length(nums) FROM tirages;
 
 
 */
