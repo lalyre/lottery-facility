@@ -47,8 +47,14 @@ const cli = meow(`
 	With "weight(x)", the filter score is computed as the multiplication of the number of filter lines that match the required level (hit count) by the weight value.
 	If not specified, the default value is 1.
 
+
+
+	TO BE REMOVED
 	* slice
 	With "slice(a,b,..,x)", the numbers at index a,b,..., x of the input combination are selected from the input combination, and used for comparisons. If not specified the whole input combination is taken by default.
+	TO BE REMOVED
+
+
 
 	* length
 	With "length(<x)",   only input combinations with less than x numbers are considered.
@@ -58,6 +64,8 @@ const cli = meow(`
 	With "length(>=x)",  only input combinations with more than or equal x numbers are considered.
 	With "length(>x)",   only input combinations with more than x numbers are considered.
 
+
+	TO BE REMOVED
 	* distance
 	With "distance(<x)",   only input combinations with distance less than x are considered.
 	With "distance(<=x)",  only input combinations with distance less than or equal x are considered.
@@ -81,6 +89,10 @@ const cli = meow(`
 	With "max_gap(!=x)",  only input combinations with maximum gap not equal to x are considered.
 	With "max_gap(>=x)",  only input combinations with maximum gap  more than or equal x are considered.
 	With "max_gap(>x)",   only input combinations with maximum gap  more than x are considered.
+	TO BE REMOVED
+
+
+
 
 	* level
 	With "level(<x)",    only filter lines with less than x collisions with the current input combination are considered.
@@ -90,6 +102,10 @@ const cli = meow(`
 	With "level(>=x)",   only filter lines with more than or equal x collisions with the current input combination are considered.
 	With "level(>x)",    only filter lines with more than x collisions with the current input combination are considered.
 
+
+
+
+	TO BE REMOVED
 	* min_val
 	With "min_val(<x)",    only input combinations with min value less than x are considered.
 	With "min_val(<=x)",   only input combinations with min value less than or equal x are considered.
@@ -97,6 +113,9 @@ const cli = meow(`
 	With "min_val(!=x)",   only input combinations with min value different from x are considered.
 	With "min_val(>=x)",   only input combinations with min value greater than or equal to x considered.
 	With "min_val(>x)",    only input combinations with min value greater than x are considered.
+	TO BE REMOVED
+
+
 
 	* score
 	With "score(<x)",    only input combinations with score less than x are considered.
