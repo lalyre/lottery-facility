@@ -225,11 +225,9 @@ let kenoGame = [
 ];
 
 document.getElementById('shuffleButton').addEventListener('click', () => {
-    // 1. Remélanger l'alphabet cible
     const box = new LotteryFacility.DrawBox(70);
     const random_balls = box.draw(70);
 
-    // 2. Traduire et afficher le nouveau jeu
     try {
         const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
         const resultDiv = document.getElementById('result');
