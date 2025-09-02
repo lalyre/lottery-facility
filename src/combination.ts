@@ -309,8 +309,57 @@ export class CombinationHelper {
 	}
 
 
+	/**
+	 * Translates a lottery combination from one alphabet to another.
+	 * The translation is based on the positional correspondence between the origin and target alphabets.
+	 *
+	 * @param combination        The combination of numbers to translate.
+	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
+	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
+	 * @returns                  The translated combination.
+	 *
+	 * @throws Error if the origin or target alphabet is invalid.
+	 * @throws Error if the combination contains numbers not present in the origin alphabet.
+	 *
+	 * Example:
+	 * translate([1, 2, 3], [1, 2, 3, 4], [10, 20, 30, 40]) => [10, 20, 30]
+	 */
+	public static translate(combination: Combination, originAlphabet: Combination, targetAlphabet: Combination): Combination {
+		if (!originAlphabet || !targetAlphabet) throw new Error('Invalid origin or target alphabet.');
+		const translatedCombination: Combination = [];
+		const originMap = new Map<number, number>();
+
+		// Build a map for quick lookups from origin to target numbers
+		for (let i = 0; i < originAlphabet.length; i++) {
+			originMap.set(originAlphabet[i], targetAlphabet[i]);
+		}
+
+		for (const num of combination) {
+			if (!originMap.has(num)) throw new Error(`Number ${num} not found in the origin alphabet.`);
+			translatedCombination.push(originMap.get(num)!);
+		}
+		return translatedCombination;
+	}
 
 
+	/**
+	 * Translates an array of lottery combinations from one alphabet to another.
+	 * This method iterates over each combination in the input array and applies the
+	 * `translate` function to it, returning an array of the translated combinations.
+	 *
+	 * @param combinations       The array of combinations to translate.
+	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
+	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
+	 * @returns                  An array containing all the translated combinations.
+	 *
+	 * @throws Error if the origin or target alphabet is invalid.
+	 * @throws Error if any combination in the array contains numbers not in the origin alphabet.
+	 */
+	public static translateAll(combinations: Combination[], originAlphabet: Combination, targetAlphabet: Combination): Combination[] {
+		return combinations.map(combination =>
+			CombinationHelper.translate(combination, originAlphabet, targetAlphabet)
+		);
+	}
 
 
 
@@ -1066,8 +1115,8 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 }
 
 
-export class InMemoryMaxCollisionFilter implements CombinationFilter {
-}
+/*export class InMemoryMaxCollisionFilter implements CombinationFilter {
+}*/
 
 
 class InMemoryCoverageFilter implements CombinationFilter {
@@ -1145,6 +1194,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 	/**
 	 */
 	select(): void {
+		if (!this._combination) return;
 		for (let i = 0; i < this._filterCombinations.length; i++) {
 			const filterCombination = this._filterCombinations[i];
 			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);

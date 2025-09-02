@@ -154,6 +154,48 @@ Import in your browser project from a CDN:
 </html>
 ```
 
+Import in your browser project from a local library file:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lottery-facility from local file</title>
+</head>
+<body>
+
+  <!-- Load lottery-facility library -->
+  <script src="./lotteryfacility-webbundle.min.umd.js"></script>
+
+  <script>
+  const balls = Array.from({ length: 70 }, (_, i) => i + 1);
+  const box = new LotteryFacility.DrawBox(70);
+  const random_balls = box.draw(70);
+  //document.write(balls);
+  //document.write("<br>");
+  //document.write(random_balls);
+  
+  let kenoGame = [
+    [1, 2, 3],
+    [4, 5],
+    [1, 5, 4]
+  ];
+
+  try {
+    const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
+	for (let c of translatedCombinations) {
+      document.write(LotteryFacility.CombinationHelper.toString(c));
+	  document.write("<br>");
+	}
+  }
+  catch (error) {
+	console.error(error);
+  }
+  </script>
+
+</body>
+</html>
+```
+
 
 ## CLI utilities
 All the following documentation is available in the tools by running `--help` on command line.

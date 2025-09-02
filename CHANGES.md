@@ -33,6 +33,7 @@ Roadmap
 
 2025-xx-xx, Version 0.0.1-alpha.10
 ==================================
+* Adding translate function in the API.
 * Adding length filter, collision filter and scorage filter in the API.
 * Adding filters pipeline in the API.
 * Adding cartesian_product CLI utility.
