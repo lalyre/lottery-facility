@@ -196,6 +196,59 @@ Import in your browser project from a local library file:
 </html>
 ```
 
+Another example (with Gemini AI):
+```html
+<!DOCTYPE html>
+<html>
+<head>
+ <title>KENO game</title>
+</head>
+<body>
+ <button id="shuffleButton">SHUFFLE</button>
+ <div id="result"></div>
+
+ <script src="./lotteryfacility-webbundle.min.umd.js"></script>
+
+<script>
+const balls = Array.from({ length: 70 }, (_, i) => i + 1);
+
+let kenoGame = [
+    [1, 2, 8, 12, 13, 14, 15, 16, 17],
+    [3, 4, 9, 18, 19, 20, 21, 22, 23],
+    [5, 1, 10, 24, 25, 26, 27, 28, 29],
+    [6, 2, 11, 30, 31, 32, 33, 34, 35],
+    [7, 3, 36, 37, 38, 39, 40, 41, 42],
+    [8, 4, 43, 44, 45, 46, 47, 48, 49],
+    [9, 5, 50, 51, 52, 53, 54, 55, 56],
+    [10, 6, 57, 58, 59, 60, 61, 62, 63],
+    [11, 7, 64, 65, 66, 67, 68, 69, 70]
+];
+
+document.getElementById('shuffleButton').addEventListener('click', () => {
+    // 1. Remélanger l'alphabet cible
+    const box = new LotteryFacility.DrawBox(70);
+    const random_balls = box.draw(70);
+
+    // 2. Traduire et afficher le nouveau jeu
+    try {
+        const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = ''; // Nettoyer le contenu précédent
+
+        for (let c of translatedCombinations) {
+            const combinationString = LotteryFacility.CombinationHelper.toString(c);
+            resultDiv.innerHTML += `<span>${combinationString}</span><br>`;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+});
+</script>
+
+</body>
+</html>
+```
+
 
 ## CLI utilities
 All the following documentation is available in the tools by running `--help` on command line.
