@@ -169,7 +169,7 @@ Import in your browser project from a local library file:
   <script>
   const balls = Array.from({ length: 70 }, (_, i) => i + 1);
   const box = new LotteryFacility.DrawBox(70);
-  const random_balls = box.draw(70);
+  const random_balls = box.draw(70, 5000);
   //document.write(balls);
   //document.write("<br>");
   //document.write(random_balls);
@@ -226,12 +226,12 @@ let kenoGame = [
 
 document.getElementById('shuffleButton').addEventListener('click', () => {
     const box = new LotteryFacility.DrawBox(70);
-    const random_balls = box.draw(70);
+    const random_balls = box.draw(70, 5000);
 
     try {
         const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
         const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = ''; // Nettoyer le contenu précédent
+        resultDiv.innerHTML = '';
 
         for (let c of translatedCombinations) {
             const combinationString = LotteryFacility.CombinationHelper.toString(c);
