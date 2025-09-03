@@ -362,6 +362,36 @@ export class CombinationHelper {
 	}
 
 
+	/**
+	 * Generates a flat sequence of lottery numbers that increment from 1 up to a given maximum,
+	 * then cycle back to 1.
+	 *
+	 * @param totalBalls             The total number of balls in the lottery (e.g., 70 for Keno, 50 for Euromillions).
+	 * @param combinationsToProduce  The number of combinations to generate.
+	 * @param combinationSize        The number of numbers per combination.
+	 * @returns                      A flat sequence of numbers (Combination).
+	 *
+	 * Example:
+	 * generateLotteryNumbers(10, 3, 5) =>
+	 *   [1,2,3,4,5,6,7,8,9,10,1,2,3,4,5]
+	 */
+	public static generateLotteryNumbers(
+		totalBalls: number,
+		combinationsToProduce: number,
+		combinationSize: number
+	): number[] {
+		const totalNumbers: number = combinationsToProduce * combinationSize;
+		const numbers: number[] = [];
+
+		for (let i = 0; i < totalNumbers; i++) {
+			const number: number = (i % totalBalls) + 1;
+			numbers.push(number);
+		}
+		return numbers;
+	}
+
+
+
 
 	/**
 	 * Give the union between 2 lottery combinations
