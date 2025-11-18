@@ -554,46 +554,27 @@ $ cartesian_product --numbers "01|02|03" --numbers "11|12|13" --sep " "
 
 ## API (work in progress)
 
-This section provides a brief overview of the main classes and helpers exposed by the library.
-A complete API documentation will be added in a future release.
+### DrawBox
+- new DrawBox(total)
+- draw(count, nbSwap?)
 
-### class DrawBox
-A utility for drawing random numbers from a set of integers.
+### CombinationHelper
+- translateAll(combinations, originAlphabet, targetAlphabet)
+- toString(combination)
 
-Constructor:
-- new DrawBox(total: number)
+### RandomHelper
+- (placeholder)
 
-Methods:
-- draw(count: number, nbSwap?: number): number[]
-  Draws "count" distinct numbers among "total".
-  Optional "nbSwap" controls the internal shuffle strength.
-
----
-
-### class CombinationHelper
-Helpers for manipulating combinations (arrays of integers).
-
-Static methods:
-- translateAll(combinations: number[][], originAlphabet: number[], targetAlphabet: number[]): number[][]
-  Applies an alphabet translation to each combination.
-
-- toString(combination: number[]): string
-  Converts a combination to a human-readable string.
-
----
-
-### class RandomHelper
-(placeholder)
-Random utilities used internally for number shuffling and selection.
-
----
-
-More modules will be documented progressively as the library evolves toward version 1.0.0.
+More modules will be documented later.
 
 
 
 
 
+<br>
+<br>
+<br>
+<br>
 
 
 <!--
