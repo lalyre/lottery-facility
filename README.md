@@ -1,9 +1,9 @@
 # lottery-facility
 [![npm version](https://badge.fury.io/js/lottery-facility.svg)](https://badge.fury.io/js/lottery-facility)
-[![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.ccom/package/lottery-facility)
+[![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.com/package/lottery-facility)
 ![GitHub](https://img.shields.io/github/license/lalyre/lottery-facility)
 
-Some APIs and CLI tools for designing lottery cracking systems.
+Some APIs and CLI tools for designing lottery analysis and build smart lottery systems in Node.js.
 
 
 <!-- TOC -->
@@ -16,8 +16,8 @@ Some APIs and CLI tools for designing lottery cracking systems.
 
 ## Overview
 Features:
-* Random numbers generator
-* Random selections of numbers
+* Random number generator
+* Random selection of numbers
 * Draws statistics (TODO)
 * Draws prediction heuristics (TODO)
 
@@ -266,11 +266,11 @@ All the following documentation is available in the tools by running `--help` on
 
 **Description**<br>
 
-This script generates a random selection of lottery balls of `size` size, taken from `1` to `total` balls.
+This script generates a random selection of lottery balls of size `size` size, taken from `1` to `total` balls.
 The optional parameter `sort` sorts combinations items in ascending order.
 You can put `total` and `size` pairs multiple times for random selection into multiple draw boxes.
 
-**Exemple**<br>
+**Example**<br>
 
 Generate 8 random games for Euromillions lottery
 
@@ -303,9 +303,9 @@ This script takes an input file `file` containing one combination per line, comb
 and returns the difference between the global alphabet and each combination.<br>
 The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
-**Exemple**<br>
+**Example**<br>
 
-We start with a `GAME.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
+We start with a `GAME.txt` file written using the global alphabet `01 02 03 04 05 06 07 08 09 10`
 
 ```sh
 $ cat GAME.txt
@@ -349,7 +349,7 @@ This script takes an input file `file` containing one combination per line, comb
 the `global` alphabet, and returns the complement of each combination relatively to the global alphabet.<br>
 The `global` alphabet can be declared either with `globalnum` or `globalfile` parameters.<br>
 
-**Exemple**<br>
+**Example**<br>
 
 We start with a `FILE.txt` file written with the global alphabet `01 02 03 04 05 06 07 08 09 10`
 
@@ -399,7 +399,7 @@ Items of `origin` alphabet are translated to `target` alphabet relatively to the
 The `origin` alphabet can be declared either with `originnum` or `originfile` parameters.<br>
 The `target` alphabet can be declared either with `targetnum` or `targetfile` parameters.<br>
 
-**Exemple**<br>
+**Example**<br>
 
 We start with a tactical `GAME.txt` file written with the origin alphabet `01 02 03 04 05 06 07 08 09 10 11 12`
 
@@ -462,7 +462,7 @@ $ translate --file GAME.txt --originnum "01 02 03 04 05 06 07 08 09 10 11 12" \
 This script generates combinations of items taken in file `file` or list `numbers`, implementing choice of `size` items among `total` items.
 Only the first `total` items of `file` or `numbers` are used to build combinations.
 
-**Exemple**<br>
+**Example**<br>
 
 Generation of all combinations of size 3 in a list of 5 numbers (choice of 3 among 5)
 
@@ -498,7 +498,7 @@ This script generates cartesian product of items taken in `<file>` or `<numbers>
 Each item of `<file>` or `<numbers>` is combined with others `<file>` or `<numbers>` items.
 You can put as many `<file>` or `<numbers>` as you want.
 
-**Exemple**<br>
+**Example**<br>
 
 Computation of the cartesian product of `01 02 03` with `11 12 13`
 
@@ -614,7 +614,7 @@ npm publish --access public
 ```
 
 
-Depracation of NPM package versions
+Deprecation of NPM package versions
 
 ```sh
 npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.0 "obsolete"
