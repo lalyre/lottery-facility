@@ -372,12 +372,14 @@ $ complement --file FILE.txt --globalnum "01 02 03 04 05 06 07 08 09 10"
 
 ### 4. translate
 **Overview**<br>
-In order to win lottery games, you both need a tactical game (file of several combinations) and a smart selection of numbers based on statistics study.
-First, you have to find good numbers with high probability to draw. The more you have winning numbers in your selection the better it is for you.
-Then, you also have to put the good numbers all together on a same combination. If there are too many loosing numbers in your selection, they can polluate
-your games. To be sure to have winning numbers on the same combination you have to make a huge amount of combinations. But you cannot afford to make all possible
-combinations for economical reasons. So you need to use a tactical set of combinations that can help you win if you have sufficient amount of winning numbers.
-In the end, you need to apply your smart selection of numbers onto your tactical game. And this is the usage of `tanslate` tool.
+To win lottery games, you need both a tactical system (a file containing multiple combinations) and a smart number selection based on statistical analysis.
+First, you must identify numbers with a high probability of being drawn. The more winning numbers you have in your selection, the better your chances.
+Then, you must group these good numbers together within the same combination. If your selection contains too many losing numbers, they can pollute your games.
+To ensure that winning numbers appear together in at least one combination, you would theoretically need to generate a huge number of combinations. However, 
+you cannot afford to play all possible combinations for economic reasons. This is why you need a tactical set of combinations that can help you win if you 
+have a sufficient amount of winning numbers.
+Finally, you need to apply your smart number selection to your tactical system. This is the purpose of the `translate` tool.
+
 
 **Parameters**<br>
 
