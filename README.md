@@ -3,7 +3,7 @@
 [![Npm package monthly downloads](https://badgen.net/npm/dm/lottery-facility)](https://npmjs.com/package/lottery-facility)
 ![GitHub](https://img.shields.io/github/license/lalyre/lottery-facility)
 
-Some APIs and CLI tools for designing lottery analysis and build smart lottery systems in Node.js.
+Some APIs and CLI tools for lottery analysis and for building smart lottery systems in Node.js.
 
 
 <!-- TOC -->
@@ -18,8 +18,8 @@ Some APIs and CLI tools for designing lottery analysis and build smart lottery s
 Features:
 * Random number generator
 * Random selection of numbers
-* Draws statistics (TODO)
-* Draws prediction heuristics (TODO)
+* Draw statistics (TODO)
+* Draw prediction heuristics (TODO)
 
 CLI utilities:
 * flash
@@ -421,7 +421,7 @@ $ cat GAME.txt
 02 04 06 09 11 12
 ```
 
-After many hours of statistics analysis, we select 12 high probability winning numbers. These numbers are `25 28 31 34 37 52 53 59 61 67 68 70`.
+After many hours of statistical analysis, we select 12 high probability winning numbers. These numbers are `25 28 31 34 37 52 53 59 61 67 68 70`.
 We need to apply this selection onto our tactical `GAME.txt` file. We use the `translate` tool to do that job with the following command
 
 ```sh
@@ -552,6 +552,43 @@ $ cartesian_product --numbers "01|02|03" --numbers "11|12|13" --sep " "
 
 
 
+## API (work in progress)
+
+This section provides a brief overview of the main classes and helpers exposed by the library.
+A complete API documentation will be added in a future release.
+
+### class DrawBox
+A utility for drawing random numbers from a set of integers.
+
+Constructor:
+- new DrawBox(total: number)
+
+Methods:
+- draw(count: number, nbSwap?: number): number[]
+  Draws "count" distinct numbers among "total".
+  Optional "nbSwap" controls the internal shuffle strength.
+
+---
+
+### class CombinationHelper
+Helpers for manipulating combinations (arrays of integers).
+
+Static methods:
+- translateAll(combinations: number[][], originAlphabet: number[], targetAlphabet: number[]): number[][]
+  Applies an alphabet translation to each combination.
+
+- toString(combination: number[]): string
+  Converts a combination to a human-readable string.
+
+---
+
+### class RandomHelper
+(placeholder)
+Random utilities used internally for number shuffling and selection.
+
+---
+
+More modules will be documented progressively as the library evolves toward version 1.0.0.
 
 
 
