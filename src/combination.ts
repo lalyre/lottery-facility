@@ -686,7 +686,7 @@ export class CombinationHelper {
 	 * @param n         integer value
 	 * @return          binomial coefficient value of (max, n)
 	 */
-	public static binomial(max:number, n:number): number {
+	/*public static binomial(max:number, n:number): number {
 		if (max < 0) return 0;
 		if (n < 0 || n > max) return 0;
 		if (n === 0 || n === max) return 1;
@@ -694,7 +694,58 @@ export class CombinationHelper {
 		ret /= this.factorial(n);
 		ret /= this.factorial(max-n);
 		return ret;
+	}*/
+
+
+	/**
+	 * Binomial coefficient function
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param n         integer value
+	 * @return          binomial coefficient value of (max, n)
+	 */
+	public static binomial(max:number, n:number): bigint {
+		if (n < 0 || n > max) return 0n;
+		if (n === 0 || n === max) return 1n;
+		
+		n = Math.min(n, max - n); // C(max, n) = C(max, max-n)
+		
+		let result = 1n;
+		const maxBig = BigInt(max);
+		
+		for (let i = 1n; i <= BigInt(n); i++) {
+			result = result * (maxBig - i + 1n) / i;
+		}
+		return result;
 	}
+
+
+
+
+public static coveringExists(total: number, size: number, guarantee: number, lineCount: number): boolean {
+	// Cas impossible trivial
+	if (size < guarantee) return false;
+
+	// C(total, guarantee) et C(size, guarantee) en bigint
+	const totalSubsets = this.binomial(total, guarantee);     // C(total, guarantee)
+	const perLineCover = this.binomial(size, guarantee);      // C(size, guarantee)
+
+	// Borne inf : ceil( C(total, guarantee) / C(size, guarantee) )
+	// minLinesBig = ⌈ totalSubsets / perLineCover ⌉
+	const minLinesBig =
+	(totalSubsets + perLineCover - 1n) / perLineCover;    // ceil division en bigint
+
+	// Si lineCount < min théorique → impossible
+	if (BigInt(lineCount) < minLinesBig) return false;
+
+	// Borne sup : C(total, guarantee) lignes suffisent toujours
+	if (BigInt(lineCount) >= totalSubsets) return true;
+
+	// Ici, zone "intéressante" : il faut un vrai algo (backtracking / SAT / heuristique)
+	// TODO: implémenter la recherche réelle d’un système couvrant.
+	return this.searchCoveringSystem(total, size, guarantee, lineCount);
+}
+
+
 
 
 	/**
