@@ -668,33 +668,16 @@ export class CombinationHelper {
 
 
 	/**
-	 * Factorial function
-	 * @param n         integer value
-	 * @return          factorial value of n
-	 */
-	public static factorial(n:number): number {
-		if (n < 0) return -1;
-		let ret:number = 1;
-		for (let i = 1; i <= n; i++) { ret *= i; }
-		return ret;
+	* Factorial function
+	* @param n         integer value
+	* @return          factorial value of n as bigint
+	*/
+	public static factorial(n: number): bigint {
+		if (n < 0) return -1n;
+		let result = 1n;
+		for (let i = 1n; i <= BigInt(n); i++) { result *= i; }
+		return result;
 	}
-
-
-	/**
-	 * Binomial coefficient function
-	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param n         integer value
-	 * @return          binomial coefficient value of (max, n)
-	 */
-	/*public static binomial(max:number, n:number): number {
-		if (max < 0) return 0;
-		if (n < 0 || n > max) return 0;
-		if (n === 0 || n === max) return 1;
-		let ret:number = this.factorial(max);
-		ret /= this.factorial(n);
-		ret /= this.factorial(max-n);
-		return ret;
-	}*/
 
 
 	/**
@@ -717,7 +700,6 @@ export class CombinationHelper {
 		}
 		return result;
 	}
-
 
 
 
@@ -1368,6 +1350,7 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
 
     console.log('Combinaisons acceptées:', acceptedCombinations);
 })();*/
+
 
 
 
