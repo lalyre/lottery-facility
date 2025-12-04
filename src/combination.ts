@@ -668,10 +668,10 @@ export class CombinationHelper {
 
 
 	/**
-	* Factorial function
-	* @param n         integer value
-	* @return          factorial value of n as bigint
-	*/
+	 * Factorial function
+	 * @param n         integer value
+	 * @return          factorial value of n as bigint
+	 */
 	public static factorial(n: number): bigint {
 		if (n < 0) return -1n;
 		let result = 1n;
@@ -690,14 +690,11 @@ export class CombinationHelper {
 		if (n < 0 || n > max) return 0n;
 		if (n === 0 || n === max) return 1n;
 		
-		n = Math.min(n, max - n); // C(max, n) = C(max, max-n)
-		
+		n = Math.min(n, max - n);		// C(max, n) = C(max, max-n)
 		let result = 1n;
 		const maxBig = BigInt(max);
 		
-		for (let i = 1n; i <= BigInt(n); i++) {
-			result = result * (maxBig - i + 1n) / i;
-		}
+		for (let i = 1n; i <= BigInt(n); i++) { result = result * (maxBig - i + 1n) / i; }
 		return result;
 	}
 
