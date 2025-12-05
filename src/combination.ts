@@ -777,8 +777,9 @@ public static schoenheimLowerBound(total: number, size: number, guarantee: numbe
 public static coveringExists(total:number, size:number, guarantee:number, lineCount:number): boolean {
 	if (total <= 0 || size <= 0 || guarantee <= 0 || lineCount <= 0) return false;
 	if (size < guarantee) return false;
+	if (total < size) return false;
 	const minLines = this.schoenheimLowerBound(total, size, guarantee);
-	if (lineCount < minLines) return false;
+	return (lineCount >= minLines);
 }
 
 
