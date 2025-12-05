@@ -725,6 +725,16 @@ export class CombinationHelper {
  * @param guarantee  t — Size of subsets that must all be covered.
  *
  * @returns          The Schönheim lower bound as a standard JavaScript number.
+ *
+ * ---
+ * Implementation note:
+ *   The code below was drafted with the assistance of ChatGPT (OpenAI GPT-5.1),
+ *   during an exploration of covering designs and lottery system theory.
+ *   The Schönheim lower bound itself is a classical mathematical result due
+ *   to E. Schönheim (“On coverings of pairs by quadruples”, 1964).
+ *   This comment is kept as a small tribute to both the mathematician and
+ *   the assistant who helped shape this API.
+ * ---
  */
 public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
     let L = 1n;
