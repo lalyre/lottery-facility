@@ -1,6 +1,4 @@
 'use strict';
-
-
 export type Combination = number[];
 
 
@@ -810,137 +808,6 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 }
 
 
-export class CartesianProduct {
-	private readonly _parts: Array<Combination>;
-	private readonly _nbParts: number;
-	private readonly _count: number;
-	private _partsIndex: Combination;
-	private _partsValue: Combination;
-	private _currentIndex: number;
-
-
-	/**
-	 * Build a cartesian product calculator
-	 */	
-	public constructor(...parts: Array<Combination>) {
-		// super();
-		this._parts = parts;
-		this._nbParts = parts.length;
-		this._partsIndex = new Array(this._nbParts).fill(0);
-		this._partsValue = new Array(this._nbParts).fill(0);
-		this._count = this._parts.reduce((acc, part) => acc * part.length, 1);
-		this._currentIndex = 0;
-		for (let i = 0; i < this._nbParts; i++) { this._partsValue[i] = this._parts[i][0]; }
-	}
-
-
-	get nbParts(): number {
-		return this._nbParts;
-	}
-
-
-	get count(): number {
-		return this._count;
-	}
-
-
-	get lastIndex(): number {
-		return this._count-1;
-	}
-
-
-	get currentIndex(): number {
-		return this._currentIndex;
-	}
-
-
-	get currentCombination(): Combination {
-		return this._partsValue;
-	}
-
-
-	/**
-	 * Gives the first combination
-	 * @param        none
-	 * @return       first combination
-	 */
-	public start(): Combination {
-		this._currentIndex = 0;
-		
-		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndex[i] = 0;
-			this._partsValue[i] = this._parts[i][0];
-		}
-		return this._partsValue;
-	}
-
-
-	/**
-	 * Gives the last combination
-	 * @param        none
-	 * @return       last combination
-	 */
-	public end(): Combination {
-		this._currentIndex = this.lastIndex;
-		
-		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndex[i] = this._parts[i].length - 1;
-			this._partsValue[i] = this._parts[i][this._partsIndex[i]];
-		}
-		return this._partsValue;
-	}
-
-
-	/**
-	 * Gives the previous combination or null if
-	 * there is no more previous combination
-	 * @param        none
-	 * @return       previous combination
-	 */
-	public previous(): Combination|null {
-		if (this._currentIndex <= 0) return null;
-		this._currentIndex--;
-		
-		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndex[i] === 0) {
-				this._partsIndex[i] = this._parts[i].length - 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
-			} else {
-				this._partsIndex[i] -= 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
-				break;
-			}
-		}
-		return this._partsValue;
-	}
-
-
-	/**
-	 * Gives the next combination or null if
-	 * there is no more next combination
-	 * @param        none
-	 * @return       next combination
-	 */
-	public next(): Combination|null {
-		if (this._currentIndex >= this.lastIndex) return null;
-		this._currentIndex++;
-		
-		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndex[i] === this._parts[i].length - 1) {
-				this._partsIndex[i] = 0;
-				this._partsValue[i] = this._parts[i][0];
-			} else {
-				this._partsIndex[i] += 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
-				break;
-			}
-		}
-		return this._partsValue;
-	}
-
-
-
-
 
 
 
@@ -1023,7 +890,6 @@ for (let i = 0; i < a2.length; i++) {
 	*/
 
 
-}
 
 
 export class Selection {
