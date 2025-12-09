@@ -40,7 +40,7 @@ const generalConfig = {
 		rules: [
 			{
 				test: /\.jsx?$/,
-				exclude: /node_modules/,
+				exclude: /(lib|node_modules)/,
 				use: 'babel-loader',
 			},
 			{

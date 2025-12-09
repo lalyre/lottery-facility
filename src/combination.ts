@@ -622,15 +622,15 @@ export class CombinationHelper {
 	 * @param numbers   array of balls number (combination).
 	 * @return          the rank of the combination.
 	 */
-	public static combinationToRank(max:number, numbers:Combination): number {
-		if (max < 0) return -1;
-		if (!numbers) return -1;
+	public static combinationToRank(max:number, numbers:Combination): bigint {
+		if (max < 0) return -1n;
+		if (!numbers) return -1n;
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:number = this.binomial(max, len);
+		let rank:bigint = this.binomial(max, len);
 		for (let i = len; i > 0; i--) {
-			if (numbers[len-i] > max) return -1;
+			if (numbers[len-i] > max) return -1n;
 			rank -= this.binomial(max-numbers[len-i]+1, i);
 			if (i > 1) rank += this.binomial(max-numbers[len-i], i-1);
 		}
@@ -646,12 +646,11 @@ export class CombinationHelper {
 	 * @param rank      the rank of the combination to be returned.
 	 * @return          the combination corresponding to the given rank.
 	 */
-	public static rankToCombination(max:number, length:number, rank:number): Combination {
+	public static rankToCombination(max:number, length:number, rank:bigint): Combination {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
 		if (rank <= 0 || rank > this.binomial(max, length)) return [];
-		/* eslint-disable-next-line */
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
 		for (let i = 0; i < length; i++) {

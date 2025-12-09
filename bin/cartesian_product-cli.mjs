@@ -110,7 +110,6 @@ for (let i = 0; i < cli.flags.file.length; i++) {
 	}
 	let nums = fs.readFileSync(cli.flags.file[i]).toString().trim().split(/\r?\n/);
 	parts.push(nums.trim().split(/[\|]/));
-	////////////////////////parts.push(nums);
 }
 let size = parts.length;
 

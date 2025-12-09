@@ -42,7 +42,6 @@ export class CartesianProduct {
 	 */
 	public start(): Combination {
 		this._currentIndex = 0;
-		
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndex[i] = 0;
 			this._partsValue[i] = this._parts[i][0];
@@ -58,7 +57,6 @@ export class CartesianProduct {
 	 */
 	public end(): Combination {
 		this._currentIndex = this.lastIndex;
-		
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndex[i] = this._parts[i].length - 1;
 			this._partsValue[i] = this._parts[i][this._partsIndex[i]];
