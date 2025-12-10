@@ -44,7 +44,11 @@ const cli = meow(`
 });
 
 
-let num = cli.flags.num;
+let num = parseInt(cli.flags.num, 10);
+if (Number.isNaN(num)) {
+	console.error("Invalid --num value");
+	process.exit(1);
+}
 let head = cli.flags.head;
 let displayDate = cli.flags.date;
 
@@ -66,6 +70,7 @@ let displayDate = cli.flags.date;
 // https://www.fdj.fr/jeux-de-tirage/keno-gagnant-a-vie/resultats
 // https://www.fdj.fr/jeux-de-tirage/keno/statistiques
 // https://www.fdj.fr/jeux-de-tirage/keno/historique
+// https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66bft6
 // https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66aft6		keno_202010
 // https://media.fdj.fr/static-draws/csv/keno/keno_202010.zip
 // https://media.fdj.fr/static-draws/csv/keno/keno_201811.zip
@@ -73,21 +78,24 @@ let displayDate = cli.flags.date;
 // https://media.fdj.fr/static-draws/csv/keno/keno_199309.zip
 
 
-
-const kenoArchive = 'https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66aft6';
+const kenoArchive = 'https://www.sto.api.fdj.fr/anonymous/service-draw-info/v3/documentations/1a2b3c4d-9876-4562-b3fc-2c963f66bft6';
 getBuffer(kenoArchive)
 .then((buffer) => {
 	return JSZip.loadAsync(buffer)
 })
 .then((zipContent) => {
-	return zipContent.file("keno_202010.csv").async("string");
+	const csvName = Object.keys(zipContent.files).find(name => name.endsWith(".csv"));
+	if (!csvName) {
+		console.error("Aucun fichier .csv trouvé dans l'archive Keno");
+		process.exit(1);
+	}
+	return zipContent.file(csvName).async("string");
 })
 .then((text) => {
 	var lines = text.split(/\r?\n/);
 	
-	//annee_numero_de_tirage0, date_de_tirage1, heure_de_tirage2, date_de_forclusion3, boule1 4,boule2 5,boule3 6,boule4 7,boule5 8,boule6 9,boule7 10,
-	//boule8 11,boule9 12,boule10 13,boule11 14,boule12 15,boule13 16,boule14 17,boule15 18,boule16 19,boule17 20,boule18 21,boule19 22,boule20 23,
-	//multiplicateur 94,numero_jokerplus 95,devise 96,
+	//annee_numero_de_tirage;date_de_tirage;date_de_forclusion;boule1;boule2;boule3;boule4;boule5;boule6;boule7;boule8;boule9;boule10;boule11;boule12;boule13;boule14;boule15;boule16;
+	//multiplicateur;numero_jokerplus;devise;
 	
 	if (num > lines.length-1) {
 		console.error("Too many draws required !");
@@ -107,12 +115,11 @@ getBuffer(kenoArchive)
 		++count;
 		var values = current_line.split(';');
 		var date = values[1];
-		var hour = values[2];
-		var balls = values.slice(4, 24);
-		var multiplicator = values[94];
+		var balls = values.slice(3, 19);	// 16 balls
+		var multiplicator = values[19];
 		
 		if (displayDate) {
-			console.log(date + "; " + hour + "; " + balls.map (x => x.toString().padStart(2, 0)).join(" "));
+			console.log(date + "; " + balls.map (x => x.toString().padStart(2, 0)).join(" "));
 		} else {
 			console.log(balls.map (x => x.toString().padStart(2, 0)).join(" "));
 		}
