@@ -2,7 +2,7 @@
 import { Combination } from "./combination";
 
 
-export class CartesianProduct {
+export class CartesianProduct implements Iterable<Combination> {
 	private readonly _parts: Array<Combination>;
 	private readonly _nbParts: number;
 	private readonly _count: number;
