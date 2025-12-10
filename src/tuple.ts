@@ -1,15 +1,15 @@
 'use strict';
-export type Combination = number[];
+export type Tuple = number[];
 
 
-export class CombinationHelper {
+export class TupleHelper {
 	/**
-	 * Get lottery combination string
+	 * Get lottery tuple string
 	 * @param numbers   array of balls number.
 	 * @param sep       separator (default SPACE).
-	 * @return          combination in string form.
+	 * @return          Tuple in string form.
 	 */
-	public static toString(numbers:Combination|null, sep:string = ' '): string {
+	public static toString(numbers:Tuple|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const display = numbers.map(x => x.toString().padStart(2, '0')).join(sep);
 		return display;
@@ -17,12 +17,12 @@ export class CombinationHelper {
 
 
 	/**
-	 * Get canonical (ordered) lottery combination string
+	 * Get canonical (ordered) lottery tuple string
 	 * @param numbers   array of balls number.
 	 * @param sep       separator (default SPACE).
-	 * @return          combination in string form.
+	 * @return          tuple in string form.
 	 */
-	public static toCanonicalString(numbers:Combination|null, sep:string = ' '): string {
+	public static toCanonicalString(numbers:Tuple|null, sep:string = ' '): string {
 		if (!numbers) return '';
 		const arr = numbers.filter((element, index, array) => array.indexOf(element) === index).sort((a, b) => {return a - b;});
 		const display = arr.map(x => x.toString().padStart(2, '0')).join(sep);
@@ -31,12 +31,12 @@ export class CombinationHelper {
 
 
 	/**
-	 * Compute the number of collisions between 2 lottery combinations
+	 * Compute the number of collisions between 2 lottery tuples
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
 	 * @return          number of balls both inside arr1 and arr2.
 	 */
-	public static collisionsCount(arr1:Combination, arr2:Combination): number {
+	public static collisionsCount(arr1:Tuple, arr2:Tuple): number {
 		const set2 = new Set(arr2);
 		return arr1.filter(item => set2.has(item)).length;
 	}
@@ -48,7 +48,7 @@ export class CombinationHelper {
 	 * @param nbParts      count of returned arrays.
 	 * @return             array of parts of entry array.
 	 */
-	public static split(numbers:Combination, nbParts:number): Array<Combination> {
+	public static split(numbers:Tuple, nbParts:number): Array<Tuple> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts === 0) return [];
 		if (nbParts === 1) return [numbers];
@@ -56,7 +56,7 @@ export class CombinationHelper {
 		if (numbers.length < nbParts) return [];
 
 		const [chunkSize, remainder] = [Math.floor(numbers.length / nbParts), numbers.length % nbParts];
-		const result: Array<Combination> = [];
+		const result: Array<Tuple> = [];
 		const partsSize = new Array(nbParts).fill(chunkSize);
 		for (let i = 0; i < remainder; i++) { partsSize[i] += 1; }
 		
@@ -76,8 +76,8 @@ export class CombinationHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            concatenation of all input arrays.
 	 */
-	public static concat(...parts: Array<Combination>): Combination {
-		return ([] as Combination).concat(...parts);
+	public static concat(...parts: Array<Tuple>): Tuple {
+		return ([] as Tuple).concat(...parts);
 	}
 
 
@@ -116,7 +116,7 @@ export class CombinationHelper {
 		const rest: number[] = array.slice(1);
 		const len = rest.length;
 		offset = offset % len;
-		const rotated_rest: number[] = this.rotate(rest, offset);
+		const rotated_rest: number[] = TupleHelper.rotate(rest, offset);
 		return [fixed, ...rotated_rest];
 	}
 
@@ -142,7 +142,7 @@ export class CombinationHelper {
 	 * Converts rows into columns and columns into rows.
 	 * All inner arrays must have the same length.
 	 * 
-	 * @param array  An array of arrays of numbers (e.g., combinations).
+	 * @param array  An array of arrays of numbers (e.g., tuple).
 	 * @returns      A new array where each column of the input becomes a row in the output.
 	 *
 	 * Example:
@@ -158,7 +158,7 @@ export class CombinationHelper {
 	 *
 	 * @throws Error if inner arrays do not all have the same length.
 	 */
-	public static transposition(array: Combination[]): Combination[] {
+	public static transposition(array: Tuple[]): Tuple[] {
 		if (array.length === 0) return [];
 
 		const rowCount = array.length;
@@ -182,9 +182,9 @@ export class CombinationHelper {
 
 
 
-	public static generateGapSeries(max: number, gap: number): Combination[] {
+	public static generateGapSeries(max: number, gap: number): Tuple[] {
 		const covered = new Set<number>();
-		const result: Combination[] = [];
+		const result: Tuple[] = [];
 
 		while (covered.size < max) {
 			// Trouver le plus petit numéro non couvert
@@ -217,11 +217,11 @@ export class CombinationHelper {
 
 	/**
 	 * Merge multiple arrays of balls number in an interleaved way
-	 * @param arrays     array of Combination arrays.
+	 * @param arrays     array of Tuple arrays.
 	 * @return           merged array.
 	 */
-	public static interleaved_merge(arrays: Array<Combination>): Combination {
-		let mergedArray: Combination = [];
+	public static interleaved_merge(arrays: Array<Tuple>): Tuple {
+		let mergedArray: Tuple = [];
 		let maxLength = Math.max(...arrays.map(arr => arr.length));
 
 		for (let i = 0; i < maxLength; i++)
@@ -238,8 +238,8 @@ export class CombinationHelper {
 	 * @param size       The number of elements per line.
 	 * @return           A 2D array where each sub-array represents a line.
 	 */
-	public static split_into_lines(array: Combination, size: number): Combination[] {
-		let result: Combination[] = [];
+	public static split_into_lines(array: Tuple, size: number): Tuple[] {
+		let result: Tuple[] = [];
 		for (let i = 0; i < array.length; i += size) {
 			if (i + size <= array.length) {
 				result.push(array.slice(i, i + size));
@@ -258,13 +258,13 @@ export class CombinationHelper {
 	 * @param nbParts     count of parts to split input array.
 	 * @return            all possible concatenations of nbParts of input array excluding one.
 	 */
-	public static splitAndExtract_Nminus1(numbers:Combination, nbParts:number): Array<Combination> {
+	public static splitAndExtract_Nminus1(numbers:Tuple, nbParts:number): Array<Tuple> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts <= 1) return [];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
-		const parts: Array<Combination> = this.split (numbers, nbParts);
-		return this.extract_Nminus1 (...parts);
+		const parts: Array<Tuple> = TupleHelper.split (numbers, nbParts);
+		return TupleHelper.extract_Nminus1 (...parts);
 	}
 
 
@@ -273,13 +273,13 @@ export class CombinationHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            all possible concatenations of input arrays excluding one.
 	 */
-	public static extract_Nminus1(...parts: Array<Combination>): Array<Combination> {
+	public static extract_Nminus1(...parts: Array<Tuple>): Array<Tuple> {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
-		const result: Array<Combination> = [];
+		const result: Array<Tuple> = [];
 		for (let i = parts.length-1; i >= 0; i--) {
-			const remainingParts: Array<Combination> = parts.filter((_, index) => index !== i);
-			const mergedArray = this.concat(...remainingParts);
+			const remainingParts: Array<Tuple> = parts.filter((_, index) => index !== i);
+			const mergedArray = TupleHelper.concat(...remainingParts);
 			result.push(mergedArray);
 		}
 		return result;
@@ -292,10 +292,10 @@ export class CombinationHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            an array that is half the length of the input array, with consecutive pairs of elements merged.
 	 */
-	public static pairwise_merge(...parts: Array<Combination>): Array<Combination> {
+	public static pairwise_merge(...parts: Array<Tuple>): Array<Tuple> {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
-		const result: Array<Combination> = [];
+		const result: Array<Tuple> = [];
 		for (let i = 0; i < parts.length; i += 2) {
 			if (i + 1 < parts.length) {
 				result.push([...parts[i], ...parts[i+1]]);
@@ -308,23 +308,23 @@ export class CombinationHelper {
 
 
 	/**
-	 * Translates a lottery combination from one alphabet to another.
+	 * Translates a lottery Tuple from one alphabet to another.
 	 * The translation is based on the positional correspondence between the origin and target alphabets.
 	 *
-	 * @param combination        The combination of numbers to translate.
+	 * @param tuple              The tuple of numbers to translate.
 	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
 	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
-	 * @returns                  The translated combination.
+	 * @returns                  The translated tuple.
 	 *
 	 * @throws Error if the origin or target alphabet is invalid.
-	 * @throws Error if the combination contains numbers not present in the origin alphabet.
+	 * @throws Error if the tuple contains numbers not present in the origin alphabet.
 	 *
 	 * Example:
 	 * translate([1, 2, 3], [1, 2, 3, 4], [10, 20, 30, 40]) => [10, 20, 30]
 	 */
-	public static translate(combination: Combination, originAlphabet: Combination, targetAlphabet: Combination): Combination {
+	public static translate(tuple: Tuple, originAlphabet: Tuple, targetAlphabet: Tuple): Tuple {
 		if (!originAlphabet || !targetAlphabet) throw new Error('Invalid origin or target alphabet.');
-		const translatedCombination: Combination = [];
+		const translatedTuple: Tuple = [];
 		const originMap = new Map<number, number>();
 
 		// Build a map for quick lookups from origin to target numbers
@@ -332,30 +332,30 @@ export class CombinationHelper {
 			originMap.set(originAlphabet[i], targetAlphabet[i]);
 		}
 
-		for (const num of combination) {
+		for (const num of tuple) {
 			if (!originMap.has(num)) throw new Error(`Number ${num} not found in the origin alphabet.`);
-			translatedCombination.push(originMap.get(num)!);
+			translatedTuple.push(originMap.get(num)!);
 		}
-		return translatedCombination;
+		return translatedTuple;
 	}
 
 
 	/**
-	 * Translates an array of lottery combinations from one alphabet to another.
-	 * This method iterates over each combination in the input array and applies the
-	 * `translate` function to it, returning an array of the translated combinations.
+	 * Translates an array of lottery Tuples from one alphabet to another.
+	 * This method iterates over each Tuple in the input array and applies the
+	 * `translate` function to it, returning an array of the translated Tuples.
 	 *
-	 * @param combinations       The array of combinations to translate.
+	 * @param tuples             The array of tuples to translate.
 	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
 	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
-	 * @returns                  An array containing all the translated combinations.
+	 * @returns                  An array containing all the translated Tuples.
 	 *
 	 * @throws Error if the origin or target alphabet is invalid.
-	 * @throws Error if any combination in the array contains numbers not in the origin alphabet.
+	 * @throws Error if any Tuple in the array contains numbers not in the origin alphabet.
 	 */
-	public static translateAll(combinations: Combination[], originAlphabet: Combination, targetAlphabet: Combination): Combination[] {
-		return combinations.map(combination =>
-			CombinationHelper.translate(combination, originAlphabet, targetAlphabet)
+	public static translateAll(tuples: Tuple[], originAlphabet: Tuple, targetAlphabet: Tuple): Tuple[] {
+		return tuples.map(Tuple =>
+			TupleHelper.translate(Tuple, originAlphabet, targetAlphabet)
 		);
 	}
 
@@ -364,10 +364,10 @@ export class CombinationHelper {
 	 * Generates a flat sequence of lottery numbers that increment from 1 up to a given maximum,
 	 * then cycle back to 1.
 	 *
-	 * @param totalBalls             The total number of balls in the lottery (e.g., 70 for Keno, 50 for Euromillions).
-	 * @param combinationsToProduce  The number of combinations to generate.
-	 * @param combinationSize        The number of numbers per combination.
-	 * @returns                      A flat sequence of numbers (Combination).
+	 * @param totalBalls       The total number of balls in the lottery (e.g., 56 for Keno, 50 for Euromillions).
+	 * @param TuplesToProduce  The number of Tuples to generate.
+	 * @param TupleSize        The number of numbers per Tuple.
+	 * @returns                      A flat sequence of numbers (Tuple).
 	 *
 	 * Example:
 	 * generateLotteryNumbers(10, 3, 5) =>
@@ -375,10 +375,10 @@ export class CombinationHelper {
 	 */
 	public static generateLotteryNumbers(
 		totalBalls: number,
-		combinationsToProduce: number,
-		combinationSize: number
+		tuplesToProduce: number,
+		tupleSize: number
 	): number[] {
-		const totalNumbers: number = combinationsToProduce * combinationSize;
+		const totalNumbers: number = tuplesToProduce * tupleSize;
 		const numbers: number[] = [];
 
 		for (let i = 0; i < totalNumbers; i++) {
@@ -392,13 +392,13 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the union between 2 lottery combinations
+	 * Give the union between 2 lottery tuples
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
 	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
 	 * @return          array containing all balls inside arr1 and arr2.
 	 */
-	public static union(arr1:Combination, arr2:Combination, duplicate:boolean = false): Combination {
+	public static union(arr1:Tuple, arr2:Tuple, duplicate:boolean = false): Tuple {
 		if (!arr1) return duplicate ? arr2 : Array.from(new Set(arr2));
 		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
 
@@ -409,12 +409,12 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the intersection between 2 lottery combinations
+	 * Give the intersection between 2 lottery tuples
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls both inside arr1 and arr2.
 	 */
-	public static intersection(arr1:Combination, arr2:Combination): Combination {
+	public static intersection(arr1:Tuple, arr2:Tuple): Tuple {
 		if (!arr1 || !arr2) return [];
 		const set2 = new Set(arr2);
 		return arr1.filter(item => set2.has(item));
@@ -422,13 +422,13 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the difference between 2 lottery combinations
+	 * Give the difference between 2 lottery tuples
 	 * It gives the elements of "arr1" minus the elements of "arr2"
 	 * @param arr1      array of balls number.
 	 * @param arr2      array of balls number.
 	 * @return          array containing balls of arr1 that are not inside arr2.
 	 */
-	public static difference(arr1:Combination, arr2:Combination): Combination {
+	public static difference(arr1:Tuple, arr2:Tuple): Tuple {
 		if (!arr1) return [];
 		if (!arr2) return arr1;
 		const set2 = new Set(arr2);
@@ -437,55 +437,55 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the distance of a lottery combination relatively to a global alphabet
-	 * The distance is the difference between the two furthest items of the input combination.
+	 * Give the distance of a lottery tuple relatively to a global alphabet
+	 * The distance is the difference between the two furthest items of the input Tuple.
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
+	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static distance(alphabet:Combination, combination:Combination): number {
+	public static distance(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
-		if (!combination) return -1;
-		if (combination.length <= 1) return 0;
-		combination.sort((a, b) => {
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		tuple.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
 
-		if (alphabet.indexOf(combination[0]) === -1) return -1;						// Item not in alphabet
-		if (alphabet.indexOf(combination[combination.length-1]) === -1) return -1;	// Item not in alphabet
-		const distance = alphabet.indexOf(combination[combination.length-1]) - alphabet.indexOf(combination[0]);
+		if (alphabet.indexOf(tuple[0]) === -1) return -1;				// Item not in alphabet
+		if (alphabet.indexOf(tuple[tuple.length-1]) === -1) return -1;	// Item not in alphabet
+		const distance = alphabet.indexOf(tuple[tuple.length-1]) - alphabet.indexOf(tuple[0]);
 		return distance;
 	}
 
 
 	/**
-	 * Give the minimum gap of a lottery combination relatively to a global alphabet
-	 * The minimum gap is the smallest distance between two consecutive items of the input combination.
+	 * Give the minimum gap of a lottery tuple relatively to a global alphabet
+	 * The minimum gap is the smallest distance between two consecutive items of the input tuple.
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
+	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_gap(alphabet:Combination, combination:Combination): number {
+	public static minimum_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
-		if (!combination) return -1;
-		if (combination.length <= 1) return 0;
-		combination.sort((a, b) => {
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		tuple.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
 
-		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
 		let minGap = gap;
 
-		for (let j = 1; j < combination.length-1; j++) {
-			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+		for (let j = 1; j < tuple.length-1; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
+			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
 			if (gap < minGap) minGap = gap;
 		}
 
-		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
+		gap = alphabet.length + alphabet.indexOf(tuple[0]) - alphabet.indexOf(tuple[tuple.length-1]);
 		if (gap < minGap) minGap = gap;
 
 		return minGap;
@@ -493,29 +493,29 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the minimum right gap of a lottery combination relatively to a global alphabet
-	 * The minimum right gap is the smallest distance between two consecutive items on the right of the input combination.
+	 * Give the minimum right gap of a lottery tuple relatively to a global alphabet
+	 * The minimum right gap is the smallest distance between two consecutive items on the right of the input tuple.
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
+	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_right_gap(alphabet:Combination, combination:Combination): number {
+	public static minimum_right_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
-		if (!combination) return -1;
-		if (combination.length <= 1) return 0;
-		combination.sort((a, b) => {
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		tuple.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
 
-		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
 		let minGap = gap;
 
-		for (let j = 1; j < combination.length-1; j++) {
-			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+		for (let j = 1; j < tuple.length-1; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return -1;	// Item not in alphabet
+			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
+			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
 			if (gap < minGap) minGap = gap;
 		}
 
@@ -524,35 +524,35 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the maximum gap of a lottery combination relatively to a global alphabet
-	 * The maximum gap is the biggest distance between consecutives items of the input combination (great-circle distance or spherical distance).
+	 * Give the maximum gap of a lottery Tuple relatively to a global alphabet
+	 * The maximum gap is the biggest distance between consecutives items of the input tuple (great-circle distance or spherical distance).
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
+	 * @param tuple         array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_gap(alphabet:Combination, combination:Combination): number {
+	public static maximum_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
-		if (!combination) return -1;
-		if (combination.length <= 1) return 0;
-		combination.sort((a, b) => {
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		tuple.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
 
-		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
 		let maxGap = gap;
 		let previousGap = 0;
 
-		for (let j = 1; j < combination.length-1; j++) {
-			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+		for (let j = 1; j < tuple.length-1; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
+			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
 			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
 			else if (gap > previousGap) { previousGap = gap; }
 		}
 
-		gap = alphabet.length + alphabet.indexOf(combination[0]) - alphabet.indexOf(combination[combination.length-1]);
+		gap = alphabet.length + alphabet.indexOf(tuple[0]) - alphabet.indexOf(tuple[tuple.length-1]);
 		if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
 		else if (gap > previousGap) { previousGap = gap; }
 
@@ -561,29 +561,29 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the maximum right gap of a lottery combination relatively to a global alphabet
-	 * The maximum right gap is the biggest distance between consecutives items on the right of the input combination.
+	 * Give the maximum right gap of a lottery Tuple relatively to a global alphabet
+	 * The maximum right gap is the biggest distance between consecutives items on the right of the input tuple.
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
+	 * @param tuple         array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_right_gap(alphabet:Combination, combination:Combination): number {
+	public static maximum_right_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
-		if (!combination) return -1;
-		if (combination.length <= 1) return 0;
-		combination.sort((a, b) => {
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		tuple.sort((a, b) => {
 			return alphabet.indexOf(a) - alphabet.indexOf(b);
 		});
 
-		if (alphabet.indexOf(combination[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(combination[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(combination[1]) - alphabet.indexOf(combination[0]);
+		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
+		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
+		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
 		let maxGap = gap;
 
-		for (let j = 1; j < combination.length-1; j++) {
-			if (alphabet.indexOf(combination[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(combination[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(combination[j+1]) - alphabet.indexOf(combination[j]);
+		for (let j = 1; j < tuple.length-1; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
+			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;		// Item not in alphabet
+			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
 			if (gap > maxGap) {
 				maxGap = gap;
 			}
@@ -594,22 +594,22 @@ export class CombinationHelper {
 
 
 	/**
-	 * Compute the complement combination of a lottery combination relatively to a global alphabet
+	 * Compute the complement Tuple of a lottery tuple relatively to a global alphabet
 	 * @param alphabet      array of balls number.
-	 * @param combination   array of balls number.
-	 * @return              array containing balls numbers of the complement combination.
+	 * @param tuple         array of balls number.
+	 * @return              array containing balls numbers of the complement tuple.
 	 */
-	public static complement(alphabet:Combination, combination:Combination): Combination|null {
+	public static complement(alphabet:Tuple, tuple:Tuple): Tuple|null {
 		if (!alphabet) return null;
-		if (!combination) return null;
+		if (!tuple) return null;
 
 		const complement:number[] = [];
-		complement.length = combination.length;
+		complement.length = tuple.length;
 
-		for (let j = 0; j < combination.length; j++) {
-			if (alphabet.indexOf(combination[j]) === -1) return null;		// Item not in alphabet
+		for (let j = 0; j < tuple.length; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return null;		// Item not in alphabet
 
-			const pos:number = alphabet.indexOf(combination[j]);
+			const pos:number = alphabet.indexOf(tuple[j]);
 			complement[j] = alphabet[alphabet.length-1 - pos];
 		}
 		return complement;
@@ -617,22 +617,22 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the rank of a given combination
+	 * Give the rank of a given tuple
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param numbers   array of balls number (combination).
-	 * @return          the rank of the combination.
+	 * @param numbers   array of balls number (tuple).
+	 * @return          the rank of the tuple.
 	 */
-	public static combinationToRank(max:number, numbers:Combination): bigint {
+	public static tupleToRank(max:number, numbers:Tuple): bigint {
 		if (max < 0) return -1n;
 		if (!numbers) return -1n;
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:bigint = this.binomial(max, len);
+		let rank:bigint = TupleHelper.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			if (numbers[len-i] > max) return -1n;
-			rank -= this.binomial(max-numbers[len-i]+1, i);
-			if (i > 1) rank += this.binomial(max-numbers[len-i], i-1);
+			rank -= TupleHelper.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += TupleHelper.binomial(max-numbers[len-i], i-1);
 		}
 		rank++;
 		return rank;
@@ -640,24 +640,24 @@ export class CombinationHelper {
 
 
 	/**
-	 * Give the combination corresponding to the given rank
+	 * Give the tuple corresponding to the given rank
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param length    the length of the combination to be returned.
-	 * @param rank      the rank of the combination to be returned.
-	 * @return          the combination corresponding to the given rank.
+	 * @param length    the length of the tuple to be returned.
+	 * @param rank      the rank of the tuple to be returned.
+	 * @return          the tuple corresponding to the given rank.
 	 */
-	public static rankToCombination(max:number, length:number, rank:bigint): Combination {
+	public static rankToTuple(max:number, length:number, rank:bigint): Tuple {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
-		if (rank <= 0 || rank > this.binomial(max, length)) return [];
+		if (rank <= 0 || rank > TupleHelper.binomial(max, length)) return [];
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
 		for (let i = 0; i < length; i++) {
 			for (let k = max; k >= length; k--) {
 				let m = k;
 				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (this.combinationToRank(max, numbers) <= rank) break;
+				if (TupleHelper.tupleToRank(max, numbers) <= rank) break;
 			}
 		}
 		return numbers;
@@ -744,6 +744,8 @@ public static schoenheimLowerBound(total: number, size: number, guarantee: numbe
 }
 
 
+public static coveringLowerBound = TupleHelper.schoenheimLowerBound;
+
 
 /**
  * Tests whether a covering system (covering design) exists with a given number of lines.
@@ -775,7 +777,7 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 	if (total <= 0 || size <= 0 || guarantee <= 0 || lineCount <= 0) return false;
 	if (size < guarantee) return false;
 	if (total < size) return false;
-	const minLines = this.schoenheimLowerBound(total, size, guarantee);
+	const minLines = TupleHelper.coveringLowerBound(total, size, guarantee);
 	return (lineCount >= minLines);
 }
 
@@ -789,8 +791,8 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 	 * @return          great common divisor value of "a" and "b"
 	 */
 	public static gcd(a:number, b:number): number {
-		if (a < b) return this.gcd(b,a);
-		const r:number = a%b; if (r !== 0) return this.gcd(b,r);
+		if (a < b) return TupleHelper.gcd(b,a);
+		const r:number = a%b; if (r !== 0) return TupleHelper.gcd(b,r);
 		return b;
 	}
 
@@ -802,7 +804,7 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 	 * @return          least common multiplier value of "a" and "b"
 	 */
 	public static lcm(a:number, b:number): number {
-		return a*b/this.gcd(a,b);
+		return a*b/TupleHelper.gcd(a,b);
 	}
 }
 
@@ -811,22 +813,22 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 
 
 	/**
-	 * Give the rank of a given combination
+	 * Give the rank of a given Tuple
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param numbers   array of balls number (combination).
-	 * @return          the rank of the combination.
+	 * @param numbers   array of balls number (Tuple).
+	 * @return          the rank of the Tuple.
 	 */
-	/*public static combinationToRank (max:number, numbers:number[]): number {
+	/*public static TupleToRank (max:number, numbers:number[]): number {
 		if (max < 0) return -1;
 		if (!numbers) return -1;
 		const len:number = numbers.length;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:number = CombinationHelper.binomial(max, len);
+		let rank:number = TupleHelper.binomial(max, len);
 		for (let i = len; i > 0; i--) {
 			if (numbers[len-i] > max) return -1;
-			rank -= CombinationHelper.binomial(max-numbers[len-i]+1, i);
-			if (i > 1) rank += CombinationHelper.binomial(max-numbers[len-i], i-1);
+			rank -= TupleHelper.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += TupleHelper.binomial(max-numbers[len-i], i-1);
 		}
 		rank++;
 		return rank;
@@ -834,17 +836,17 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 
 
 	/**
-	 * Give the combination corresponding to the given rank
+	 * Give the Tuple corresponding to the given rank
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param length    the length of the combination to be returned.
-	 * @param rank      the rank of the combination to be returned.
-	 * @return          the combination corresponding to the given rank.
+	 * @param length    the length of the Tuple to be returned.
+	 * @param rank      the rank of the Tuple to be returned.
+	 * @return          the Tuple corresponding to the given rank.
 	 */
-	/*public static rankToCombination (max:number, length:number, rank:number): number[] {
+	/*public static rankToTuple (max:number, length:number, rank:number): number[] {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
-		if (rank <= 0 || rank > CombinationHelper.binomial(max, length)) return [];
+		if (rank <= 0 || rank > TupleHelper.binomial(max, length)) return [];
 		// eslint-disable-next-line
 		const numbers = Array.from({ length: length }, (_, i) => 0);
 
@@ -852,7 +854,7 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 			for (let k = max; k >= length; k--) {
 				let m = k;
 				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (CombinationHelper.combinationToRank(max, numbers) <= rank) break;
+				if (TupleHelper.TupleToRank(max, numbers) <= rank) break;
 			}
 		}
 		return numbers;
@@ -863,9 +865,9 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 
 const lotteryFacility = require('./dist/lotteryfacility-nodebundle.umd.js');
 
-var a1 = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 2);
+var a1 = lotteryFacility.TupleHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 2);
 
-var a1 = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+var a1 = lotteryFacility.TupleHelper.splitAndExtract_Nminus1([1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
@@ -874,15 +876,15 @@ for (let i = 0; i < a1.length; i++) { console.log(a1[i]); }
 
 var a2 = [];
 for (let i = 0; i < a1.length; i++) {
-	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a1[i], 2);
-	a2 = lotteryFacility.CombinationHelper.concat(a2, a);
+	var a = lotteryFacility.TupleHelper.splitAndExtract_Nminus1(a1[i], 2);
+	a2 = lotteryFacility.TupleHelper.concat(a2, a);
 }
 //for (let i = 0; i < a2.length; i++) { console.log(a2[i]); }
 
 var a3 = [];
 for (let i = 0; i < a2.length; i++) {
-	var a = lotteryFacility.CombinationHelper.splitAndExtract_Nminus1(a2[i], 3);
-	a3 = lotteryFacility.CombinationHelper.concat(a3, a);
+	var a = lotteryFacility.TupleHelper.splitAndExtract_Nminus1(a2[i], 3);
+	a3 = lotteryFacility.TupleHelper.concat(a3, a);
 }
 //for (let i = 0; i < a3.length; i++) { console.log(a3[i]); }
 
@@ -891,7 +893,7 @@ for (let i = 0; i < a2.length; i++) {
 
 
 
-export class Selection {
+export class Combination {
 
 }
 
@@ -927,35 +929,35 @@ export const comparisonOperators = {
 };
 
 
-export interface CombinationFilter {
-	setCombination (combination: Combination): void;		// set the current tested combination
-	isSelected(): boolean;									// true if the combination is accepted by the filter, false otherwise
-	select(): void;											// the combination is selected by the filter
+export interface TupleFilter {
+	setTuple (tuple: Tuple): void;		// set the current tested tuple
+	isSelected(): boolean;				// true if the tuple is accepted by the filter, false otherwise
+	select(): void;						// the tuple is selected by the filter
 }
 
 
-export class CombinationFilterPipeline {
-	private _filters: CombinationFilter[] = [];
+export class TupleFilterPipeline {
+	private _filters: TupleFilter[] = [];
 
 
 	/**
 	 * Add a filter to the pipeline
-	 * @param filter      a combination filter
+	 * @param filter      a tuple filter
 	 * @return            none
 	 */
-	addFilter(filter: CombinationFilter): void {
+	addFilter(filter: TupleFilter): void {
 		this._filters.push(filter);
 	}
 
 
 	/**
-	 * Test a combination through all filters in the pipeline
-	 * @param combination      combination to be tested
-	 * @return                 true if the combination passes all filters, false otherwise
+	 * Test a tuple through all filters in the pipeline
+	 * @param tuple      tuple to be tested
+	 * @return           true if the Tuple passes all filters, false otherwise
 	 */
-	isSelected(combination: Combination): boolean {
+	isSelected(tuple: Tuple): boolean {
 		return this._filters.every(filter => {
-			filter.setCombination(combination);
+			filter.setTuple(tuple);
 			return filter.isSelected();
 		});
 	}
@@ -963,9 +965,9 @@ export class CombinationFilterPipeline {
 
 	/**
 	 */
-	select(combination: Combination): void {
+	select(tuple: Tuple): void {
 		for (const filter of this._filters) {
-			filter.setCombination(combination);
+			filter.setTuple(tuple);
 			if (!filter.isSelected()) {
 				return;
 			}
@@ -978,8 +980,8 @@ export class CombinationFilterPipeline {
 }
 
 
-export class LengthFilter implements CombinationFilter {
-	private _combination: Combination | null = null;
+export class LengthFilter implements TupleFilter {
+	private _tuple: Tuple | null = null;
 	private _lengthComparator: (a: number, b: number) => boolean;
 
 
@@ -999,23 +1001,23 @@ export class LengthFilter implements CombinationFilter {
 
 
 	/**
-	 * Set the current combination to be tested.
-	 * @param combination      the combination to set
-	 * @return                 none
+	 * Set the current tuple to be tested.
+	 * @param tuple      the tuple to set
+	 * @return           none
 	 */
-	setCombination(combination: Combination): void {
-		if (!combination) throw new Error("No engaged combination");
-		this._combination = combination;
+	setTuple(tuple: Tuple): void {
+		if (!tuple) throw new Error("No engaged Tuple");
+		this._tuple = tuple;
 	}
 
 
 	/**
-	 * Allow combinations lower than (or equal)/upper than (or equal) a specific length.
-	 * @return                 true if the combination matches the comparison criteria, false otherwise
+	 * Allow tuples lower than (or equal)/upper than (or equal) a specific length.
+	 * @return    true if the tuple matches the comparison criteria, false otherwise
 	 */
 	isSelected(): boolean {
-		if (!this._combination) return false;
-		return this._lengthComparator(this._combination.length, this._lengthReference);
+		if (!this._tuple) return false;
+		return this._lengthComparator(this._tuple.length, this._lengthReference);
 	}
 
 
@@ -1025,8 +1027,8 @@ export class LengthFilter implements CombinationFilter {
 }
 
 
-export class InMemoryCollisionFilter implements CombinationFilter {
-	private _combination: Combination | null = null;
+export class InMemoryCollisionFilter implements TupleFilter {
+	private _tuple: Tuple | null = null;
 	
 	private _levelComparator: (a: number, b: number) => boolean;
 	private _scoreComparator: (a: number, b: number) => boolean;
@@ -1040,7 +1042,7 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 
 	/**
 	 * Creates a filter for collision-based comparisons to a specific collision level reference.
-	 * @param _filterCombinations         an array of the filter combinations stored in memory
+	 * @param _filterTuples         an array of the filter Tuples stored in memory
 	 * @param _levelReference             the reference level of collisions
 	 * @param _levelOperator              a collisions level comparison operator
 	 * @param _scoreReference             the reference score
@@ -1048,7 +1050,7 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 	 * @param _weight                     the weight of matching lines of filter, used to compute the score (default value is 1)
 	 */
 	constructor(
-		private _filterCombinations: Combination[],
+		private _filterTuples: Tuple[],
 		private _levelReference: number,
 		private _levelOperator: keyof typeof comparisonOperators,
 		private _scoreReference: number,
@@ -1056,7 +1058,7 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 		private _weight: number = 1,
 	) {
 		// super();
-		if (!Array.isArray(_filterCombinations) || _filterCombinations.length === 0) throw new Error("Wrong combinations array.");
+		if (!Array.isArray(_filterTuples) || _filterTuples.length === 0) throw new Error("Wrong Tuples array.");
 		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
 		if (_scoreReference < 0 || !Number.isFinite(_scoreReference)) throw new Error("Invalid score reference.");
 		this._scoreComparator = comparisonOperators[this._scoreOperator];
@@ -1065,17 +1067,17 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 
 
 	/**
-	 * Set the current combination to be tested.
-	 * @param combination      the combination to set, and computes its score
-	 * @return                 none
+	 * Set the current Tuple to be tested.
+	 * @param tuple      the Tuple to set, and computes its score
+	 * @return           none
 	 */
-	setCombination(combination: Combination): void {
-		if (!combination) throw new Error("No engaged combination");
-		this._combination = combination;
+	setTuple(tuple: Tuple): void {
+		if (!tuple) throw new Error("No engaged Tuple");
+		this._tuple = tuple;
 
 		let nbHits: number = 0;
-		for (const filterCombination of this._filterCombinations) {
-			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
+		for (const filterTuple of this._filterTuples) {
+			const collisionsCount = TupleHelper.collisionsCount(this._tuple, filterTuple);
 			if (this._levelComparator(collisionsCount, this._levelReference)) nbHits++;
 		}
 		this._score = nbHits * this._weight;
@@ -1083,11 +1085,11 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 
 
 	/**
-	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
-	 * @return                 true if the combination matches the score criteria, false otherwise
+	 * Allow tuples with score lower than (or equal)/upper than (or equal) a specific score reference.
+	 * @return     true if the tuple matches the score criteria, false otherwise.
 	 */
 	isSelected(): boolean {
-		if (!this._combination) return false;
+		if (!this._tuple) return false;
 		return this._scoreComparator(this._score, this._scoreReference);
 	}
 
@@ -1098,13 +1100,13 @@ export class InMemoryCollisionFilter implements CombinationFilter {
 }
 
 
-/*export class InMemoryMaxCollisionFilter implements CombinationFilter {
+/*export class InMemoryMaxCollisionFilter implements TupleFilter {
 }*/
 
 
-class InMemoryCoverageFilter implements CombinationFilter {
+class InMemoryCoverageFilter implements TupleFilter {
 	private _filterCoverage: number[];
-	private _combination: Combination | null = null;
+	private _tuple: Tuple | null = null;
 	
 	private _levelComparator: (a: number, b: number) => boolean;
 	private _scoreComparator: (a: number, b: number) => boolean;
@@ -1118,7 +1120,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 
 	/**
 	 * Creates a filter for coverage-based comparisons to a specific coverage level reference.
-	 * @param _filterCombinations         an array of the filter combinations stored in memory
+	 * @param _filterTuples         an array of the filter Tuples stored in memory
 	 * @param _levelReference             the reference level of coverage
 	 * @param _levelOperator              a coverage level comparison operator
 	 * @param _scoreReference             the reference score
@@ -1126,7 +1128,7 @@ class InMemoryCoverageFilter implements CombinationFilter {
 	 * @param _weight                     the weight of matching lines of filter, used to compute the score (default value is 1)
 	 */
 	constructor(
-		private _filterCombinations: Combination[],
+		private _filterTuples: Tuple[],
 		private _levelReference: number,
 		private _levelOperator: keyof typeof comparisonOperators,
 		private _scoreReference: number,
@@ -1134,30 +1136,30 @@ class InMemoryCoverageFilter implements CombinationFilter {
 		private _weight: number = 1,
 	) {
 		// super();
-		if (!Array.isArray(_filterCombinations) || _filterCombinations.length === 0) throw new Error("Wrong combinations array.");
+		if (!Array.isArray(_filterTuples) || _filterTuples.length === 0) throw new Error("Wrong Tuples array.");
 		if (_levelReference < 0 || !Number.isFinite(_levelReference)) throw new Error("Invalid level reference.");
 		if (_scoreReference < 0 || !Number.isFinite(_scoreReference)) throw new Error("Invalid score reference.");
 		this._scoreComparator = comparisonOperators[this._scoreOperator];
 		this._levelComparator = comparisonOperators[this._levelOperator];
 		
-		this._filterCoverage = new Array(this._filterCombinations.length).fill(0);
+		this._filterCoverage = new Array(this._filterTuples.length).fill(0);
 	}
 
 
 	/**
-	 * Set the current combination to be tested.
-	 * @param combination      the combination to set, and computes its score
-	 * @return                 none
+	 * Set the current tuple to be tested.
+	 * @param tuple      the tuple to set, and computes its score
+	 * @return           none
 	 */
-	setCombination(combination: Combination): void {
-		if (!combination) throw new Error("No engaged combination");
-		this._combination = combination;
+	setTuple(tuple: Tuple): void {
+		if (!tuple) throw new Error("No engaged Tuple");
+		this._tuple = tuple;
 
 		let nbHits: number = 0;
-		for (let i = 0; i < this._filterCombinations.length; i++) {
-			const filterCombination = this._filterCombinations[i];
-			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
+		for (let i = 0; i < this._filterTuples.length; i++) {
+			const filterTuple = this._filterTuples[i];
+			const collisionsCount = TupleHelper.collisionsCount(this._tuple, filterTuple);
+			if (collisionsCount != filterTuple.length && collisionsCount != this._tuple.length) continue;
 			if (this._levelComparator(this._filterCoverage[i], this._levelReference)) nbHits++;
 		}
 		this._score = nbHits * this._weight;
@@ -1165,11 +1167,11 @@ class InMemoryCoverageFilter implements CombinationFilter {
 
 
 	/**
-	 * Allow combinations with score lower than (or equal)/upper than (or equal) a specific score reference.
-	 * @return                 true if the combination matches the score criteria, false otherwise
+	 * Allow tuples with score lower than (or equal)/upper than (or equal) a specific score reference.
+	 * @return   true if the tuple matches the score criteria, false otherwise
 	 */
 	isSelected(): boolean {
-		if (!this._combination) return false;
+		if (!this._tuple) return false;
 		return this._scoreComparator(this._score, this._scoreReference);
 	}
 
@@ -1177,11 +1179,11 @@ class InMemoryCoverageFilter implements CombinationFilter {
 	/**
 	 */
 	select(): void {
-		if (!this._combination) return;
-		for (let i = 0; i < this._filterCombinations.length; i++) {
-			const filterCombination = this._filterCombinations[i];
-			const collisionsCount = CombinationHelper.collisionsCount(this._combination, filterCombination);
-			if (collisionsCount != filterCombination.length && collisionsCount != this._combination.length) continue;
+		if (!this._tuple) return;
+		for (let i = 0; i < this._filterTuples.length; i++) {
+			const filterTuple = this._filterTuples[i];
+			const collisionsCount = TupleHelper.collisionsCount(this._tuple, filterTuple);
+			if (collisionsCount != filterTuple.length && collisionsCount != this._tuple.length) continue;
 			if (this._levelComparator(this._filterCoverage[i], this._levelReference)) this._filterCoverage[i]++;
 		}
 	};
@@ -1197,40 +1199,40 @@ class InMemoryCoverageFilter implements CombinationFilter {
 
 /*
 // Filtre de collision basé sur un fichier de combinaisons
-class FileBasedCollisionFilter implements CombinationFilter {
-    private combinationSet: Set<string> = new Set();
+class FileBasedCollisionFilter implements TupleFilter {
+    private TupleSet: Set<string> = new Set();
 
     constructor(filePath: string) {
-        this.loadCombinationsFromFile(filePath);
+        this.loadTuplesFromFile(filePath);
     }
 
-    private loadCombinationsFromFile(filePath: string): void {
+    private loadTuplesFromFile(filePath: string): void {
         const data = fs.readFileSync(filePath, 'utf-8');
         const lines = data.split(/\r?\n/);
         for (const line of lines) {
-            const combination = line.trim().split(/\s+/).map(Number);
-            if (combination.length > 0) {
-                this.combinationSet.add(combination.join(','));
+            const Tuple = line.trim().split(/\s+/).map(Number);
+            if (Tuple.length > 0) {
+                this.TupleSet.add(Tuple.join(','));
             }
         }
     }
 
-    select(combination: Combination): boolean {
-        return this.combinationSet.has(combination.join(','));
+    select(Tuple: Tuple): boolean {
+        return this.TupleSet.has(Tuple.join(','));
     }
 }
 */
 
 /*
 // Fonction pour traiter le flux de combinaisons depuis un fichier
-async function processCombinationFile(filePath: string, pipeline: CombinationFilterPipeline, onAccept: (combination: Combination) => void): Promise<void> {
+async function processTupleFile(filePath: string, pipeline: TupleFilterPipeline, onAccept: (Tuple: Tuple) => void): Promise<void> {
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input: fileStream, crlfDelay: Infinity });
 
     for await (const line of rl) {
-        const combination = line.trim().split(/\s+/).map(Number);
-        if (pipeline.select(combination)) {
-            onAccept(combination);  // Gestion de la combinaison acceptée
+        const Tuple = line.trim().split(/\s+/).map(Number);
+        if (pipeline.select(Tuple)) {
+            onAccept(Tuple);  // Gestion de la combinaison acceptée
         }
     }
 }
@@ -1240,35 +1242,35 @@ async function processCombinationFile(filePath: string, pipeline: CombinationFil
 
 // Exemple d'utilisation
 /*(async () => {
-    const pipeline = new CombinationFilterPipeline();
+    const pipeline = new TupleFilterPipeline();
 
     // Ajouter des filtres au pipeline
     pipeline.addFilter(new NumberCountFilter(3, 6));  // Combinaisons de 3 à 6 numéros
     pipeline.addFilter(new AverageFilter(10, 50));    // Moyenne entre 10 et 50
 
     // Ajouter un filtre de collision avec des combinaisons en mémoire
-    const memoryCombinations: Combination[] = [
+    const memoryTuples: Tuple[] = [
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 9]
     ];
-    pipeline.addFilter(new CollisionFilter(memoryCombinations));
+    pipeline.addFilter(new CollisionFilter(memoryTuples));
 
     // Ajouter un filtre de collision basé sur un fichier
-    const collisionFilePath = 'path/to/collision_combinations.txt';
+    const collisionFilePath = 'path/to/collision_Tuples.txt';
     pipeline.addFilter(new FileBasedCollisionFilter(collisionFilePath));
 
     // Gestionnaire pour les combinaisons acceptées
-    const acceptedCombinations: Combination[] = [];
-    function handleAcceptedCombination(combination: Combination) {
-        acceptedCombinations.push(combination);
+    const acceptedTuples: Tuple[] = [];
+    function handleAcceptedTuple(Tuple: Tuple) {
+        acceptedTuples.push(Tuple);
     }
 
     // Traitement du fichier contenant les combinaisons d'entrée
-    const inputFilePath = 'path/to/input_combinations.txt';
-    await processCombinationFile(inputFilePath, pipeline, handleAcceptedCombination);
+    const inputFilePath = 'path/to/input_Tuples.txt';
+    await processTupleFile(inputFilePath, pipeline, handleAcceptedTuple);
 
-    console.log('Combinaisons acceptées:', acceptedCombinations);
+    console.log('Combinaisons acceptées:', acceptedTuples);
 })();*/
 
 

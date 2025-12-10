@@ -1,20 +1,20 @@
 'use strict';
-import { Combination } from "./combination";
+import { Tuple } from "./tuple";
 
 
-export class CartesianProduct implements Iterable<Combination> {
-	private readonly _parts: Array<Combination>;
+export class CartesianProduct implements Iterable<Tuple> {
+	private readonly _parts: Array<Tuple>;
 	private readonly _nbParts: number;
 	private readonly _count: number;
 	private _partsIndex: number[];
-	private _partsValue: Combination;
+	private _partsValue: Tuple;
 	private _currentIndex: number;
 
 
 	/**
 	 * Build a cartesian product calculator
 	 */	
-	public constructor(...parts: Array<Combination>) {
+	public constructor(...parts: Array<Tuple>) {
 		// super();
 		if (parts.some(p => p.length === 0)) throw new Error("CartesianProduct parts cannot contain empty arrays.");
 		
@@ -32,15 +32,15 @@ export class CartesianProduct implements Iterable<Combination> {
 	get count(): number { return this._count; }
 	get lastIndex(): number { return this._count-1; }
 	get currentIndex(): number { return this._currentIndex; }
-	get currentCombination(): Combination { return [...this._partsValue]; }
+	get currentTuple(): Tuple { return [...this._partsValue]; }
 
 
 	/**
-	 * Gives the first combination
+	 * Gives the first tuple
 	 * @param        none
-	 * @return       first combination
+	 * @return       first tuple
 	 */
-	public start(): Combination {
+	public start(): Tuple {
 		this._currentIndex = 0;
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndex[i] = 0;
@@ -51,11 +51,11 @@ export class CartesianProduct implements Iterable<Combination> {
 
 
 	/**
-	 * Gives the last combination
+	 * Gives the last tuple
 	 * @param        none
-	 * @return       last combination
+	 * @return       last tuple
 	 */
-	public end(): Combination {
+	public end(): Tuple {
 		this._currentIndex = this.lastIndex;
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndex[i] = this._parts[i].length - 1;
@@ -66,20 +66,20 @@ export class CartesianProduct implements Iterable<Combination> {
 
 
 	/**
-	 * Resets the iterator to the first combination and returns it.
+	 * Resets the iterator to the first tuple and returns it.
 	 */
-	public reset(): Combination {
+	public reset(): Tuple {
 		return this.start();
 	}
 
 
 	/**
-	 * Gives the previous combination or null if
-	 * there is no more previous combination
+	 * Gives the previous tuple or null if
+	 * there is no more previous tuple
 	 * @param        none
-	 * @return       previous combination
+	 * @return       previous tuple
 	 */
-	public previous(): Combination|null {
+	public previous(): Tuple|null {
 		if (this._currentIndex <= 0) return null;
 		this._currentIndex--;
 		
@@ -98,12 +98,12 @@ export class CartesianProduct implements Iterable<Combination> {
 
 
 	/**
-	 * Gives the next combination or null if
-	 * there is no more next combination
+	 * Gives the next tuple or null if
+	 * there is no more next tuple
 	 * @param        none
-	 * @return       next combination
+	 * @return       next tuple
 	 */
-	public next(): Combination|null {
+	public next(): Tuple|null {
 		if (this._currentIndex >= this.lastIndex) return null;
 		this._currentIndex++;
 		
@@ -122,30 +122,30 @@ export class CartesianProduct implements Iterable<Combination> {
 
 
 	/**
-	 * ES6 iterator over all combinations of the Cartesian product.
+	 * ES6 iterator over all tuples of the Cartesian product.
 	 *
 	 * Allows usage such as:
 	 * ```ts
-	 * for (const combination of cartesianProduct) {
+	 * for (const tuple of cartesianProduct) {
 	 *     // ...
 	 * }
 	 * ```
 	 *
-	 * The iteration starts at the first combination (equivalent to calling {@link start})
-	 * and continues until the last combination (when {@link next} returns `null`).
+	 * The iteration starts at the first tuple (equivalent to calling {@link start})
+	 * and continues until the last tuple (when {@link next} returns `null`).
 	 */
-	public [Symbol.iterator](): IterableIterator<Combination> {
+	public [Symbol.iterator](): IterableIterator<Tuple> {
 		let started = false;
 		let done = false;
 		const self = this;
 
 		return {
-			next(): IteratorResult<Combination> {
+			next(): IteratorResult<Tuple> {
 				if (done) {
 					return { value: undefined, done: true };
 				}
 
-				let value: Combination | null;
+				let value: Tuple | null;
 				if (!started) {
 					value = self.start();
 					started = true;
@@ -161,10 +161,10 @@ export class CartesianProduct implements Iterable<Combination> {
 				return { value, done: false };
 			},
 
-			[Symbol.iterator](): IterableIterator<Combination> {
+			[Symbol.iterator](): IterableIterator<Tuple> {
 				return this;
 			}
-		} as IterableIterator<Combination>;
+		} as IterableIterator<Tuple>;
 	}
 }
 
