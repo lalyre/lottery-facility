@@ -78,7 +78,7 @@ let rl = readline.createInterface({
 	let res1 = line.trim().split(/\s+/);
 	//console.log("res1 " + res1);
 	
-	let res2 = lotteryFacility.CombinationHelper.difference(global_alphabet, res1)
+	let res2 = lotteryFacility.TupleHelper.difference(global_alphabet, res1)
 	//console.log("res2 " + res2);
 	
 	let result_line = res2.join(" ").split(" ").filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(" ");

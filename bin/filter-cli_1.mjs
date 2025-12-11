@@ -635,11 +635,11 @@ let maxScore = 0;
 const printOutput = function (inputLinesCount, testedCombination, hits_count_string, hits_filters_string) {
 	// Display output
 	if (cli.flags.printhits || cli.flags.printfullhits) {
-		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.CombinationHelper.toString(testedCombination.sort()));
+		console.log("combi" + inputLinesCount.toString().padStart(10, 0) + ": " + lotteryFacility.TupleHelper.toString(testedCombination.sort()));
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
-		console.log(lotteryFacility.CombinationHelper.toString(testedCombination.sort()));
+		console.log(lotteryFacility.TupleHelper.toString(testedCombination.sort()));
 	}
 }
 
@@ -757,7 +757,7 @@ outerLoop: for await (const line of rl) {
 
 
 		// Combi distance scope
-		/*let distance = lotteryFacility.CombinationHelper.distance(global_alphabet, testedCombination);
+		/*let distance = lotteryFacility.TupleHelper.distance(global_alphabet, testedCombination);
 		let selectDistanceScope = true;
 		switch (true) {
 			case (testDistanceSelection[i] == null):
@@ -806,7 +806,7 @@ outerLoop: for await (const line of rl) {
 
 
 		// Combi min_gap scope
-		/*let minGap = lotteryFacility.CombinationHelper.minimum_right_gap(global_alphabet, testedCombination);
+		/*let minGap = lotteryFacility.TupleHelper.minimum_right_gap(global_alphabet, testedCombination);
 		let selectMingapScope = true;
 		switch (true) {
 			case (testMingapSelection[i] == null):
@@ -859,7 +859,7 @@ outerLoop: for await (const line of rl) {
 
 
 		// Combi max_gap scope
-		/*let maxGap = lotteryFacility.CombinationHelper.maximum_right_gap(global_alphabet, testedCombination);
+		/*let maxGap = lotteryFacility.TupleHelper.maximum_right_gap(global_alphabet, testedCombination);
 		let selectMaxgapScope = true;
 		switch (true) {
 			case (testMaxgapSelection[i] == null):
@@ -973,7 +973,7 @@ outerLoop: for await (const line of rl) {
 		{
 			for (let j = 0; j < filterRestrictions[i].length; j++) {
 				let match = false;
-				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(slicedCombination, filterRestrictions[i][j].combination);
+				let nb_collisions = lotteryFacility.TupleHelper.collisionsCount(slicedCombination, filterRestrictions[i][j].combination);
 				switch (true) {
 					case /^<$/.test(testLevelSelection[i]):
 						if (nb_collisions < testLevel[i]) {
@@ -1050,7 +1050,7 @@ outerLoop: for await (const line of rl) {
 			let matchingCombinations = [];
 			for (let j = 0; j < currentFilterCombinations.length; j++) {
 				let match = false;
-				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], currentFilterCombinations[j].combination);
+				let nb_collisions = lotteryFacility.TupleHelper.collisionsCount(matchingRestrictions[k], currentFilterCombinations[j].combination);
 
 
 				// TODO CL
@@ -1124,12 +1124,12 @@ outerLoop: for await (const line of rl) {
 
 
 			let combiRepetition = 0;
-			hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
+			hits_filters_string += lotteryFacility.TupleHelper.toString(matchingRestrictions[k]) + '\n';
 			for (let j = 0; j < matchingCombinations.length; j++) {
 				combiRepetition += (matchingCombinations[j].covering == 0) ? 0 : matchingCombinations[j].covering;
 				nbHits++;
-				let nb_collisions = lotteryFacility.CombinationHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
-				hits_filters_string += lotteryFacility.CombinationHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
+				let nb_collisions = lotteryFacility.TupleHelper.collisionsCount(matchingRestrictions[k], matchingCombinations[j].combination);
+				hits_filters_string += lotteryFacility.TupleHelper.toString(matchingCombinations[j].combination) + ` - [ nb_collisions: ${nb_collisions} ]` + '\n';
 				coveredLines += matchingCombinations[j].lineNum;
 				coveredLines += " ";
 			}
@@ -1190,7 +1190,7 @@ outerLoop: for await (const line of rl) {
 
 
 			score = nbHits * weight[i];
-			hits_count_string += lotteryFacility.CombinationHelper.toString(matchingRestrictions[k]) + '\n';
+			hits_count_string += lotteryFacility.TupleHelper.toString(matchingRestrictions[k]) + '\n';
 			hits_count_string += `[hits: ${nbHits} - score: ${score} ] `;
 
 
@@ -1289,7 +1289,7 @@ outerLoop: for await (const line of rl) {
 			
 			hitsCount += nbHits;
 			combiFilterScore[i] = hitsCount * weight[i]; //combiGlobalScore += combiFilterScore[i];
-			hits_count_string += lotteryFacility.CombinationHelper.toString(slicedCombination) + '\n';
+			hits_count_string += lotteryFacility.TupleHelper.toString(slicedCombination) + '\n';
 			//hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - min value: ${combiFilterMinValue[i]} - - max value: ${combiFilterMaxValue[i]} - - sum value: ${combiFilterSumValue[i]}`;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] `;
 			
@@ -1447,7 +1447,7 @@ if (coverStatsMode) {
 	for (let i = 0; i < filterCommand.length; i++) {
 		console.log(`Filter #${i+1} on file ${filename[i]}`);
 		for (let j = 0; j < filterCombinations[i].length; j++) {
-			console.log(`${lotteryFacility.CombinationHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
+			console.log(`${lotteryFacility.TupleHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 		}
 		console.log();
 	}

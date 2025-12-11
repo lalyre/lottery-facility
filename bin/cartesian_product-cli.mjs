@@ -149,7 +149,7 @@ for (const combination of cartesianProduct) {
 
 
 	// Get combination
-	const result_line = lotteryFacility.CombinationHelper.toCanonicalString (cartesianProduct.currentCombination, SEP);
+	const result_line = lotteryFacility.TupleHelper.toCanonicalString (cartesianProduct.currentCombination, SEP);
 
 
 	// Output

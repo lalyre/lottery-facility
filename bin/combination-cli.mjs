@@ -202,7 +202,7 @@ do {
 	var result_line = temp_array;
 	
 	
-	//var iterators2 = lotteryFacility.CombinationHelper.complement(global_alphabet, iterators);
+	//var iterators2 = lotteryFacility.TupleHelper.complement(global_alphabet, iterators);
 	//var temp_array2 = iterators2.map(x => numbers[x-1]).join(cli.flags.sep);
 	//var result_line2 = temp_array2;
 	

@@ -181,9 +181,9 @@ Import in your browser project from a local library file:
   ];
 
   try {
-    const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
+    const translatedCombinations = LotteryFacility.TupleHelper.translateAll(kenoGame, balls, random_balls);
 	for (let c of translatedCombinations) {
-      document.write(LotteryFacility.CombinationHelper.toString(c));
+      document.write(LotteryFacility.TupleHelper.toString(c));
 	  document.write("<br>");
 	}
   }
@@ -229,12 +229,12 @@ document.getElementById('shuffleButton').addEventListener('click', () => {
     const random_balls = box.draw(70, 5000);
 
     try {
-        const translatedCombinations = LotteryFacility.CombinationHelper.translateAll(kenoGame, balls, random_balls);
+        const translatedCombinations = LotteryFacility.TupleHelper.translateAll(kenoGame, balls, random_balls);
         const resultDiv = document.getElementById('result');
         resultDiv.innerHTML = '';
 
         for (let c of translatedCombinations) {
-            const combinationString = LotteryFacility.CombinationHelper.toString(c);
+            const combinationString = LotteryFacility.TupleHelper.toString(c);
             resultDiv.innerHTML += `<span>${combinationString}</span><br>`;
         }
     } catch (error) {
@@ -558,7 +558,7 @@ $ cartesian_product --numbers "01|02|03" --numbers "11|12|13" --sep " "
 - new DrawBox(total)
 - draw(count, nbSwap?)
 
-### CombinationHelper
+### TupleHelper
 - translateAll(combinations, originAlphabet, targetAlphabet)
 - toString(combination)
 
