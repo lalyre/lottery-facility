@@ -1,15 +1,16 @@
 {
   "name": "lottery-facility",
   "version": "0.0.1-alpha.9",
-  "description": "Some APIs and CLI tools for designing lottery cracking systems.",
+  "description": "Some APIs and CLI tools for lottery analysis and for building smart lottery systems in Node.js.",
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
   "exports": {
     ".": {
+      "types": "./ts5.6/index.d.ts",
       "node": "./dist/lotteryfacility-nodebundle.umd.js",
       "browser": "./dist/lotteryfacility-webbundle.umd.js"
     }
   },
-  "types": "main.d.ts",
+  "types": "ts5.6/index.d.ts",
   "typesVersions": {
     ">=5.6": {
       "*": [
@@ -23,7 +24,7 @@
     "dist/**.txt",
     "dist/**.csv",
     "dist/**.js",
-    "ts5.4/"
+    "ts5.6/**"
   ],
   "type": "commonjs",
   "private": false,

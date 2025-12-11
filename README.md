@@ -94,7 +94,6 @@ https://badge.fury.io/for/js/lottery-facility
 Install with npm:
 ```sh
 npm install lottery-facility
-npm install --save-dev @types/lottery-facility
 ```
 
 
