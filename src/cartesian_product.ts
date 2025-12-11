@@ -145,7 +145,7 @@ export class CartesianProduct implements Iterable<Tuple> {
 					return { value: undefined, done: true };
 				}
 
-				let value: Tuple | null;
+				let value: Tuple|null;
 				if (!started) {
 					value = self.start();
 					started = true;

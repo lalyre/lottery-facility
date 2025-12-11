@@ -11,4 +11,5 @@ export * from './utilities';
 export * from './random';
 export * from './drawbox';
 export * from './tuple';
+export * from './cartesian_product';
 

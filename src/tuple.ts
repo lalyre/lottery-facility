@@ -7,7 +7,7 @@ export class TupleHelper {
 	 * Get lottery tuple string
 	 * @param numbers   array of balls number.
 	 * @param sep       separator (default SPACE).
-	 * @return          Tuple in string form.
+	 * @return          tuple in string form.
 	 */
 	public static toString(numbers:Tuple|null, sep:string = ' '): string {
 		if (!numbers) return '';
@@ -308,7 +308,7 @@ export class TupleHelper {
 
 
 	/**
-	 * Translates a lottery Tuple from one alphabet to another.
+	 * Translates a lottery tuple from one alphabet to another.
 	 * The translation is based on the positional correspondence between the origin and target alphabets.
 	 *
 	 * @param tuple              The tuple of numbers to translate.
@@ -341,14 +341,14 @@ export class TupleHelper {
 
 
 	/**
-	 * Translates an array of lottery Tuples from one alphabet to another.
-	 * This method iterates over each Tuple in the input array and applies the
-	 * `translate` function to it, returning an array of the translated Tuples.
+	 * Translates an array of lottery tuples from one alphabet to another.
+	 * This method iterates over each tuple in the input array and applies the
+	 * `translate` function to it, returning an array of the translated tuples.
 	 *
 	 * @param tuples             The array of tuples to translate.
 	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
 	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
-	 * @returns                  An array containing all the translated Tuples.
+	 * @returns                  An array containing all the translated tuples.
 	 *
 	 * @throws Error if the origin or target alphabet is invalid.
 	 * @throws Error if any Tuple in the array contains numbers not in the origin alphabet.
@@ -365,9 +365,9 @@ export class TupleHelper {
 	 * then cycle back to 1.
 	 *
 	 * @param totalBalls       The total number of balls in the lottery (e.g., 56 for Keno, 50 for Euromillions).
-	 * @param TuplesToProduce  The number of Tuples to generate.
-	 * @param TupleSize        The number of numbers per Tuple.
-	 * @returns                      A flat sequence of numbers (Tuple).
+	 * @param tuplesToProduce  The number of tuples to generate.
+	 * @param tupleSize        The number of numbers per tuple.
+	 * @returns                A flat sequence of numbers (Tuple).
 	 *
 	 * Example:
 	 * generateLotteryNumbers(10, 3, 5) =>
@@ -403,7 +403,6 @@ export class TupleHelper {
 		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
 
 		if (duplicate) return [...arr1, ...arr2];
-
 		return Array.from(new Set([...arr1, ...arr2]));
 	}
 
@@ -438,7 +437,7 @@ export class TupleHelper {
 
 	/**
 	 * Give the distance of a lottery tuple relatively to a global alphabet
-	 * The distance is the difference between the two furthest items of the input Tuple.
+	 * The distance is the difference between the two furthest items of the input tuple.
 	 * @param alphabet      array of balls number.
 	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
@@ -524,7 +523,7 @@ export class TupleHelper {
 
 
 	/**
-	 * Give the maximum gap of a lottery Tuple relatively to a global alphabet
+	 * Give the maximum gap of a lottery tuple relatively to a global alphabet
 	 * The maximum gap is the biggest distance between consecutives items of the input tuple (great-circle distance or spherical distance).
 	 * @param alphabet      array of balls number.
 	 * @param tuple         array of balls number.
@@ -561,7 +560,7 @@ export class TupleHelper {
 
 
 	/**
-	 * Give the maximum right gap of a lottery Tuple relatively to a global alphabet
+	 * Give the maximum right gap of a lottery tuple relatively to a global alphabet
 	 * The maximum right gap is the biggest distance between consecutives items on the right of the input tuple.
 	 * @param alphabet      array of balls number.
 	 * @param tuple         array of balls number.
@@ -594,7 +593,7 @@ export class TupleHelper {
 
 
 	/**
-	 * Compute the complement Tuple of a lottery tuple relatively to a global alphabet
+	 * Compute the complement tuple of a lottery tuple relatively to a global alphabet
 	 * @param alphabet      array of balls number.
 	 * @param tuple         array of balls number.
 	 * @return              array containing balls numbers of the complement tuple.
@@ -813,10 +812,10 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 
 
 	/**
-	 * Give the rank of a given Tuple
+	 * Give the rank of a given tuple
 	 * @param max       the maximum possible number value used in balls numbers.
 	 * @param numbers   array of balls number (Tuple).
-	 * @return          the rank of the Tuple.
+	 * @return          the rank of the tuple.
 	 */
 	/*public static TupleToRank (max:number, numbers:number[]): number {
 		if (max < 0) return -1;
@@ -836,11 +835,11 @@ public static coveringExists(total:number, size:number, guarantee:number, lineCo
 
 
 	/**
-	 * Give the Tuple corresponding to the given rank
+	 * Give the tuple corresponding to the given rank
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param length    the length of the Tuple to be returned.
-	 * @param rank      the rank of the Tuple to be returned.
-	 * @return          the Tuple corresponding to the given rank.
+	 * @param length    the length of the tuple to be returned.
+	 * @param rank      the rank of the tuple to be returned.
+	 * @return          the tuple corresponding to the given rank.
 	 */
 	/*public static rankToTuple (max:number, length:number, rank:number): number[] {
 		if (max <= 0) return [];
