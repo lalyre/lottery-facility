@@ -25,7 +25,7 @@ export class RandomHelper {
 	 */
 	public static randomNumber(): number {
 		const length = 8;
-		const randomBytes1:Int8Array = RandomHelper.randomBytes(length);
+		const randomBytes1:Uint8Array = RandomHelper.randomBytes(length);
 		let rand1:number = 0;
 		for (let i = 0; i < length; i++) {
 			rand1 <<= 8;
@@ -41,7 +41,7 @@ export class RandomHelper {
 	 * @return           random HEX string.
 	 */
 	public static randomHEXString (len:number): string {
-		const randomBytes:Int8Array = RandomHelper.randomBytes(len);
+		const randomBytes:Uint8Array = RandomHelper.randomBytes(len);
 		const buffer = Buffer.from(randomBytes);
 		return buffer.toString('hex');
 	}
@@ -52,12 +52,12 @@ export class RandomHelper {
 	 * @param len        length of random generated array of bytes.
 	 * @return           random array of bytes.
 	 */
-	public static randomBytes (len:number): Int8Array {
+	public static randomBytes (len:number): Uint8Array {
 		if (len < 1 || len > 32) throw new Error('Invalid len parameter');
 		// const rand = Date.now().toString(2) + Math.random().toString(2);
 		const rand = Date.now().toString() + Math.random().toString().substring(2);
 		const hash = sha256.array(rand);
-		const arr:Int8Array = new Int8Array(hash.slice(0, len));
+		const arr:Uint8Array = new Uint8Array(hash.slice(0, len));
 		return arr;
 	}
 }
