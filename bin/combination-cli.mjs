@@ -106,59 +106,36 @@ switch (true) {
 		break;
 }
 
-let verboseMode = cli.flags.verbose;
-let numbers = null;
-let size = cli.flags.size;
-let total = cli.flags.total;
+const verboseMode = cli.flags.verbose;
+const size = cli.flags.size;
+const total = cli.flags.total;
+const SEP = cli.flags.sep;
 //let step = cli.flags.step;
 //let separator = false;
 //let SEP = (separator) ? '|' : ' ';
 
 
+// Read input items
+let items = null;
 if (cli.flags.numbers) {
-	numbers = cli.flags.numbers.trim().split(/[\|]/);
+	items = cli.flags.numbers.trim().split(/[\|]/);
 } else {
 	if (!fs.existsSync(cli.flags.file)) {
 		console.error(`File ${cli.flags.file} does not exist`);
 		process.exit(1);
 	}
-	numbers = fs.readFileSync(cli.flags.file).toString().trim().split(/\r?\n/);
+	items = fs.readFileSync(cli.flags.file).toString().trim().split(/\r?\n/);
 }
 if (total < size) {
 	console.error("Wrong <total> or <size> value.");
 	process.exit(1);
 }
-if (numbers.length < total) {
-	console.error("The numbers file is too short.");
+if (!items || items.length < total) {
+	console.error("The numbers source is too short.");
 	process.exit(1);
 }
-
-
-var iterators = [];
-for (var i = 1; i <= size; i++) {
-	iterators.push(i);
-}
-
-
-const nextCombination = function (tab) {
-	var index = size-1;
-	var val = total;
-	
-	while (index >= 0 && tab[index] >= val) {
-		index--;
-		val--;
-	}
-	if (index < 0) {
-		return null;
-	}
-
-	val = tab[index] + 1;
-	for (var j = index; j < size; j++) {
-		tab[j] = val;
-		val++;
-	}
-	return tab;
-}
+items = items.slice(0, total);											// Keep only first <total> items (as your help text says)
+const combinationIterator = new lotteryFacility.Combination(total, size);
 
 
 //let global_alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
@@ -168,7 +145,8 @@ let outfd = null;
 let file = null;
 let fileNum = 0;
 let lineNum = 0;
-do {
+
+for (const combination of combinationIterator) {
 	// Progress bar
 	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
 		fileNum++; lineNum = 0;
@@ -194,36 +172,20 @@ do {
 		}
 	}
 	lineNum++;
-	
-	// Computation
-	//var temp_array = iterators.map(x => numbers.slice((x-1)*step, x*step).join(cli.flags.sep));
-	var temp_array = iterators.map(x => numbers[x-1]).join(cli.flags.sep);
-	//var result_line = temp_array.join(SEP).split(SEP).filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(SEP);
-	var result_line = temp_array;
-	
-	
-	//var iterators2 = lotteryFacility.TupleHelper.complement(global_alphabet, iterators);
-	//var temp_array2 = iterators2.map(x => numbers[x-1]).join(cli.flags.sep);
-	//var result_line2 = temp_array2;
-	
-	
-	
+		
+	const result_line = combination.map(i => items[i - 1]).join(SEP);
+
 	// Output
 	if (verboseMode) {
 		console.log(result_line);
-		//console.log(result_line2);
 	}
 	if (outfd) {
-		fs.writeSync(outfd, result_line);
-		fs.writeSync(outfd, '\n');
+		fs.writeSync(outfd, result_line + '\n');
 	}
 	if (bar) {
 		bar.increment();
 	}
-	
-	// Next
-	var ret = nextCombination(iterators);
-} while (ret != null);
+}
 
 if (outfd) { fs.closeSync(outfd); outfd = null; }
 if (bar) { bar.stop(); }
