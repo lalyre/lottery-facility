@@ -1,18 +1,18 @@
 'use strict';
-import { Tuple } from "./tuple";
+import { TupleHelper, Tuple } from "./tuple";
 
 
 export class CartesianProduct implements Iterable<Tuple> {
 	private readonly _parts: Array<Tuple>;
 	private readonly _nbParts: number;
-	private readonly _count: number;
+	private readonly _count: bigint;
+	private _currentIndex: bigint;
 	private _partsIndex: number[];
 	private _partsValue: Tuple;
-	private _currentIndex: number;
 
 
 	/**
-	 * Build a cartesian product calculator
+	 * Build a cartesian product iterator
 	 */	
 	public constructor(...parts: Array<Tuple>) {
 		// super();
@@ -22,16 +22,16 @@ export class CartesianProduct implements Iterable<Tuple> {
 		this._nbParts = parts.length;
 		this._partsIndex = new Array(this._nbParts).fill(0);
 		this._partsValue = new Array(this._nbParts).fill(0);
-		this._count = this._parts.reduce((acc, part) => acc * part.length, 1);
-		this._currentIndex = 0;
+		this._count = BigInt(this._parts.reduce((acc, part) => acc * part.length, 1));
+		this._currentIndex = 0n;
 		for (let i = 0; i < this._nbParts; i++) { this._partsValue[i] = this._parts[i][0]; }
 	}
 
 
 	get nbParts(): number { return this._nbParts; }
-	get count(): number { return this._count; }
-	get lastIndex(): number { return this._count-1; }
-	get currentIndex(): number { return this._currentIndex; }
+	get count(): bigint { return this._count; }
+	get lastIndex(): bigint { return this._count-1n; }
+	get currentIndex(): bigint { return this._currentIndex; }
 	get currentTuple(): Tuple { return [...this._partsValue]; }
 
 
@@ -41,7 +41,7 @@ export class CartesianProduct implements Iterable<Tuple> {
 	 * @return       first tuple
 	 */
 	public start(): Tuple {
-		this._currentIndex = 0;
+		this._currentIndex = 0n;
 		for (let i = 0; i < this._nbParts; i++) {
 			this._partsIndex[i] = 0;
 			this._partsValue[i] = this._parts[i][0];
@@ -141,9 +141,7 @@ export class CartesianProduct implements Iterable<Tuple> {
 
 		return {
 			next(): IteratorResult<Tuple> {
-				if (done) {
-					return { value: undefined, done: true };
-				}
+				if (done) { return { value: undefined, done: true }; }
 
 				let value: Tuple|null;
 				if (!started) {

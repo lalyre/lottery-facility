@@ -20,18 +20,12 @@ export class DrawBox {
 		if (count === undefined) throw new Error('Need to pass a count parameter');
 		if (count < 1) throw new Error('Invalid count parameter');
 		this._count = count;
-		this._balls = Array.from({ length: count+1 }, (_, i) => i);
+		this._balls = Array.from({ length: count }, (_, i) => i+1);
 	}
 
 
-	get count(): number {
-		return this._count;
-	}
-
-
-	get balls(): number[] {
-		return this._balls;
-	}
+	get count(): number { return this._count; }
+	get balls(): number[] { return this._balls; }
 
 
 	/**
@@ -55,7 +49,7 @@ export class DrawBox {
 	public shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
 			const a = RandomHelper.randomNumberInRange(1, this._count);
-			this._swapBalls(1+i%this._count, a);
+			this._swapBalls(i%this._count, a);
 		}
 	}
 

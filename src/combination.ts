@@ -1,0 +1,155 @@
+'use strict';
+import { TupleHelper, Tuple } from "./tuple";
+
+
+export class Combination implements Iterable<Tuple> {
+    private readonly _total: number;
+    private readonly _size: number;
+    private readonly _count: bigint;
+    private _currentIndex: bigint;
+    private _values: Tuple;
+
+
+    /**
+	 * Build a combination iterator
+	 */	
+    constructor(total: number, size: number) {
+        // super();
+        if (total <= 0 || size <= 0 || size > total) throw new Error("Invalid total/size values");
+
+        this._total = total;
+        this._size = size;
+        this._count = TupleHelper.binomial(total, size);
+        this._values = Array.from({ length: size }, (_, i) => i + 1);
+        this._currentIndex = 0n;
+    }
+
+
+	get total(): number { return this._total; }
+	get size(): number { return this._size; }
+	get count(): bigint { return this._count; }
+	get lastIndex(): bigint { return this._count - 1n; }
+	get currentIndex(): bigint { return this._currentIndex; }
+	get currentCombination(): Tuple { return [...this._values]; }
+
+
+	/**
+	 * Gives the first tuple
+	 * @param        none
+	 * @return       first tuple
+	 */
+    public start(): Tuple {
+        this._values = Array.from({ length: this._size }, (_, i) => i + 1);
+        this._currentIndex = 0n;
+        return [...this._values];
+    }
+
+
+    /**
+	 * Gives the last tuple
+	 * @param        none
+	 * @return       last tuple
+	 */
+    public end(): Tuple {
+        this._values = Array.from({ length: this._size }, (_, i) => this._total - this._size + 1 + i);
+        this._currentIndex = this.lastIndex;
+        return [...this._values];
+    }
+
+
+	/**
+	 * Resets the iterator to the first tuple and returns it.
+	 */
+	public reset(): Tuple {
+		return this.start();
+	}
+
+
+	/**
+	 * Gives the previous tuple or null if
+	 * there is no more previous tuple
+	 * @param        none
+	 * @return       previous tuple
+	 */
+    public previous(): Tuple|null {
+        if (this._currentIndex <= 0n) return null;
+        this._currentIndex--;
+
+        //TODO
+
+        return [...this._values];
+    }
+
+
+	/**
+	 * Gives the next tuple or null if
+	 * there is no more next tuple
+	 * @param        none
+	 * @return       next tuple
+	 */
+	public next(): Tuple|null {
+		if (this._currentIndex >= this.lastIndex) return null;
+		this._currentIndex++;
+
+		let index = this._size - 1;
+		let val = this._total;
+
+		while (index >= 0 && this._values[index] >= val) {
+			index--;
+			val--;
+		}
+		if (index < 0) return null;
+
+		val = this._values[index] + 1;
+		for (let j = index; j < this._size; j++) {
+			this._values[j] = val;
+			val++;
+		}
+		return [...this._values];
+	}
+
+
+	/**
+	 * ES6 iterator over all tuples of the combination.
+	 *
+	 * Allows usage such as:
+	 * ```ts
+	 * for (const tuple of combination) {
+	 *     // ...
+	 * }
+	 * ```
+	 *
+	 * The iteration starts at the first tuple (equivalent to calling {@link start})
+	 * and continues until the last tuple (when {@link next} returns `null`).
+	 */
+	public [Symbol.iterator](): IterableIterator<Tuple> {
+		let started = false;
+		let done = false;
+		const self = this;
+
+		return {
+			next(): IteratorResult<Tuple> {
+				if (done) return { value: undefined, done: true };
+
+				let value: Tuple | null;
+				if (!started) {
+					value = self.start();
+					started = true;
+				} else {
+					value = self.next();
+				}
+
+				if (value === null) {
+					done = true;
+					return { value: undefined, done: true };
+				}
+				return { value, done: false };
+			},
+
+			[Symbol.iterator](): IterableIterator<Tuple> {
+                return this;
+            }
+		} as IterableIterator<Tuple>;
+	}
+}
+
