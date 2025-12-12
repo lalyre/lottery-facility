@@ -15,16 +15,16 @@ describe('CartesianProduct module', () => {
 		const arr1: Array<number[]> = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
 		const prod1 = new CartesianProduct(...arr1);
 		console.log("prod1.count " + prod1.count);
-		expect(prod1.count).toBe(27);
+		expect(prod1.count).toBe(27n);
 
 		const prod2 = new CartesianProduct([1, 2, 3], [4, 5, 6]);
 		console.log("prod2.count " + prod2.count);
-		expect(prod2.count).toBe(9);
+		expect(prod2.count).toBe(9n);
 
 		const arr3: number[][] = [[1, 2, 3], [4, 5, 6]];
 		const prod3 = new CartesianProduct(...arr3);
 		console.log("prod3.count " + prod3.count);
-		expect(prod3.count).toBe(9);
+		expect(prod3.count).toBe(9n);
 	});
 
 
