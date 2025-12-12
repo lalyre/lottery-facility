@@ -5,12 +5,12 @@
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
   "exports": {
     ".": {
-      "types": "./ts5.6/index.d.ts",
+      "types": "./ts5.6/main.d.ts",
       "node": "./dist/lotteryfacility-nodebundle.umd.js",
       "browser": "./dist/lotteryfacility-webbundle.umd.js"
     }
   },
-  "types": "ts5.6/index.d.ts",
+  "types": "ts5.6/main.d.ts",
   "typesVersions": {
     ">=5.6": {
       "*": [
