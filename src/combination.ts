@@ -75,25 +75,19 @@ export class Combination implements Iterable<Tuple> {
 		if (this._currentIndex <= 0n) return null;
 		this._currentIndex--;
 
-		// Find the rightmost position we can decrement while keeping strict increase
 		let index = this._size - 1;
-
 		while (index >= 0) {
 			const minAllowed = (index === 0) ? 1 : (this._values[index - 1] + 1);
 			if (this._values[index] > minAllowed) break;
 			index--;
 		}
-
 		if (index < 0) return null;
 
-		// Decrement this position
-		this._values[index]--;
 
-		// Then set the tail to the maximum possible values to get the immediate predecessor
+		this._values[index]--;
 		for (let j = index + 1; j < this._size; j++) {
 			this._values[j] = this._total - (this._size - 1 - j);
 		}
-
 		return [...this._values];
 	}
 

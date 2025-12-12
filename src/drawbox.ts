@@ -37,7 +37,7 @@ export class DrawBox {
 	public draw (size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		this.shuffle(nbSwap);
-		return this._balls.slice(1, size+1);
+		return this._balls.slice(0, size);
 	}
 
 
@@ -48,7 +48,7 @@ export class DrawBox {
 	 */
 	public shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
-			const a = RandomHelper.randomNumberInRange(1, this._count);
+			const a = RandomHelper.randomNumberInRange(0, this._count-1);
 			this._swapBalls(i%this._count, a);
 		}
 	}
