@@ -3,24 +3,29 @@ import { TupleHelper, Tuple } from "./tuple";
 
 
 export class Combination implements Iterable<Tuple> {
+	private readonly _items: Tuple;
 	private readonly _total: number;
 	private readonly _size: number;
 	private readonly _count: bigint;
 	private _currentIndex: bigint;
+	private _indices: number[];
 	private _values: Tuple;
 
 
     /**
 	 * Build a combination iterator
 	 */	
-    constructor(total: number, size: number) {
+    constructor(items: Tuple, size: number) {
         // super();
-        if (total <= 0 || size <= 0 || size > total) throw new Error("Invalid total/size values");
-
-        this._total = total;
+		if (size <= 0 || size > items.length) throw new Error("Invalid size value");
+		
+    	this._items = items;
+    	this._total = items.length;
         this._size = size;
-        this._count = TupleHelper.binomial(total, size);
-        this._values = Array.from({ length: size }, (_, i) => i + 1);
+        this._count = TupleHelper.binomial(this._total, size);
+
+    	this._indices = Array.from({ length: size }, (_, i) => i);
+    	this._values  = Array.from({ length: size }, (_, i) => items[i]);
         this._currentIndex = 0n;
     }
 
@@ -39,9 +44,12 @@ export class Combination implements Iterable<Tuple> {
 	 * @return       first tuple
 	 */
     public start(): Tuple {
-        this._values = Array.from({ length: this._size }, (_, i) => i + 1);
-        this._currentIndex = 0n;
-        return [...this._values];
+    	this._currentIndex = 0n;
+		for (let i = 0; i < this._size; i++) {
+			this._indices[i] = i;
+			this._values[i] = this._items[i];
+		}
+    	return [...this._values];
     }
 
 
@@ -51,9 +59,12 @@ export class Combination implements Iterable<Tuple> {
 	 * @return       last tuple
 	 */
     public end(): Tuple {
-        this._values = Array.from({ length: this._size }, (_, i) => this._total - this._size + 1 + i);
-        this._currentIndex = this.lastIndex;
-        return [...this._values];
+		this._currentIndex = this.lastIndex;
+		for (let i = 0; i < this._size; i++) {
+			this._indices[i] = this._total - this._size + i;
+			this._values[i] = this._items[this._indices[i]];
+		}
+		return [...this._values];
     }
 
 
@@ -75,19 +86,18 @@ export class Combination implements Iterable<Tuple> {
 		if (this._currentIndex <= 0n) return null;
 		this._currentIndex--;
 
-		let index = this._size - 1;
-		while (index >= 0) {
-			const minAllowed = (index === 0) ? 1 : (this._values[index - 1] + 1);
-			if (this._values[index] > minAllowed) break;
-			index--;
+		let i = this._size - 1;
+		while (i >= 0) {
+			const minAllowed = (i === 0) ? 0 : (this._indices[i - 1] + 1);
+			if (this._indices[i] > minAllowed) break;
+			i--;
 		}
-		if (index < 0) return null;
+		if (i < 0) return null;
 
+		this._indices[i]--;
+		for (let j = i + 1; j < this._size; j++) { this._indices[j] = this._total - (this._size - j); }
 
-		this._values[index]--;
-		for (let j = index + 1; j < this._size; j++) {
-			this._values[j] = this._total - (this._size - 1 - j);
-		}
+		for (let j = 0; j < this._size; j++) { this._values[j] = this._items[this._indices[j]]; }
 		return [...this._values];
 	}
 
@@ -102,20 +112,14 @@ export class Combination implements Iterable<Tuple> {
 		if (this._currentIndex >= this.lastIndex) return null;
 		this._currentIndex++;
 
-		let index = this._size - 1;
-		let val = this._total;
+		let i = this._size - 1;
+		while (i >= 0 && this._indices[i] === this._total - this._size + i) { i--; }
+		if (i < 0) return null;
 
-		while (index >= 0 && this._values[index] >= val) {
-			index--;
-			val--;
-		}
-		if (index < 0) return null;
+		this._indices[i]++;
+		for (let j = i + 1; j < this._size; j++) { this._indices[j] = this._indices[j - 1] + 1; }
 
-		val = this._values[index] + 1;
-		for (let j = index; j < this._size; j++) {
-			this._values[j] = val;
-			val++;
-		}
+		for (let j = 0; j < this._size; j++) { this._values[j] = this._items[this._indices[j]]; }
 		return [...this._values];
 	}
 

@@ -7,8 +7,8 @@ export class CartesianProduct implements Iterable<Tuple> {
 	private readonly _nbParts: number;
 	private readonly _count: bigint;
 	private _currentIndex: bigint;
-	private _partsIndex: number[];
-	private _partsValue: Tuple;
+	private _indices: number[];
+	private _values: Tuple;
 
 
 	/**
@@ -20,11 +20,11 @@ export class CartesianProduct implements Iterable<Tuple> {
 		
 		this._parts = parts;
 		this._nbParts = parts.length;
-		this._partsIndex = new Array(this._nbParts).fill(0);
-		this._partsValue = new Array(this._nbParts).fill(0);
+		this._indices = new Array(this._nbParts).fill(0);
+		this._values = new Array(this._nbParts).fill(0);
 		this._count = BigInt(this._parts.reduce((acc, part) => acc * part.length, 1));
 		this._currentIndex = 0n;
-		for (let i = 0; i < this._nbParts; i++) { this._partsValue[i] = this._parts[i][0]; }
+		for (let i = 0; i < this._nbParts; i++) { this._values[i] = this._parts[i][0]; }
 	}
 
 
@@ -32,7 +32,7 @@ export class CartesianProduct implements Iterable<Tuple> {
 	get count(): bigint { return this._count; }
 	get lastIndex(): bigint { return this._count-1n; }
 	get currentIndex(): bigint { return this._currentIndex; }
-	get currentTuple(): Tuple { return [...this._partsValue]; }
+	get currentTuple(): Tuple { return [...this._values]; }
 
 
 	/**
@@ -43,10 +43,10 @@ export class CartesianProduct implements Iterable<Tuple> {
 	public start(): Tuple {
 		this._currentIndex = 0n;
 		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndex[i] = 0;
-			this._partsValue[i] = this._parts[i][0];
+			this._indices[i] = 0;
+			this._values[i] = this._parts[i][0];
 		}
-		return [...this._partsValue];
+		return [...this._values];
 	}
 
 
@@ -58,10 +58,10 @@ export class CartesianProduct implements Iterable<Tuple> {
 	public end(): Tuple {
 		this._currentIndex = this.lastIndex;
 		for (let i = 0; i < this._nbParts; i++) {
-			this._partsIndex[i] = this._parts[i].length - 1;
-			this._partsValue[i] = this._parts[i][this._partsIndex[i]];
+			this._indices[i] = this._parts[i].length - 1;
+			this._values[i] = this._parts[i][this._indices[i]];
 		}
-		return [...this._partsValue];
+		return [...this._values];
 	}
 
 
@@ -84,16 +84,16 @@ export class CartesianProduct implements Iterable<Tuple> {
 		this._currentIndex--;
 		
 		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndex[i] === 0) {
-				this._partsIndex[i] = this._parts[i].length - 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
+			if (this._indices[i] === 0) {
+				this._indices[i] = this._parts[i].length - 1;
+				this._values[i] = this._parts[i][this._indices[i]];
 			} else {
-				this._partsIndex[i] -= 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
+				this._indices[i] -= 1;
+				this._values[i] = this._parts[i][this._indices[i]];
 				break;
 			}
 		}
-		return [...this._partsValue];
+		return [...this._values];
 	}
 
 
@@ -108,16 +108,16 @@ export class CartesianProduct implements Iterable<Tuple> {
 		this._currentIndex++;
 		
 		for (let i = this._nbParts-1; i >= 0; i--) {
-			if (this._partsIndex[i] === this._parts[i].length - 1) {
-				this._partsIndex[i] = 0;
-				this._partsValue[i] = this._parts[i][0];
+			if (this._indices[i] === this._parts[i].length - 1) {
+				this._indices[i] = 0;
+				this._values[i] = this._parts[i][0];
 			} else {
-				this._partsIndex[i] += 1;
-				this._partsValue[i] = this._parts[i][this._partsIndex[i]];
+				this._indices[i] += 1;
+				this._values[i] = this._parts[i][this._indices[i]];
 				break;
 			}
 		}
-		return [...this._partsValue];
+		return [...this._values];
 	}
 
 
