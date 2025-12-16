@@ -87,32 +87,17 @@ if (!cli.flags.verbose && !cli.flags.outfile) {
 
 let outfile = (cli.flags.outfile) ? cli.flags.outfile.trim() : null;
 let extension = (outfile) ? path.extname(outfile) : null;
+let basename = outfile ? path.basename(outfile, extension || '') : null;
 if (outfile && outfile.startsWith('.')) {
 	console.error(`Wrong output filename !`);
 	process.exit(1);
 }
 
-let basename = null;
-switch (true) {
-	case (outfile != null && extension != null):
-		basename = path.basename(outfile, extension);
-		break;
-
-	case (outfile != null):
-		basename = path.basename(outfile);
-		break;
-
-	default:
-		break;
-}
 
 const verboseMode = cli.flags.verbose;
 const size = cli.flags.size;
 const total = cli.flags.total;
 const SEP = cli.flags.sep;
-//let step = cli.flags.step;
-//let separator = false;
-//let SEP = (separator) ? '|' : ' ';
 
 
 // Read input items
@@ -124,7 +109,7 @@ if (cli.flags.numbers) {
 		console.error(`File ${cli.flags.file} does not exist`);
 		process.exit(1);
 	}
-	items = fs.readFileSync(cli.flags.file).toString().trim().split(/\r?\n/);
+	items = fs.readFileSync(cli.flags.file, 'utf8').toString().trim().split(/\r?\n/);
 }
 if (total < size) {
 	console.error("Wrong <total> or <size> value.");
@@ -135,7 +120,7 @@ if (!items || items.length < total) {
 	process.exit(1);
 }
 items = items.slice(0, total);											// Keep only first <total> items (as your help text says)
-const combinationIterator = new lotteryFacility.Combination(total, size);
+const combinationIterator = new lotteryFacility.Combination(items, size);
 
 
 //let global_alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
@@ -146,12 +131,12 @@ let file = null;
 let fileNum = 0;
 let lineNum = 0;
 
-for (const combination of combinationIterator) {
+for (const tuple of combinationIterator) {
 	// Progress bar
-	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
+	if (fileNum === 0 || lineNum >= FILE_LIMIT) {
 		fileNum++; lineNum = 0;
 		if (basename) {
-			file = basename + '_' + fileNum; if (extension) file += extension;
+			file = basename + '_' + fileNum + (extension || '');
 			if (!verboseMode) {
 				//console.log(file);
 				if (bar) { bar.stop(); }
@@ -162,9 +147,7 @@ for (const combination of combinationIterator) {
 					hideCursor: true
 				});
 
-				var totalValue = FILE_LIMIT;
-				var startValue = 0
-				bar.start(totalValue, startValue);
+				bar.start(FILE_LIMIT, 0);
 			}
 
 			if (outfd) { fs.closeSync(outfd); outfd = null; }
@@ -172,21 +155,14 @@ for (const combination of combinationIterator) {
 		}
 	}
 	lineNum++;
-		
-	const result_line = combination.map(i => items[i - 1]).join(SEP);
 
 	// Output
-	if (verboseMode) {
-		console.log(result_line);
-	}
-	if (outfd) {
-		fs.writeSync(outfd, result_line + '\n');
-	}
-	if (bar) {
-		bar.increment();
-	}
+	const line = tuple.join(SEP);
+	if (verboseMode) console.log(line);
+	if (outfd)  fs.writeSync(outfd, line + '\n');
+	if (bar) bar.increment();
 }
 
-if (outfd) { fs.closeSync(outfd); outfd = null; }
-if (bar) { bar.stop(); }
+if (outfd) fs.closeSync(outfd);
+if (bar) bar.stop();
 

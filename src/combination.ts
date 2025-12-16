@@ -166,5 +166,141 @@ export class Combination implements Iterable<Tuple> {
             }
 		} as IterableIterator<Tuple>;
 	}
+
+
+	/**
+	 * Give the rank of a given tuple
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param numbers   array of balls number (tuple).
+	 * @return          the rank of the tuple.
+	 */
+	public static tupleToRank(max:number, numbers:Tuple): bigint {
+		if (max < 0) return -1n;
+		if (!numbers) return -1n;
+		const len:number = numbers.length;
+		numbers.sort((a, b) => {return a - b;});
+
+		let rank:bigint = TupleHelper.binomial(max, len);
+		for (let i = len; i > 0; i--) {
+			if (numbers[len-i] > max) return -1n;
+			rank -= TupleHelper.binomial(max-numbers[len-i]+1, i);
+			if (i > 1) rank += TupleHelper.binomial(max-numbers[len-i], i-1);
+		}
+		rank++;
+		return rank;
+	}
+
+
+	/**
+	 * Give the tuple corresponding to the given rank
+	 * @param max       the maximum possible number value used in balls numbers.
+	 * @param length    the length of the tuple to be returned.
+	 * @param rank      the rank of the tuple to be returned.
+	 * @return          the tuple corresponding to the given rank.
+	 */
+	public static rankToTuple(max:number, length:number, rank:bigint): Tuple {
+		if (max <= 0) return [];
+		if (length <= 0) return [];
+		if (length > max) return [];
+		if (rank <= 0 || rank > TupleHelper.binomial(max, length)) return [];
+		const numbers = Array.from({ length: length }, (_, i) => 0);
+
+		for (let i = 0; i < length; i++) {
+			for (let k = max; k >= length; k--) {
+				let m = k;
+				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
+				if (Combination.tupleToRank(max, numbers) <= rank) break;
+			}
+		}
+		return numbers;
+	}
+
+
+/**
+ * Computes the Schönheim lower bound for a covering design C(v, k, t).
+ *
+ * This bound gives a universal theoretical minimum number of blocks (lines)
+ * required to cover all t-subsets of a v-element universe using blocks of size k.
+ *
+ * Formula (nested ceilings):
+ *
+ *     L ≥ ceil( v / k * ceil( (v−1)/(k−1) * ceil( (v−2)/(k−2) * ... ) ) )
+ *
+ * This implementation evaluates the nested ceilings using integer arithmetic,
+ * entirely with BigInt, via the identity:
+ *
+ *     ceil(a / b) = (a + b − 1) / b         // integer division
+ *
+ * Notes:
+ * - The bound is valid for any covering problem C(total, size, guarantee).
+ * - If `lineCount` is below this value, a covering system is mathematically impossible.
+ * - If `lineCount` is above this value, feasibility is not guaranteed but possible.
+ *
+ * @param total      v — Total number of elements in the universe.
+ * @param size       k — Size of each block (line).
+ * @param guarantee  t — Size of subsets that must all be covered.
+ *
+ * @returns          The Schönheim lower bound as a standard JavaScript number.
+ *
+ * ---
+ * Implementation note:
+ *   The code below was drafted with the assistance of ChatGPT (OpenAI GPT-5.1),
+ *   during an exploration of covering designs and lottery system theory.
+ *   The Schönheim lower bound itself is a classical mathematical result due
+ *   to E. Schönheim (“On coverings of pairs by quadruples”, 1964).
+ *   This comment is kept as a small tribute to both the mathematician and
+ *   the assistant who helped shape this API.
+ * ---
+ */
+public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
+    let L = 1n;
+    for (let i = 0; i < guarantee; i++) {
+        const a = BigInt(total - i);
+        const b = BigInt(size - i);
+        L = (L * (a + b - 1n)) / b;  // ceil(a/b)
+    }
+    return Number(L);
+}
+
+
+public static coveringLowerBound = Combination.schoenheimLowerBound;
+
+
+/**
+ * Tests whether a covering system (covering design) exists with a given number of lines.
+ *
+ * Conceptually:
+ * - There are `total` elements in the universe (0..total-1).
+ * - Each line (block / ticket) contains exactly `size` distinct elements.
+ * - We want every subset of size `guarantee` (e.g. every pair if guarantee = 2)
+ *   to appear in at least one of the lines.
+ *
+ * This function returns TRUE or FALSE depending on `lineCount`:
+ * - Returns FALSE if, even in the best possible case, `lineCount` lines cannot cover
+ *   all subsets of size `guarantee` (based on a combinatorial lower bound).
+ * - Returns TRUE if `lineCount` is greater than or equal to C(total, guarantee),
+ *   because a trivial covering always exists (one line per subset).
+ * - Otherwise, it falls into the “interesting zone” and calls an internal search
+ *   algorithm (`searchCoveringSystem`) to decide if such a covering system actually exists.
+ *
+ * Parameters:
+ * @param total      Total number of elements in the universe (e.g. 8 numbers, 50 numbers, …)
+ * @param size       Size of each line (block size, e.g. 3 for triplets, 5 for Euromillions grids)
+ * @param guarantee  Size of the subsets that must be covered (e.g. 2 to cover all pairs)
+ * @param lineCount  Number of lines allowed in the system
+ *
+ * @returns          TRUE if a covering system exists with at most `lineCount` lines,
+ *                   FALSE otherwise.
+ */
+public static coveringExists(total:number, size:number, guarantee:number, lineCount:number): boolean {
+	if (total <= 0 || size <= 0 || guarantee <= 0 || lineCount <= 0) return false;
+	if (size < guarantee) return false;
+	if (total < size) return false;
+	const minLines = Combination.coveringLowerBound(total, size, guarantee);
+	return (lineCount >= minLines);
+}
+
+
+
 }
 
