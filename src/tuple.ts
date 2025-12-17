@@ -833,10 +833,50 @@ if (guarantee === 2) {
 	return signatures.size;	
 	
 	
+const bitsPerGap = Math.ceil(Math.log2(modulo + 1));
+
+	
+
+	
+	
+
 	
 	
 }
 
+
+private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
+	let key = 0n;
+	const shift = BigInt(bitsPerGap);
+	for (let i = 0; i < gaps.length; i++) {
+		key = (key << shift) | BigInt(gaps[i]);
+	}
+	return key;
+}
+//Et tu stockes dans Set<bigint>
+
+
+
+public static diversityScore2(tuple: Tuple, modulo: number): number {
+	const a = [...tuple].sort((x,y)=>x-y);
+	const maxD = Math.floor(modulo / 2);
+	// bitset sur maxD+1 bits
+	const bits = new Uint32Array(Math.ceil((maxD + 1) / 32));
+
+	let count = 0;
+	for (let i = 0; i < a.length; i++) {
+		for (let j = i + 1; j < a.length; j++) {
+			let d = a[j] - a[i];
+			d %= modulo;
+			d = Math.min(d, modulo - d);
+			if (d === 0) continue;
+			const w = d >>> 5;
+			const m = 1 << (d & 31);
+			if ((bits[w] & m) === 0) { bits[w] |= m; count++; }
+		}
+	}
+	return count;
+}
 
 
 
