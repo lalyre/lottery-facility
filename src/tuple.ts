@@ -616,6 +616,233 @@ export class TupleHelper {
 
 
 
+
+
+/**
+ * Structural diversity (internal signature) score for a tuple:
+ * - guarantee = 2 : number of distinct internal differences
+ * - guarantee > 2 : number of distinct internal signatures of size `guarantee`
+ *
+ * @param tuple       input tuple
+ * @param guarantee   size of internal subsets
+ * @param modulo      size of the universe
+ * @returns           number of distinct signatures
+ */
+public static diversityScore(
+	tuple: Tuple,
+	guarantee: number,
+	modulo: number
+): number {
+	if (!tuple || tuple.length < guarantee || modulo < guarantee) return 0;
+	if (guarantee < 2) return 0;
+	
+	
+	
+	// Fast path: guarantee = 2 → distinct differences
+	if (guarantee === 2) {
+		const diffs = new Set<number>();
+		const n = tuple.length;
+
+		for (let i = 0; i < n; i++) {
+			for (let j = i + 1; j < n; j++) {
+				let d = Math.abs(tuple[j] - tuple[i]);
+
+				if (modulo) {
+					d %= modulo;
+					d = Math.min(d, modulo - d);
+				}
+
+				if (d > 0) diffs.add(d);
+			}
+		}
+		return diffs.size;
+	}
+
+	// Generic path: guarantee > 2 → distinct signatures
+	const signatures = new Set<string>();
+
+	// local helper: iterate k-subsets without allocating all of them
+	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+	const n = tuple.length;
+
+	const addSignature = (indices: number[]) => {
+		const values = indices.map(i => tuple[i]).slice().sort((a, b) => a - b);
+		const base = values[0];
+		const normalized = values.map(x => x - base);
+
+		// signature = sorted list of internal pairwise diffs (optionally modulo-reduced)
+		const diffs: number[] = [];
+		for (let i = 0; i < normalized.length; i++) {
+			for (let j = i + 1; j < normalized.length; j++) {
+				let d = Math.abs(normalized[j] - normalized[i]);
+				if (modulo) {
+					d %= modulo;
+					d = Math.min(d, modulo - d);
+				}
+				diffs.push(d);
+			}
+		}
+		diffs.sort((a, b) => a - b);
+		signatures.add(diffs.join(','));
+	};
+
+	// iterate combinations of indices (0..n-1 choose guarantee)
+	while (true) {
+		addSignature(idx);
+
+		// next combination
+		let i = guarantee - 1;
+		while (i >= 0 && idx[i] === i + n - guarantee) i--;
+		if (i < 0) break;
+
+		idx[i]++;
+		for (let j = i + 1; j < guarantee; j++) {
+			idx[j] = idx[j - 1] + 1;
+		}
+	}
+
+	return signatures.size;
+	
+	
+	
+	
+if (guarantee === 2) {
+	const diffs = new Set<number>();
+	for (let i = 0; i < n; i++) {
+		for (let j = i + 1; j < n; j++) {
+			let d = values[j] - values[i];
+			d = d % modulo;
+			d = Math.min(d, modulo - d);
+			if (d > 0) diffs.add(d);
+		}
+	}
+	return diffs.size;
+}
+
+	
+	
+	
+	
+	// Normalize input to 0..modulo-1 if you use 1..modulo in your library.
+	// If your tuples are already 0-based, remove this mapping.
+	const values = tuple.map(x => ((x - 1) % modulo + modulo) % modulo).sort((a, b) => a - b);
+	const values = tuple.map(x => ((x % modulo) + modulo) % modulo).sort((a,b)=>a-b);
+
+
+	const sigs = new Set<string>();
+	const n = values.length;
+
+	// Iterate k-combinations of indices without allocating all subsets
+	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+	const pushSignature = () => {
+		const subset: number[] = new Array(guarantee);
+		for (let i = 0; i < guarantee; i++) subset[i] = values[idx[i]];
+		subset.sort((a, b) => a - b);
+
+		// Translation normalization (make min = 0)
+		const base = subset[0];
+		for (let i = 0; i < guarantee; i++) subset[i] = subset[i] - base; // no wrap needed for sorted lottery-style values
+
+		// For guarantee=2, subset is [0, d]; this naturally counts distinct differences
+		sigs.add(subset.join(','));
+	};
+
+	while (true) {
+		pushSignature();
+
+		// next combination of indices
+		let i = guarantee - 1;
+		while (i >= 0 && idx[i] === i + n - guarantee) i--;
+		if (i < 0) break;
+
+		idx[i]++;
+		for (let j = i + 1; j < guarantee; j++) idx[j] = idx[j - 1] + 1;
+	}
+
+	return sigs.size;
+	
+	
+	
+	
+	// 1) Canonical form
+	const values = [...tuple].sort((a, b) => a - b);
+
+	const signatures = new Set<string>();
+	const n = values.length;
+
+	// 2–4) Sliding window
+	for (let i = 0; i <= n - guarantee; i++) {
+		const base = values[i];
+		const sig: number[] = new Array(guarantee);
+
+		for (let j = 0; j < guarantee; j++) {
+			sig[j] = values[i + j] - base;
+		}
+
+		// signature as canonical string
+		signatures.add(sig.join(','));
+	}
+
+	return signatures.size;
+	
+	
+	
+	
+	
+	
+	// 1) Canonicalize input
+	const values = [...tuple].sort((a, b) => a - b);
+	const n = values.length;
+
+	const signatures = new Set<string>();
+
+	// 2) Iterate all k-subsets of indices without storing them
+	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+	const addSignature = () => {
+		// build sorted subset (already sorted because values sorted + idx increasing)
+		// compute consecutive gaps
+		let prev = values[idx[0]];
+		const gaps: number[] = new Array(guarantee - 1);
+
+		for (let i = 1; i < guarantee; i++) {
+			const cur = values[idx[i]];
+			gaps[i - 1] = cur - prev;
+			prev = cur;
+		}
+
+		// canonical key
+		signatures.add(gaps.join(','));
+	};
+
+	while (true) {
+		addSignature();
+
+		// next combination (lexicographic)
+		let i = guarantee - 1;
+		while (i >= 0 && idx[i] === i + n - guarantee) i--;
+		if (i < 0) break;
+
+		idx[i]++;
+		for (let j = i + 1; j < guarantee; j++) {
+			idx[j] = idx[j - 1] + 1;
+		}
+	}
+
+	return signatures.size;	
+	
+	
+	
+	
+}
+
+
+
+
+
+
+
 	/**
 	 * Factorial function
 	 * @param n         integer value
