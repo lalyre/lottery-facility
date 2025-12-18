@@ -70,8 +70,8 @@ const nodeConfig = {
 	},
 
 	entry: {
-		"nodebundle": "./lib/main.js",
-		"nodebundle.min": "./lib/main.js",
+		"nodebundle": "./lib/index.js",
+		"nodebundle.min": "./lib/index.js",
 	},
 
 	output: {

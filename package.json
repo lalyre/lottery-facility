@@ -3,19 +3,13 @@
   "version": "0.0.1-alpha.9",
   "description": "Some APIs and CLI tools for lottery analysis and for building smart lottery systems in Node.js.",
   "main": "./dist/lotteryfacility-nodebundle.umd.js",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./ts5.6/main.d.ts",
+      "types": "./lib/index.d.ts",
+      "require": "./dist/lottery-facility.bundle.js",
       "node": "./dist/lotteryfacility-nodebundle.umd.js",
       "browser": "./dist/lotteryfacility-webbundle.umd.js"
-    }
-  },
-  "types": "ts5.6/main.d.ts",
-  "typesVersions": {
-    ">=5.6": {
-      "*": [
-        "ts5.6/*"
-      ]
     }
   },
   "files": [
@@ -24,7 +18,7 @@
     "dist/**.txt",
     "dist/**.csv",
     "dist/**.js",
-    "ts5.6/**"
+    "lib/**"
   ],
   "type": "commonjs",
   "private": false,

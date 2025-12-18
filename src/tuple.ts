@@ -528,6 +528,8 @@ export class TupleHelper {
  *
  * d(x,y) = min(|x-y|, modulo - |x-y|)
  */
+
+/*
 export function circularDistance(
 	x: number,
 	y: number,
@@ -536,6 +538,7 @@ export function circularDistance(
 	const d = Math.abs(x - y) % modulo;
 	return Math.min(d, modulo - d);
 }
+*/
 
 
 
@@ -648,6 +651,7 @@ export function circularDistance(
  * @param modulo      size of the universe
  * @returns           number of distinct signatures
  */
+/*
 public static diversityScore(
 	tuple: Tuple,
 	guarantee: number,
@@ -864,6 +868,7 @@ const bitsPerGap = Math.ceil(Math.log2(modulo + 1));
 	
 }
 
+*/
 
 private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
 	let key = 0n;
