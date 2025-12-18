@@ -522,9 +522,29 @@ export class TupleHelper {
 	}
 
 
+	// minimum circular distance min(|x−y|, total−|x−y|)
+/**
+ * Computes the minimum circular distance between two values in Z_modulo.
+ *
+ * d(x,y) = min(|x-y|, modulo - |x-y|)
+ */
+export function circularDistance(
+	x: number,
+	y: number,
+	modulo: number
+): number {
+	const d = Math.abs(x - y) % modulo;
+	return Math.min(d, modulo - d);
+}
+
+
+
+
+
+
 	/**
 	 * Give the maximum gap of a lottery tuple relatively to a global alphabet
-	 * The maximum gap is the biggest distance between consecutives items of the input tuple (great-circle distance or spherical distance).
+	 * The maximum gap is the biggest distance between consecutives items of the input tuple (minimum circular distance).
 	 * @param alphabet      array of balls number.
 	 * @param tuple         array of balls number.
 	 * @return              maximum gap.
@@ -619,7 +639,7 @@ export class TupleHelper {
 
 
 /**
- * Structural diversity (internal signature) score for a tuple:
+ * Structural diversity (internal signature of gaps) score for a tuple:
  * - guarantee = 2 : number of distinct internal differences
  * - guarantee > 2 : number of distinct internal signatures of size `guarantee`
  *
