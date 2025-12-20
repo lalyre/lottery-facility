@@ -46,8 +46,13 @@ const generalConfig = {
 			{
 				test: /\.tsx?$/,
 				exclude: /node_modules/,
-				use: 'ts-loader',
-			}
+				use: {
+					loader: 'ts-loader',
+					options: {
+						configFile: 'tsconfig.webpack.json',
+					},
+				},
+			},
 		]
 	},
 
@@ -70,8 +75,8 @@ const nodeConfig = {
 	},
 
 	entry: {
-		"nodebundle": "./lib/index.js",
-		"nodebundle.min": "./lib/index.js",
+		"nodebundle": "./src/index.ts",
+		"nodebundle.min": "./src/index.ts",
 	},
 
 	output: {
@@ -94,8 +99,8 @@ const browserConfig = {
 	target: 'web',
 
 	entry: {
-		"webbundle": "./lib/browser.js",
-		"webbundle.min": "./lib/browser.js",
+		"webbundle": "./src/browser.ts",
+		"webbundle.min": "./src/browser.ts",
 	},
 
 	output: {

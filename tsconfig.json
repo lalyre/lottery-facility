@@ -3,7 +3,7 @@
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "resolveJsonModule": true,
     "allowImportingTsExtensions": false,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": true,
 
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */

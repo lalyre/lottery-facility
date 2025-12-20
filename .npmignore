@@ -1,15 +1,35 @@
+# IDE et logs
 .vscode/
+.idea/
+.DS_Store
+*.log
+
+# Tests et Couverture
 coverage/
-node_modules/
-build/
-src/
 test/
+jest.config.ts
+
+# Documentation et Sources
+src/
 doc/
 AUTHORS
+
+# Configuration Build
 tsconfig.json
-tslint.json
-jest.config.ts
+tsconfig.cjs.json
+tsconfig.esm.json
 webpack.config.js
+eslint.config.js
+.eslintignore
+
+# Dossiers temporaires ou intermédiaires
+node_modules/
+build/
 *.tgz
+
+# Fichiers de mapping (Optionnel)
+# Garde-les si tu veux que les utilisateurs puissent débugger ton code minifié
+# Supprime-les pour alléger le paquet au maximum
 lib/**/*.map
 dist/**/*.map
+

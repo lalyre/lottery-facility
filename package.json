@@ -2,25 +2,26 @@
   "name": "lottery-facility",
   "version": "0.0.1-alpha.9",
   "description": "Some APIs and CLI tools for lottery analysis and for building smart lottery systems in Node.js.",
-  "main": "./dist/lotteryfacility-nodebundle.umd.js",
-  "types": "lib/index.d.ts",
+  "type": "commonjs",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "browser": "./dist/lotteryfacility-webbundle.umd.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "require": "./dist/lottery-facility.bundle.js",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "browser": "./dist/lotteryfacility-webbundle.umd.js",
       "node": "./dist/lotteryfacility-nodebundle.umd.js",
-      "browser": "./dist/lotteryfacility-webbundle.umd.js"
+      "default": "./dist/cjs/index.js"
     }
   },
   "files": [
     "bin/",
-    "dist/**.json",
-    "dist/**.txt",
-    "dist/**.csv",
-    "dist/**.js",
-    "lib/**"
+    "dist/",
+    "lib/"
   ],
-  "type": "commonjs",
   "private": false,
   "engines": {
     "node": ">=22.11.0"
@@ -33,14 +34,15 @@
     "test": "./test"
   },
   "scripts": {
-    "copy-files": "copyfiles -f src/**/*.json src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
+    "clean": "rimraf build dist lib coverage",
+    "copy-files": "copyfiles -f src/**/*.txt src/**/*.csv src/**/*.html src/**/*.css ./lib",
     "lint": "eslint",
-    "tsc": "tsc",
-    "clean": "rimraf build dist lib coverage types ts5.0 ts5.1 ts5.2 ts5.3 ts5.4 ts5.5 ts5.6",
-    "prebuild": "npm run clean && npm run lint",
+    "prebuild": "npm run lint",
+    "build:tsc": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json && tsc -p tsconfig.json",
+    "build:webpack": "webpack --mode=production",
+    "build": "npm run clean && npm run build:tsc && npm run copy-files && npm run build:webpack",
     "start:dev": "webpack --mode=development --watch --progress",
-    "build": "tsc",
-    "postbuild": "npm run copy-files && webpack --mode=production",
+    "postbuild": "",
     "test": "jest --config=jest.config.ts --rootDir . --forceExit --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
     "test0": "echo \"Error: no test specified\" && exit 1"
