@@ -31,7 +31,7 @@ Roadmap
 * write a transposition CLI tool that rewrite data lines to columns.
 
 
-2025-xx-xx, Version 0.0.1-alpha.10
+2026-xx-xx, Version 0.0.1-alpha.10
 ==================================
 * Renaming CombinationHelper class by TupleHelper class.
 * Adding translate function in the API.
@@ -39,6 +39,8 @@ Roadmap
 * Adding filters pipeline in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
+* Adding CombinationHelper class.
+* Package fix.
 * Documentation update.
 
 
