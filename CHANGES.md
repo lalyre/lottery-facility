@@ -33,13 +33,12 @@ Roadmap
 
 2026-xx-xx, Version 0.0.1-alpha.10
 ==================================
-* Renaming CombinationHelper class by TupleHelper class.
-* Adding translate function in the API.
 * Adding length filter, collision filter and scorage filter in the API.
 * Adding filters pipeline in the API.
+* Adding translate function in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
-* Adding CombinationHelper class.
+* Renaming CombinationHelper class by TupleHelper class.
 * Package fix.
 * Documentation update.
 
