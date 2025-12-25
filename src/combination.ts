@@ -101,6 +101,69 @@ public static schoenheimLowerBound(total: number, size: number, guarantee: numbe
 public static coveringLowerBound = CombinationHelper.schoenheimLowerBound;
 
 
+
+
+/**
+ * Computes a lower bound for a Hitting Set H(v, k, m, t).
+ * * A Hitting Set (or lottery design) ensures that for any winning draw of size m 
+ * out of v elements, at least one of our blocks of size k will share at least 
+ * t elements with it.
+ * * This bound is derived from Turán-type problems for hypergraphs and is often 
+ * referred to as the Katona-Nemetz-Simonyi bound. It provides the absolute 
+ * floor for the number of lines required to "hit" any possible draw.
+ * * Formula:
+ * L ≥ ceil( comb(v, t) / (comb(k, t) * comb(m, t) / 1) )
+ * * For EuroMillions (2/5 guarantee), parameters are v=50, k=5, m=5, t=2.
+ * * @param v — Total number of elements in the universe (e.g., 50).
+ * @param k — Size of each played block/line (e.g., 5).
+ * @param m — Size of the drawn winning combination (e.g., 5).
+ * @param t — Minimum number of matching elements required (e.g., 2).
+ * * @returns The Turán-type lower bound as a standard JavaScript number.
+ * * ---
+ * Implementation note:
+ * This code was refined with the assistance of Gemini AI (Google),
+ * exploring the frontiers of combinatorial optimization and hitting sets.
+ * The mathematical foundation rests upon the work of G.O.H. Katona, 
+ * T. Nemetz, and M. Simonyi (“On the Hamming distance of functions”, 1970),
+ * as well as the Turán Number applications in extremal set theory.
+ * ---
+ */
+public static turanLowerBound(v: number, k: number, m: number, t: number): number {
+    /**
+     * Helper function to compute Binomial Coefficients (n choose r) 
+     * using BigInt to prevent overflow during intermediate multiplications.
+     */
+    const combinations = (n: number, r: number): bigint => {
+        if (r < 0 || r > n) return 0n;
+        if (r === 0 || r === n) return 1n;
+        if (r > n / 2) r = n - r;
+        
+        let res = 1n;
+        for (let i = 1n; i <= BigInt(r); i++) {
+            res = res * (BigInt(n) - i + 1n) / i;
+        }
+        return res;
+    };
+
+    const totalPairs = combinations(v, t);         // Total subsets of size t in the universe
+    const pairsPerBlock = combinations(k, t);      // t-subsets provided by one played line
+    const pairsPerDraw = combinations(m, t);       // t-subsets available in one winning draw
+
+    // The denominator represents the "hitting power" of a single block.
+    const denominator = pairsPerBlock * pairsPerDraw;
+    
+    // Applying the ceiling division: ceil(a / b) = (a + b - 1) / b
+    const L = (totalPairs + (denominator - 1n)) / denominator;
+
+    return Number(L);
+}
+
+
+public static hittingLowerBound = CombinationHelper.turanLowerBound;
+
+
+
+
 /**
  * Tests whether a covering system (covering design) exists with a given number of lines.
  *
