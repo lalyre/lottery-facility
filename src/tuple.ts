@@ -640,6 +640,192 @@ export function circularDistance(
 
 
 
+/**
+ * Computes the cardinality of the additive spectrum of order `guarantee`
+ * for a given tuple.
+ *
+ * For a fixed order `guarantee`, each k-element subset of the tuple
+ * defines an additive signature given by its consecutive internal differences.
+ *
+ * The set of all such signatures forms the additive spectrum of order `guarantee`.
+ * This function returns the number of distinct signatures observed.
+ *
+ * For guarantee = 2, this corresponds to the number of distinct internal differences.
+ * For guarantee >= 3, it counts the number of distinct internal difference signatures
+ * of size `guarantee`.
+ *
+ * @param tuple      Input tuple (finite ordered set of integers)
+ * @param guarantee  Size of internal subsets (order of the spectrum)
+ * @param modulo     Size of the cyclic universe (optional, for modulo reduction)
+ * @returns          Number of distinct additive signatures (cardinality)
+ */
+
+
+/**
+ * Computes the cardinality of the additive spectrum of order `k` for a given tuple.
+ *
+ * Each k-element subset of the tuple defines a signature given by its consecutive differences.
+ * The function returns the number of distinct signatures.
+ *
+ * @param tuple  Array of integers (input tuple)
+ * @param k      Size of internal subsets (order of the spectrum)
+ * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
+ * @returns      Number of distinct additive signatures (cardinality)
+ */
+function additiveSpectrumCardinality(tuple: number[], k: number, modulo?: number): number {
+    if (!tuple || tuple.length < k || k < 2) return 0;
+
+    const n = tuple.length;
+    const values = tuple.slice().sort((a, b) => a - b);
+    const signatures = new Set<string>();
+
+    // Initialize first combination of indices
+    const idx: number[] = Array.from({ length: k }, (_, i) => i);
+
+    const addSignature = () => {
+        const subset = idx.map(i => values[i]);
+        const base = subset[0];
+        const diffs: number[] = [];
+
+        for (let i = 1; i < k; i++) {
+            let d = subset[i] - subset[i - 1];
+            if (modulo) {
+                d %= modulo;
+                d = Math.min(d, modulo - d);
+            }
+            diffs.push(d);
+        }
+
+        signatures.add(diffs.join(','));
+    };
+
+    while (true) {
+        addSignature();
+
+        // Generate next combination lexicographically
+        let i = k - 1;
+        while (i >= 0 && idx[i] === i + n - k) i--;
+        if (i < 0) break;
+
+        idx[i]++;
+        for (let j = i + 1; j < k; j++) {
+            idx[j] = idx[j - 1] + 1;
+        }
+    }
+
+    return signatures.size;
+}
+
+
+
+/**
+ * Computes the cardinality of the additive spectrum of order `k` for a given tuple,
+ * optimized to avoid generating all subsets in memory.
+ *
+ * @param tuple  Array of integers (input tuple)
+ * @param k      Size of internal subsets (order of the spectrum)
+ * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
+ * @returns      Number of distinct additive signatures (cardinality)
+ */
+function additiveSpectrumCardinalityOptimized(
+    tuple: number[],
+    k: number,
+    modulo?: number
+): number {
+    if (!tuple || tuple.length < k || k < 2) return 0;
+
+    const n = tuple.length;
+    const values = tuple.slice().sort((a, b) => a - b);
+    const signatures = new Set<string>();
+
+    // Initialize first combination of indices
+    const idx: number[] = Array.from({ length: k }, (_, i) => i);
+
+    const addSignature = () => {
+        let diffs: number[] = [];
+        for (let i = 1; i < k; i++) {
+            let d = values[idx[i]] - values[idx[i - 1]];
+            if (modulo) {
+                d %= modulo;
+                d = Math.min(d, modulo - d);
+            }
+            diffs.push(d);
+        }
+        signatures.add(diffs.join(','));
+    };
+
+    while (true) {
+        addSignature();
+
+        // Generate next combination lexicographically
+        let i = k - 1;
+        while (i >= 0 && idx[i] === i + n - k) i--;
+        if (i < 0) break;
+
+        idx[i]++;
+        for (let j = i + 1; j < k; j++) {
+            idx[j] = idx[j - 1] + 1;
+        }
+    }
+
+    return signatures.size;
+}
+
+
+
+
+/**
+ * Computes the cardinality of the additive spectrum of order `k` for a tuple,
+ * optimized for large tuples by avoiding array allocations for each signature.
+ *
+ * @param tuple  Array of integers (input tuple)
+ * @param k      Size of internal subsets (order of the spectrum)
+ * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
+ * @returns      Number of distinct additive signatures (cardinality)
+ */
+function additiveSpectrumCardinalityFast(
+    tuple: number[],
+    k: number,
+    modulo?: number
+): number {
+    if (!tuple || tuple.length < k || k < 2) return 0;
+
+    const n = tuple.length;
+    const values = tuple.slice().sort((a, b) => a - b);
+    const signatures = new Set<string>();
+
+    const idx: number[] = Array.from({ length: k }, (_, i) => i);
+
+    while (true) {
+        // compute a hashable signature without creating arrays
+        let signatureKey = '';
+        for (let i = 1; i < k; i++) {
+            let d = values[idx[i]] - values[idx[i - 1]];
+            if (modulo) {
+                d %= modulo;
+                d = Math.min(d, modulo - d);
+            }
+            signatureKey += d + ','; // simple string key
+        }
+        signatures.add(signatureKey);
+
+        // next combination lexicographically
+        let i = k - 1;
+        while (i >= 0 && idx[i] === i + n - k) i--;
+        if (i < 0) break;
+
+        idx[i]++;
+        for (let j = i + 1; j < k; j++) {
+            idx[j] = idx[j - 1] + 1;
+        }
+    }
+
+    return signatures.size;
+}
+
+
+
+
 
 /**
  * Structural diversity (internal signature of gaps) score for a tuple:
