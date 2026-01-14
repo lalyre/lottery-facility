@@ -131,6 +131,12 @@ let file = null;
 let fileNum = 0;
 let lineNum = 0;
 
+
+//TODO CL
+let min = null;
+let max = null;
+
+
 for (const tuple of combinationIterator) {
 	// Progress bar
 	if (fileNum === 0 || lineNum >= FILE_LIMIT) {

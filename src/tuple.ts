@@ -43,6 +43,19 @@ export class TupleHelper {
 
 
 	/**
+     * Compute the sum of all numbers in a lottery tuple.
+     * @param numbers   array of balls number.
+     * @return          the sum of all elements. Returns 0 if numbers is null or empty.
+     * * Example:
+     * sum([1, 2, 3, 4]) => 10
+     */
+    public static sum(numbers: Tuple | null): number {
+        if (!numbers || numbers.length === 0) return 0;
+        return numbers.reduce((acc, val) => acc + val, 0);
+    }
+
+
+	/**
 	 * Split an array in nbParts
 	 * @param numbers      array of balls number.
 	 * @param nbParts      count of returned arrays.
@@ -672,6 +685,7 @@ export function circularDistance(
  * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
  * @returns      Number of distinct additive signatures (cardinality)
  */
+/*
 function additiveSpectrumCardinality(tuple: number[], k: number, modulo?: number): number {
     if (!tuple || tuple.length < k || k < 2) return 0;
 
@@ -715,7 +729,7 @@ function additiveSpectrumCardinality(tuple: number[], k: number, modulo?: number
 
     return signatures.size;
 }
-
+*/
 
 
 /**
@@ -727,6 +741,7 @@ function additiveSpectrumCardinality(tuple: number[], k: number, modulo?: number
  * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
  * @returns      Number of distinct additive signatures (cardinality)
  */
+/*
 function additiveSpectrumCardinalityOptimized(
     tuple: number[],
     k: number,
@@ -770,7 +785,7 @@ function additiveSpectrumCardinalityOptimized(
 
     return signatures.size;
 }
-
+*/
 
 
 
@@ -783,6 +798,7 @@ function additiveSpectrumCardinalityOptimized(
  * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
  * @returns      Number of distinct additive signatures (cardinality)
  */
+/*
 function additiveSpectrumCardinalityFast(
     tuple: number[],
     k: number,
@@ -822,7 +838,7 @@ function additiveSpectrumCardinalityFast(
 
     return signatures.size;
 }
-
+*/
 
 
 
