@@ -179,8 +179,8 @@ for (const tuple of combinationIterator) {
 	//TODO CL
 	if (verboseMode) console.log(combi);
 	if (outfd)  fs.writeSync(outfd, combi + '\n');
-	//if (verboseMode) console.log(`${combi}\tmin=${min}\tmax=${max}`);
-	//if (outfd)  fs.writeSync(outfd, `${combi}\tmin=${min}\tmax=${max}` + '\n');
+	//if (verboseMode) console.log(`${combi}\tmin=${min}\tmax=${max}\tsum=${indexSum}`);
+	//if (outfd)  fs.writeSync(outfd, `${combi}\tmin=${min}\tmax=${max}\tsum=${indexSum}` + '\n');
 
 
 	if (bar) bar.increment();
