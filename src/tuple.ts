@@ -122,7 +122,7 @@ export class TupleHelper {
 	 * Example:
 	 * rotate_roundrobin_tournament([1, 2, 3, 4, 5], 2) => [1, 4, 5, 2, 3]
 	 */
-	public static rotate_roundrobin_tournament(array: number[], offset: number): number[] {
+	/*public static rotate_roundrobin_tournament(array: number[], offset: number): number[] {
 		if (array.length <= 1) return [...array]; // Nothing to rotate
 
 		const fixed: number = array[0];
@@ -131,7 +131,7 @@ export class TupleHelper {
 		offset = offset % len;
 		const rotated_rest: number[] = TupleHelper.rotate(rest, offset);
 		return [fixed, ...rotated_rest];
-	}
+	}*/
 
 
 
@@ -195,7 +195,7 @@ export class TupleHelper {
 
 
 
-	public static generateGapSeries(max: number, gap: number): Tuple[] {
+	/*public static generateGapSeries(max: number, gap: number): Tuple[] {
 		const covered = new Set<number>();
 		const result: Tuple[] = [];
 
@@ -225,7 +225,7 @@ export class TupleHelper {
 		}
 
 		return result;
-	}
+	}*/
 
 
 	/**
@@ -233,7 +233,7 @@ export class TupleHelper {
 	 * @param arrays     array of Tuple arrays.
 	 * @return           merged array.
 	 */
-	public static interleaved_merge(arrays: Array<Tuple>): Tuple {
+	/*public static interleaved_merge(arrays: Array<Tuple>): Tuple {
 		let mergedArray: Tuple = [];
 		let maxLength = Math.max(...arrays.map(arr => arr.length));
 
@@ -241,7 +241,7 @@ export class TupleHelper {
 			for (let arr of arrays)
 				if (i < arr.length) mergedArray.push(arr[i]);
 		return mergedArray;
-	}
+	}*/
 
 
 
@@ -251,7 +251,7 @@ export class TupleHelper {
 	 * @param size       The number of elements per line.
 	 * @return           A 2D array where each sub-array represents a line.
 	 */
-	public static split_into_lines(array: Tuple, size: number): Tuple[] {
+	/*public static split_into_lines(array: Tuple, size: number): Tuple[] {
 		let result: Tuple[] = [];
 		for (let i = 0; i < array.length; i += size) {
 			if (i + size <= array.length) {
@@ -261,7 +261,7 @@ export class TupleHelper {
 			}
 		}
 		return result;
-	}
+	}*/
 
 
 
@@ -271,14 +271,14 @@ export class TupleHelper {
 	 * @param nbParts     count of parts to split input array.
 	 * @return            all possible concatenations of nbParts of input array excluding one.
 	 */
-	public static splitAndExtract_Nminus1(numbers:Tuple, nbParts:number): Array<Tuple> {
+	/*public static splitAndExtract_Nminus1(numbers:Tuple, nbParts:number): Array<Tuple> {
 		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
 		if (nbParts <= 1) return [];
 		if (!numbers) return [];
 		if (numbers.length < nbParts) return [];
 		const parts: Array<Tuple> = TupleHelper.split (numbers, nbParts);
 		return TupleHelper.extract_Nminus1 (...parts);
-	}
+	}*/
 
 
 	/**
@@ -286,7 +286,7 @@ export class TupleHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            all possible concatenations of input arrays excluding one.
 	 */
-	public static extract_Nminus1(...parts: Array<Tuple>): Array<Tuple> {
+	/*public static extract_Nminus1(...parts: Array<Tuple>): Array<Tuple> {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
 		const result: Array<Tuple> = [];
@@ -296,7 +296,7 @@ export class TupleHelper {
 			result.push(mergedArray);
 		}
 		return result;
-	}
+	}*/
 
 
 
@@ -305,7 +305,7 @@ export class TupleHelper {
 	 * @param parts       array of arrays of balls number.
 	 * @return            an array that is half the length of the input array, with consecutive pairs of elements merged.
 	 */
-	public static pairwise_merge(...parts: Array<Tuple>): Array<Tuple> {
+	/*public static pairwise_merge(...parts: Array<Tuple>): Array<Tuple> {
 		if (!parts) return [];
 		if (parts.length <= 1) return [];
 		const result: Array<Tuple> = [];
@@ -317,7 +317,7 @@ export class TupleHelper {
 			}
 		}
 		return result;
-	}
+	}*/
 
 
 	/**
@@ -386,7 +386,7 @@ export class TupleHelper {
 	 * generateLotteryNumbers(10, 3, 5) =>
 	 *   [1,2,3,4,5,6,7,8,9,10,1,2,3,4,5]
 	 */
-	public static generateLotteryNumbers(
+	/*public static generateLotteryNumbers(
 		totalBalls: number,
 		tuplesToProduce: number,
 		tupleSize: number
@@ -399,7 +399,7 @@ export class TupleHelper {
 			numbers.push(number);
 		}
 		return numbers;
-	}
+	}*/
 
 
 
@@ -455,7 +455,7 @@ export class TupleHelper {
 	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static distance(alphabet:Tuple, tuple:Tuple): number {
+	/*public static distance(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
 		if (!tuple) return -1;
 		if (tuple.length <= 1) return 0;
@@ -467,7 +467,7 @@ export class TupleHelper {
 		if (alphabet.indexOf(tuple[tuple.length-1]) === -1) return -1;	// Item not in alphabet
 		const distance = alphabet.indexOf(tuple[tuple.length-1]) - alphabet.indexOf(tuple[0]);
 		return distance;
-	}
+	}*/
 
 
 	/**
@@ -477,7 +477,7 @@ export class TupleHelper {
 	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_gap(alphabet:Tuple, tuple:Tuple): number {
+	/*public static minimum_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
 		if (!tuple) return -1;
 		if (tuple.length <= 1) return 0;
@@ -501,7 +501,7 @@ export class TupleHelper {
 		if (gap < minGap) minGap = gap;
 
 		return minGap;
-	}
+	}*/
 
 
 	/**
@@ -511,7 +511,7 @@ export class TupleHelper {
 	 * @param tuple         array of balls number.
 	 * @return              minimum gap.
 	 */
-	public static minimum_right_gap(alphabet:Tuple, tuple:Tuple): number {
+	/*public static minimum_right_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
 		if (!tuple) return -1;
 		if (tuple.length <= 1) return 0;
@@ -532,7 +532,7 @@ export class TupleHelper {
 		}
 
 		return minGap;
-	}
+	}*/
 
 
 	// minimum circular distance min(|x−y|, total−|x−y|)
@@ -565,7 +565,7 @@ export function circularDistance(
 	 * @param tuple         array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_gap(alphabet:Tuple, tuple:Tuple): number {
+	/*public static maximum_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
 		if (!tuple) return -1;
 		if (tuple.length <= 1) return 0;
@@ -592,7 +592,7 @@ export function circularDistance(
 		else if (gap > previousGap) { previousGap = gap; }
 
 		return previousGap;
-	}
+	}*/
 
 
 	/**
@@ -602,7 +602,7 @@ export function circularDistance(
 	 * @param tuple         array of balls number.
 	 * @return              maximum gap.
 	 */
-	public static maximum_right_gap(alphabet:Tuple, tuple:Tuple): number {
+	/*public static maximum_right_gap(alphabet:Tuple, tuple:Tuple): number {
 		if (!alphabet) return -1;
 		if (!tuple) return -1;
 		if (tuple.length <= 1) return 0;
@@ -625,7 +625,7 @@ export function circularDistance(
 		}
 
 		return maxGap;
-	}
+	}*/
 
 
 	/**
@@ -1072,6 +1072,7 @@ const bitsPerGap = Math.ceil(Math.log2(modulo + 1));
 
 */
 
+
 private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
 	let key = 0n;
 	const shift = BigInt(bitsPerGap);
@@ -1080,10 +1081,26 @@ private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
 	}
 	return key;
 }
+
+
+private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: number): number[] {
+	const gaps = new Array<number>(gapCount);
+	const mask = (1n << BigInt(bitsPerGap)) - 1n;
+	for (let i = gapCount - 1; i >= 0; i--) {
+		gaps[i] = Number(key & mask);
+		key >>= BigInt(bitsPerGap);
+	}
+	return gaps;
+}
+// Example:
+// const gaps = [2, 3, 5];
+// const bits = 3; // enough for max gap <= 7
+// const key = TupleHelper.packGapsBigInt(gaps, bits);
+// const restored = TupleHelper.unpackGapsBigInt(key, bits, gaps.length);
 //Et tu stockes dans Set<bigint>
 
 
-
+/*
 public static diversityScore2(tuple: Tuple, modulo: number): number {
 	const a = [...tuple].sort((x,y)=>x-y);
 	const maxD = Math.floor(modulo / 2);
@@ -1104,6 +1121,60 @@ public static diversityScore2(tuple: Tuple, modulo: number): number {
 	}
 	return count;
 }
+*/
+
+
+
+	/**
+	 * Computes the cardinality of the gap spectrum of order `guarantee` for a sorted tuple.
+	 *
+	 * For every g-subset of indices, we build the signature of consecutive value gaps.
+	 * The gap spectrum is the set of distinct signatures; this function returns its size.
+	 *
+	 * Example:
+	 * tuple = [1,2,3], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: [1], [2], [1] => spectrum size = 2
+	 *
+	 * Example (values):
+	 * tuple = [5,7,10], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: [2], [5], [3] => spectrum size = 3
+	 *
+	 * @param tuple      Sorted tuple (ascending). Values are used to compute gaps.
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @returns          Number of distinct gap signatures.
+	 */
+	public static gapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		const signatures = new Set<string>();
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSignature = () => {
+			let key = '';
+			for (let i = 1; i < guarantee; i++) {
+				key += (tuple[idx[i]] - tuple[idx[i - 1]]).toString() + ',';
+			}
+			signatures.add(key);
+		};
+
+		while (true) {
+			addSignature();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return signatures.size;
+	}
 
 
 

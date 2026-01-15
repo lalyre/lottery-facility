@@ -135,6 +135,7 @@ let lineNum = 0;
 // TODO CL
 let min = null;
 let max = null;
+const guarantee = 2;
 
 
 
@@ -163,6 +164,7 @@ for (const tuple of combinationIterator) {
 	}
 	lineNum++;
 
+
 	// Output
 	const combi = lotteryFacility.TupleHelper.toString(tuple, SEP);
 	const indexSum = lotteryFacility.TupleHelper.sum(combinationIterator.indices);
@@ -171,9 +173,12 @@ for (const tuple of combinationIterator) {
 
 
 	//TODO CL
+	//if (indexSum < 10) continue;
+
+
+	//TODO CL
 	if (verboseMode) console.log(combi);
 	if (outfd)  fs.writeSync(outfd, combi + '\n');
-
 	//if (verboseMode) console.log(`${combi}\tmin=${min}\tmax=${max}`);
 	//if (outfd)  fs.writeSync(outfd, `${combi}\tmin=${min}\tmax=${max}` + '\n');
 
