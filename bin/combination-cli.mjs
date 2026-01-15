@@ -132,9 +132,10 @@ let fileNum = 0;
 let lineNum = 0;
 
 
-//TODO CL
+// TODO CL
 let min = null;
 let max = null;
+
 
 
 for (const tuple of combinationIterator) {
@@ -163,9 +164,20 @@ for (const tuple of combinationIterator) {
 	lineNum++;
 
 	// Output
-	const line = tuple.join(SEP);
-	if (verboseMode) console.log(line);
-	if (outfd)  fs.writeSync(outfd, line + '\n');
+	const combi = lotteryFacility.TupleHelper.toString(tuple, SEP);
+	const indexSum = lotteryFacility.TupleHelper.sum(combinationIterator.indices);
+	if (min === null || indexSum < min) min = indexSum;
+	if (max === null || indexSum > max) max = indexSum;
+
+
+	//TODO CL
+	if (verboseMode) console.log(combi);
+	if (outfd)  fs.writeSync(outfd, combi + '\n');
+
+	//if (verboseMode) console.log(`${combi}\tmin=${min}\tmax=${max}`);
+	//if (outfd)  fs.writeSync(outfd, `${combi}\tmin=${min}\tmax=${max}` + '\n');
+
+
 	if (bar) bar.increment();
 }
 

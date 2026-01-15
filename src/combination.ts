@@ -234,6 +234,7 @@ export class Combination implements Iterable<Tuple> {
 	get count(): bigint { return this._count; }
 	get lastIndex(): bigint { return this._count - 1n; }
 	get currentIndex(): bigint { return this._currentIndex; }
+	get indices(): number[] { return [...this._indices]; }
 	get currentTuple(): Tuple { return [...this._values]; }
 
 
