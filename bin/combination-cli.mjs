@@ -7,6 +7,7 @@ import meow from 'meow';
 import colors from 'ansi-colors';
 import cliProgress from 'cli-progress';
 import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
+import { cp } from 'fs';
 const FILE_LIMIT = 500000;
 
 
@@ -135,6 +136,7 @@ let lineNum = 0;
 // TODO CL
 let min = null;
 let max = null;
+let lastIndexSum = null;
 const guarantee = 2;
 
 
@@ -173,10 +175,14 @@ for (const tuple of combinationIterator) {
 
 
 	//TODO CL
-	//if (indexSum < 10) continue;
+	if (!(indexSum == 10 && (!lastIndexSum || lastIndexSum < 10 ))) {
+		lastIndexSum = indexSum;
+		continue;
+	}
 
 
 	//TODO CL
+	lastIndexSum = indexSum;
 	if (verboseMode) console.log(combi);
 	if (outfd)  fs.writeSync(outfd, combi + '\n');
 	//if (verboseMode) console.log(`${combi}\tmin=${min}\tmax=${max}\tsum=${indexSum}`);
