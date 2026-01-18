@@ -1178,16 +1178,27 @@ public static diversityScore2(tuple: Tuple, modulo: number): number {
 
 
 	/**
-	 * Computes the cardinality of the circular gap spectrum of order `guarantee`.
-	 * * Instead of simple differences, it uses the minimal circular distance between 
-	 * elements in each subset. This is crucial for evaluating signatures that 
-	 * will be translatated (cyclic designs).
-	 * * @param tuple      Sorted tuple (ascending).
+	 * Computes the cardinality of the gap spectrum of order `guarantee`
+	 * where gaps are measured using a circular (modular) distance.
+	 *
+	 * For each g-subset of indices, the signature is formed by the
+	 * distances between consecutive elements of the subset.
+	 * Each distance is computed as:
+	 *
+	 *   min(|a - b|, poolSize - |a - b|)
+	 *
+	 * This accounts for the circular nature of the pool (e.g. lottery balls),
+	 * but does NOT treat the subset itself as a closed cycle.
+	 *
+	 * Example (Euromillions, poolSize = 50):
+	 *   gap(01, 49) = 2
+	 *
+	 * @param tuple      Sorted tuple (ascending).
 	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   The total number of balls (e.g., 50).
-	 * @returns          Number of distinct circular gap signatures.
+	 * @param poolSize   Size of the circular pool.
+	 * @returns          Number of distinct gap signatures.
 	 */
-	public static gapCircularSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
+	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
 		const n = tuple.length;
@@ -1275,27 +1286,26 @@ public static diversityScore2(tuple: Tuple, modulo: number): number {
 
 
 	/**
-	 * Computes the total sum of all circular gaps within all possible index subsets of a given size.
+	 * Computes the total sum of gap signatures of order `guarantee`
+	 * where gaps are measured using a circular (modular) distance.
 	 *
-	 * This function iterates through every g-subset of indices, calculates the 
-	 * minimum circular distance between consecutive values in that subset, 
-	 * and returns the cumulative sum.
+	 * For each g-subset of indices, the distances between consecutive
+	 * elements of the subset are summed, using the circular metric:
 	 *
-	 * Example (Euromillions, pool = 50):
-	 * tuple = [1, 10, 50], guarantee = 2
-	 * subsets: (1,10), (1,50), (10,50)
-	 * circular gaps: 
-	 * dist(1,10) = 9
-	 * dist(1,50) = 1  (because 50 is next to 1)
-	 * dist(10,50) = 10 (because 50 to 1 is 1, then 1 to 10 is 9)
-	 * returns: 9 + 1 + 10 = 20
+	 *   min(|a - b|, poolSize - |a - b|)
+	 *
+	 * This accounts for the circular nature of the pool (e.g. lottery balls),
+	 * but does NOT treat the subset itself as a closed cycle.
+	 *
+	 * Example (Euromillions, poolSize = 50):
+	 *   gap(01, 49) = 2
 	 *
 	 * @param tuple      Sorted tuple (ascending).
 	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   The total number of balls in the game (e.g., 50 for Euromillions).
+	 * @param poolSize   Size of the circular pool.
 	 * @returns          The total sum of all computed circular gaps.
 	 */
-	public static gapCircularSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
+	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
 		const n = tuple.length;
