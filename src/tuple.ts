@@ -1177,7 +1177,159 @@ public static diversityScore2(tuple: Tuple, modulo: number): number {
 	}
 
 
+	/**
+	 * Computes the cardinality of the circular gap spectrum of order `guarantee`.
+	 * * Instead of simple differences, it uses the minimal circular distance between 
+	 * elements in each subset. This is crucial for evaluating signatures that 
+	 * will be translatated (cyclic designs).
+	 * * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   The total number of balls (e.g., 50).
+	 * @returns          Number of distinct circular gap signatures.
+	 */
+	public static gapCircularSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
+		const n = tuple.length;
+		const signatures = new Set<string>();
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addCircularSignature = () => {
+			let key = '';
+			for (let i = 1; i < guarantee; i++) {
+				const val1 = tuple[idx[i]];
+				const val2 = tuple[idx[i - 1]];
+				
+				// Minimal circular distance: min(|a-b|, poolSize - |a-b|)
+				const diff = Math.abs(val1 - val2) % poolSize;
+				const circularDist = Math.min(diff, poolSize - diff);
+				
+				key += circularDist.toString() + ',';
+			}
+			signatures.add(key);
+		};
+
+		while (true) {
+			addCircularSignature();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return signatures.size;
+	}
+
+
+	/**
+	 * Computes the total sum of all gaps within all possible index subsets of a given size.
+	 *
+	 * This function iterates through every g-subset of indices, calculates the 
+	 * gaps between consecutive values in that subset, and returns the cumulative sum.
+	 *
+	 * Example:
+	 * tuple = [1, 5, 10], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: (5-1)=4, (10-1)=9, (10-5)=5
+	 * returns: 4 + 9 + 5 = 18
+	 *
+	 * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @returns          The total sum of all computed gaps.
+	 */
+	public static gapSpectrumSum(tuple: Tuple, guarantee: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		let totalSum = 0;
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSubsetGaps = () => {
+			for (let i = 1; i < guarantee; i++) {
+				// Simple sum of gaps between consecutive elements in the current subset
+				totalSum += (tuple[idx[i]] - tuple[idx[i - 1]]);
+			}
+		};
+
+		while (true) {
+			addSubsetGaps();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return totalSum;
+	}
+
+
+
+	/**
+	 * Computes the total sum of all circular gaps within all possible index subsets of a given size.
+	 *
+	 * This function iterates through every g-subset of indices, calculates the 
+	 * minimum circular distance between consecutive values in that subset, 
+	 * and returns the cumulative sum.
+	 *
+	 * Example (Euromillions, pool = 50):
+	 * tuple = [1, 10, 50], guarantee = 2
+	 * subsets: (1,10), (1,50), (10,50)
+	 * circular gaps: 
+	 * dist(1,10) = 9
+	 * dist(1,50) = 1  (because 50 is next to 1)
+	 * dist(10,50) = 10 (because 50 to 1 is 1, then 1 to 10 is 9)
+	 * returns: 9 + 1 + 10 = 20
+	 *
+	 * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   The total number of balls in the game (e.g., 50 for Euromillions).
+	 * @returns          The total sum of all computed circular gaps.
+	 */
+	public static gapCircularSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		let totalSum = 0;
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSubsetCircularGaps = () => {
+			for (let i = 1; i < guarantee; i++) {
+				const val1 = tuple[idx[i]];
+				const val2 = tuple[idx[i - 1]];
+				
+				// Minimal circular distance
+				const diff = Math.abs(val1 - val2) % poolSize;
+				const circularDist = Math.min(diff, poolSize - diff);
+				
+				totalSum += circularDist;
+			}
+		};
+
+		while (true) {
+			addSubsetCircularGaps();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return totalSum;
+	}
 
 
 

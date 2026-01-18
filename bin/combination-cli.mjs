@@ -175,7 +175,7 @@ for (const tuple of combinationIterator) {
 
 
 	//TODO CL
-	/*if (!(indexSum == 10 && (!lastIndexSum || lastIndexSum < 10 ))) {
+	/*if (!(indexSum == 120 && (!lastIndexSum || lastIndexSum != 120 ))) {
 		lastIndexSum = indexSum;
 		continue;
 	}*/
