@@ -370,10 +370,10 @@ let testLengthSelection = [];
 let testLength = [];
 //let testDistanceSelection = [];
 //let testDistance = [];
-//let testMingapSelection = [];
-//let testMingap = [];
-//let testMaxgapSelection = [];
-//let testMaxgap = [];
+let testMingapSelection = [];
+let testMingap = [];
+let testMaxgapSelection = [];
+let testMaxgap = [];
 let testCombiFilterScoreSelection = [];
 let testCombiFilterScore = [];
 //let testCombiFilterRepetitionSelection = [];
@@ -417,7 +417,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			let line = 0;
 			for (let filter_line of filter_lines) {
 				var [x, y] = filter_line.trim().split(/:/);
-				let numbers = x.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+				let numbers = x.trim().split(/\s+/).map(Number).filter((v, i, a) => a.indexOf(v) === i);
 				if (numbers[0] == 0) continue;				// next filter command
 				if (numbers.join("") == '') continue;		// next filter command
 				var value = (!y) ? 0 : +y.trim();
@@ -532,7 +532,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 
 
 	// Parsing MIN_GAP
-	/*switch (true) {
+	switch (true) {
 		case /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
 			let match = /min_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testMingapSelection.push('='); else testMingapSelection.push(match[1]);
@@ -543,11 +543,11 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testMingapSelection.push(null)
 			testMingap.push(-1);
 			break;
-	}*/
+	}
 
 
 	// Parsing MAX_GAP
-	/*switch (true) {
+	switch (true) {
 		case /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.test(filterCommand[i].trim()):
 			let match = /max_gap\((<|=<|<=|=|!=|>=|=>|>)?(\d*)\)/.exec(filterCommand[i]);
 			if (match[1] == null) testMaxgapSelection.push('='); else testMaxgapSelection.push(match[1]);
@@ -558,7 +558,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			testMaxgapSelection.push(null)
 			testMaxgap.push(-1);
 			break;
-	}*/
+	}
 
 
 	// Parsing LEVEL
@@ -670,7 +670,7 @@ outerLoop: for await (const line of rl) {
 	if (!line) {
 		continue outerLoop;
 	}
-	let testedCombination = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i);
+	let testedCombination = line.trim().split(/\s+/).filter((v, i, a) => a.indexOf(v) === i).map(Number);
 	if (testedCombination[0] == 0) continue outerLoop;
 	if (testedCombination.join("") == '') continue outerLoop;
 	inputLinesCount++;
@@ -692,9 +692,9 @@ outerLoop: for await (const line of rl) {
 	//let combiGlobalFailure = 0;
 	let combiFilterScore = new Array(filterCommand.length).fill(0);
 	let combiFilterFailure = new Array(filterCommand.length).fill(0);
-	//let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
-	//let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
-	//let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
+	let combiFilterMinValue = new Array(filterCommand.length).fill(-1);
+	let combiFilterMaxValue = new Array(filterCommand.length).fill(-1);
+	let combiFilterSumValue = new Array(filterCommand.length).fill(-1);
 	let slicedCombination = testedCombination;
 	let coveredLines = "";
 	let withOngoingSelection = false;
@@ -806,7 +806,7 @@ outerLoop: for await (const line of rl) {
 
 
 		// Combi min_gap scope
-		/*let minGap = lotteryFacility.TupleHelper.minimum_right_gap(global_alphabet, testedCombination);
+		let minGap = lotteryFacility.TupleHelper.modularMinimumGap(testedCombination, global_alphabet.length);
 		let selectMingapScope = true;
 		switch (true) {
 			case (testMingapSelection[i] == null):
@@ -852,14 +852,16 @@ outerLoop: for await (const line of rl) {
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
-			combiFilterFailure[i] = 1; combiGlobalFailure++;
+			//combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
-			continue;		// next filter command
-		}*/
+
+			//continue;		// next filter command
+			continue outerLoop; // rejette la combinaison testée
+		}
 
 
 		// Combi max_gap scope
-		/*let maxGap = lotteryFacility.TupleHelper.maximum_right_gap(global_alphabet, testedCombination);
+		let maxGap = lotteryFacility.TupleHelper.modularMaximumGap(testedCombination, global_alphabet.length);
 		let selectMaxgapScope = true;
 		switch (true) {
 			case (testMaxgapSelection[i] == null):
@@ -899,24 +901,27 @@ outerLoop: for await (const line of rl) {
 				selectMaxgapScope = false; // reject this combination
 				break;
 		}
+
 		if (!selectMaxgapScope) {
 			hitsCount = -1;
 			combiFilterMinValue[i] = -1;
 			combiFilterMaxValue[i] = -1;
 			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
-			combiFilterFailure[i] = 1; combiGlobalFailure++;
+			//combiFilterFailure[i] = 1; combiGlobalFailure++;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
-			continue;		// next filter command
-		}*/
+
+			//continue;		// next filter command
+			continue outerLoop; // rejette la combinaison testée
+		}
 
 
 		// Check whether computing a score is relevant or not
 		if (filename[i] === null || testLevelSelection[i] === null) {
 			hitsCount = -1;
-			//combiFilterMinValue[i] = -1;
-			//combiFilterMaxValue[i] = -1;
-			//combiFilterSumValue[i] = -1;
+			combiFilterMinValue[i] = -1;
+			combiFilterMaxValue[i] = -1;
+			combiFilterSumValue[i] = -1;
 			combiFilterScore[i] = -1;
 			combiFilterFailure[i] = 0;
 			hits_count_string += `[hits: ${hitsCount} - score: ${combiFilterScore[i]} - failure: ${combiFilterFailure[i]}] - `;
