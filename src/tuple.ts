@@ -470,69 +470,6 @@ export class TupleHelper {
 	}*/
 
 
-	/**
-	 * Give the minimum gap of a lottery tuple relatively to a global alphabet
-	 * The minimum gap is the smallest distance between two consecutive items of the input tuple.
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              minimum gap.
-	 */
-	/*public static minimum_gap(alphabet:Tuple, tuple:Tuple): number {
-		if (!alphabet) return -1;
-		if (!tuple) return -1;
-		if (tuple.length <= 1) return 0;
-		tuple.sort((a, b) => {
-			return alphabet.indexOf(a) - alphabet.indexOf(b);
-		});
-
-		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
-		let minGap = gap;
-
-		for (let j = 1; j < tuple.length-1; j++) {
-			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
-			if (gap < minGap) minGap = gap;
-		}
-
-		gap = alphabet.length + alphabet.indexOf(tuple[0]) - alphabet.indexOf(tuple[tuple.length-1]);
-		if (gap < minGap) minGap = gap;
-
-		return minGap;
-	}*/
-
-
-	/**
-	 * Give the minimum right gap of a lottery tuple relatively to a global alphabet
-	 * The minimum right gap is the smallest distance between two consecutive items on the right of the input tuple.
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              minimum gap.
-	 */
-	/*public static minimum_right_gap(alphabet:Tuple, tuple:Tuple): number {
-		if (!alphabet) return -1;
-		if (!tuple) return -1;
-		if (tuple.length <= 1) return 0;
-		tuple.sort((a, b) => {
-			return alphabet.indexOf(a) - alphabet.indexOf(b);
-		});
-
-		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
-		let minGap = gap;
-
-		for (let j = 1; j < tuple.length-1; j++) {
-			if (alphabet.indexOf(tuple[j]) === -1) return -1;	// Item not in alphabet
-			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
-			if (gap < minGap) minGap = gap;
-		}
-
-		return minGap;
-	}*/
 
 
 	// minimum circular distance min(|x−y|, total−|x−y|)
@@ -556,76 +493,156 @@ export function circularDistance(
 
 
 
+	/**
+	 * Computes the minimum linear gap of a lottery tuple.
+	 *
+	 * The gap is defined as the difference between two consecutive
+	 * elements of the tuple after sorting in ascending order.
+	 *
+	 * No circular wrap-around is applied.
+	 *
+	 * Example:
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30]
+	 *  result = 7
+	 *
+	 * @param tuple   Array of selected lottery numbers.
+	 * @return        The minimum linear gap, or:
+	 *                - -1 if tuple is null
+	 *                -  0 if tuple has 0 or 1 element
+	 */
+	public static minimumGap(tuple: number[]): number {
+	  if (!tuple) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let minGap = Number.POSITIVE_INFINITY;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap < minGap) minGap = gap;
+	  }
+
+	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+	}
+
 
 
 	/**
-	 * Give the maximum gap of a lottery tuple relatively to a global alphabet
-	 * The maximum gap is the biggest distance between consecutives items of the input tuple (minimum circular distance).
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              maximum gap.
+	 * Computes the minimum circular gap of a lottery tuple using a modular pool.
+	 *
+	 * The gap is defined as the clockwise distance between two consecutive
+	 * elements of the tuple after sorting, including the circular wrap-around
+	 * gap between the last and the first element.
+	 *
+	 * Example (poolSize = 50):
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
+	 *  result = 7
+	 *
+	 * @param tuple     Array of selected lottery numbers.
+	 * @param poolSize  Size of the circular pool.
+	 * @return          The minimum circular gap, or:
+	 *                  - -1 if parameters are invalid
+	 *                  -  0 if tuple has 0 or 1 element
 	 */
-	/*public static maximum_gap(alphabet:Tuple, tuple:Tuple): number {
-		if (!alphabet) return -1;
-		if (!tuple) return -1;
-		if (tuple.length <= 1) return 0;
-		tuple.sort((a, b) => {
-			return alphabet.indexOf(a) - alphabet.indexOf(b);
-		});
+	public static modularMinimumGap(tuple: number[], poolSize: number): number {
+	  if (!tuple) return -1;
+	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+	  if (tuple.length <= 1) return 0;
 
-		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
-		let maxGap = gap;
-		let previousGap = 0;
+	  const sorted = [...tuple].sort((a, b) => a - b);
 
-		for (let j = 1; j < tuple.length-1; j++) {
-			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;	// Item not in alphabet
-			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
-			if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
-			else if (gap > previousGap) { previousGap = gap; }
-		}
+	  let minGap = Number.POSITIVE_INFINITY;
 
-		gap = alphabet.length + alphabet.indexOf(tuple[0]) - alphabet.indexOf(tuple[tuple.length-1]);
-		if (gap > maxGap) { previousGap = maxGap; maxGap = gap; }
-		else if (gap > previousGap) { previousGap = gap; }
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap < minGap) minGap = gap;
+	  }
 
-		return previousGap;
-	}*/
+	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+	  if (wrapGap < minGap) minGap = wrapGap;
+
+	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+	}
+
+
 
 
 	/**
-	 * Give the maximum right gap of a lottery tuple relatively to a global alphabet
-	 * The maximum right gap is the biggest distance between consecutives items on the right of the input tuple.
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              maximum gap.
+	 * Computes the maximum linear gap of a lottery tuple.
+	 *
+	 * The gap is defined as the difference between two consecutive
+	 * elements of the tuple after sorting in ascending order.
+	 *
+	 * No circular wrap-around is applied.
+	 *
+	 * Example:
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30]
+	 *  result = 30
+	 *
+	 * @param tuple   Array of selected lottery numbers.
+	 * @return        The maximum linear gap, or:
+	 *                - -1 if tuple is null
+	 *                -  0 if tuple has 0 or 1 element
 	 */
-	/*public static maximum_right_gap(alphabet:Tuple, tuple:Tuple): number {
-		if (!alphabet) return -1;
-		if (!tuple) return -1;
-		if (tuple.length <= 1) return 0;
-		tuple.sort((a, b) => {
-			return alphabet.indexOf(a) - alphabet.indexOf(b);
-		});
+	public static maximumGap(tuple: number[]): number {
+	  if (!tuple) return -1;
+	  if (tuple.length <= 1) return 0;
 
-		if (alphabet.indexOf(tuple[0]) === -1) return -1;		// Item not in alphabet
-		if (alphabet.indexOf(tuple[1]) === -1) return -1;		// Item not in alphabet
-		let gap = alphabet.indexOf(tuple[1]) - alphabet.indexOf(tuple[0]);
-		let maxGap = gap;
+	  const sorted = [...tuple].sort((a, b) => a - b);
 
-		for (let j = 1; j < tuple.length-1; j++) {
-			if (alphabet.indexOf(tuple[j]) === -1) return -1;		// Item not in alphabet
-			if (alphabet.indexOf(tuple[j+1]) === -1) return -1;		// Item not in alphabet
-			gap = alphabet.indexOf(tuple[j+1]) - alphabet.indexOf(tuple[j]);
-			if (gap > maxGap) {
-				maxGap = gap;
-			}
-		}
+	  let maxGap = 0;
 
-		return maxGap;
-	}*/
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap > maxGap) maxGap = gap;
+	  }
+
+	  return maxGap;
+	}
+
+
+	/**
+	 * Computes the maximum circular gap of a lottery tuple using a modular pool.
+	 *
+	 * The gap is defined as the clockwise distance between two consecutive
+	 * elements of the tuple after sorting, including the circular wrap-around
+	 * gap between the last and the first element.
+	 *
+	 * Example (poolSize = 50):
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
+	 *  result = 30
+	 *
+	 * @param tuple     Array of selected lottery numbers.
+	 * @param poolSize  Size of the circular pool.
+	 * @return          The maximum circular gap, or:
+	 *                  - -1 if parameters are invalid
+	 *                  -  0 if tuple has 0 or 1 element
+	 */
+	public static modularMaximumGap(tuple: number[], poolSize: number): number {
+	  if (!tuple) return -1;
+	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let maxGap = 0;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap > maxGap) maxGap = gap;
+	  }
+
+	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+	  if (wrapGap > maxGap) maxGap = wrapGap;
+
+	  return maxGap;
+	}
+
 
 
 	/**
