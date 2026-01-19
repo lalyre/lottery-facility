@@ -902,6 +902,12 @@ outerLoop: for await (const line of rl) {
 				break;
 		}
 
+
+
+		//const indexSum = lotteryFacility.TupleHelper.modularGapSpectrumCardinality(testedCombination, 2, global_alphabet.length);
+		//if (indexSum < 10) selectMaxgapScope = false; // reject this combination
+
+
 		if (!selectMaxgapScope) {
 			hitsCount = -1;
 			combiFilterMinValue[i] = -1;
