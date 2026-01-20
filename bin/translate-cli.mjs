@@ -97,6 +97,8 @@ if (cli.flags.targetnum) {
 	target_alphabet = fs.readFileSync(cli.flags.targetfile).toString().trim().split(/\r?\n/);
 }
 
+const origin_set = new Set(origin_alphabet);
+
 /*
 if (origin_alphabet.length > target_alphabet.length) {
 	console.error("The target alphabet does not contain enough items");
@@ -115,7 +117,15 @@ let rl = readline.createInterface({
 	}
 	let res1 = line.trim().split(/\s+/);
 	//console.log("res1 " + res1);
-	
+
+	const has_missing = res1.some(o => !origin_set.has(o));
+	if (!has_missing) {
+		const res2 = lotteryFacility.TupleHelper.translate(res1, origin_alphabet, target_alphabet);
+		const result_line = lotteryFacility.TupleHelper.toCanonicalString(res2);
+		console.log(result_line);
+		return;
+	}
+
 	let res2 = res1.map(o => {
 		let id = origin_alphabet.findIndex(obj => obj == o);
 		if (id == -1) {
@@ -124,7 +134,7 @@ let rl = readline.createInterface({
 		return target_alphabet[id];
 	});
 	//console.log("res2 " + res2);
-	
+
 	let result_line = res2.join(" ").split(" ").filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(" ");
 	console.log(result_line);
 })
