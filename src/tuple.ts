@@ -96,44 +96,20 @@ export class TupleHelper {
 
 	/**
 	 * Rotates the elements of an array by a given offset.
+	 * Positive offsets rotate to the right, negative offsets rotate to the left.
 	 * Elements shifted off the end are wrapped around to the beginning.
 	 * 
 	 * @param array   The array of numbers to rotate.
-	 * @param offset  The number of positions to rotate the array by.
+	 * @param offset  The number of positions to rotate the array by (right if > 0, left if < 0).
 	 * @returns       A new array with elements rotated by the given offset.
 	 *
 	 * Example:
 	 * rotate([1, 2, 3, 4], 1) => [4, 1, 2, 3]
+	 * rotate([1, 2, 3, 4], -1) => [2, 3, 4, 1]
 	 */
 	public static rotate(array: number[], offset: number): number[] {
 		return array.slice(-offset).concat(array.slice(0, -offset));
 	}
-
-
-	/**
-	 * Rotates the elements of an array in a round-robin tournament style.
-	 * The first element stays fixed, and the rest of the array is rotated by the given offset.
-	 * 
-	 * @param array   The array of numbers to rotate.
-	 * @param offset  The number of positions to rotate the elements (excluding the first one).
-	 *                Positive values rotate to the right, negative to the left.
-	 * @returns       A new array with the first element fixed and the rest rotated by the given offset.
-	 *
-	 * Example:
-	 * rotate_roundrobin_tournament([1, 2, 3, 4, 5], 2) => [1, 4, 5, 2, 3]
-	 */
-	/*public static rotate_roundrobin_tournament(array: number[], offset: number): number[] {
-		if (array.length <= 1) return [...array]; // Nothing to rotate
-
-		const fixed: number = array[0];
-		const rest: number[] = array.slice(1);
-		const len = rest.length;
-		offset = offset % len;
-		const rotated_rest: number[] = TupleHelper.rotate(rest, offset);
-		return [fixed, ...rotated_rest];
-	}*/
-
-
 
 
 	/**
@@ -192,6 +168,494 @@ export class TupleHelper {
 
 		return transposed;
 	}
+
+
+	/**
+	 * Translates a lottery tuple from one alphabet to another.
+	 * The translation is based on the positional correspondence between the origin and target alphabets.
+	 *
+	 * @param tuple              The tuple of numbers to translate.
+	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
+	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
+	 * @returns                  The translated tuple.
+	 *
+	 * @throws Error if the origin or target alphabet is invalid.
+	 * @throws Error if the tuple contains numbers not present in the origin alphabet.
+	 *
+	 * Example:
+	 * translate([1, 2, 3], [1, 2, 3, 4], [10, 20, 30, 40]) => [10, 20, 30]
+	 */
+	public static translate(tuple: Tuple, originAlphabet: Tuple, targetAlphabet: Tuple): Tuple {
+		if (!originAlphabet || !targetAlphabet) throw new Error('Invalid origin or target alphabet.');
+		const translatedTuple: Tuple = [];
+		const originMap = new Map<number, number>();
+
+		// Build a map for quick lookups from origin to target numbers
+		for (let i = 0; i < originAlphabet.length; i++) {
+			originMap.set(originAlphabet[i], targetAlphabet[i]);
+		}
+
+		for (const num of tuple) {
+			if (!originMap.has(num)) throw new Error(`Number ${num} not found in the origin alphabet.`);
+			translatedTuple.push(originMap.get(num)!);
+		}
+		return translatedTuple;
+	}
+
+
+	/**
+	 * Translates an array of lottery tuples from one alphabet to another.
+	 * This method iterates over each tuple in the input array and applies the
+	 * `translate` function to it, returning an array of the translated tuples.
+	 *
+	 * @param tuples             The array of tuples to translate.
+	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
+	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
+	 * @returns                  An array containing all the translated tuples.
+	 *
+	 * @throws Error if the origin or target alphabet is invalid.
+	 * @throws Error if any Tuple in the array contains numbers not in the origin alphabet.
+	 */
+	public static translateAll(tuples: Tuple[], originAlphabet: Tuple, targetAlphabet: Tuple): Tuple[] {
+		return tuples.map(Tuple =>
+			TupleHelper.translate(Tuple, originAlphabet, targetAlphabet)
+		);
+	}
+
+
+	/**
+	 * Give the union between 2 lottery tuples
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
+	 * @return          array containing all balls inside arr1 and arr2.
+	 */
+	public static union(arr1:Tuple, arr2:Tuple, duplicate:boolean = false): Tuple {
+		if (!arr1) return duplicate ? arr2 : Array.from(new Set(arr2));
+		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
+
+		if (duplicate) return [...arr1, ...arr2];
+		return Array.from(new Set([...arr1, ...arr2]));
+	}
+
+
+	/**
+	 * Give the intersection between 2 lottery tuples
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @return          array containing balls both inside arr1 and arr2.
+	 */
+	public static intersection(arr1:Tuple, arr2:Tuple): Tuple {
+		if (!arr1 || !arr2) return [];
+		const set2 = new Set(arr2);
+		return arr1.filter(item => set2.has(item));
+	}
+
+
+	/**
+	 * Give the difference between 2 lottery tuples
+	 * It gives the elements of "arr1" minus the elements of "arr2"
+	 * @param arr1      array of balls number.
+	 * @param arr2      array of balls number.
+	 * @return          array containing balls of arr1 that are not inside arr2.
+	 */
+	public static difference(arr1:Tuple, arr2:Tuple): Tuple {
+		if (!arr1) return [];
+		if (!arr2) return arr1;
+		const set2 = new Set(arr2);
+		return arr1.filter(item => !set2.has(item));
+	}
+
+
+	/**
+	 * Compute the complement tuple of a lottery tuple relatively to a global alphabet
+	 * @param alphabet      array of balls number.
+	 * @param tuple         array of balls number.
+	 * @return              array containing balls numbers of the complement tuple.
+	 */
+	public static complement(alphabet:Tuple, tuple:Tuple): Tuple|null {
+		if (!alphabet) return null;
+		if (!tuple) return null;
+
+		const complement:number[] = [];
+		complement.length = tuple.length;
+
+		for (let j = 0; j < tuple.length; j++) {
+			if (alphabet.indexOf(tuple[j]) === -1) return null;		// Item not in alphabet
+
+			const pos:number = alphabet.indexOf(tuple[j]);
+			complement[j] = alphabet[alphabet.length-1 - pos];
+		}
+		return complement;
+	}
+
+
+	/**
+	 * Computes the minimum linear gap of a lottery tuple.
+	 *
+	 * The gap is defined as the difference between two consecutive
+	 * elements of the tuple after sorting in ascending order.
+	 *
+	 * No circular wrap-around is applied.
+	 *
+	 * Example:
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30]
+	 *  result = 7
+	 *
+	 * @param tuple   Array of selected lottery numbers.
+	 * @return        The minimum linear gap, or:
+	 *                - -1 if tuple is null
+	 *                -  0 if tuple has 0 or 1 element
+	 */
+	public static linearMinimumGap(tuple: number[]): number {
+	  if (!tuple) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let minGap = Number.POSITIVE_INFINITY;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap < minGap) minGap = gap;
+	  }
+
+	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+	}
+
+
+	/**
+	 * Computes the minimum circular gap of a lottery tuple using a modular pool.
+	 *
+	 * The gap is defined as the clockwise distance between two consecutive
+	 * elements of the tuple after sorting, including the circular wrap-around
+	 * gap between the last and the first element.
+	 *
+	 * Example (poolSize = 50):
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
+	 *  result = 7
+	 *
+	 * @param tuple     Array of selected lottery numbers.
+	 * @param poolSize  Size of the circular pool.
+	 * @return          The minimum circular gap, or:
+	 *                  - -1 if parameters are invalid
+	 *                  -  0 if tuple has 0 or 1 element
+	 */
+	public static modularMinimumGap(tuple: number[], poolSize: number): number {
+	  if (!tuple) return -1;
+	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let minGap = Number.POSITIVE_INFINITY;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap < minGap) minGap = gap;
+	  }
+
+	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+	  if (wrapGap < minGap) minGap = wrapGap;
+
+	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+	}
+
+
+	/**
+	 * Computes the maximum linear gap of a lottery tuple.
+	 *
+	 * The gap is defined as the difference between two consecutive
+	 * elements of the tuple after sorting in ascending order.
+	 *
+	 * No circular wrap-around is applied.
+	 *
+	 * Example:
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30]
+	 *  result = 30
+	 *
+	 * @param tuple   Array of selected lottery numbers.
+	 * @return        The maximum linear gap, or:
+	 *                - -1 if tuple is null
+	 *                -  0 if tuple has 0 or 1 element
+	 */
+	public static linearMaximumGap(tuple: number[]): number {
+	  if (!tuple) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let maxGap = 0;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap > maxGap) maxGap = gap;
+	  }
+
+	  return maxGap;
+	}
+
+
+	/**
+	 * Computes the maximum circular gap of a lottery tuple using a modular pool.
+	 *
+	 * The gap is defined as the clockwise distance between two consecutive
+	 * elements of the tuple after sorting, including the circular wrap-around
+	 * gap between the last and the first element.
+	 *
+	 * Example (poolSize = 50):
+	 *  tuple = [3, 10, 40]
+	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
+	 *  result = 30
+	 *
+	 * @param tuple     Array of selected lottery numbers.
+	 * @param poolSize  Size of the circular pool.
+	 * @return          The maximum circular gap, or:
+	 *                  - -1 if parameters are invalid
+	 *                  -  0 if tuple has 0 or 1 element
+	 */
+	public static modularMaximumGap(tuple: number[], poolSize: number): number {
+	  if (!tuple) return -1;
+	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+	  if (tuple.length <= 1) return 0;
+
+	  const sorted = [...tuple].sort((a, b) => a - b);
+
+	  let maxGap = 0;
+
+	  for (let i = 0; i < sorted.length - 1; i++) {
+		const gap = sorted[i + 1] - sorted[i];
+		if (gap > maxGap) maxGap = gap;
+	  }
+
+	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+	  if (wrapGap > maxGap) maxGap = wrapGap;
+
+	  return maxGap;
+	}
+
+
+	/**
+	 * Computes the cardinality of the gap spectrum of order `guarantee` for a sorted tuple.
+	 *
+	 * For every g-subset of indices, we build the signature of consecutive value gaps.
+	 * The gap spectrum is the set of distinct signatures; this function returns its size.
+	 *
+	 * Example:
+	 * tuple = [1,2,3], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: [1], [2], [1] => spectrum size = 2
+	 *
+	 * Example (values):
+	 * tuple = [5,7,10], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: [2], [5], [3] => spectrum size = 3
+	 *
+	 * @param tuple      Sorted tuple (ascending). Values are used to compute gaps.
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @returns          Number of distinct gap signatures.
+	 */
+	public static linearGapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		const signatures = new Set<string>();
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSignature = () => {
+			let key = '';
+			for (let i = 1; i < guarantee; i++) {
+				key += (tuple[idx[i]] - tuple[idx[i - 1]]).toString() + ',';
+			}
+			signatures.add(key);
+		};
+
+		while (true) {
+			addSignature();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return signatures.size;
+	}
+
+
+	/**
+	 * Computes the cardinality of the gap spectrum of order `guarantee`
+	 * where gaps are measured using a circular (modular) distance.
+	 *
+	 * For each g-subset of indices, the signature is formed by the
+	 * distances between consecutive elements of the subset.
+	 * Each distance is computed as:
+	 *
+	 *   min(|a - b|, poolSize - |a - b|)
+	 *
+	 * This accounts for the circular nature of the pool (e.g. lottery balls),
+	 * but does NOT treat the subset itself as a closed cycle.
+	 *
+	 * Example (Euromillions, poolSize = 50):
+	 *   gap(01, 49) = 2
+	 *
+	 * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   Size of the circular pool.
+	 * @returns          Number of distinct gap signatures.
+	 */
+	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		const signatures = new Set<string>();
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addCircularSignature = () => {
+			let key = '';
+			for (let i = 1; i < guarantee; i++) {
+				const val1 = tuple[idx[i]];
+				const val2 = tuple[idx[i - 1]];
+				
+				// Minimal circular distance: min(|a-b|, poolSize - |a-b|)
+				const diff = Math.abs(val1 - val2) % poolSize;
+				const circularDist = Math.min(diff, poolSize - diff);
+				
+				key += circularDist.toString() + ',';
+			}
+			signatures.add(key);
+		};
+
+		while (true) {
+			addCircularSignature();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return signatures.size;
+	}
+
+
+	/**
+	 * Computes the total sum of all gaps within all possible index subsets of a given size.
+	 *
+	 * This function iterates through every g-subset of indices, calculates the 
+	 * gaps between consecutive values in that subset, and returns the cumulative sum.
+	 *
+	 * Example:
+	 * tuple = [1, 5, 10], guarantee = 2
+	 * index subsets: (0,1), (0,2), (1,2)
+	 * gaps: (5-1)=4, (10-1)=9, (10-5)=5
+	 * returns: 4 + 9 + 5 = 18
+	 *
+	 * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @returns          The total sum of all computed gaps.
+	 */
+	public static linearGapSpectrumSum(tuple: Tuple, guarantee: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		let totalSum = 0;
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSubsetGaps = () => {
+			for (let i = 1; i < guarantee; i++) {
+				// Simple sum of gaps between consecutive elements in the current subset
+				totalSum += (tuple[idx[i]] - tuple[idx[i - 1]]);
+			}
+		};
+
+		while (true) {
+			addSubsetGaps();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return totalSum;
+	}
+
+
+	/**
+	 * Computes the total sum of gap signatures of order `guarantee`
+	 * where gaps are measured using a circular (modular) distance.
+	 *
+	 * For each g-subset of indices, the distances between consecutive
+	 * elements of the subset are summed, using the circular metric:
+	 *
+	 *   min(|a - b|, poolSize - |a - b|)
+	 *
+	 * This accounts for the circular nature of the pool (e.g. lottery balls),
+	 * but does NOT treat the subset itself as a closed cycle.
+	 *
+	 * Example (Euromillions, poolSize = 50):
+	 *   gap(01, 49) = 2
+	 *
+	 * @param tuple      Sorted tuple (ascending).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   Size of the circular pool.
+	 * @returns          The total sum of all computed circular gaps.
+	 */
+	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+
+		const n = tuple.length;
+		let totalSum = 0;
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSubsetCircularGaps = () => {
+			for (let i = 1; i < guarantee; i++) {
+				const val1 = tuple[idx[i]];
+				const val2 = tuple[idx[i - 1]];
+				
+				// Minimal circular distance
+				const diff = Math.abs(val1 - val2) % poolSize;
+				const circularDist = Math.min(diff, poolSize - diff);
+				
+				totalSum += circularDist;
+			}
+		};
+
+		while (true) {
+			addSubsetCircularGaps();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return totalSum;
+	}
+
+
+
+
 
 
 
@@ -320,776 +784,8 @@ export class TupleHelper {
 	}*/
 
 
-	/**
-	 * Translates a lottery tuple from one alphabet to another.
-	 * The translation is based on the positional correspondence between the origin and target alphabets.
-	 *
-	 * @param tuple              The tuple of numbers to translate.
-	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
-	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
-	 * @returns                  The translated tuple.
-	 *
-	 * @throws Error if the origin or target alphabet is invalid.
-	 * @throws Error if the tuple contains numbers not present in the origin alphabet.
-	 *
-	 * Example:
-	 * translate([1, 2, 3], [1, 2, 3, 4], [10, 20, 30, 40]) => [10, 20, 30]
-	 */
-	public static translate(tuple: Tuple, originAlphabet: Tuple, targetAlphabet: Tuple): Tuple {
-		if (!originAlphabet || !targetAlphabet) throw new Error('Invalid origin or target alphabet.');
-		const translatedTuple: Tuple = [];
-		const originMap = new Map<number, number>();
-
-		// Build a map for quick lookups from origin to target numbers
-		for (let i = 0; i < originAlphabet.length; i++) {
-			originMap.set(originAlphabet[i], targetAlphabet[i]);
-		}
-
-		for (const num of tuple) {
-			if (!originMap.has(num)) throw new Error(`Number ${num} not found in the origin alphabet.`);
-			translatedTuple.push(originMap.get(num)!);
-		}
-		return translatedTuple;
-	}
-
-
-	/**
-	 * Translates an array of lottery tuples from one alphabet to another.
-	 * This method iterates over each tuple in the input array and applies the
-	 * `translate` function to it, returning an array of the translated tuples.
-	 *
-	 * @param tuples             The array of tuples to translate.
-	 * @param originAlphabet     The alphabet of numbers from which the translation is performed.
-	 * @param targetAlphabet     The alphabet of numbers to which the translation is performed.
-	 * @returns                  An array containing all the translated tuples.
-	 *
-	 * @throws Error if the origin or target alphabet is invalid.
-	 * @throws Error if any Tuple in the array contains numbers not in the origin alphabet.
-	 */
-	public static translateAll(tuples: Tuple[], originAlphabet: Tuple, targetAlphabet: Tuple): Tuple[] {
-		return tuples.map(Tuple =>
-			TupleHelper.translate(Tuple, originAlphabet, targetAlphabet)
-		);
-	}
-
-
-	/**
-	 * Generates a flat sequence of lottery numbers that increment from 1 up to a given maximum,
-	 * then cycle back to 1.
-	 *
-	 * @param totalBalls       The total number of balls in the lottery (e.g., 56 for Keno, 50 for Euromillions).
-	 * @param tuplesToProduce  The number of tuples to generate.
-	 * @param tupleSize        The number of numbers per tuple.
-	 * @returns                A flat sequence of numbers (Tuple).
-	 *
-	 * Example:
-	 * generateLotteryNumbers(10, 3, 5) =>
-	 *   [1,2,3,4,5,6,7,8,9,10,1,2,3,4,5]
-	 */
-	/*public static generateLotteryNumbers(
-		totalBalls: number,
-		tuplesToProduce: number,
-		tupleSize: number
-	): number[] {
-		const totalNumbers: number = tuplesToProduce * tupleSize;
-		const numbers: number[] = [];
-
-		for (let i = 0; i < totalNumbers; i++) {
-			const number: number = (i % totalBalls) + 1;
-			numbers.push(number);
-		}
-		return numbers;
-	}*/
-
-
-
-
-	/**
-	 * Give the union between 2 lottery tuples
-	 * @param arr1      array of balls number.
-	 * @param arr2      array of balls number.
-	 * @param duplicate if true then duplicate balls number are kept (default false). Otherwise only unique numbers are returned.
-	 * @return          array containing all balls inside arr1 and arr2.
-	 */
-	public static union(arr1:Tuple, arr2:Tuple, duplicate:boolean = false): Tuple {
-		if (!arr1) return duplicate ? arr2 : Array.from(new Set(arr2));
-		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
-
-		if (duplicate) return [...arr1, ...arr2];
-		return Array.from(new Set([...arr1, ...arr2]));
-	}
-
-
-	/**
-	 * Give the intersection between 2 lottery tuples
-	 * @param arr1      array of balls number.
-	 * @param arr2      array of balls number.
-	 * @return          array containing balls both inside arr1 and arr2.
-	 */
-	public static intersection(arr1:Tuple, arr2:Tuple): Tuple {
-		if (!arr1 || !arr2) return [];
-		const set2 = new Set(arr2);
-		return arr1.filter(item => set2.has(item));
-	}
-
-
-	/**
-	 * Give the difference between 2 lottery tuples
-	 * It gives the elements of "arr1" minus the elements of "arr2"
-	 * @param arr1      array of balls number.
-	 * @param arr2      array of balls number.
-	 * @return          array containing balls of arr1 that are not inside arr2.
-	 */
-	public static difference(arr1:Tuple, arr2:Tuple): Tuple {
-		if (!arr1) return [];
-		if (!arr2) return arr1;
-		const set2 = new Set(arr2);
-		return arr1.filter(item => !set2.has(item));
-	}
-
-
-	/**
-	 * Give the distance of a lottery tuple relatively to a global alphabet
-	 * The distance is the difference between the two furthest items of the input tuple.
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              minimum gap.
-	 */
-	/*public static distance(alphabet:Tuple, tuple:Tuple): number {
-		if (!alphabet) return -1;
-		if (!tuple) return -1;
-		if (tuple.length <= 1) return 0;
-		tuple.sort((a, b) => {
-			return alphabet.indexOf(a) - alphabet.indexOf(b);
-		});
-
-		if (alphabet.indexOf(tuple[0]) === -1) return -1;				// Item not in alphabet
-		if (alphabet.indexOf(tuple[tuple.length-1]) === -1) return -1;	// Item not in alphabet
-		const distance = alphabet.indexOf(tuple[tuple.length-1]) - alphabet.indexOf(tuple[0]);
-		return distance;
-	}*/
-
-
-
-
-	// minimum circular distance min(|x−y|, total−|x−y|)
-/**
- * Computes the minimum circular distance between two values in Z_modulo.
- *
- * d(x,y) = min(|x-y|, modulo - |x-y|)
- */
 
 /*
-export function circularDistance(
-	x: number,
-	y: number,
-	modulo: number
-): number {
-	const d = Math.abs(x - y) % modulo;
-	return Math.min(d, modulo - d);
-}
-*/
-
-
-
-
-	/**
-	 * Computes the minimum linear gap of a lottery tuple.
-	 *
-	 * The gap is defined as the difference between two consecutive
-	 * elements of the tuple after sorting in ascending order.
-	 *
-	 * No circular wrap-around is applied.
-	 *
-	 * Example:
-	 *  tuple = [3, 10, 40]
-	 *  gaps  = [7, 30]
-	 *  result = 7
-	 *
-	 * @param tuple   Array of selected lottery numbers.
-	 * @return        The minimum linear gap, or:
-	 *                - -1 if tuple is null
-	 *                -  0 if tuple has 0 or 1 element
-	 */
-	public static minimumGap(tuple: number[]): number {
-	  if (!tuple) return -1;
-	  if (tuple.length <= 1) return 0;
-
-	  const sorted = [...tuple].sort((a, b) => a - b);
-
-	  let minGap = Number.POSITIVE_INFINITY;
-
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap < minGap) minGap = gap;
-	  }
-
-	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
-	}
-
-
-
-	/**
-	 * Computes the minimum circular gap of a lottery tuple using a modular pool.
-	 *
-	 * The gap is defined as the clockwise distance between two consecutive
-	 * elements of the tuple after sorting, including the circular wrap-around
-	 * gap between the last and the first element.
-	 *
-	 * Example (poolSize = 50):
-	 *  tuple = [3, 10, 40]
-	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
-	 *  result = 7
-	 *
-	 * @param tuple     Array of selected lottery numbers.
-	 * @param poolSize  Size of the circular pool.
-	 * @return          The minimum circular gap, or:
-	 *                  - -1 if parameters are invalid
-	 *                  -  0 if tuple has 0 or 1 element
-	 */
-	public static modularMinimumGap(tuple: number[], poolSize: number): number {
-	  if (!tuple) return -1;
-	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
-	  if (tuple.length <= 1) return 0;
-
-	  const sorted = [...tuple].sort((a, b) => a - b);
-
-	  let minGap = Number.POSITIVE_INFINITY;
-
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap < minGap) minGap = gap;
-	  }
-
-	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
-	  if (wrapGap < minGap) minGap = wrapGap;
-
-	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
-	}
-
-
-
-
-	/**
-	 * Computes the maximum linear gap of a lottery tuple.
-	 *
-	 * The gap is defined as the difference between two consecutive
-	 * elements of the tuple after sorting in ascending order.
-	 *
-	 * No circular wrap-around is applied.
-	 *
-	 * Example:
-	 *  tuple = [3, 10, 40]
-	 *  gaps  = [7, 30]
-	 *  result = 30
-	 *
-	 * @param tuple   Array of selected lottery numbers.
-	 * @return        The maximum linear gap, or:
-	 *                - -1 if tuple is null
-	 *                -  0 if tuple has 0 or 1 element
-	 */
-	public static maximumGap(tuple: number[]): number {
-	  if (!tuple) return -1;
-	  if (tuple.length <= 1) return 0;
-
-	  const sorted = [...tuple].sort((a, b) => a - b);
-
-	  let maxGap = 0;
-
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap > maxGap) maxGap = gap;
-	  }
-
-	  return maxGap;
-	}
-
-
-	/**
-	 * Computes the maximum circular gap of a lottery tuple using a modular pool.
-	 *
-	 * The gap is defined as the clockwise distance between two consecutive
-	 * elements of the tuple after sorting, including the circular wrap-around
-	 * gap between the last and the first element.
-	 *
-	 * Example (poolSize = 50):
-	 *  tuple = [3, 10, 40]
-	 *  gaps  = [7, 30, 13]  // (10-3, 40-10, 50+3-40)
-	 *  result = 30
-	 *
-	 * @param tuple     Array of selected lottery numbers.
-	 * @param poolSize  Size of the circular pool.
-	 * @return          The maximum circular gap, or:
-	 *                  - -1 if parameters are invalid
-	 *                  -  0 if tuple has 0 or 1 element
-	 */
-	public static modularMaximumGap(tuple: number[], poolSize: number): number {
-	  if (!tuple) return -1;
-	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
-	  if (tuple.length <= 1) return 0;
-
-	  const sorted = [...tuple].sort((a, b) => a - b);
-
-	  let maxGap = 0;
-
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap > maxGap) maxGap = gap;
-	  }
-
-	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
-	  if (wrapGap > maxGap) maxGap = wrapGap;
-
-	  return maxGap;
-	}
-
-
-
-	/**
-	 * Compute the complement tuple of a lottery tuple relatively to a global alphabet
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              array containing balls numbers of the complement tuple.
-	 */
-	public static complement(alphabet:Tuple, tuple:Tuple): Tuple|null {
-		if (!alphabet) return null;
-		if (!tuple) return null;
-
-		const complement:number[] = [];
-		complement.length = tuple.length;
-
-		for (let j = 0; j < tuple.length; j++) {
-			if (alphabet.indexOf(tuple[j]) === -1) return null;		// Item not in alphabet
-
-			const pos:number = alphabet.indexOf(tuple[j]);
-			complement[j] = alphabet[alphabet.length-1 - pos];
-		}
-		return complement;
-	}
-
-
-
-
-/**
- * Computes the cardinality of the additive spectrum of order `guarantee`
- * for a given tuple.
- *
- * For a fixed order `guarantee`, each k-element subset of the tuple
- * defines an additive signature given by its consecutive internal differences.
- *
- * The set of all such signatures forms the additive spectrum of order `guarantee`.
- * This function returns the number of distinct signatures observed.
- *
- * For guarantee = 2, this corresponds to the number of distinct internal differences.
- * For guarantee >= 3, it counts the number of distinct internal difference signatures
- * of size `guarantee`.
- *
- * @param tuple      Input tuple (finite ordered set of integers)
- * @param guarantee  Size of internal subsets (order of the spectrum)
- * @param modulo     Size of the cyclic universe (optional, for modulo reduction)
- * @returns          Number of distinct additive signatures (cardinality)
- */
-
-
-/**
- * Computes the cardinality of the additive spectrum of order `k` for a given tuple.
- *
- * Each k-element subset of the tuple defines a signature given by its consecutive differences.
- * The function returns the number of distinct signatures.
- *
- * @param tuple  Array of integers (input tuple)
- * @param k      Size of internal subsets (order of the spectrum)
- * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
- * @returns      Number of distinct additive signatures (cardinality)
- */
-/*
-function additiveSpectrumCardinality(tuple: number[], k: number, modulo?: number): number {
-    if (!tuple || tuple.length < k || k < 2) return 0;
-
-    const n = tuple.length;
-    const values = tuple.slice().sort((a, b) => a - b);
-    const signatures = new Set<string>();
-
-    // Initialize first combination of indices
-    const idx: number[] = Array.from({ length: k }, (_, i) => i);
-
-    const addSignature = () => {
-        const subset = idx.map(i => values[i]);
-        const base = subset[0];
-        const diffs: number[] = [];
-
-        for (let i = 1; i < k; i++) {
-            let d = subset[i] - subset[i - 1];
-            if (modulo) {
-                d %= modulo;
-                d = Math.min(d, modulo - d);
-            }
-            diffs.push(d);
-        }
-
-        signatures.add(diffs.join(','));
-    };
-
-    while (true) {
-        addSignature();
-
-        // Generate next combination lexicographically
-        let i = k - 1;
-        while (i >= 0 && idx[i] === i + n - k) i--;
-        if (i < 0) break;
-
-        idx[i]++;
-        for (let j = i + 1; j < k; j++) {
-            idx[j] = idx[j - 1] + 1;
-        }
-    }
-
-    return signatures.size;
-}
-*/
-
-
-/**
- * Computes the cardinality of the additive spectrum of order `k` for a given tuple,
- * optimized to avoid generating all subsets in memory.
- *
- * @param tuple  Array of integers (input tuple)
- * @param k      Size of internal subsets (order of the spectrum)
- * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
- * @returns      Number of distinct additive signatures (cardinality)
- */
-/*
-function additiveSpectrumCardinalityOptimized(
-    tuple: number[],
-    k: number,
-    modulo?: number
-): number {
-    if (!tuple || tuple.length < k || k < 2) return 0;
-
-    const n = tuple.length;
-    const values = tuple.slice().sort((a, b) => a - b);
-    const signatures = new Set<string>();
-
-    // Initialize first combination of indices
-    const idx: number[] = Array.from({ length: k }, (_, i) => i);
-
-    const addSignature = () => {
-        let diffs: number[] = [];
-        for (let i = 1; i < k; i++) {
-            let d = values[idx[i]] - values[idx[i - 1]];
-            if (modulo) {
-                d %= modulo;
-                d = Math.min(d, modulo - d);
-            }
-            diffs.push(d);
-        }
-        signatures.add(diffs.join(','));
-    };
-
-    while (true) {
-        addSignature();
-
-        // Generate next combination lexicographically
-        let i = k - 1;
-        while (i >= 0 && idx[i] === i + n - k) i--;
-        if (i < 0) break;
-
-        idx[i]++;
-        for (let j = i + 1; j < k; j++) {
-            idx[j] = idx[j - 1] + 1;
-        }
-    }
-
-    return signatures.size;
-}
-*/
-
-
-
-/**
- * Computes the cardinality of the additive spectrum of order `k` for a tuple,
- * optimized for large tuples by avoiding array allocations for each signature.
- *
- * @param tuple  Array of integers (input tuple)
- * @param k      Size of internal subsets (order of the spectrum)
- * @param modulo Optional modulo for cyclic universe (0 or undefined = no modulo)
- * @returns      Number of distinct additive signatures (cardinality)
- */
-/*
-function additiveSpectrumCardinalityFast(
-    tuple: number[],
-    k: number,
-    modulo?: number
-): number {
-    if (!tuple || tuple.length < k || k < 2) return 0;
-
-    const n = tuple.length;
-    const values = tuple.slice().sort((a, b) => a - b);
-    const signatures = new Set<string>();
-
-    const idx: number[] = Array.from({ length: k }, (_, i) => i);
-
-    while (true) {
-        // compute a hashable signature without creating arrays
-        let signatureKey = '';
-        for (let i = 1; i < k; i++) {
-            let d = values[idx[i]] - values[idx[i - 1]];
-            if (modulo) {
-                d %= modulo;
-                d = Math.min(d, modulo - d);
-            }
-            signatureKey += d + ','; // simple string key
-        }
-        signatures.add(signatureKey);
-
-        // next combination lexicographically
-        let i = k - 1;
-        while (i >= 0 && idx[i] === i + n - k) i--;
-        if (i < 0) break;
-
-        idx[i]++;
-        for (let j = i + 1; j < k; j++) {
-            idx[j] = idx[j - 1] + 1;
-        }
-    }
-
-    return signatures.size;
-}
-*/
-
-
-
-
-/**
- * Structural diversity (internal signature of gaps) score for a tuple:
- * - guarantee = 2 : number of distinct internal differences
- * - guarantee > 2 : number of distinct internal signatures of size `guarantee`
- *
- * @param tuple       input tuple
- * @param guarantee   size of internal subsets
- * @param modulo      size of the universe
- * @returns           number of distinct signatures
- */
-/*
-public static diversityScore(
-	tuple: Tuple,
-	guarantee: number,
-	modulo: number
-): number {
-	if (!tuple || tuple.length < guarantee || modulo < guarantee) return 0;
-	if (guarantee < 2) return 0;
-	
-	
-	
-	// Fast path: guarantee = 2 → distinct differences
-	if (guarantee === 2) {
-		const diffs = new Set<number>();
-		const n = tuple.length;
-
-		for (let i = 0; i < n; i++) {
-			for (let j = i + 1; j < n; j++) {
-				let d = Math.abs(tuple[j] - tuple[i]);
-
-				if (modulo) {
-					d %= modulo;
-					d = Math.min(d, modulo - d);
-				}
-
-				if (d > 0) diffs.add(d);
-			}
-		}
-		return diffs.size;
-	}
-
-	// Generic path: guarantee > 2 → distinct signatures
-	const signatures = new Set<string>();
-
-	// local helper: iterate k-subsets without allocating all of them
-	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-	const n = tuple.length;
-
-	const addSignature = (indices: number[]) => {
-		const values = indices.map(i => tuple[i]).slice().sort((a, b) => a - b);
-		const base = values[0];
-		const normalized = values.map(x => x - base);
-
-		// signature = sorted list of internal pairwise diffs (optionally modulo-reduced)
-		const diffs: number[] = [];
-		for (let i = 0; i < normalized.length; i++) {
-			for (let j = i + 1; j < normalized.length; j++) {
-				let d = Math.abs(normalized[j] - normalized[i]);
-				if (modulo) {
-					d %= modulo;
-					d = Math.min(d, modulo - d);
-				}
-				diffs.push(d);
-			}
-		}
-		diffs.sort((a, b) => a - b);
-		signatures.add(diffs.join(','));
-	};
-
-	// iterate combinations of indices (0..n-1 choose guarantee)
-	while (true) {
-		addSignature(idx);
-
-		// next combination
-		let i = guarantee - 1;
-		while (i >= 0 && idx[i] === i + n - guarantee) i--;
-		if (i < 0) break;
-
-		idx[i]++;
-		for (let j = i + 1; j < guarantee; j++) {
-			idx[j] = idx[j - 1] + 1;
-		}
-	}
-
-	return signatures.size;
-	
-	
-	
-	
-if (guarantee === 2) {
-	const diffs = new Set<number>();
-	for (let i = 0; i < n; i++) {
-		for (let j = i + 1; j < n; j++) {
-			let d = values[j] - values[i];
-			d = d % modulo;
-			d = Math.min(d, modulo - d);
-			if (d > 0) diffs.add(d);
-		}
-	}
-	return diffs.size;
-}
-
-	
-	
-	
-	
-	// Normalize input to 0..modulo-1 if you use 1..modulo in your library.
-	// If your tuples are already 0-based, remove this mapping.
-	const values = tuple.map(x => ((x - 1) % modulo + modulo) % modulo).sort((a, b) => a - b);
-	const values = tuple.map(x => ((x % modulo) + modulo) % modulo).sort((a,b)=>a-b);
-
-
-	const sigs = new Set<string>();
-	const n = values.length;
-
-	// Iterate k-combinations of indices without allocating all subsets
-	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-	const pushSignature = () => {
-		const subset: number[] = new Array(guarantee);
-		for (let i = 0; i < guarantee; i++) subset[i] = values[idx[i]];
-		subset.sort((a, b) => a - b);
-
-		// Translation normalization (make min = 0)
-		const base = subset[0];
-		for (let i = 0; i < guarantee; i++) subset[i] = subset[i] - base; // no wrap needed for sorted lottery-style values
-
-		// For guarantee=2, subset is [0, d]; this naturally counts distinct differences
-		sigs.add(subset.join(','));
-	};
-
-	while (true) {
-		pushSignature();
-
-		// next combination of indices
-		let i = guarantee - 1;
-		while (i >= 0 && idx[i] === i + n - guarantee) i--;
-		if (i < 0) break;
-
-		idx[i]++;
-		for (let j = i + 1; j < guarantee; j++) idx[j] = idx[j - 1] + 1;
-	}
-
-	return sigs.size;
-	
-	
-	
-	
-	// 1) Canonical form
-	const values = [...tuple].sort((a, b) => a - b);
-
-	const signatures = new Set<string>();
-	const n = values.length;
-
-	// 2–4) Sliding window
-	for (let i = 0; i <= n - guarantee; i++) {
-		const base = values[i];
-		const sig: number[] = new Array(guarantee);
-
-		for (let j = 0; j < guarantee; j++) {
-			sig[j] = values[i + j] - base;
-		}
-
-		// signature as canonical string
-		signatures.add(sig.join(','));
-	}
-
-	return signatures.size;
-	
-	
-	
-	
-	
-	
-	// 1) Canonicalize input
-	const values = [...tuple].sort((a, b) => a - b);
-	const n = values.length;
-
-	const signatures = new Set<string>();
-
-	// 2) Iterate all k-subsets of indices without storing them
-	const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-	const addSignature = () => {
-		// build sorted subset (already sorted because values sorted + idx increasing)
-		// compute consecutive gaps
-		let prev = values[idx[0]];
-		const gaps: number[] = new Array(guarantee - 1);
-
-		for (let i = 1; i < guarantee; i++) {
-			const cur = values[idx[i]];
-			gaps[i - 1] = cur - prev;
-			prev = cur;
-		}
-
-		// canonical key
-		signatures.add(gaps.join(','));
-	};
-
-	while (true) {
-		addSignature();
-
-		// next combination (lexicographic)
-		let i = guarantee - 1;
-		while (i >= 0 && idx[i] === i + n - guarantee) i--;
-		if (i < 0) break;
-
-		idx[i]++;
-		for (let j = i + 1; j < guarantee; j++) {
-			idx[j] = idx[j - 1] + 1;
-		}
-	}
-
-	return signatures.size;	
-	
-	
-const bitsPerGap = Math.ceil(Math.log2(modulo + 1));
-
-	
-
-	
-	
-
-	
-	
-}
-
-*/
-
-
 private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
 	let key = 0n;
 	const shift = BigInt(bitsPerGap);
@@ -1109,6 +805,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 	return gaps;
 }
+*/
+
 // Example:
 // const gaps = [2, 3, 5];
 // const bits = 3; // enough for max gap <= 7
@@ -1117,246 +815,20 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 //Et tu stockes dans Set<bigint>
 
 
-/*
-public static diversityScore2(tuple: Tuple, modulo: number): number {
-	const a = [...tuple].sort((x,y)=>x-y);
-	const maxD = Math.floor(modulo / 2);
-	// bitset sur maxD+1 bits
-	const bits = new Uint32Array(Math.ceil((maxD + 1) / 32));
-
-	let count = 0;
-	for (let i = 0; i < a.length; i++) {
-		for (let j = i + 1; j < a.length; j++) {
-			let d = a[j] - a[i];
-			d %= modulo;
-			d = Math.min(d, modulo - d);
-			if (d === 0) continue;
-			const w = d >>> 5;
-			const m = 1 << (d & 31);
-			if ((bits[w] & m) === 0) { bits[w] |= m; count++; }
-		}
-	}
-	return count;
-}
-*/
 
 
 
-	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee` for a sorted tuple.
-	 *
-	 * For every g-subset of indices, we build the signature of consecutive value gaps.
-	 * The gap spectrum is the set of distinct signatures; this function returns its size.
-	 *
-	 * Example:
-	 * tuple = [1,2,3], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: [1], [2], [1] => spectrum size = 2
-	 *
-	 * Example (values):
-	 * tuple = [5,7,10], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: [2], [5], [3] => spectrum size = 3
-	 *
-	 * @param tuple      Sorted tuple (ascending). Values are used to compute gaps.
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @returns          Number of distinct gap signatures.
-	 */
-	public static gapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-
-		const n = tuple.length;
-		const signatures = new Set<string>();
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSignature = () => {
-			let key = '';
-			for (let i = 1; i < guarantee; i++) {
-				key += (tuple[idx[i]] - tuple[idx[i - 1]]).toString() + ',';
-			}
-			signatures.add(key);
-		};
-
-		while (true) {
-			addSignature();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-
-		return signatures.size;
-	}
-
-
-	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee`
-	 * where gaps are measured using a circular (modular) distance.
-	 *
-	 * For each g-subset of indices, the signature is formed by the
-	 * distances between consecutive elements of the subset.
-	 * Each distance is computed as:
-	 *
-	 *   min(|a - b|, poolSize - |a - b|)
-	 *
-	 * This accounts for the circular nature of the pool (e.g. lottery balls),
-	 * but does NOT treat the subset itself as a closed cycle.
-	 *
-	 * Example (Euromillions, poolSize = 50):
-	 *   gap(01, 49) = 2
-	 *
-	 * @param tuple      Sorted tuple (ascending).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          Number of distinct gap signatures.
-	 */
-	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-
-		const n = tuple.length;
-		const signatures = new Set<string>();
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addCircularSignature = () => {
-			let key = '';
-			for (let i = 1; i < guarantee; i++) {
-				const val1 = tuple[idx[i]];
-				const val2 = tuple[idx[i - 1]];
-				
-				// Minimal circular distance: min(|a-b|, poolSize - |a-b|)
-				const diff = Math.abs(val1 - val2) % poolSize;
-				const circularDist = Math.min(diff, poolSize - diff);
-				
-				key += circularDist.toString() + ',';
-			}
-			signatures.add(key);
-		};
-
-		while (true) {
-			addCircularSignature();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-
-		return signatures.size;
-	}
-
-
-	/**
-	 * Computes the total sum of all gaps within all possible index subsets of a given size.
-	 *
-	 * This function iterates through every g-subset of indices, calculates the 
-	 * gaps between consecutive values in that subset, and returns the cumulative sum.
-	 *
-	 * Example:
-	 * tuple = [1, 5, 10], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: (5-1)=4, (10-1)=9, (10-5)=5
-	 * returns: 4 + 9 + 5 = 18
-	 *
-	 * @param tuple      Sorted tuple (ascending).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @returns          The total sum of all computed gaps.
-	 */
-	public static gapSpectrumSum(tuple: Tuple, guarantee: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-
-		const n = tuple.length;
-		let totalSum = 0;
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSubsetGaps = () => {
-			for (let i = 1; i < guarantee; i++) {
-				// Simple sum of gaps between consecutive elements in the current subset
-				totalSum += (tuple[idx[i]] - tuple[idx[i - 1]]);
-			}
-		};
-
-		while (true) {
-			addSubsetGaps();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-
-		return totalSum;
-	}
 
 
 
-	/**
-	 * Computes the total sum of gap signatures of order `guarantee`
-	 * where gaps are measured using a circular (modular) distance.
-	 *
-	 * For each g-subset of indices, the distances between consecutive
-	 * elements of the subset are summed, using the circular metric:
-	 *
-	 *   min(|a - b|, poolSize - |a - b|)
-	 *
-	 * This accounts for the circular nature of the pool (e.g. lottery balls),
-	 * but does NOT treat the subset itself as a closed cycle.
-	 *
-	 * Example (Euromillions, poolSize = 50):
-	 *   gap(01, 49) = 2
-	 *
-	 * @param tuple      Sorted tuple (ascending).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          The total sum of all computed circular gaps.
-	 */
-	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const n = tuple.length;
-		let totalSum = 0;
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
-		const addSubsetCircularGaps = () => {
-			for (let i = 1; i < guarantee; i++) {
-				const val1 = tuple[idx[i]];
-				const val2 = tuple[idx[i - 1]];
-				
-				// Minimal circular distance
-				const diff = Math.abs(val1 - val2) % poolSize;
-				const circularDist = Math.min(diff, poolSize - diff);
-				
-				totalSum += circularDist;
-			}
-		};
 
-		while (true) {
-			addSubsetCircularGaps();
 
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
 
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
 
-		return totalSum;
-	}
+
+
 
 
 
@@ -1390,11 +862,6 @@ public static diversityScore2(tuple: Tuple, modulo: number): number {
 		for (let i = 1n; i <= BigInt(n); i++) { result = result * (maxBig - i + 1n) / i; }
 		return result;
 	}
-
-
-
-
-
 
 
 	/**

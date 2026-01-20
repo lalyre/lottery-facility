@@ -71,3 +71,13 @@ export function displayUTCDateTimeYYYYMMDD (date: Date): string {
 	return display.substring(0, display.length-9);
 }
 
+
+/**
+ * Computes the minimum circular distance between two values in Z_modulo.
+ * d(x,y) = min(|x-y|, modulo - |x-y|)
+ */
+export function circularDistance(x: number, y: number, modulo: number): number {
+	const d = Math.abs(x - y) % modulo;
+	return Math.min(d, modulo - d);
+}
+
