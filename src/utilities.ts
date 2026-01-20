@@ -81,3 +81,47 @@ export function circularDistance(x: number, y: number, modulo: number): number {
 	return Math.min(d, modulo - d);
 }
 
+
+
+
+
+/*
+
+const grosNombre = 9007199254740991n + 100n;
+
+// Conversion en chaîne
+const chaine = grosNombre.toString(); 
+console.log(chaine); // "9007199254741091"
+
+// Conversion inverse
+const retourAuBigInt = BigInt(chaine);
+console.log(retourAuBigInt === grosNombre); // true
+
+
+const data = {
+  id: 1,
+  score: 123456789012345678901234567890n
+};
+
+// On transforme le BigInt en String pour le JSON
+const jsonSante = JSON.stringify(data, (key, value) =>
+  typeof value === 'bigint' ? value.toString() : value
+);
+
+// Vous pouvez maintenant écrire 'jsonSante' dans un fichier (.json)
+
+
+const objetLu = JSON.parse(jsonSante, (key, value) => {
+  // Si la valeur ressemble à un très grand nombre, on peut la repasser en BigInt
+  // (C'est à adapter selon la structure de vos données)
+  if (key === 'score') return BigInt(value);
+  return value;
+});
+
+
+*/
+
+
+
+
+

@@ -217,9 +217,7 @@ export class TupleHelper {
 	 * @throws Error if any Tuple in the array contains numbers not in the origin alphabet.
 	 */
 	public static translateAll(tuples: Tuple[], originAlphabet: Tuple, targetAlphabet: Tuple): Tuple[] {
-		return tuples.map(Tuple =>
-			TupleHelper.translate(Tuple, originAlphabet, targetAlphabet)
-		);
+		return tuples.map(tuple => TupleHelper.translate(tuple, originAlphabet, targetAlphabet));
 	}
 
 
