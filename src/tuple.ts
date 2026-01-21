@@ -437,7 +437,7 @@ export class TupleHelper {
 
 
 	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee` for a sorted tuple.
+	 * Computes the cardinality of the gap spectrum of order `guarantee` for a tuple.
 	 *
 	 * For every g-subset of indices, we build the signature of consecutive value gaps.
 	 * The gap spectrum is the set of distinct signatures; this function returns its size.
@@ -452,21 +452,22 @@ export class TupleHelper {
 	 * index subsets: (0,1), (0,2), (1,2)
 	 * gaps: [2], [5], [3] => spectrum size = 3
 	 *
-	 * @param tuple      Sorted tuple (ascending). Values are used to compute gaps.
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @returns          Number of distinct gap signatures.
 	 */
 	public static linearGapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const n = tuple.length;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
 		const signatures = new Set<string>();
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
 		const addSignature = () => {
 			let key = '';
 			for (let i = 1; i < guarantee; i++) {
-				key += (tuple[idx[i]] - tuple[idx[i - 1]]).toString() + ',';
+				key += (sorted[idx[i]] - sorted[idx[i - 1]]).toString() + ',';
 			}
 			signatures.add(key);
 		};
@@ -504,7 +505,7 @@ export class TupleHelper {
 	 * Example (Euromillions, poolSize = 50):
 	 *   gap(01, 49) = 2
 	 *
-	 * @param tuple      Sorted tuple (ascending).
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          Number of distinct gap signatures.
@@ -512,15 +513,16 @@ export class TupleHelper {
 	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const n = tuple.length;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
 		const signatures = new Set<string>();
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
 		const addCircularSignature = () => {
 			let key = '';
 			for (let i = 1; i < guarantee; i++) {
-				const val1 = tuple[idx[i]];
-				const val2 = tuple[idx[i - 1]];
+				const val1 = sorted[idx[i]];
+				const val2 = sorted[idx[i - 1]];
 				
 				// Minimal circular distance: min(|a-b|, poolSize - |a-b|)
 				const diff = Math.abs(val1 - val2) % poolSize;
@@ -560,21 +562,22 @@ export class TupleHelper {
 	 * gaps: (5-1)=4, (10-1)=9, (10-5)=5
 	 * returns: 4 + 9 + 5 = 18
 	 *
-	 * @param tuple      Sorted tuple (ascending).
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @returns          The total sum of all computed gaps.
 	 */
 	public static linearGapSpectrumSum(tuple: Tuple, guarantee: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const n = tuple.length;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
 		let totalSum = 0;
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
 		const addSubsetGaps = () => {
 			for (let i = 1; i < guarantee; i++) {
 				// Simple sum of gaps between consecutive elements in the current subset
-				totalSum += (tuple[idx[i]] - tuple[idx[i - 1]]);
+				totalSum += (sorted[idx[i]] - sorted[idx[i - 1]]);
 			}
 		};
 
@@ -610,7 +613,7 @@ export class TupleHelper {
 	 * Example (Euromillions, poolSize = 50):
 	 *   gap(01, 49) = 2
 	 *
-	 * @param tuple      Sorted tuple (ascending).
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          The total sum of all computed circular gaps.
@@ -618,14 +621,15 @@ export class TupleHelper {
 	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const n = tuple.length;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
 		let totalSum = 0;
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
 		const addSubsetCircularGaps = () => {
 			for (let i = 1; i < guarantee; i++) {
-				const val1 = tuple[idx[i]];
-				const val2 = tuple[idx[i - 1]];
+				const val1 = sorted[idx[i]];
+				const val2 = sorted[idx[i - 1]];
 				
 				// Minimal circular distance
 				const diff = Math.abs(val1 - val2) % poolSize;
