@@ -437,20 +437,11 @@ export class TupleHelper {
 
 
 	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee` for a tuple.
+	 * Computes the cardinality of the gap spectrum of order `guarantee` for a tuple,
+	 * using ALL pairwise linear differences inside each g-subset (not only consecutive gaps).
 	 *
-	 * For every g-subset of indices, we build the signature of consecutive value gaps.
 	 * The gap spectrum is the set of distinct signatures; this function returns its size.
 	 *
-	 * Example:
-	 * tuple = [1,2,3], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: [1], [2], [1] => spectrum size = 2
-	 *
-	 * Example (values):
-	 * tuple = [5,7,10], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: [2], [5], [3] => spectrum size = 3
 	 *
 	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
@@ -463,17 +454,20 @@ export class TupleHelper {
 		const n = sorted.length;
 		const signatures = new Set<string>();
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSignature = () => {
-			let key = '';
-			for (let i = 1; i < guarantee; i++) {
-				key += (sorted[idx[i]] - sorted[idx[i - 1]]).toString() + ',';
+	
+		const addSignatureAllPairs = () => {
+			const diffs: number[] = [];
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = i + 1; j < guarantee; j++) {
+					diffs.push(sorted[idx[j]] - sorted[idx[i]]);
+				}
 			}
-			signatures.add(key);
+			diffs.sort((a, b) => a - b);
+			signatures.add(diffs.join(','));
 		};
 
 		while (true) {
-			addSignature();
+			addSignatureAllPairs();
 
 			let i = guarantee - 1;
 			while (i >= 0 && idx[i] === i + n - guarantee) i--;
@@ -491,19 +485,12 @@ export class TupleHelper {
 
 	/**
 	 * Computes the cardinality of the gap spectrum of order `guarantee`
-	 * where gaps are measured using a circular (modular) distance.
+	 * using ALL pairwise modular (circular) distances inside each g-subset.
 	 *
-	 * For each g-subset of indices, the signature is formed by the
-	 * distances between consecutive elements of the subset.
-	 * Each distance is computed as:
-	 *
-	 *   min(|a - b|, poolSize - |a - b|)
-	 *
-	 * This accounts for the circular nature of the pool (e.g. lottery balls),
-	 * but does NOT treat the subset itself as a closed cycle.
-	 *
-	 * Example (Euromillions, poolSize = 50):
-	 *   gap(01, 49) = 2
+	 * Distance for a pair (a,b) = min((b-a mod v), v-(b-a mod v)) with b>a in the subset.
+	 * Signature = sorted list of all such distances.
+	 * Distances are in [1, floor(v/2)] (0 is excluded).
+	 * No validation is done to ensure tuple values are within [0, v-1].
 	 *
 	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
@@ -512,29 +499,30 @@ export class TupleHelper {
 	 */
 	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
 		const sorted = [...tuple].sort((a, b) => a - b);
 		const n = sorted.length;
 		const signatures = new Set<string>();
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addCircularSignature = () => {
-			let key = '';
-			for (let i = 1; i < guarantee; i++) {
-				const val1 = sorted[idx[i]];
-				const val2 = sorted[idx[i - 1]];
-				
-				// Minimal circular distance: min(|a-b|, poolSize - |a-b|)
-				const diff = Math.abs(val1 - val2) % poolSize;
-				const circularDist = Math.min(diff, poolSize - diff);
-				
-				key += circularDist.toString() + ',';
+	
+		const addSignatureAllPairsMod = () => {
+			const diffs: number[] = [];
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = i + 1; j < guarantee; j++) {
+					const a = sorted[idx[i]];
+					const b = sorted[idx[j]];
+					const d = (b - a) % poolSize; // b>=a since sorted, so d in [0, poolSize)
+					const circ = Math.min(d, poolSize - d);
+					if (circ !== 0) diffs.push(circ);
+				}
 			}
-			signatures.add(key);
+			diffs.sort((x, y) => x - y);
+			signatures.add(diffs.join(','));
 		};
 
 		while (true) {
-			addCircularSignature();
+			addSignatureAllPairsMod();
 
 			let i = guarantee - 1;
 			while (i >= 0 && idx[i] === i + n - guarantee) i--;
@@ -551,16 +539,63 @@ export class TupleHelper {
 
 
 	/**
-	 * Computes the total sum of all gaps within all possible index subsets of a given size.
+	 * Computes the cardinality of the gap spectrum of order `guarantee`
+	 * using ALL ordered modular (circular) differences inside each g-subset.
 	 *
-	 * This function iterates through every g-subset of indices, calculates the 
-	 * gaps between consecutive values in that subset, and returns the cumulative sum.
+	 * Difference for a pair (a,b) = (b-a mod v) with a != b in the subset.
+	 * This includes "inverse" differences because both orders are counted.
+	 * Signature = sorted list of all such differences (excluding 0).
+	 * No validation is done to ensure tuple values are within [0, v-1].
 	 *
-	 * Example:
-	 * tuple = [1, 5, 10], guarantee = 2
-	 * index subsets: (0,1), (0,2), (1,2)
-	 * gaps: (5-1)=4, (10-1)=9, (10-5)=5
-	 * returns: 4 + 9 + 5 = 18
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   Size of the circular pool.
+	 * @returns          Number of distinct gap signatures.
+	 */
+	public static modularGapSpectrumCardinalityWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
+
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
+		const signatures = new Set<string>();
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSignatureAllOrderedPairsMod = () => {
+			const diffs: number[] = [];
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = 0; j < guarantee; j++) {
+					if (i === j) continue;
+					const a = sorted[idx[i]];
+					const b = sorted[idx[j]];
+					const d = (b - a) % poolSize;
+					if (d !== 0) diffs.push(d);
+				}
+			}
+			diffs.sort((x, y) => x - y);
+			signatures.add(diffs.join(','));
+		};
+
+		while (true) {
+			addSignatureAllOrderedPairsMod();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return signatures.size;
+	}
+
+
+	/**
+	 * Computes the total sum of ALL pairwise linear differences
+	 * over all g-subsets of indices.
 	 *
 	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
@@ -574,15 +609,16 @@ export class TupleHelper {
 		let totalSum = 0;
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
 
-		const addSubsetGaps = () => {
-			for (let i = 1; i < guarantee; i++) {
-				// Simple sum of gaps between consecutive elements in the current subset
-				totalSum += (sorted[idx[i]] - sorted[idx[i - 1]]);
+		const addSubsetAllPairDiffs = () => {
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = i + 1; j < guarantee; j++) {
+					totalSum += (sorted[idx[j]] - sorted[idx[i]]);
+				}
 			}
 		};
 
 		while (true) {
-			addSubsetGaps();
+			addSubsetAllPairDiffs();
 
 			let i = guarantee - 1;
 			while (i >= 0 && idx[i] === i + n - guarantee) i--;
@@ -599,19 +635,10 @@ export class TupleHelper {
 
 
 	/**
-	 * Computes the total sum of gap signatures of order `guarantee`
-	 * where gaps are measured using a circular (modular) distance.
-	 *
-	 * For each g-subset of indices, the distances between consecutive
-	 * elements of the subset are summed, using the circular metric:
-	 *
-	 *   min(|a - b|, poolSize - |a - b|)
-	 *
-	 * This accounts for the circular nature of the pool (e.g. lottery balls),
-	 * but does NOT treat the subset itself as a closed cycle.
-	 *
-	 * Example (Euromillions, poolSize = 50):
-	 *   gap(01, 49) = 2
+	 * Computes the total sum of ALL pairwise modular (circular) distances
+	 * over all g-subsets of indices.
+	 * Distances are in [1, floor(v/2)] (0 is excluded).
+	 * No validation is done to ensure tuple values are within [0, v-1].
 	 *
 	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
 	 * @param guarantee  Size of index subsets (g >= 2).
@@ -620,27 +647,27 @@ export class TupleHelper {
 	 */
 	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
 		const sorted = [...tuple].sort((a, b) => a - b);
 		const n = sorted.length;
 		let totalSum = 0;
 		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSubsetCircularGaps = () => {
-			for (let i = 1; i < guarantee; i++) {
-				const val1 = sorted[idx[i]];
-				const val2 = sorted[idx[i - 1]];
-				
-				// Minimal circular distance
-				const diff = Math.abs(val1 - val2) % poolSize;
-				const circularDist = Math.min(diff, poolSize - diff);
-				
-				totalSum += circularDist;
+		
+		const addSubsetAllPairCircDiffs = () => {
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = i + 1; j < guarantee; j++) {
+					const a = sorted[idx[i]];
+					const b = sorted[idx[j]];
+					const d = (b - a) % poolSize;
+					const circ = Math.min(d, poolSize - d);
+					totalSum += circ;
+				}
 			}
 		};
 
 		while (true) {
-			addSubsetCircularGaps();
+			addSubsetAllPairCircDiffs();
 
 			let i = guarantee - 1;
 			while (i >= 0 && idx[i] === i + n - guarantee) i--;
@@ -655,6 +682,120 @@ export class TupleHelper {
 		return totalSum;
 	}
 
+
+	/**
+	 * Computes the total sum of ALL ordered modular (circular) differences
+	 * over all g-subsets of indices (includes inverse differences).
+	 * Differences are in [1, v-1] (0 is excluded).
+	 * No validation is done to ensure tuple values are within [0, v-1].
+	 *
+	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
+	 * @param guarantee  Size of index subsets (g >= 2).
+	 * @param poolSize   Size of the circular pool.
+	 * @returns          The total sum of all computed ordered modular differences.
+	 */
+	public static modularGapSpectrumSumWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
+		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
+		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
+
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const n = sorted.length;
+		let totalSum = 0;
+		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
+
+		const addSubsetAllOrderedPairDiffs = () => {
+			for (let i = 0; i < guarantee; i++) {
+				for (let j = 0; j < guarantee; j++) {
+					if (i === j) continue;
+					const a = sorted[idx[i]];
+					const b = sorted[idx[j]];
+					const d = (b - a) % poolSize;
+					if (d !== 0) totalSum += d;
+				}
+			}
+		};
+
+		while (true) {
+			addSubsetAllOrderedPairDiffs();
+
+			let i = guarantee - 1;
+			while (i >= 0 && idx[i] === i + n - guarantee) i--;
+			if (i < 0) break;
+
+			idx[i]++;
+			for (let j = i + 1; j < guarantee; j++) {
+				idx[j] = idx[j - 1] + 1;
+			}
+		}
+
+		return totalSum;
+	}
+
+
+	/**
+	 * Computes modular difference statistics for a tuple.
+	 * By default counts ordered differences, so inverses are included.
+	 * Differences are modulo poolSize; 0 is excluded.
+	 * No validation is done to ensure tuple values are within [0, poolSize-1].
+	 *
+	 * @param tuple       Tuple of numbers.
+	 * @param poolSize    Size of the circular pool.
+	 * @param ordered     If true, count (a,b) and (b,a) separately. Default true.
+	 * @returns           Differences list, sum, cardinality, and per-difference counts.
+	 *                   `counts` length is poolSize (index 0 unused; valid diffs are 1..v-1).
+	 */
+	public static modularDifferenceStats(
+		tuple: number[],
+		poolSize: number,
+		ordered: boolean = true,
+	): {
+		differences: number[];
+		sum: number;
+		cardinality: number;
+		counts: number[];
+	} {
+		if (!tuple || tuple.length < 2) {
+			return { differences: [], sum: 0, cardinality: 0, counts: [] };
+		}
+		if (!Number.isFinite(poolSize) || poolSize <= 0) {
+			return { differences: [], sum: 0, cardinality: 0, counts: [] };
+		}
+
+		const sorted = [...tuple].sort((a, b) => a - b);
+		const differences: number[] = [];
+		const counts: number[] = new Array(poolSize).fill(0);
+		let sum = 0;
+
+		if (ordered) {
+			for (let i = 0; i < sorted.length; i++) {
+				for (let j = 0; j < sorted.length; j++) {
+					if (i === j) continue;
+					const d = (sorted[j] - sorted[i]) % poolSize;
+					if (d === 0) continue;
+					differences.push(d);
+					counts[d]++;
+					sum += d;
+				}
+			}
+		} else {
+			for (let i = 0; i < sorted.length; i++) {
+				for (let j = i + 1; j < sorted.length; j++) {
+					const d = (sorted[j] - sorted[i]) % poolSize;
+					if (d === 0) continue;
+					differences.push(d);
+					counts[d]++;
+					sum += d;
+				}
+			}
+		}
+
+		return {
+			differences,
+			sum,
+			cardinality: new Set(differences).size,
+			counts,
+		};
+	}
 
 
 
