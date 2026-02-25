@@ -639,7 +639,7 @@ const printOutput = function (inputLinesCount, testedCombination, hits_count_str
 		console.log(hits_count_string);
 		if (cli.flags.printfullhits) console.log(hits_filters_string);
 	} else {
-		console.log(lotteryFacility.TupleHelper.toString(testedCombination.sort()));
+		console.log(lotteryFacility.TupleHelper.toCanonicalString(testedCombination.sort()));
 	}
 }
 
@@ -1458,7 +1458,7 @@ if (coverStatsMode) {
 	for (let i = 0; i < filterCommand.length; i++) {
 		console.log(`Filter #${i+1} on file ${filename[i]}`);
 		for (let j = 0; j < filterCombinations[i].length; j++) {
-			console.log(`${lotteryFacility.TupleHelper.toString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
+			console.log(`${lotteryFacility.TupleHelper.toCanonicalString(filterCombinations[i][j].combination)}: ${filterCombinations[i][j].covering}`);
 		}
 		console.log();
 	}

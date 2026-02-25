@@ -149,7 +149,6 @@ export class TupleHelper {
 	 */
 	public static transposition(array: Tuple[]): Tuple[] {
 		if (array.length === 0) return [];
-
 		const rowCount = array.length;
 		const colCount = array[0].length;
 
@@ -161,11 +160,9 @@ export class TupleHelper {
 		}
 
 		let transposed: number[][] = Array.from({ length: colCount }, () => []);
-
 		for (let i = 0; i < rowCount; i++)
 			for (let j = 0; j < colCount; j++)
 				transposed[j].push(array[i][j]);
-
 		return transposed;
 	}
 
@@ -274,7 +271,6 @@ export class TupleHelper {
 	public static complement(alphabet:Tuple, tuple:Tuple): Tuple|null {
 		if (!alphabet) return null;
 		if (!tuple) return null;
-
 		const complement:number[] = [];
 		complement.length = tuple.length;
 
@@ -309,9 +305,7 @@ export class TupleHelper {
 	public static linearMinimumGap(tuple: number[]): number {
 	  if (!tuple) return -1;
 	  if (tuple.length <= 1) return 0;
-
 	  const sorted = [...tuple].sort((a, b) => a - b);
-
 	  let minGap = Number.POSITIVE_INFINITY;
 
 	  for (let i = 0; i < sorted.length - 1; i++) {
@@ -345,11 +339,9 @@ export class TupleHelper {
 	  if (!tuple) return -1;
 	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
 	  if (tuple.length <= 1) return 0;
-
 	  const sorted = [...tuple].sort((a, b) => a - b);
 
 	  let minGap = Number.POSITIVE_INFINITY;
-
 	  for (let i = 0; i < sorted.length - 1; i++) {
 		const gap = sorted[i + 1] - sorted[i];
 		if (gap < minGap) minGap = gap;
@@ -385,7 +377,6 @@ export class TupleHelper {
 	  if (tuple.length <= 1) return 0;
 
 	  const sorted = [...tuple].sort((a, b) => a - b);
-
 	  let maxGap = 0;
 
 	  for (let i = 0; i < sorted.length - 1; i++) {
@@ -421,7 +412,6 @@ export class TupleHelper {
 	  if (tuple.length <= 1) return 0;
 
 	  const sorted = [...tuple].sort((a, b) => a - b);
-
 	  let maxGap = 0;
 
 	  for (let i = 0; i < sorted.length - 1; i++) {
@@ -431,7 +421,6 @@ export class TupleHelper {
 
 	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
 	  if (wrapGap > maxGap) maxGap = wrapGap;
-
 	  return maxGap;
 	}
 
@@ -533,7 +522,6 @@ export class TupleHelper {
 				idx[j] = idx[j - 1] + 1;
 			}
 		}
-
 		return signatures.size;
 	}
 
@@ -588,7 +576,6 @@ export class TupleHelper {
 				idx[j] = idx[j - 1] + 1;
 			}
 		}
-
 		return signatures.size;
 	}
 
@@ -629,7 +616,6 @@ export class TupleHelper {
 				idx[j] = idx[j - 1] + 1;
 			}
 		}
-
 		return totalSum;
 	}
 
@@ -678,7 +664,6 @@ export class TupleHelper {
 				idx[j] = idx[j - 1] + 1;
 			}
 		}
-
 		return totalSum;
 	}
 
