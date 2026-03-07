@@ -436,7 +436,7 @@ export class TupleHelper {
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @returns          Number of distinct gap signatures.
 	 */
-	public static linearGapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
+	/*public static linearGapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
 		const sorted = [...tuple].sort((a, b) => a - b);
@@ -469,7 +469,7 @@ export class TupleHelper {
 		}
 
 		return signatures.size;
-	}
+	}*/
 
 
 	/**
@@ -486,7 +486,7 @@ export class TupleHelper {
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          Number of distinct gap signatures.
 	 */
-	public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
+	/*public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
@@ -523,7 +523,7 @@ export class TupleHelper {
 			}
 		}
 		return signatures.size;
-	}
+	}*/
 
 
 	/**
@@ -540,7 +540,7 @@ export class TupleHelper {
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          Number of distinct gap signatures.
 	 */
-	public static modularGapSpectrumCardinalityWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
+	/*public static modularGapSpectrumCardinalityWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
@@ -577,7 +577,7 @@ export class TupleHelper {
 			}
 		}
 		return signatures.size;
-	}
+	}*/
 
 
 	/**
@@ -588,7 +588,7 @@ export class TupleHelper {
 	 * @param guarantee  Size of index subsets (g >= 2).
 	 * @returns          The total sum of all computed gaps.
 	 */
-	public static linearGapSpectrumSum(tuple: Tuple, guarantee: number): number {
+	/*public static linearGapSpectrumSum(tuple: Tuple, guarantee: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
 		const sorted = [...tuple].sort((a, b) => a - b);
@@ -617,7 +617,7 @@ export class TupleHelper {
 			}
 		}
 		return totalSum;
-	}
+	}*/
 
 
 	/**
@@ -631,7 +631,7 @@ export class TupleHelper {
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          The total sum of all computed circular gaps.
 	 */
-	public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
+	/*public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
@@ -665,7 +665,7 @@ export class TupleHelper {
 			}
 		}
 		return totalSum;
-	}
+	}*/
 
 
 	/**
@@ -679,7 +679,7 @@ export class TupleHelper {
 	 * @param poolSize   Size of the circular pool.
 	 * @returns          The total sum of all computed ordered modular differences.
 	 */
-	public static modularGapSpectrumSumWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
+	/*public static modularGapSpectrumSumWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
 		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
 
@@ -714,7 +714,7 @@ export class TupleHelper {
 		}
 
 		return totalSum;
-	}
+	}*/
 
 
 	/**
@@ -729,7 +729,7 @@ export class TupleHelper {
 	 * @returns           Differences list, sum, cardinality, and per-difference counts.
 	 *                   `counts` length is poolSize (index 0 unused; valid diffs are 1..v-1).
 	 */
-	public static modularDifferenceStats(
+	/*public static modularDifferenceStats(
 		tuple: number[],
 		poolSize: number,
 		ordered: boolean = true,
@@ -780,7 +780,7 @@ export class TupleHelper {
 			cardinality: new Set(differences).size,
 			counts,
 		};
-	}
+	}*/
 
 
 
@@ -946,13 +946,107 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 
+	/**
+	 * Gets the neighborhood of a specific number in a system.
+	 * The neighborhood is the set of all unique numbers that appear in the same tuples as the ball.
+	 *
+	 * @param ball      The reference ball number.
+	 * @param system    The array of tuples (the lottery system).
+	 * @return          A Tuple containing all unique adjacent numbers (neighbors).
+	 */
+	public static getNumberNeighborhood(ball: number, system: Tuple[]): Tuple {
+		const neighbors = new Set<number>();
+
+		for (let i = 0; i < system.length; i++) {
+			const tuple = system[i];
+			if (tuple.includes(ball)) {
+				for (let j = 0; j < tuple.length; j++) {
+					const num = tuple[j];
+					if (num !== ball) {
+						neighbors.add(num);
+					}
+				}
+			}
+		}
+
+		return Array.from(neighbors);
+	}
+
+
+	/**
+	 * Computes the real degree of a number within the system.
+	 * The degree is defined as the cardinality of its unique neighborhood.
+	 *
+	 * @param ball      The ball number.
+	 * @param system    The array of tuples.
+	 * @return          The number of unique neighbors (distinct connections).
+	 */
+	public static getNumberDegree(ball: number, system: Tuple[]): number {
+		return TupleHelper.getNumberNeighborhood(ball, system).length;
+	}
+
+
+	/**
+	 * Gets the collective neighborhood of a subset of numbers.
+	 * It computes the union of the neighborhoods of each number in the subTuple.
+	 * @param subTuple  The subset of numbers (e.g., a pair or a potential ticket).
+	 *
+	 * @param system    The array of tuples.
+	 * @return          A Tuple containing the union of all reachable unique neighbors.
+	 */
+	public static getSubTupleNeighborhood(subTuple: Tuple, system: Tuple[]): Tuple {
+		const unionSet = new Set<number>();
+
+		// Iterate through each number in the subset (e.g., alphabet 1-50)
+		for (let i = 0; i < subTuple.length; i++) {
+			const ball = subTuple[i];
+			
+			// Retrieve the neighborhood for this specific ball
+			const neighbors = TupleHelper.getNumberNeighborhood(ball, system);
+			
+			// Add each neighbor to the global Set (Set automatically handles uniqueness)
+			for (let j = 0; j < neighbors.length; j++) {
+				unionSet.add(neighbors[j]);
+			}
+		}
+
+		return Array.from(unionSet);
+	}
+
+
+	/**
+	 * Computes the Global Expansion Score of the entire system.
+	 * This is the sum of the degrees of all numbers in the alphabet (1 to 50).
+	 * Higher values indicate better dispersion and fewer redundant connections.
+	 *
+	 * @param system    The array of tuples.
+	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
+	 * @return          The total sum of all individual vertex degrees.
+	 */
+	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
+		return TupleHelper.getSubTupleNeighborhood(alphabet, system).length;
+	}*/
 
 
 
-
-
-
-
+	/**
+	 * Computes the Global Expansion Score of the entire system.
+	 * This is the SUM of the degrees of all numbers in the alphabet.
+	 * This measure ensures that every ticket uses its budget to create 
+	 * as many unique connections as possible, avoiding redundant pairs.
+	 *
+	 * @param system    The array of tuples.
+	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
+	 * @return          The total sum of all individual vertex degrees.
+	 */
+	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
+		let totalScore = 0;
+		for (let i = 0; i < alphabet.length; i++) {
+			// Sum the size of the neighborhood for each number in the alphabet
+			totalScore += TupleHelper.getNumberDegree(alphabet[i], system);
+		}
+		return totalScore;
+	}*/
 
 
 
