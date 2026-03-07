@@ -1023,30 +1023,103 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
 	 * @return          The total sum of all individual vertex degrees.
 	 */
-	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
+	public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
 		return TupleHelper.getSubTupleNeighborhood(alphabet, system).length;
-	}*/
+	}
+
 
 
 
 	/**
-	 * Computes the Global Expansion Score of the entire system.
-	 * This is the SUM of the degrees of all numbers in the alphabet.
-	 * This measure ensures that every ticket uses its budget to create 
-	 * as many unique connections as possible, avoiding redundant pairs.
+	 * Gets the k-sized neighborhood of a specific number.
+	 * It finds all unique combinations of size 'k' that appear alongside the ball.
+	 *
+	 * @param ball      The reference ball.
+	 * @param system    The lottery system.
+	 * @param k         The size of the neighbor groups to track (1 for singles, 2 for pairs, etc.).
+	 * @return          An array of Tuples, each representing a unique k-combination found.
+	 */
+	public static getNumberKNeighborhood(ball: number, system: Tuple[], k: number): Tuple[] {
+		const combinationsFound = new Map<string, Tuple>();
+
+		for (const ticket of system) {
+			if (ticket.includes(ball)) {
+				// Get all numbers in the ticket except the reference ball
+				const others = ticket.filter(num => num !== ball);
+				
+				// Generate all possible combinations of size 'k' from the other numbers
+				// If ticket is [10, 1, 2, 3] and ball is 10, others are [1, 2, 3]
+				// If k=2, subsets are [1, 2], [1, 3], [2, 3]
+				const subsets = TupleHelper.getCombinations(others, k); 
+				
+				for (const sub of subsets) {
+					const key = [...sub].sort((a, b) => a - b).join('-');
+					if (!combinationsFound.has(key)) {
+						combinationsFound.set(key, sub);
+					}
+				}
+			}
+		}
+
+		return Array.from(combinationsFound.values());
+	}
+
+
+	/**
+	 * Computes the k-degree of a number within the system.
+	 * The k-degree represents the total number of unique combinations of size 'k' 
+	 * that this specific ball "sees" or reaches within its shared tuples.
+	 *
+	 * @param ball      The reference ball number to analyze.
+	 * @param system    The array of tuples (the lottery system).
+	 * @param k         The size of the combinations to track (e.g., 1 for neighbors, 2 for pairs).
+	 * @return          The count of unique k-sized sets in the ball's orbit.
+	 */
+	public static getNumberKDegree(ball: number, system: Tuple[], k: number): number {
+		return TupleHelper.getNumberKNeighborhood(ball, system, k).length;
+	}
+
+
+	/**
+	 * Gets the collective k-neighborhood for a group of numbers.
+	 * It merges all unique k-sized combinations reachable by any of the numbers in the subTuple,
+	 * ensuring no duplicates are counted across the entire subset.
+	 *
+	 * @param subTuple  The subset of numbers (e.g., the alphabet or a specific ticket).
+	 * @param system    The array of tuples (the lottery system).
+	 * @param k         The size of the neighbor groups to collect (1, 2, 3...).
+	 * @return          An array of unique k-sized Tuples reachable by the subTuple.
+	 */
+	public static getSubTupleKNeighborhood(subTuple: Tuple, system: Tuple[], k: number): Tuple[] {
+		const globalMap = new Map<string, Tuple>();
+
+		for (const ball of subTuple) {
+			const kNeighbors = TupleHelper.getNumberKNeighborhood(ball, system, k);
+			for (const sub of kNeighbors) {
+				// We sort the combination to ensure unique string keys (e.g., "1-2" vs "2-1")
+				const key = [...sub].sort((a, b) => a - b).join('-');
+				globalMap.set(key, sub);
+			}
+		}
+
+		return Array.from(globalMap.values());
+	}
+
+
+
+	/**
+	 * Computes the Global K-Expansion Score of the entire system.
+	 * This is the total number of UNIQUE k-sized combinations covered by the system.
 	 *
 	 * @param system    The array of tuples.
-	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
-	 * @return          The total sum of all individual vertex degrees.
+	 * @param alphabet  The pool of available numbers (e.g., [1 to 50]).
+	 * @param k         The size of the combinations to track (1, 2, 3...).
+	 * @return          The cardinality (length) of the collective k-neighborhood.
 	 */
-	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
-		let totalScore = 0;
-		for (let i = 0; i < alphabet.length; i++) {
-			// Sum the size of the neighborhood for each number in the alphabet
-			totalScore += TupleHelper.getNumberDegree(alphabet[i], system);
-		}
-		return totalScore;
-	}*/
+	public static getGlobalKExpansion(system: Tuple[], alphabet: Tuple, k: number): number {
+		return TupleHelper.getSubTupleKNeighborhood(alphabet, system, k).length;
+	}
+
 
 
 
