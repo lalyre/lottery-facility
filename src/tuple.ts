@@ -1287,6 +1287,75 @@ public static getGlobalKExpansionBitmask(system: Tuple[], alphabet: Tuple, k: nu
 
 
 /**
+ * Optimized Global Frequency Mask using Uint32Array.
+ * Records exactly how many times each k-combination appears in the system.
+ *
+ * @param system          The list of all tickets (e.g., number[][]).
+ * @param alphabetLength   The total numbers in the pool (e.g., 50 for EuroMillions).
+ * @param k               The size of the combinations to track (e.g., 2 for pairs).
+ * @returns               An object containing the frequency mask and coverage analytics.
+ */
+public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number, k: number) {
+    const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
+    const mask = new Uint32Array(totalPossible); 
+    let uniqueCovered = 0;
+    let totalPlacements = 0;
+
+    const tempCombo = new Array(k);
+
+    const process = (ticket: number[], targetK: number, start: number, depth: number) => {
+        if (depth === targetK) {
+            const idx = TupleHelper.getCombinationIndex(tempCombo, targetK);
+            if (mask[idx] === 0) {
+                uniqueCovered++;
+            }
+            mask[idx]++;
+            totalPlacements++;
+            return;
+        }
+
+        for (let i = start; i < ticket.length; i++) {
+            tempCombo[depth] = ticket[i];
+            process(ticket, targetK, i + 1, depth + 1);
+        }
+    };
+
+    for (const ticket of system) {
+        // Combinadics requires descending order for index calculation
+        const sortedTicket = [...ticket].sort((a, b) => b - a);
+        process(sortedTicket, k, 0, 0);
+    }
+
+    // --- COVERAGE FIELD ANALYSIS ---
+    let maxFreq = 0;
+    let minFreq = Infinity;
+    let holes = 0;
+
+    for (let i = 0; i < totalPossible; i++) {
+        const val = mask[i];
+        if (val === 0) {
+            holes++;
+        }
+        if (val > maxFreq) maxFreq = val;
+        if (val < minFreq) minFreq = val;
+    }
+
+    // If there are holes, the absolute minimum frequency is 0
+    const finalMinFreq = holes > 0 ? 0 : (minFreq === Infinity ? 0 : minFreq);
+
+    return {
+        mask,                    // The raw frequency field [0, 1, 2, 0, 1...]
+        totalPossible,           // Universe size (e.g., 1225 for k=2)
+        uniqueCovered,           // Number of unique combinations touched (Expansion)
+        holes,                   // Number of "leaks" (combinations with 0 coverage)
+        minFrequency: finalMinFreq,
+        maxFrequency: maxFreq,
+    };
+}
+
+
+
+/**
  * Computes the expansion score vector for a system from k=1 up to kMax.
  * Optimized to process each ticket once and update all bitmasks in a single traversal.
  *
