@@ -86,78 +86,34 @@ if (cli.flags.total.length !== cli.flags.size.length) {
 	process.exit(1);
 }
 
-let outfile = (cli.flags.outfile) ? cli.flags.outfile.trim() : null;
-let extension = (outfile) ? path.extname(outfile) : null;
+
+const { nb, nbSwap, sort, sep, verbose: verboseMode } = cli.flags;
+const totals = cli.flags.total;
+const sizes = cli.flags.size;
+
+
+// --- Initialisation des boîtes et génération harmonique ---
+let ticketsByBox = [];
+for (let i = 0; i < totals.length; i++) {
+	const box = new lotteryFacility.DrawBox(totals[i]);
+	// On génère TOUTES les grilles d'un coup de manière équilibrée pour chaque tirage
+	// Cela remplace l'ancien calcul manuel de réservoir
+	ticketsByBox[i] = box.drawBalanced(nb, sizes[i], nbSwap);
+}
+
+
+// --- Gestion des fichiers de sortie ---
+let outfd = null;
+let bar = null;
+let fileNum = 0;
+let lineNum = 0;
+const outfile = cli.flags.outfile?.trim();
+const extension = outfile ? path.extname(outfile) : null;
+const basename = outfile ? path.basename(outfile, extension) : null;
 if (outfile && outfile.startsWith('.')) {
 	console.error(`Wrong output filename !`);
 	process.exit(1);
 }
-
-let basename = null;
-switch (true) {
-	case (outfile != null && extension != null):
-		basename = path.basename(outfile, extension);
-		break;
-
-	case (outfile != null):
-		basename = path.basename(outfile);
-		break;
-
-	default:
-		break;
-}
-
-let verboseMode = cli.flags.verbose;
-let totals = cli.flags.total;
-let sizes = cli.flags.size;
-let nb = cli.flags.nb;
-let nbSwap = cli.flags.nbSwap;
-let sep = cli.flags.sep;
-
-
-let boxes = [];
-for (let i = 0; i < totals.length; i++) {
-	if (totals[i] < 1) {
-		console.error(`wrong value for <total> (#${i+1}) parameter !`);
-		process.exit(1);
-	}
-	if (totals[i] < sizes[i]) {
-		console.error(`wrong value for <size> (#${i+1}) parameter !`);
-		process.exit(1);
-	}
-	boxes[i] = new lotteryFacility.DrawBox(totals[i]);
-}
-
-
-let bar = null;
-let outfd = null;
-let file = null;
-let fileNum = 0;
-let lineNum = 0;
-
-
-// =========================================================================
-// === PRÉPARATION DU RÉSERVOIR HARMONIQUE (OPTIMISATION K=1) ===
-// =========================================================================
-// On calcule combien de cycles de 1 à <total> on doit générer
-// Pour 36 grilles de 5, on a besoin de 180 numéros.
-// Sur un total de 50, 4 cycles (200 numéros) couvrent largement le besoin.
-let balancedReservoir = [];
-const cycleCount = Math.ceil((nb * sizes[0]) / totals[0]);
-
-for (let cycle = 0; cycle < cycleCount; cycle++) {
-    const cycleBox = new lotteryFacility.DrawBox(totals[0]);
-    // On mélange chaque cycle de 1 à 50
-    balancedReservoir.push(...cycleBox.draw(totals[0], nbSwap));
-}
-
-// On prépare les boîtes pour les éventuelles étoiles (2ème box, etc.) 
-// si elles ne sont pas incluses dans le réservoir harmonique
-let extraBoxes = [];
-for (let i = 1; i < totals.length; i++) {
-    extraBoxes[i] = new lotteryFacility.DrawBox(totals[i]);
-}
-
 
 
 
@@ -166,7 +122,7 @@ for (let i = 0; i < nb; i++) {
 	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
 		fileNum++; lineNum = 0;
 		if (basename) {
-			file = basename + '_' + fileNum; if (extension) file += extension;
+			let file = basename + '_' + fileNum; if (extension) file += extension;
 			if (!verboseMode) {
 				//console.log(file);
 				if (bar) { bar.stop(); }
@@ -176,10 +132,7 @@ for (let i = 0; i < nb; i++) {
 					barIncompleteChar: '\u2591',
 					hideCursor: true
 				});
-
-				var totalValue = FILE_LIMIT;
-				var startValue = 0
-				bar.start(totalValue, startValue);
+				bar.start(FILE_LIMIT, 0);
 			}
 
 			if (outfd) { fs.closeSync(outfd); outfd = null; }
@@ -188,43 +141,24 @@ for (let i = 0; i < nb; i++) {
 	}
 	lineNum++;
 
-	
-// === GÉNÉRATION DE LA GRILLE ÉQUILIBRÉE ===
-    let str = "";
-    let ballsSet = [];
+// Assemblage de la ligne (Combinaison principale + éventuelles étoiles)
+	let ballsSet = [];
+	for (let j = 0; j < totals.length; j++) {
+		ballsSet[j] = ticketsByBox[j][i];
+	}
 
-    // 1. On prend le bloc de 5 numéros depuis le réservoir (Garantie k=1)
-    ballsSet[0] = balancedReservoir.slice(i * sizes[0], (i * sizes[0]) + sizes[0]);
+	let str = "";
+	for (let j = 0; j < ballsSet.length; j++) {
+		if (j > 0) str += " / ";
+		str += sort 
+			? lotteryFacility.TupleHelper.toCanonicalString(ballsSet[j], sep) 
+			: lotteryFacility.TupleHelper.toString(ballsSet[j], sep);
+	}
 
-    // 2. Gestion des tirages additionnels (ex: les étoiles) s'il y en a
-    for (let j = 1; j < totals.length; j++) {
-        ballsSet[j] = extraBoxes[j].draw(sizes[j], nbSwap);
-    }
-	
-	
-// === CONSTRUCTION DE LA CHAÎNE DE SORTIE ===
-    for (let j = 0; j < ballsSet.length; j++) {
-        if (j > 0) str += " / ";
-        
-        // On utilise l'outil de formatage pour trier si l'option est active
-        str += (cli.flags.sort) 
-            ? lotteryFacility.TupleHelper.toCanonicalString(ballsSet[j], sep) 
-            : lotteryFacility.TupleHelper.toString(ballsSet[j], sep);
-    }
-	
-	
-	
-	// Output
-	if (verboseMode) {
-		console.log(str);
-	}
-	if (outfd) {
-		fs.writeSync(outfd, str);
-		fs.writeSync(outfd, '\n');
-	}
-	if (bar) {
-		bar.increment();
-	}
+	// Sortie standard ou fichier
+	if (verboseMode) console.log(str);
+	if (outfd) fs.writeSync(outfd, str + '\n');
+	if (bar) bar.increment();
 }
 
 if (outfd) { fs.closeSync(outfd); outfd = null; }

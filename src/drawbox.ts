@@ -42,6 +42,34 @@ export class DrawBox {
 
 
 	/**
+	 * Generates a balanced set of tickets using the Harmonic Reservoir technique.
+	 * Ensures each number appears an equal number of times across all tickets (±1).
+	 * * @param nbTickets - Total number of tickets to generate.
+	 * @param size      - Number of balls per ticket.
+	 * @param nbSwap    - Shuffle intensity for each cycle (default: 50).
+	 * @return          - An array of balanced combinations (number[][]).
+	 */
+	public drawBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		const results: number[][] = [];
+		let currentCycle: number[] = [];
+
+		for (let i = 0; i < nbTickets; i++) {
+			// If the current cycle doesn't have enough balls left for a full ticket
+			if (currentCycle.length < size) {
+				// We refresh the cycle (New shuffle of the 50 balls)
+				this.shuffle(nbSwap);
+				currentCycle = [...this._balls]; 
+			}
+
+			// We take the first 'size' balls and remove them from the current cycle
+			const ticket = currentCycle.splice(0, size);
+			results.push(ticket);
+		}
+		return results;
+	}
+
+
+	/**
 	 * Shuffle the balls in the draw box.
 	 * @param nbSwap    number of shuffle operations.
 	 * @return          none.
