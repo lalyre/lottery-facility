@@ -134,6 +134,33 @@ let outfd = null;
 let file = null;
 let fileNum = 0;
 let lineNum = 0;
+
+
+// =========================================================================
+// === PRÉPARATION DU RÉSERVOIR HARMONIQUE (OPTIMISATION K=1) ===
+// =========================================================================
+// On calcule combien de cycles de 1 à <total> on doit générer
+// Pour 36 grilles de 5, on a besoin de 180 numéros.
+// Sur un total de 50, 4 cycles (200 numéros) couvrent largement le besoin.
+let balancedReservoir = [];
+const cycleCount = Math.ceil((nb * sizes[0]) / totals[0]);
+
+for (let cycle = 0; cycle < cycleCount; cycle++) {
+    const cycleBox = new lotteryFacility.DrawBox(totals[0]);
+    // On mélange chaque cycle de 1 à 50
+    balancedReservoir.push(...cycleBox.draw(totals[0], nbSwap));
+}
+
+// On prépare les boîtes pour les éventuelles étoiles (2ème box, etc.) 
+// si elles ne sont pas incluses dans le réservoir harmonique
+let extraBoxes = [];
+for (let i = 1; i < totals.length; i++) {
+    extraBoxes[i] = new lotteryFacility.DrawBox(totals[i]);
+}
+
+
+
+
 for (let i = 0; i < nb; i++) {
 	// Progress bar
 	if (fileNum == 0 || lineNum >= FILE_LIMIT) {
@@ -161,14 +188,31 @@ for (let i = 0; i < nb; i++) {
 	}
 	lineNum++;
 
-	// Computation
-	let str = "";
-	let ballsSet = [];
-	for (let j = 0; j < totals.length; j++) {
-		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
-		if (j > 0) str += " / ";
-		str += (cli.flags.sort) ? lotteryFacility.TupleHelper.toCanonicalString(ballsSet[j], sep) : lotteryFacility.TupleHelper.toString(ballsSet[j], sep);
-	}
+	
+// === GÉNÉRATION DE LA GRILLE ÉQUILIBRÉE ===
+    let str = "";
+    let ballsSet = [];
+
+    // 1. On prend le bloc de 5 numéros depuis le réservoir (Garantie k=1)
+    ballsSet[0] = balancedReservoir.slice(i * sizes[0], (i * sizes[0]) + sizes[0]);
+
+    // 2. Gestion des tirages additionnels (ex: les étoiles) s'il y en a
+    for (let j = 1; j < totals.length; j++) {
+        ballsSet[j] = extraBoxes[j].draw(sizes[j], nbSwap);
+    }
+	
+	
+// === CONSTRUCTION DE LA CHAÎNE DE SORTIE ===
+    for (let j = 0; j < ballsSet.length; j++) {
+        if (j > 0) str += " / ";
+        
+        // On utilise l'outil de formatage pour trier si l'option est active
+        str += (cli.flags.sort) 
+            ? lotteryFacility.TupleHelper.toCanonicalString(ballsSet[j], sep) 
+            : lotteryFacility.TupleHelper.toString(ballsSet[j], sep);
+    }
+	
+	
 	
 	// Output
 	if (verboseMode) {
