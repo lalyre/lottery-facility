@@ -1217,58 +1217,162 @@ public static getTheoreticalMaxExpansion(nbTickets: number, alphabet: Tuple, k: 
 
 
 
-	/**
-	 * Computes the unique lexicographical index (rank) of a k-combination.
-	 * This implements the Combinatorial Number System (Combinadics) to map 
-	 * any combination to a unique integer from 0 to Binomial(n, k) - 1.
-	 *
-	 * @param tuple      The combination to index (must contain unique numbers).
-	 * @param k          The size of the combination.
-	 * @returns          The unique integer index for this combination.
-	 */
-	public static getCombinationIndex(tuple: number[], k: number): number {
-		// Sorted in descending order for the lexicographical ranking formula
-		const sorted = [...tuple].sort((a, b) => b - a);
-		let index = 0;
-		for (let i = 0; i < k; i++) {
-			// Using your existing binomial function
-			// n-1 because the formula is 0-indexed for the alphabet values
-			index += Number(TupleHelper.binomial(sorted[i] - 1, k - i));
-		}
-		return index;
-	}
+
+/**
+ * Computes the unique lexicographical index of a combination (Combinadics).
+ * ASSUMES the input tuple is ALREADY SORTED in DESCENDING order to save CPU.
+ *
+ * @param {number[]} sortedTuple - The combination (must be sorted DESC).
+ * @param {number} k - The size of the combination.
+ * @returns {number} The unique index.
+ */
+public static getCombinationIndex(sortedTuple: number[], k: number): number {
+    let index = 0;
+    for (let i = 0; i < k; i++) {
+        // Combinadics formula: sum of binom(n_i, k - i)
+        // We use n_i - 1 because lottery numbers usually start at 1s
+        index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
+    }
+    return index;
+}
 
 
 
-	/**
-	 * Optimized Global Expansion Score using a Bitmask (Uint8Array).
-	 * Calculates how many unique combinations of size k are covered by the entire system.
-	 * Extremely fast as it avoids string manipulations and uses direct memory addressing.
-	 *
-	 * @param system     The list of all tickets currently in the game.
-	 * @param alphabet    The full set of available numbers (to calculate the max space).
-	 * @param k          The depth of the expansion (the size of combinations to track).
-	 * @returns          The total number of unique k-combinations covered.
-	 */
-	public static getGlobalKExpansionBitmask(system: Tuple[], alphabet: Tuple, k: number): number {
-		const totalPossible = Number(TupleHelper.binomial(alphabet.length, k));
-		
-		// Uint8Array is used as a fast bitset where each index corresponds to a combination rank
-		const bitmask = new Uint8Array(totalPossible);
-		let uniqueCount = 0;
 
-		for (const ticket of system) {
-			const subCombinations = TupleHelper.getCombinations(ticket, k);
-			for (const sub of subCombinations) {
-				const idx = TupleHelper.getCombinationIndex(sub, k);
-				if (bitmask[idx] === 0) {
-					bitmask[idx] = 1;
-					uniqueCount++;
-				}
-			}
-		}
-		return uniqueCount;
-	}
+/**
+ * Optimized Global Expansion Score using a Bitmask (Uint8Array).
+ * Calculates how many unique combinations of size k are covered by the entire system.
+ *
+ * @param system      The list of all tickets currently in the game.
+ * @param alphabet    The full set of available numbers.
+ * @param k           The depth of the expansion.
+ * @returns           The total number of unique k-combinations covered.
+ */
+public static getGlobalKExpansionBitmask(system: Tuple[], alphabet: Tuple, k: number): number {
+    const totalPossible = Number(TupleHelper.binomial(alphabet.length, k));
+    const bitmask = new Uint8Array(totalPossible);
+    let uniqueCount = 0;
+
+    // We pre-allocate a single buffer for the combination to avoid GC pressure
+    const tempCombo = new Array(k);
+
+    // Reuse the same recursive logic for maximum performance
+    const process = (ticket: number[], targetK: number, start: number, depth: number) => {
+        if (depth === targetK) {
+            // tempCombo is already sorted descending because ticket is sorted descending
+            const idx = TupleHelper.getCombinationIndex(tempCombo, targetK);
+            if (bitmask[idx] === 0) {
+                bitmask[idx] = 1;
+                uniqueCount++;
+            }
+            return;
+        }
+
+        for (let i = start; i < ticket.length; i++) {
+            tempCombo[depth] = ticket[i];
+            process(ticket, targetK, i + 1, depth + 1);
+        }
+    };
+
+    for (const ticket of system) {
+        // Sort DESCENDING to match our Combinadics requirement
+        const sortedTicket = [...ticket].sort((a, b) => b - a);
+        process(sortedTicket, k, 0, 0);
+    }
+
+    return uniqueCount;
+}
+
+
+
+
+/**
+ * Computes the expansion score vector for a system from k=1 up to kMax.
+ * Optimized to process each ticket once and update all bitmasks in a single traversal.
+ *
+ * @param {number[][]} system - The list of tickets (lottery grids) in the current system.
+ * @param {number} alphabetSize - The total size of the ball pool (e.g., 25).
+ * @param {number} kMax - The maximum depth for combinations (e.g., 4).
+ * @returns {number[]} An array where index i contains the unique combination count for k = i + 1.
+ */
+public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): number[] {
+    const scores: number[] = new Array(kMax).fill(0);
+    const bitmasks: Uint8Array[] = [];
+
+    // 1. Pre-allocate bitmasks for each k level to maximize performance
+    for (let k = 1; k <= kMax; k++) {
+        const totalPossible = Number(TupleHelper.binomial(alphabetSize, k));
+        bitmasks.push(new Uint8Array(totalPossible));
+    }
+
+    // 2. Optimized recursive explorer to avoid array slicing/allocation in the loop
+    const processSubCombos = (ticket: number[], targetK: number, start: number, current: number[], depth: number, bitmask: Uint8Array, kIndex: number) => {
+        if (depth === targetK) {
+            // Direct index calculation and bitmask marking
+            const idx = TupleHelper.getCombinationIndex(current, targetK);
+            if (bitmask[idx] === 0) {
+                bitmask[idx] = 1;
+                scores[kIndex]++;
+            }
+            return;
+        }
+
+        for (let i = start; i < ticket.length; i++) {
+            current[depth] = ticket[i];
+            processSubCombos(ticket, targetK, i + 1, current, depth + 1, bitmask, kIndex);
+        }
+    };
+
+    // 3. System traversal: process each ticket once
+    const tempCombo: number[] = new Array(kMax);
+    for (const ticket of system) {
+		const sortedTicket = [...ticket].sort((a, b) => b - a); // Descending order once and for all
+        
+        for (let k = 1; k <= kMax; k++) {
+            processSubCombos(sortedTicket, k, 0, tempCombo, 0, bitmasks[k - 1], k - 1);
+        }
+    }
+
+    return scores;
+}
+
+
+
+
+
+
+
+
+/**
+ * Determines if a mutation should be accepted based on a hierarchical score comparison.
+ * The mutation is accepted only if:
+ * 1. No lower-level score (k < n) is degraded (newScores[i] >= oldScores[i]).
+ * 2. The target-level score (k = n) is strictly improved (newScores[n] > oldScores[n]).
+ *
+ * @param {number[]} oldScores - Array of current expansion scores from k=1 to n.
+ * @param {number[]} newScores - Array of expansion scores after mutation from k=1 to n.
+ * @returns {boolean} True if the mutation improves the system structure without regression.
+ */
+public static isMutationBetter(oldScores: number[], newScores: number[]): boolean {
+    const n = oldScores.length - 1; // Target level (the highest k)
+
+    // 1. Ensure no degradation on intermediate levels
+    for (let i = 0; i < n; i++) {
+        if (newScores[i] < oldScores[i]) {
+            return false;
+        }
+    }
+
+    // 2. Ensure strict improvement on the target level
+    return newScores[n] > oldScores[n];
+}
+
+
+
+
+
+
+
 
 
 
