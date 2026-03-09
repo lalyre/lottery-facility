@@ -1415,7 +1415,7 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
 /**
  * Determines if a mutation should be accepted based on a hierarchical (lexicographical) score comparison.
  * The priority is given to the first elements of the array (lower k values).
- * * Logic:
+ * Logic:
  * 1. Iterates through scores from index 0 to n.
  * 2. If a new score at level i is higher, the mutation is better (returns true).
  * 3. If a new score at level i is lower, the mutation is worse (returns false).
