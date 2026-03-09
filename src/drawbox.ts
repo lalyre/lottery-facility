@@ -30,6 +30,7 @@ export class DrawBox {
 
 	/**
 	 * Draw the balls from the draw box.
+	 *
 	 * @param size      size of the random selection of numbers.
 	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
 	 * @return          a random selection of numbers picked in the draw box.
@@ -44,7 +45,8 @@ export class DrawBox {
 	/**
 	 * Generates a balanced set of tickets using the Harmonic Reservoir technique.
 	 * Ensures each number appears an equal number of times across all tickets (±1).
-	 * * @param nbTickets - Total number of tickets to generate.
+	 *
+	 * @param nbTickets - Total number of tickets to generate.
 	 * @param size      - Number of balls per ticket.
 	 * @param nbSwap    - Shuffle intensity for each cycle (default: 50).
 	 * @return          - An array of balanced combinations (number[][]).
@@ -71,6 +73,7 @@ export class DrawBox {
 
 	/**
 	 * Shuffle the balls in the draw box.
+	 *
 	 * @param nbSwap    number of shuffle operations.
 	 * @return          none.
 	 */
