@@ -1413,27 +1413,35 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
 
 
 /**
- * Determines if a mutation should be accepted based on a hierarchical score comparison.
- * The mutation is accepted only if:
- * 1. No lower-level score (k < n) is degraded (newScores[i] >= oldScores[i]).
- * 2. The target-level score (k = n) is strictly improved (newScores[n] > oldScores[n]).
+ * Determines if a mutation should be accepted based on a hierarchical (lexicographical) score comparison.
+ * The priority is given to the first elements of the array (lower k values).
+ * * Logic:
+ * 1. Iterates through scores from index 0 to n.
+ * 2. If a new score at level i is higher, the mutation is better (returns true).
+ * 3. If a new score at level i is lower, the mutation is worse (returns false).
+ * 4. If scores are equal at level i, it proceeds to level i+1 to break the tie.
  *
- * @param {number[]} oldScores - Array of current expansion scores from k=1 to n.
- * @param {number[]} newScores - Array of expansion scores after mutation from k=1 to n.
- * @returns {boolean} True if the mutation improves the system structure without regression.
+ * @param {number[]} oldScores - Array of current scores [k1, k2, ..., kn].
+ * @param {number[]} newScores - Array of new scores [k1, k2, ..., kn] after mutation.
+ * @returns {boolean} True if the mutation improves the system hierarchy, false otherwise.
  */
 public static isMutationBetter(oldScores: number[], newScores: number[]): boolean {
-    const n = oldScores.length - 1; // Target level (the highest k)
+    for (let i = 0; i < oldScores.length; i++) {
+        // Higher score at the current priority level means an overall improvement
+        if (newScores[i] > oldScores[i]) {
+            return true;
+        }
 
-    // 1. Ensure no degradation on intermediate levels
-    for (let i = 0; i < n; i++) {
+        // Lower score at the current priority level means a regression
         if (newScores[i] < oldScores[i]) {
             return false;
         }
+
+        // If equal, the loop continues to the next level (i + 1) to decide
     }
 
-    // 2. Ensure strict improvement on the target level
-    return newScores[n] > oldScores[n];
+    // If the loop finishes, all scores are identical
+    return false;
 }
 
 
