@@ -1166,16 +1166,16 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
  * Computes the absolute maximum expansion score possible for a given budget.
  * This is the "Perfect Score" that the Monte Carlo tries to reach.
  *
- * @param nbTickets   Number of tickets in the system.
- * @param alphabet    The pool of numbers (e.g., 1 to 50).
- * @param k           The depth of expansion (1, 2, or 3).
- * @param ticketSize  The number of balls per ticket.
- * @return            The theoretical maximum number of unique k-combinations.
+ * @param nbTickets        Number of tickets in the system.
+ * @param alphabet_length  The pool size of numbers (e.g., 56).
+ * @param k                The depth of expansion (1, 2, 3, or 4).
+ * @param ticketSize       The number of balls per ticket.
+ * @return                 The theoretical maximum number of unique k-combinations.
  */
-public static getTheoreticalMaxExpansion(nbTickets: number, alphabet: Tuple, k: number, ticketSize: number): number {
+public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: number, k: number, ticketSize: number): number {
     // 1. How many unique k-combinations can the alphabet possibly offer?
     // Example for k=2 and n=50: 1225
-    const totalSpace = Number(TupleHelper.binomial(alphabet.length, k));
+    const totalSpace = Number(TupleHelper.binomial(alphabet_length, k));
 
     // 2. How many k-combinations does your budget generate in total?
     // Example for k=2, 70 tickets: 70 * binom(5, 2) = 700
