@@ -1451,39 +1451,36 @@ public static isFrequencyMaskVectorMutationBetter(
 
     const length = Math.min(oldVector.length, newVector.length);
 
-    for (let i = 0; i < length; i++) {
+    for (let i = length - 1; i >= 0; i--) {
         const oldStats = oldVector[i];
         const newStats = newVector[i];
+		const k = i + 1;
+		
+		if (k >= 3) {
+			
+        if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
+        if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
 
-        if (newStats.maxFrequency < oldStats.maxFrequency) {
-            return true;
-        }
-        if (newStats.maxFrequency > oldStats.maxFrequency) {
-            return false;
-        }
+        if (newStats.maxFrequency < oldStats.maxFrequency) return true;
+        if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+
+
+		} else {
+
+
+        if (newStats.maxFrequency < oldStats.maxFrequency) return true;
+        if (newStats.maxFrequency > oldStats.maxFrequency) return false;
 
         const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
         const newRange = newStats.maxFrequency - newStats.minFrequency;
-        if (newRange < oldRange) {
-            return true;
-        }
-        if (newRange > oldRange) {
-            return false;
-        }
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
 
-        if (newStats.minFrequency > oldStats.minFrequency) {
-            return true;
-        }
-        if (newStats.minFrequency < oldStats.minFrequency) {
-            return false;
-        }
-
-        if (newStats.uniqueCovered > oldStats.uniqueCovered) {
-            return true;
-        }
-        if (newStats.uniqueCovered < oldStats.uniqueCovered) {
-            return false;
-        }
+        if (newStats.minFrequency > oldStats.minFrequency) return true;
+        if (newStats.minFrequency < oldStats.minFrequency) return false;
+		
+		
+		}
     }
 
     return false;
