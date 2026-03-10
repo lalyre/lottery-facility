@@ -1356,6 +1356,27 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
 
 
 /**
+ * Computes the frequency mask analytics vector for a system from k=1 up to kMax.
+ * Each entry contains the same statistics returned by getGlobalKFrequencyMask().
+ *
+ * @param {number[][]} system - The list of tickets (lottery grids) in the current system.
+ * @param {number} alphabetSize - The total size of the ball pool (e.g., 25).
+ * @param {number} kMax - The maximum depth for combinations (e.g., 4).
+ * @returns {Array} An array where index i contains the frequency analytics for k = i + 1.
+ */
+public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
+    const results: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> = [];
+
+    for (let k = 1; k <= kMax; k++) {
+        results.push(TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, k));
+    }
+
+    return results;
+}
+
+
+
+/**
  * Computes the expansion score vector for a system from k=1 up to kMax.
  * Optimized to process each ticket once and update all bitmasks in a single traversal.
  *
@@ -1425,7 +1446,7 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
  * @param {number[]} newScores - Array of new scores [k1, k2, ..., kn] after mutation.
  * @returns {boolean} True if the mutation improves the system hierarchy, false otherwise.
  */
-public static isMutationBetter(oldScores: number[], newScores: number[]): boolean {
+public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
     for (let i = 0; i < oldScores.length; i++) {
         // Higher score at the current priority level means an overall improvement
         if (newScores[i] > oldScores[i]) {
@@ -1441,6 +1462,59 @@ public static isMutationBetter(oldScores: number[], newScores: number[]): boolea
     }
 
     // If the loop finishes, all scores are identical
+    return false;
+}
+
+
+/**
+ * Determines if a mutation should be accepted based on a hierarchical comparison
+ * of frequency mask vectors.
+ *
+ * @param oldVector   Current frequency mask vector.
+ * @param newVector   Candidate frequency mask vector after mutation.
+ * @returns           True if the candidate is better, false otherwise.
+ */
+public static isFrequencyMaskVectorMutationBetter(
+    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
+    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
+): boolean {
+    const length = Math.min(oldVector.length, newVector.length);
+
+    for (let i = 0; i < length; i++) {
+        const oldStats = oldVector[i];
+        const newStats = newVector[i];
+
+        if (newStats.uniqueCovered > oldStats.uniqueCovered) {
+            return true;
+        }
+        if (newStats.uniqueCovered < oldStats.uniqueCovered) {
+            return false;
+        }
+
+        if (newStats.maxFrequency < oldStats.maxFrequency) {
+            return true;
+        }
+        if (newStats.maxFrequency > oldStats.maxFrequency) {
+            return false;
+        }
+
+        const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
+        const newRange = newStats.maxFrequency - newStats.minFrequency;
+        if (newRange < oldRange) {
+            return true;
+        }
+        if (newRange > oldRange) {
+            return false;
+        }
+
+        if (newStats.minFrequency > oldStats.minFrequency) {
+            return true;
+        }
+        if (newStats.minFrequency < oldStats.minFrequency) {
+            return false;
+        }
+    }
+
     return false;
 }
 
