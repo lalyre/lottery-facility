@@ -72,6 +72,25 @@ export class DrawBox {
 
 
 	/**
+	 * Generates a system of tickets using pure randomness.
+	 * Each ticket is independently drawn and contains no duplicate number.
+	 *
+	 * @param nbTickets - Total number of tickets to generate.
+	 * @param size      - Number of balls per ticket.
+	 * @param nbSwap    - Shuffle intensity for each draw (default: 50).
+	 * @return          - An array of random valid combinations (number[][]).
+	 */
+	public drawRandomSystem(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		const results: number[][] = [];
+
+		for (let i = 0; i < nbTickets; i++) {
+			results.push(this.draw(size, nbSwap));
+		}
+		return results;
+	}
+
+
+	/**
 	 * Shuffle the balls in the draw box.
 	 *
 	 * @param nbSwap    number of shuffle operations.

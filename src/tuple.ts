@@ -1478,18 +1478,13 @@ public static isFrequencyMaskVectorMutationBetter(
     oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
 ): boolean {
+    if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
+
     const length = Math.min(oldVector.length, newVector.length);
 
     for (let i = 0; i < length; i++) {
         const oldStats = oldVector[i];
         const newStats = newVector[i];
-
-        if (newStats.uniqueCovered > oldStats.uniqueCovered) {
-            return true;
-        }
-        if (newStats.uniqueCovered < oldStats.uniqueCovered) {
-            return false;
-        }
 
         if (newStats.maxFrequency < oldStats.maxFrequency) {
             return true;
@@ -1511,6 +1506,13 @@ public static isFrequencyMaskVectorMutationBetter(
             return true;
         }
         if (newStats.minFrequency < oldStats.minFrequency) {
+            return false;
+        }
+
+        if (newStats.uniqueCovered > oldStats.uniqueCovered) {
+            return true;
+        }
+        if (newStats.uniqueCovered < oldStats.uniqueCovered) {
             return false;
         }
     }
