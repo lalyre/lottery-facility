@@ -1243,13 +1243,13 @@ public static getCombinationIndex(sortedTuple: number[], k: number): number {
  * Optimized Global Expansion Score using a Bitmask (Uint8Array).
  * Calculates how many unique combinations of size k are covered by the entire system.
  *
- * @param system      The list of all tickets currently in the game.
- * @param alphabet    The full set of available numbers.
- * @param k           The depth of the expansion.
- * @returns           The total number of unique k-combinations covered.
+ * @param system         The list of all tickets currently in the game.
+ * @param alphabetLength The total size of the ball pool (e.g., 50).
+ * @param k              The depth of the expansion.
+ * @returns              The total number of unique k-combinations covered.
  */
-public static getGlobalKExpansionBitmask(system: Tuple[], alphabet: Tuple, k: number): number {
-    const totalPossible = Number(TupleHelper.binomial(alphabet.length, k));
+public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number, k: number): number {
+    const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
     const bitmask = new Uint8Array(totalPossible);
     let uniqueCount = 0;
 
@@ -1291,7 +1291,7 @@ public static getGlobalKExpansionBitmask(system: Tuple[], alphabet: Tuple, k: nu
  * Records exactly how many times each k-combination appears in the system.
  *
  * @param system          The list of all tickets (e.g., number[][]).
- * @param alphabetLength   The total numbers in the pool (e.g., 50 for EuroMillions).
+ * @param alphabetLength  The total numbers in the pool (e.g., 50 for EuroMillions).
  * @param k               The size of the combinations to track (e.g., 2 for pairs).
  * @returns               An object containing the frequency mask and coverage analytics.
  */
@@ -1359,10 +1359,10 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
  * Computes the frequency mask analytics vector for a system from k=1 up to kMax.
  * Each entry contains the same statistics returned by getGlobalKFrequencyMask().
  *
- * @param {number[][]} system - The list of tickets (lottery grids) in the current system.
- * @param {number} alphabetSize - The total size of the ball pool (e.g., 25).
- * @param {number} kMax - The maximum depth for combinations (e.g., 4).
- * @returns {Array} An array where index i contains the frequency analytics for k = i + 1.
+ * @param {number[][]} system    - The list of tickets (lottery grids) in the current system.
+ * @param {number} alphabetSize  - The total size of the ball pool (e.g., 25).
+ * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
+ * @returns {Array}              An array where index i contains the frequency analytics for k = i + 1.
  */
 public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
     const results: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> = [];
@@ -1378,52 +1378,21 @@ public static getFrequencyMaskVector(system: number[][], alphabetSize: number, k
 
 /**
  * Computes the expansion score vector for a system from k=1 up to kMax.
- * Optimized to process each ticket once and update all bitmasks in a single traversal.
+ * Each entry contains the unique combination count for the corresponding k.
  *
- * @param {number[][]} system - The list of tickets (lottery grids) in the current system.
- * @param {number} alphabetSize - The total size of the ball pool (e.g., 25).
- * @param {number} kMax - The maximum depth for combinations (e.g., 4).
- * @returns {number[]} An array where index i contains the unique combination count for k = i + 1.
+ * @param {number[][]} system    - The list of tickets (lottery grids) in the current system.
+ * @param {number} alphabetSize  - The total size of the ball pool (e.g., 25).
+ * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
+ * @returns {number[]}           An array where index i contains the unique combination count for k = i + 1.
  */
-public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): number[] {
-    const scores: number[] = new Array(kMax).fill(0);
-    const bitmasks: Uint8Array[] = [];
+public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> {
+    const results: Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> = [];
 
-    // 1. Pre-allocate bitmasks for each k level to maximize performance
     for (let k = 1; k <= kMax; k++) {
-        const totalPossible = Number(TupleHelper.binomial(alphabetSize, k));
-        bitmasks.push(new Uint8Array(totalPossible));
+        results.push(TupleHelper.getGlobalKExpansionBitmask(system, alphabetSize, k));
     }
 
-    // 2. Optimized recursive explorer to avoid array slicing/allocation in the loop
-    const processSubCombos = (ticket: number[], targetK: number, start: number, current: number[], depth: number, bitmask: Uint8Array, kIndex: number) => {
-        if (depth === targetK) {
-            // Direct index calculation and bitmask marking
-            const idx = TupleHelper.getCombinationIndex(current, targetK);
-            if (bitmask[idx] === 0) {
-                bitmask[idx] = 1;
-                scores[kIndex]++;
-            }
-            return;
-        }
-
-        for (let i = start; i < ticket.length; i++) {
-            current[depth] = ticket[i];
-            processSubCombos(ticket, targetK, i + 1, current, depth + 1, bitmask, kIndex);
-        }
-    };
-
-    // 3. System traversal: process each ticket once
-    const tempCombo: number[] = new Array(kMax);
-    for (const ticket of system) {
-		const sortedTicket = [...ticket].sort((a, b) => b - a); // Descending order once and for all
-        
-        for (let k = 1; k <= kMax; k++) {
-            processSubCombos(sortedTicket, k, 0, tempCombo, 0, bitmasks[k - 1], k - 1);
-        }
-    }
-
-    return scores;
+    return results;
 }
 
 
@@ -1442,9 +1411,9 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
  * 3. If a new score at level i is lower, the mutation is worse (returns false).
  * 4. If scores are equal at level i, it proceeds to level i+1 to break the tie.
  *
- * @param {number[]} oldScores - Array of current scores [k1, k2, ..., kn].
- * @param {number[]} newScores - Array of new scores [k1, k2, ..., kn] after mutation.
- * @returns {boolean} True if the mutation improves the system hierarchy, false otherwise.
+ * @param {number[]} oldScores  - Array of current scores [k1, k2, ..., kn].
+ * @param {number[]} newScores  - Array of new scores [k1, k2, ..., kn] after mutation.
+ * @returns {boolean}           True if the mutation improves the system hierarchy, false otherwise.
  */
 public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
     for (let i = 0; i < oldScores.length; i++) {
