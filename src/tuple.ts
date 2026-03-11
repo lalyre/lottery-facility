@@ -1449,7 +1449,7 @@ public static isFrequencyMaskVectorMutationBetter(
 ): boolean {
     if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
 
-    const length = Math.min(oldVector.length, newVector.length);
+    //const length = Math.min(oldVector.length, newVector.length);
 	
 	// On parcourt de K=4 vers K=1 (index 3 à 0)
     /*for (let i = length - 1; i >= 0; i--) {
@@ -1489,7 +1489,7 @@ public static isFrequencyMaskVectorMutationBetter(
     }*/
 	
 	
-	
+	/*
 	// 1. Priorité absolue : Expansion K=3 (les brelans)
 	// On veut que le filet soit large.
 	if (newVector[2].uniqueCovered > oldVector[2].uniqueCovered) return true;
@@ -1507,8 +1507,36 @@ public static isFrequencyMaskVectorMutationBetter(
 
 	// 3. La régularité (Anti-Fuite)
 	if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
+	*/
 	
 	
+	
+	// On parcourt de K=4 vers K=2 pour les ratios de cohésion
+    for (let i = oldVector.length - 1; i >= 1; i--) {
+        const kUpperNew = newVector[i];
+        const kLowerNew = newVector[i - 1];
+        const kUpperOld = oldVector[i];
+        const kLowerOld = oldVector[i - 1];
+
+        // 1. D'abord, on ne sacrifie JAMAIS l'expansion du niveau supérieur
+        if (kUpperNew.uniqueCovered > kUpperOld.uniqueCovered) return true;
+        if (kUpperNew.uniqueCovered < kUpperOld.uniqueCovered) return false;
+
+        // 2. LE SECRET : Ratio de Cohésion pour ce niveau (Densité)
+        // Ex: Combien de K=4 j'arrive à faire tenir sur mes K=3 ?
+        const ratioNew = kUpperNew.uniqueCovered / kLowerNew.uniqueCovered;
+        const ratioOld = kUpperOld.uniqueCovered / kLowerOld.uniqueCovered;
+
+        if (ratioNew > ratioOld) return true;
+        if (ratioNew < ratioOld) return false;
+    }
+
+    // 3. Arbitrage final sur la régularité du socle (K=2 et K=1)
+    // Si toutes les densités sont égales, on prend le plus propre
+    if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
+    if (newVector[1].maxFrequency > oldVector[1].maxFrequency) return false;
+    
+    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
 
     return false;
 }
