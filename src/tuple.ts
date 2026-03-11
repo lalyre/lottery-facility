@@ -1450,38 +1450,65 @@ public static isFrequencyMaskVectorMutationBetter(
     if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
 
     const length = Math.min(oldVector.length, newVector.length);
-
-    for (let i = length - 1; i >= 0; i--) {
+	
+	// On parcourt de K=4 vers K=1 (index 3 à 0)
+    /*for (let i = length - 1; i >= 0; i--) {
         const oldStats = oldVector[i];
         const newStats = newVector[i];
-		const k = i + 1;
-		
-		if (k >= 3) {
-			
-        if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
-        if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
+        const k = i + 1;
 
-        if (newStats.maxFrequency < oldStats.maxFrequency) return true;
-        if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+        // --- NIVEAU HAUT (k=4, k=3) : Priorité à l'EXPANSION ---
+        if (k >= 3) {
+            if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
+            if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
+            
+            // Si expansion égale, on prend le plus "propre" (moins de collisions k-uplets)
+            if (newStats.maxFrequency < oldStats.maxFrequency) return true;
+            if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+        } 
+        
+        // --- NIVEAU BAS (k=2, k=1) : Priorité à la RÉPARTITION ---
+        else {
+            // Pour k=2 (couples) et k=1 (boules seules), on veut éviter les pics
+            if (newStats.maxFrequency < oldStats.maxFrequency) return true;
+            if (newStats.maxFrequency > oldStats.maxFrequency) return false;
 
+            // On veut que le minimum soit le plus haut possible (couvrir tout le monde)
+            if (newStats.minFrequency > oldStats.minFrequency) return true;
+            if (newStats.minFrequency < oldStats.minFrequency) return false;
 
-		} else {
+            const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
+            const newRange = newStats.maxFrequency - newStats.minFrequency;
+            if (newRange < oldRange) return true;
+            if (newRange > oldRange) return false;
 
+            // L'expansion k=2 ne vient qu'en dernier recours
+            if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
+            if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
+        }
+    }*/
+	
+	
+	
+	// 1. Priorité absolue : Expansion K=3 (les brelans)
+	// On veut que le filet soit large.
+	if (newVector[2].uniqueCovered > oldVector[2].uniqueCovered) return true;
+	if (newVector[2].uniqueCovered < oldVector[2].uniqueCovered) return false;
 
-        if (newStats.maxFrequency < oldStats.maxFrequency) return true;
-        if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+	// 2. LE SECRET : Le ratio de Cohésion (K3 / K2)
+	// Pour un même nombre de triplets, on veut celui qui utilise le MOINS de couples.
+	// Pourquoi ? Parce que ça veut dire que tes triplets sont "soudés" entre eux.
+	// C'est ce qui crée des tickets qui font 4/5 au lieu de deux tickets qui font 3/5.
+	const cohésionNew = newVector[2].uniqueCovered / newVector[1].uniqueCovered;
+	const cohésionOld = oldVector[2].uniqueCovered / oldVector[1].uniqueCovered;
 
-        const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
-        const newRange = newStats.maxFrequency - newStats.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
+	if (cohésionNew > cohésionOld) return true; 
+	if (cohésionNew < cohésionOld) return false;
 
-        if (newStats.minFrequency > oldStats.minFrequency) return true;
-        if (newStats.minFrequency < oldStats.minFrequency) return false;
-		
-		
-		}
-    }
+	// 3. La régularité (Anti-Fuite)
+	if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
+	
+	
 
     return false;
 }
