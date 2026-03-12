@@ -1512,7 +1512,7 @@ public static isFrequencyMaskVectorMutationBetter(
 	
 	
 	// On parcourt de K=4 vers K=2 pour les ratios de cohésion
-    for (let i = oldVector.length - 1; i >= 1; i--) {
+    /*for (let i = oldVector.length - 1; i >= 1; i--) {
         const kUpperNew = newVector[i];
         const kLowerNew = newVector[i - 1];
         const kUpperOld = oldVector[i];
@@ -1536,7 +1536,23 @@ public static isFrequencyMaskVectorMutationBetter(
     if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
     if (newVector[1].maxFrequency > oldVector[1].maxFrequency) return false;
     
-    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
+    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;*/
+
+
+	// On parcourt de K=4 vers K=2
+	for (let i = length - 1; i >= 1; i--) {
+		const newRatio = newVector[i].uniqueCovered / newVector[i-1].uniqueCovered;
+		const oldRatio = oldVector[i].uniqueCovered / oldVector[i-1].uniqueCovered;
+
+		// Priorité 1 : L'expansion du niveau actuel (on veut toujours couvrir le max)
+		if (newVector[i].uniqueCovered > oldVector[i].uniqueCovered) return true;
+		if (newVector[i].uniqueCovered < oldVector[i].uniqueCovered) return false;
+
+		// Priorité 2 : La densité (Ratio de Cohésion)
+		// On veut le ratio le plus élevé (le plus de K_haut sur le moins de K_bas)
+		if (newRatio > oldRatio) return true;
+		if (newRatio < oldRatio) return false;
+	}
 
     return false;
 }
