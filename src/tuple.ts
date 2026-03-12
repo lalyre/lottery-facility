@@ -1346,6 +1346,7 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
     return {
         mask,                    // The raw frequency field [0, 1, 2, 0, 1...]
         totalPossible,           // Universe size (e.g., 1225 for k=2)
+        totalPlacements,         // Total number of k-combination placements, including duplicates
         uniqueCovered,           // Number of unique combinations touched (Expansion)
         holes,                   // Number of "leaks" (combinations with 0 coverage)
         minFrequency: finalMinFreq,
@@ -1553,6 +1554,36 @@ public static isFrequencyMaskVectorMutationBetter(
 		if (newRatio > oldRatio) return true;
 		if (newRatio < oldRatio) return false;
 	}
+
+    return false;
+}
+
+
+/**
+ * Determines if a mutation should be accepted for a single k-level frequency mask.
+ * The comparison is based on the same local statistics used by the vector version.
+ *
+ * @param oldStats   Current frequency mask analytics for a given k.
+ * @param newStats   Candidate frequency mask analytics for the same k.
+ * @returns          True if the candidate is better, false otherwise.
+ */
+public static isFrequencyMaskKMutationBetter(
+    oldStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
+    newStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>
+): boolean {
+    if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
+    if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
+
+    if (newStats.maxFrequency < oldStats.maxFrequency) return true;
+    if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+
+    const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
+    const newRange = newStats.maxFrequency - newStats.minFrequency;
+    if (newRange < oldRange) return true;
+    if (newRange > oldRange) return false;
+
+    if (newStats.minFrequency > oldStats.minFrequency) return true;
+    if (newStats.minFrequency < oldStats.minFrequency) return false;
 
     return false;
 }
