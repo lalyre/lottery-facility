@@ -1419,14 +1419,10 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
 public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
     for (let i = 0; i < oldScores.length; i++) {
         // Higher score at the current priority level means an overall improvement
-        if (newScores[i] > oldScores[i]) {
-            return true;
-        }
+        if (newScores[i] > oldScores[i]) return true;
 
         // Lower score at the current priority level means a regression
-        if (newScores[i] < oldScores[i]) {
-            return false;
-        }
+        if (newScores[i] < oldScores[i]) return false;
 
         // If equal, the loop continues to the next level (i + 1) to decide
     }
@@ -1434,6 +1430,7 @@ public static isExpansionVectorMutationBetter(oldScores: number[], newScores: nu
     // If the loop finishes, all scores are identical
     return false;
 }
+
 
 
 /**
@@ -1448,170 +1445,172 @@ public static isFrequencyMaskVectorMutationBetter(
     oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
 ): boolean {
-	if (oldVector == null) return true;
-    if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
+    if (oldVector == null) return true;
 
-    //const length = Math.min(oldVector.length, newVector.length);
-	
-	// On parcourt de K=4 vers K=1 (index 3 à 0)
-    /*for (let i = length - 1; i >= 0; i--) {
-        const oldStats = oldVector[i];
-        const newStats = newVector[i];
-        const k = i + 1;
+    const length = Math.min(oldVector.length, newVector.length);
 
-        // --- NIVEAU HAUT (k=4, k=3) : Priorité à l'EXPANSION ---
-        if (k >= 3) {
-            if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
-            if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
-            
-            // Si expansion égale, on prend le plus "propre" (moins de collisions k-uplets)
-            if (newStats.maxFrequency < oldStats.maxFrequency) return true;
-            if (newStats.maxFrequency > oldStats.maxFrequency) return false;
-        } 
-        
-        // --- NIVEAU BAS (k=2, k=1) : Priorité à la RÉPARTITION ---
-        else {
-            // Pour k=2 (couples) et k=1 (boules seules), on veut éviter les pics
-            if (newStats.maxFrequency < oldStats.maxFrequency) return true;
-            if (newStats.maxFrequency > oldStats.maxFrequency) return false;
+    if (length === 0) return false;
 
-            // On veut que le minimum soit le plus haut possible (couvrir tout le monde)
-            if (newStats.minFrequency > oldStats.minFrequency) return true;
-            if (newStats.minFrequency < oldStats.minFrequency) return false;
+    if (length === 1) {
+        const oldK1 = oldVector[0];
+        const newK1 = newVector[0];
 
-            const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
-            const newRange = newStats.maxFrequency - newStats.minFrequency;
-            if (newRange < oldRange) return true;
-            if (newRange > oldRange) return false;
+        if (newK1.uniqueCovered > oldK1.uniqueCovered) return true;
+        if (newK1.uniqueCovered < oldK1.uniqueCovered) return false;
 
-            // L'expansion k=2 ne vient qu'en dernier recours
-            if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
-            if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
-        }
-    }*/
-	
-	
-	/*
-	// 1. Priorité absolue : Expansion K=3 (les brelans)
-	// On veut que le filet soit large.
-	if (newVector[2].uniqueCovered > oldVector[2].uniqueCovered) return true;
-	if (newVector[2].uniqueCovered < oldVector[2].uniqueCovered) return false;
+        if (newK1.maxFrequency < oldK1.maxFrequency) return true;
+        if (newK1.maxFrequency > oldK1.maxFrequency) return false;
 
-	// 2. LE SECRET : Le ratio de Cohésion (K3 / K2)
-	// Pour un même nombre de triplets, on veut celui qui utilise le MOINS de couples.
-	// Pourquoi ? Parce que ça veut dire que tes triplets sont "soudés" entre eux.
-	// C'est ce qui crée des tickets qui font 4/5 au lieu de deux tickets qui font 3/5.
-	const cohésionNew = newVector[2].uniqueCovered / newVector[1].uniqueCovered;
-	const cohésionOld = oldVector[2].uniqueCovered / oldVector[1].uniqueCovered;
+        const oldRange = oldK1.maxFrequency - oldK1.minFrequency;
+        const newRange = newK1.maxFrequency - newK1.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
 
-	if (cohésionNew > cohésionOld) return true; 
-	if (cohésionNew < cohésionOld) return false;
+        if (newK1.minFrequency > oldK1.minFrequency) return true;
+        if (newK1.minFrequency < oldK1.minFrequency) return false;
 
-	// 3. La régularité (Anti-Fuite)
-	if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
-	*/
-	
-	
-	
-	// On parcourt de K=4 vers K=2 pour les ratios de cohésion
-    /*for (let i = oldVector.length - 1; i >= 1; i--) {
-        const kUpperNew = newVector[i];
-        const kLowerNew = newVector[i - 1];
-        const kUpperOld = oldVector[i];
-        const kLowerOld = oldVector[i - 1];
-
-        // 1. D'abord, on ne sacrifie JAMAIS l'expansion du niveau supérieur
-        if (kUpperNew.uniqueCovered > kUpperOld.uniqueCovered) return true;
-        if (kUpperNew.uniqueCovered < kUpperOld.uniqueCovered) return false;
-
-        // 2. LE SECRET : Ratio de Cohésion pour ce niveau (Densité)
-        // Ex: Combien de K=4 j'arrive à faire tenir sur mes K=3 ?
-        const ratioNew = kUpperNew.uniqueCovered / kLowerNew.uniqueCovered;
-        const ratioOld = kUpperOld.uniqueCovered / kLowerOld.uniqueCovered;
-
-        if (ratioNew > ratioOld) return true;
-        if (ratioNew < ratioOld) return false;
+        return false;
     }
 
-    // 3. Arbitrage final sur la régularité du socle (K=2 et K=1)
-    // Si toutes les densités sont égales, on prend le plus propre
-    if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
-    if (newVector[1].maxFrequency > oldVector[1].maxFrequency) return false;
-    
-    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;*/
-	
-	
-	
-	const length = oldVector.length;
+    if (length === 2) {
+        const oldK2 = oldVector[1];
+        const newK2 = newVector[1];
 
-	// --- ÉTAPE 1 : LE VERROU DE SÉCURITÉ ---
-    // On parcourt du haut vers le bas. Si le nouveau système perd 
-    // ne serait-ce qu'un point d'expansion sur n'importe quel K, on REJETTE.
-    for (let j = length - 1; j >= 1; j--) {
-        if (newVector[j].uniqueCovered < oldVector[j].uniqueCovered) return false;
+        if (newK2.uniqueCovered > oldK2.uniqueCovered) return true;
+        if (newK2.uniqueCovered < oldK2.uniqueCovered) return false;
+
+        if (newK2.maxFrequency < oldK2.maxFrequency) return true;
+        if (newK2.maxFrequency > oldK2.maxFrequency) return false;
+
+        const oldRange = oldK2.maxFrequency - oldK2.minFrequency;
+        const newRange = newK2.maxFrequency - newK2.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
+
+        if (newK2.minFrequency > oldK2.minFrequency) return true;
+        if (newK2.minFrequency < oldK2.minFrequency) return false;
+
+        const oldK1 = oldVector[0];
+        const newK1 = newVector[0];
+
+        if (newK1.uniqueCovered > oldK1.uniqueCovered) return true;
+        if (newK1.uniqueCovered < oldK1.uniqueCovered) return false;
+
+        if (newK1.maxFrequency < oldK1.maxFrequency) return true;
+        if (newK1.maxFrequency > oldK1.maxFrequency) return false;
+
+        return false;
     }
 
-
-    // On descend du plus haut niveau vers le bas
-    for (let i = length - 1; i >= 1; i--) {
+    for (let i = length - 1; i >= 2; i--) {
         const oldK = oldVector[i];
         const newK = newVector[i];
-        const totalPossible = oldK.totalPossible; // ou une constante selon ton helper
-		
-		// Si le niveau est déjà saturé pour les deux, on passe au K inférieur
-        if (oldK.uniqueCovered === totalPossible && newK.uniqueCovered === totalPossible) {
-            continue;
-        }
-		
-        // 1. Expansion du niveau actuel (K)
+        const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
+        const oldAtMax = oldK.uniqueCovered >= maxReachable;
+        const newAtMax = newK.uniqueCovered >= maxReachable;
+
+        // If both systems already saturate this level, it no longer discriminates.
+        if (oldAtMax && newAtMax) continue;
+
+        // Otherwise, priority is to maximize expansion at the current level.
         if (newK.uniqueCovered > oldK.uniqueCovered) return true;
         if (newK.uniqueCovered < oldK.uniqueCovered) return false;
 
+        // Same expansion on the current pivot: compress the level below.
+        const oldKMinus1 = oldVector[i - 1];
+        const newKMinus1 = newVector[i - 1];
 
-		// RÈGLE 3 : Si l'expansion est ÉGALE sur ce niveau pivot
-        if (newK.uniqueCovered === oldK.uniqueCovered) {
-            // 2. Compression du niveau en dessous (K-1)
-            const oldKMinus1 = oldVector[i - 1];
-            const newKMinus1 = newVector[i - 1];
+        if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
+        if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
 
-            if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
-            if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
+        if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
+        if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
 
-			// Arbitrage sur la propreté (pics de fréquence)
-            if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
-            if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
+        const oldRange = oldKMinus1.maxFrequency - oldKMinus1.minFrequency;
+        const newRange = newKMinus1.maxFrequency - newKMinus1.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
 
-            // Si tout est identique à cet étage, la boucle continue au i suivant (K-1)
-            continue;
-        }
-
-		// Si on arrive ici, c'est que newK.uniqueCovered > oldK.uniqueCovered
-        // (le cas < a été géré par le verrou au début).
-        // On ACCEPTE la mutation car elle augmente l'expansion du niveau actuel.
-        return true;
+        if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
+        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;
     }
-
-	// Arbitrage final sur k1 (index 0)
-    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
-	
-
-	// On parcourt de K=4 vers K=2
-	for (let i = length - 1; i >= 1; i--) {
-		const newRatio = newVector[i].uniqueCovered / newVector[i-1].uniqueCovered;
-		const oldRatio = oldVector[i].uniqueCovered / oldVector[i-1].uniqueCovered;
-
-		// Priorité 1 : L'expansion du niveau actuel (on veut toujours couvrir le max)
-		if (newVector[i].uniqueCovered > oldVector[i].uniqueCovered) return true;
-		if (newVector[i].uniqueCovered < oldVector[i].uniqueCovered) return false;
-
-		// Priorité 2 : La densité (Ratio de Cohésion)
-		// On veut le ratio le plus élevé (le plus de K_haut sur le moins de K_bas)
-		if (newRatio > oldRatio) return true;
-		if (newRatio < oldRatio) return false;
-	}
 
     return false;
 }
+
+
+
+/*
+public static isFrequencyMaskVectorMutationBetter(
+    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
+    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
+): boolean {
+    if (oldVector == null) return true;
+    if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
+
+    const length = Math.min(oldVector.length, newVector.length);
+
+    for (let i = length - 1; i >= 1; i--) {
+        const oldK = oldVector[i];
+        const newK = newVector[i];
+        const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
+        const oldAtMax = oldK.uniqueCovered >= maxReachable;
+        const newAtMax = newK.uniqueCovered >= maxReachable;
+
+        // If both systems already saturate this level, it no longer discriminates.
+        if (oldAtMax && newAtMax) continue;
+
+        // Otherwise, priority is to maximize expansion at the current level.
+        if (newK.uniqueCovered > oldK.uniqueCovered) return true;
+        if (newK.uniqueCovered < oldK.uniqueCovered) return false;
+
+        // Same expansion on the current pivot: compress the level below.
+        const oldKMinus1 = oldVector[i - 1];
+        const newKMinus1 = newVector[i - 1];
+
+        if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
+        if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
+
+        if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
+        if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
+
+        const oldRange = oldKMinus1.maxFrequency - oldKMinus1.minFrequency;
+        const newRange = newKMinus1.maxFrequency - newKMinus1.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
+
+        if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
+        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;
+    }
+
+    // Terminal optimization on k=2: once higher pairs (K, K-1) no longer discriminate,
+    // we minimize k=2 coverage itself and then prefer the cleanest frequency field.
+    if (length > 1) {
+        const oldK2 = oldVector[1];
+        const newK2 = newVector[1];
+
+        if (newK2.uniqueCovered < oldK2.uniqueCovered) return true;
+        if (newK2.uniqueCovered > oldK2.uniqueCovered) return false;
+
+        if (newK2.maxFrequency < oldK2.maxFrequency) return true;
+        if (newK2.maxFrequency > oldK2.maxFrequency) return false;
+
+        const oldRange = oldK2.maxFrequency - oldK2.minFrequency;
+        const newRange = newK2.maxFrequency - newK2.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
+
+        if (newK2.minFrequency > oldK2.minFrequency) return true;
+        if (newK2.minFrequency < oldK2.minFrequency) return false;
+    }
+
+    return false;
+}
+*/
+
+
+
+
 
 
 /**
@@ -2167,6 +2166,7 @@ async function processTupleFile(filePath: string, pipeline: TupleFilterPipeline,
 
     console.log('Combinaisons acceptées:', acceptedTuples);
 })();*/
+
 
 
 
