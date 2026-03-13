@@ -1447,6 +1447,7 @@ public static isFrequencyMaskVectorMutationBetter(
     oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
 ): boolean {
+	if (oldVector == null) return true;
     if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
 
     //const length = Math.min(oldVector.length, newVector.length);
@@ -1512,7 +1513,7 @@ public static isFrequencyMaskVectorMutationBetter(
 	
 	
 	// On parcourt de K=4 vers K=2 pour les ratios de cohésion
-    for (let i = oldVector.length - 1; i >= 1; i--) {
+    /*for (let i = oldVector.length - 1; i >= 1; i--) {
         const kUpperNew = newVector[i];
         const kLowerNew = newVector[i - 1];
         const kUpperOld = oldVector[i];
@@ -1536,8 +1537,62 @@ public static isFrequencyMaskVectorMutationBetter(
     if (newVector[1].maxFrequency < oldVector[1].maxFrequency) return true;
     if (newVector[1].maxFrequency > oldVector[1].maxFrequency) return false;
     
-    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
+    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;*/
+	
+	
+	
+	const length = oldVector.length;
 
+	// --- ÉTAPE 1 : LE VERROU DE SÉCURITÉ ---
+    // On parcourt du haut vers le bas. Si le nouveau système perd 
+    // ne serait-ce qu'un point d'expansion sur n'importe quel K, on REJETTE.
+    for (let j = length - 1; j >= 1; j--) {
+        if (newVector[j].uniqueCovered < oldVector[j].uniqueCovered) return false;
+    }
+
+
+    // On descend du plus haut niveau vers le bas
+    for (let i = length - 1; i >= 1; i--) {
+        const oldK = oldVector[i];
+        const newK = newVector[i];
+        const totalPossible = oldK.totalPossible; // ou une constante selon ton helper
+		
+		// Si le niveau est déjà saturé pour les deux, on passe au K inférieur
+        if (oldK.uniqueCovered === totalPossible && newK.uniqueCovered === totalPossible) {
+            continue;
+        }
+		
+        // 1. Expansion du niveau actuel (K)
+        if (newK.uniqueCovered > oldK.uniqueCovered) return true;
+        if (newK.uniqueCovered < oldK.uniqueCovered) return false;
+
+
+		// RÈGLE 3 : Si l'expansion est ÉGALE sur ce niveau pivot
+        if (newK.uniqueCovered === oldK.uniqueCovered) {
+            // 2. Compression du niveau en dessous (K-1)
+            const oldKMinus1 = oldVector[i - 1];
+            const newKMinus1 = newVector[i - 1];
+
+            if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
+            if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
+
+			// Arbitrage sur la propreté (pics de fréquence)
+            if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
+            if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
+
+            // Si tout est identique à cet étage, la boucle continue au i suivant (K-1)
+            continue;
+        }
+
+		// Si on arrive ici, c'est que newK.uniqueCovered > oldK.uniqueCovered
+        // (le cas < a été géré par le verrou au début).
+        // On ACCEPTE la mutation car elle augmente l'expansion du niveau actuel.
+        return true;
+    }
+
+	// Arbitrage final sur k1 (index 0)
+    if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
+	
     return false;
 }
 
