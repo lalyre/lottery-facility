@@ -1539,7 +1539,6 @@ public static isFrequencyMaskVectorMutationBetter(
     if (newVector[1].maxFrequency > oldVector[1].maxFrequency) return false;
     
     if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;*/
-<<<<<<< .mine
 	
 	
 	
@@ -1594,62 +1593,6 @@ public static isFrequencyMaskVectorMutationBetter(
 
 	// Arbitrage final sur k1 (index 0)
     if (newVector[0].maxFrequency < oldVector[0].maxFrequency) return true;
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> .theirs
 	
 
 	// On parcourt de K=4 vers K=2
