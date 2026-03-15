@@ -1126,7 +1126,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
  * Constant defining the point where the combinatorial search becomes too constrained.
  * At 80%, we switch to a deeper 'k' to maintain search fluidity.
  */
-public static readonly SATURATION_THRESHOLD = 0.8;
+//public static readonly SATURATION_THRESHOLD = 0.8;
 
 
 /**
@@ -1138,6 +1138,7 @@ public static readonly SATURATION_THRESHOLD = 0.8;
  * @param ticketSize  The number of balls per ticket (10 for Crescendo, 5 for Loto).
  * @return            The optimal k-value (1, 2, 3, 4...).
  */
+ /*
 public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number): number {
     const n = alphabet.length;
     
@@ -1157,7 +1158,7 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
     // If everything is saturated, we return the highest possible k (ticketSize - 1)
     return ticketSize - 1;
 }
-
+*/
 
 
 
@@ -1168,7 +1169,7 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
  *
  * @param nbTickets        Number of tickets in the system.
  * @param alphabet_length  The pool size of numbers (e.g., 56).
- * @param k                The depth of expansion (1, 2, 3, or 4).
+ * @param k                The depth of expansion (1, 2, 3, 4, etc...).
  * @param ticketSize       The number of balls per ticket.
  * @return                 The theoretical maximum number of unique k-combinations.
  */
@@ -1306,9 +1307,7 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
     const process = (ticket: number[], targetK: number, start: number, depth: number) => {
         if (depth === targetK) {
             const idx = TupleHelper.getCombinationIndex(tempCombo, targetK);
-            if (mask[idx] === 0) {
-                uniqueCovered++;
-            }
+            if (mask[idx] === 0) uniqueCovered++;
             mask[idx]++;
             totalPlacements++;
             return;
@@ -1333,9 +1332,7 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
 
     for (let i = 0; i < totalPossible; i++) {
         const val = mask[i];
-        if (val === 0) {
-            holes++;
-        }
+        if (val === 0) holes++;
         if (val > maxFreq) maxFreq = val;
         if (val < minFreq) minFreq = val;
     }
@@ -1367,11 +1364,9 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
  */
 public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
     const results: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> = [];
-
     for (let k = 1; k <= kMax; k++) {
         results.push(TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, k));
     }
-
     return results;
 }
 
@@ -1388,11 +1383,9 @@ public static getFrequencyMaskVector(system: number[][], alphabetSize: number, k
  */
 public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> {
     const results: Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> = [];
-
     for (let k = 1; k <= kMax; k++) {
         results.push(TupleHelper.getGlobalKExpansionBitmask(system, alphabetSize, k));
     }
-
     return results;
 }
 
@@ -1404,7 +1397,7 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
 
 
 /**
- * Determines if a mutation should be accepted based on a hierarchical (lexicographical) score comparison.
+ * Determines if a mutation should be accepted based on a hierarchical (lexicographical) expansion score comparison.
  * The priority is given to the first elements of the array (lower k values).
  * Logic:
  * 1. Iterates through scores from index 0 to n.
@@ -1416,20 +1409,13 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
  * @param {number[]} newScores  - Array of new scores [k1, k2, ..., kn] after mutation.
  * @returns {boolean}           True if the mutation improves the system hierarchy, false otherwise.
  */
-public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
+ /*public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
     for (let i = 0; i < oldScores.length; i++) {
-        // Higher score at the current priority level means an overall improvement
-        if (newScores[i] > oldScores[i]) return true;
-
-        // Lower score at the current priority level means a regression
-        if (newScores[i] < oldScores[i]) return false;
-
-        // If equal, the loop continues to the next level (i + 1) to decide
-    }
-
-    // If the loop finishes, all scores are identical
-    return false;
-}
+        if (newScores[i] > oldScores[i]) return true;					// Higher score at the current priority level means an overall improvement
+        if (newScores[i] < oldScores[i]) return false;					// Lower score at the current priority level means a regression
+    }																	// If equal, the loop continues to the next level (i + 1) to decide
+    return false;														// If the loop finishes, all scores are identical
+}*/
 
 
 
@@ -1621,6 +1607,7 @@ public static isFrequencyMaskVectorMutationBetter(
  * @param newStats   Candidate frequency mask analytics for the same k.
  * @returns          True if the candidate is better, false otherwise.
  */
+ /*
 public static isFrequencyMaskKMutationBetter(
     oldStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
     newStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>
@@ -1640,7 +1627,7 @@ public static isFrequencyMaskKMutationBetter(
     if (newStats.minFrequency < oldStats.minFrequency) return false;
 
     return false;
-}
+}*/
 
 
 
