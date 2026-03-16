@@ -1371,6 +1371,89 @@ public static getFrequencyMaskVector(system: number[][], alphabetSize: number, k
 }
 
 
+/**
+ * Counts how many targetK-subsets contain no covered baseK-subset at all.
+ *
+ * A target tuple is a leak when none of its internal baseK-subsets is covered
+ * by the system mask built at level baseK.
+ *
+ * @param baseStats        Frequency analytics returned for the chosen baseK.
+ * @param alphabetLength   The total numbers in the pool.
+ * @param baseK            The size of the covered subsets to test.
+ * @param targetK          The target tuple size to protect.
+ * @returns                Number of leaking tuples.
+ */
+public static countUncoveredCombinations(
+    baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
+    alphabetLength: number,
+    baseK: number,
+    targetK: number
+): number {
+    if (baseK < 1 || targetK < baseK) return 0;
+    if (baseStats == null || baseStats.mask == null) return 0;
+    if (alphabetLength < targetK) return 0;
+
+    let leakCount = 0;
+    const targetTuple = new Array(targetK);
+    const baseTuple = new Array(baseK);
+
+    const hasCoveredBaseSubset = (tuple: number[]): boolean => {
+        const exploreBase = (start: number, depth: number): boolean => {
+            if (depth === baseK) {
+                const idx = TupleHelper.getCombinationIndex(baseTuple, baseK);
+                return baseStats.mask[idx] > 0;
+            }
+
+            for (let i = start; i < tuple.length; i++) {
+                baseTuple[depth] = tuple[i];
+                if (exploreBase(i + 1, depth + 1)) return true;
+            }
+
+            return false;
+        };
+
+        return exploreBase(0, 0);
+    };
+
+    const exploreTargets = (startValue: number, depth: number): void => {
+        if (depth === targetK) {
+            const descendingTuple = [...targetTuple].sort((a, b) => b - a);
+            if (!hasCoveredBaseSubset(descendingTuple)) leakCount++;
+            return;
+        }
+
+        const remaining = targetK - depth;
+        const maxStart = alphabetLength - remaining + 1;
+
+        for (let value = startValue; value <= maxStart; value++) {
+            targetTuple[depth] = value;
+            exploreTargets(value + 1, depth + 1);
+        }
+    };
+
+    exploreTargets(1, 0);
+    return leakCount;
+}
+
+
+/**
+ * Counts the number of targetK-tuples that contain no covered baseK-subset in
+ * the system.
+ *
+ * @param system         The system to analyze.
+ * @param alphabetSize   The total numbers in the pool.
+ * @param baseK          The covered subset size to use.
+ * @param targetK        The leak tuple size to count.
+ * @returns              Number of leaks of size targetK.
+ */
+public static leaksCount(system: number[][], alphabetSize: number, baseK: number, targetK: number): number {
+    if (baseK < 1 || targetK < baseK) return 0;
+
+    const baseStats = TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, baseK);
+    return TupleHelper.countUncoveredCombinations(baseStats, alphabetSize, baseK, targetK);
+}
+
+
 
 /**
  * Computes the expansion score vector for a system from k=1 up to kMax.
@@ -1441,8 +1524,8 @@ public static isFrequencyMaskVectorMutationBetter(
         const oldK1 = oldVector[0];
         const newK1 = newVector[0];
 
-        if (newK1.uniqueCovered > oldK1.uniqueCovered) return true;
-        if (newK1.uniqueCovered < oldK1.uniqueCovered) return false;
+        if (newK1.holes < oldK1.holes) return true;
+        if (newK1.holes > oldK1.holes) return false;
 
         if (newK1.maxFrequency < oldK1.maxFrequency) return true;
         if (newK1.maxFrequency > oldK1.maxFrequency) return false;
@@ -1462,8 +1545,8 @@ public static isFrequencyMaskVectorMutationBetter(
         const oldK2 = oldVector[1];
         const newK2 = newVector[1];
 
-        if (newK2.uniqueCovered > oldK2.uniqueCovered) return true;
-        if (newK2.uniqueCovered < oldK2.uniqueCovered) return false;
+        if (newK2.holes < oldK2.holes) return true;
+        if (newK2.holes > oldK2.holes) return false;
 
         if (newK2.maxFrequency < oldK2.maxFrequency) return true;
         if (newK2.maxFrequency > oldK2.maxFrequency) return false;
@@ -1479,8 +1562,8 @@ public static isFrequencyMaskVectorMutationBetter(
         const oldK1 = oldVector[0];
         const newK1 = newVector[0];
 
-        if (newK1.uniqueCovered > oldK1.uniqueCovered) return true;
-        if (newK1.uniqueCovered < oldK1.uniqueCovered) return false;
+        if (newK1.holes < oldK1.holes) return true;
+        if (newK1.holes > oldK1.holes) return false;
 
         if (newK1.maxFrequency < oldK1.maxFrequency) return true;
         if (newK1.maxFrequency > oldK1.maxFrequency) return false;
@@ -1499,15 +1582,15 @@ public static isFrequencyMaskVectorMutationBetter(
         if (oldAtMax && newAtMax) continue;
 
         // Otherwise, priority is to maximize expansion at the current level.
-        if (newK.uniqueCovered > oldK.uniqueCovered) return true;
-        if (newK.uniqueCovered < oldK.uniqueCovered) return false;
+        if (newK.holes < oldK.holes) return true;
+        if (newK.holes > oldK.holes) return false;
 
         // Same expansion on the current pivot: compress the level below.
         const oldKMinus1 = oldVector[i - 1];
         const newKMinus1 = newVector[i - 1];
 
-        if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
-        if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
+        if (newKMinus1.holes > oldKMinus1.holes) return true;
+        if (newKMinus1.holes < oldKMinus1.holes) return false;
 
         if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
         if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
