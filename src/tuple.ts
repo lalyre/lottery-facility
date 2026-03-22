@@ -1515,11 +1515,10 @@ public static isFrequencyMaskVectorMutationBetter(
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
 ): boolean {
     if (oldVector == null) return true;
-
     const length = Math.min(oldVector.length, newVector.length);
-
     if (length === 0) return false;
 
+	/*
     if (length === 1) {
         const oldK1 = oldVector[0];
         const newK1 = newVector[0];
@@ -1570,23 +1569,32 @@ public static isFrequencyMaskVectorMutationBetter(
 
         return false;
     }
+	*/
 
-    for (let i = length - 1; i >= 2; i--) {
+
+    //for (let i = length - 1; i >= 2; i--) {
+    for (let i = 0; i <= length - 1; i++) {
         const oldK = oldVector[i];
         const newK = newVector[i];
-        const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
-        const oldAtMax = oldK.uniqueCovered >= maxReachable;
-        const newAtMax = newK.uniqueCovered >= maxReachable;
+        //const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
+        //const oldAtMax = oldK.uniqueCovered >= maxReachable;
+        //const newAtMax = newK.uniqueCovered >= maxReachable;
 
         // If both systems already saturate this level, it no longer discriminates.
-        if (oldAtMax && newAtMax) continue;
+        //if (oldAtMax && newAtMax) continue;
 
         // Otherwise, priority is to maximize expansion at the current level.
         if (newK.holes < oldK.holes) return true;
         if (newK.holes > oldK.holes) return false;
+		
+        //if (newK.maxFrequency < oldK.maxFrequency) return true;
+        //if (newK.maxFrequency > oldK.maxFrequency) return false;
+		
+        //if (newK.minFrequency > oldK.minFrequency) return true;
+        //if (newK.minFrequency < oldK.minFrequency) return false;
 
         // Same expansion on the current pivot: compress the level below.
-        const oldKMinus1 = oldVector[i - 1];
+        /*const oldKMinus1 = oldVector[i - 1];
         const newKMinus1 = newVector[i - 1];
 
         if (newKMinus1.holes > oldKMinus1.holes) return true;
@@ -1601,7 +1609,7 @@ public static isFrequencyMaskVectorMutationBetter(
         if (newRange > oldRange) return false;
 
         if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
-        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;
+        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;*/
     }
 
     return false;
