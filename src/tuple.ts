@@ -1454,6 +1454,79 @@ public static leaksCount(system: number[][], alphabetSize: number, baseK: number
 }
 
 
+/**
+ * Projects a base-k coverage mask onto a target space and counts how many
+ * target tuples are protected by at least one covered base subset.
+ *
+ * This is the relevant metric when full base-space saturation is unnecessary.
+ * Example: with baseK=2 and targetK=5, we only care that every 5-tuple
+ * contains at least one covered pair, not that every pair is covered globally.
+ *
+ * @param baseStats        Frequency analytics returned for the chosen baseK.
+ * @param alphabetLength   The total numbers in the pool.
+ * @param baseK            The size of the covered subsets to test.
+ * @param targetK          The target tuple size to protect.
+ * @returns                Coverage projection statistics from baseK to targetK.
+ */
+public static getTargetCoverageStats(
+    baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
+    alphabetLength: number,
+    baseK: number,
+    targetK: number
+) {
+    if (baseK < 1 || targetK < baseK || alphabetLength < targetK) {
+        return {
+            baseK,
+            targetK,
+            totalTargets: 0,
+            coveredTargets: 0,
+            uncoveredTargets: 0,
+            coverageRatio: 0,
+        };
+    }
+
+    const totalTargets = Number(TupleHelper.binomial(alphabetLength, targetK));
+    const uncoveredTargets = TupleHelper.countUncoveredCombinations(baseStats, alphabetLength, baseK, targetK);
+    const coveredTargets = totalTargets - uncoveredTargets;
+
+    return {
+        baseK,
+        targetK,
+        totalTargets,
+        coveredTargets,
+        uncoveredTargets,
+        coverageRatio: totalTargets === 0 ? 0 : coveredTargets / totalTargets,
+    };
+}
+
+
+/**
+ * Computes the target-space coverage projection for each k-level frequency mask.
+ *
+ * Each entry answers: "with the covered base-k subsets of this system, how much
+ * of the targetK space is protected?"
+ *
+ * @param vector           The frequency mask vector returned by getFrequencyMaskVector().
+ * @param alphabetLength   The total numbers in the pool.
+ * @param targetK          The target tuple size to protect.
+ * @returns                A projection vector aligned with base k from 1..targetK.
+ */
+public static getTargetCoverageVector(
+    vector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
+    alphabetLength: number,
+    targetK: number
+) {
+    const results = [];
+    const length = Math.min(vector.length, targetK);
+
+    for (let i = 0; i < length; i++) {
+        results.push(TupleHelper.getTargetCoverageStats(vector[i], alphabetLength, i + 1, targetK));
+    }
+
+    return results;
+}
+
+
 
 /**
  * Computes the expansion score vector for a system from k=1 up to kMax.
@@ -1587,11 +1660,11 @@ public static isFrequencyMaskVectorMutationBetter(
         if (newK.holes < oldK.holes) return true;
         if (newK.holes > oldK.holes) return false;
 		
-        //if (newK.maxFrequency < oldK.maxFrequency) return true;
-        //if (newK.maxFrequency > oldK.maxFrequency) return false;
+        if (newK.maxFrequency < oldK.maxFrequency) return true;
+        if (newK.maxFrequency > oldK.maxFrequency) return false;
 		
-        //if (newK.minFrequency > oldK.minFrequency) return true;
-        //if (newK.minFrequency < oldK.minFrequency) return false;
+        if (newK.minFrequency > oldK.minFrequency) return true;
+        if (newK.minFrequency < oldK.minFrequency) return false;
 
         // Same expansion on the current pivot: compress the level below.
         /*const oldKMinus1 = oldVector[i - 1];
@@ -1683,7 +1756,57 @@ public static isFrequencyMaskVectorMutationBetter(
 
     return false;
 }
-*/
+
+
+/**
+ * Determines if a mutation is better for a given target space.
+ *
+ * The primary criterion is no longer the raw base-space expansion
+ * (`uniqueCovered` / `holes`), but the projected protection of the targetK
+ * space: how many target tuples still have no covered base subset.
+ *
+ * Example: for targetK=5 and baseK=2, this compares systems by the number of
+ * 5-tuples that contain no covered pair at all.
+ *
+ * @param oldVector        Current frequency mask vector.
+ * @param newVector        Candidate frequency mask vector after mutation.
+ * @param alphabetLength   The total numbers in the pool.
+ * @param targetK          The target tuple size to protect.
+ * @returns                True if the candidate is better, false otherwise.
+ */
+public static isTargetCoverageVectorMutationBetter(
+    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
+    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
+    alphabetLength: number,
+    targetK: number
+): boolean {
+    if (oldVector == null) return true;
+    const length = Math.min(oldVector.length, newVector.length, targetK);
+    if (length === 0) return false;
+
+    for (let i = 0; i < length; i++) {
+        const baseK = i + 1;
+        const oldProjection = TupleHelper.getTargetCoverageStats(oldVector[i], alphabetLength, baseK, targetK);
+        const newProjection = TupleHelper.getTargetCoverageStats(newVector[i], alphabetLength, baseK, targetK);
+
+        if (newProjection.uncoveredTargets < oldProjection.uncoveredTargets) return true;
+        if (newProjection.uncoveredTargets > oldProjection.uncoveredTargets) return false;
+
+        const oldK = oldVector[i];
+        const newK = newVector[i];
+
+        if (newK.maxFrequency < oldK.maxFrequency) return true;
+        if (newK.maxFrequency > oldK.maxFrequency) return false;
+
+        if (newK.minFrequency > oldK.minFrequency) return true;
+        if (newK.minFrequency < oldK.minFrequency) return false;
+
+        if (newK.holes < oldK.holes) return true;
+        if (newK.holes > oldK.holes) return false;
+    }
+
+    return false;
+}
 
 
 
