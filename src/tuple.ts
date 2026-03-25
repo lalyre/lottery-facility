@@ -1774,7 +1774,7 @@ public static isFrequencyMaskVectorMutationBetter(
  * @param targetK          The target tuple size to protect.
  * @returns                True if the candidate is better, false otherwise.
  */
-public static isTargetCoverageVectorMutationBetter(
+/*public static isTargetCoverageVectorMutationBetter(
     oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     alphabetLength: number,
@@ -1806,7 +1806,7 @@ public static isTargetCoverageVectorMutationBetter(
     }
 
     return false;
-}
+}*/
 
 
 
