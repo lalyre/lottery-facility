@@ -43,6 +43,22 @@ export class DrawBox {
 
 
 	/**
+	 * Generates a system of tickets using pure randomness.
+	 * Each ticket is independently drawn and contains no duplicate number.
+	 *
+	 * @param nbTickets - Total number of tickets to generate.
+	 * @param size      - Number of balls per ticket.
+	 * @param nbSwap    - Shuffle intensity for each draw (default: 50).
+	 * @return          - An array of random valid combinations (number[][]).
+	 */
+	public drawRandomSystem(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		const results: number[][] = [];
+		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size, nbSwap));
+		return results;
+	}
+
+
+	/**
 	 * Generates a balanced set of tickets using the Harmonic Reservoir technique.
 	 * Ensures each number appears an equal number of times across all tickets (±1).
 	 *
@@ -51,7 +67,7 @@ export class DrawBox {
 	 * @param nbSwap    - Shuffle intensity for each cycle (default: 50).
 	 * @return          - An array of balanced combinations (number[][]).
 	 */
-	public drawBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawsingleBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
 		const results: number[][] = [];
 		let currentCycle: number[] = [];
 
@@ -71,23 +87,21 @@ export class DrawBox {
 	}
 
 
-	/**
-	 * Generates a system of tickets using pure randomness.
-	 * Each ticket is independently drawn and contains no duplicate number.
-	 *
-	 * @param nbTickets - Total number of tickets to generate.
-	 * @param size      - Number of balls per ticket.
-	 * @param nbSwap    - Shuffle intensity for each draw (default: 50).
-	 * @return          - An array of random valid combinations (number[][]).
-	 */
-	public drawRandomSystem(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
-		const results: number[][] = [];
 
-		for (let i = 0; i < nbTickets; i++) {
-			results.push(this.draw(size, nbSwap));
-		}
+
+
+
+	
+
+	public drawPairBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		const results: number[][] = [];
 		return results;
 	}
+
+
+
+
+
 
 
 	/**
