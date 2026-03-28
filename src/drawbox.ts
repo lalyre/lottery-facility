@@ -67,7 +67,7 @@ export class DrawBox {
 	 * @param nbSwap    - Shuffle intensity for each cycle (default: 50).
 	 * @return          - An array of balanced combinations (number[][]).
 	 */
-	public drawsingleBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawSingleBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
 		const results: number[][] = [];
 		let currentCycle: number[] = [];
 
