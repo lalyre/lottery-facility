@@ -1645,8 +1645,8 @@ public static isFrequencyMaskVectorMutationBetter(
 	*/
 
 
-    //for (let i = length - 1; i >= 2; i--) {
-    for (let i = 0; i <= length - 1; i++) {
+    for (let i = length - 1; i >= 0; i--) {
+    //for (let i = 0; i <= length - 1; i++) {
         const oldK = oldVector[i];
         const newK = newVector[i];
         //const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
@@ -1657,14 +1657,24 @@ public static isFrequencyMaskVectorMutationBetter(
         //if (oldAtMax && newAtMax) continue;
 
         // Otherwise, priority is to maximize expansion at the current level.
-        if (newK.holes < oldK.holes) return true;
-        if (newK.holes > oldK.holes) return false;
+        //if (newK.holes < oldK.holes) return true;
+        //if (newK.holes > oldK.holes) return false;
 		
-        if (newK.maxFrequency < oldK.maxFrequency) return true;
-        if (newK.maxFrequency > oldK.maxFrequency) return false;
+        //if (newK.maxFrequency < oldK.maxFrequency) return true;
+        //if (newK.maxFrequency > oldK.maxFrequency) return false;
 		
-        if (newK.minFrequency > oldK.minFrequency) return true;
-        if (newK.minFrequency < oldK.minFrequency) return false;
+        //if (newK.minFrequency > oldK.minFrequency) return true;
+        //if (newK.minFrequency < oldK.minFrequency) return false;
+
+
+        const oldRange = oldK.maxFrequency - oldK.minFrequency;
+        const newRange = newK.maxFrequency - newK.minFrequency;
+        if (newRange < oldRange) return true;
+        if (newRange > oldRange) return false;
+
+        //if (newK.holes < oldK.holes) return true;
+        //if (newK.holes > oldK.holes) return false;
+
 
         // Same expansion on the current pivot: compress the level below.
         /*const oldKMinus1 = oldVector[i - 1];
@@ -1685,6 +1695,17 @@ public static isFrequencyMaskVectorMutationBetter(
         if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;*/
     }
 
+
+    for (let i = length - 1; i >= 0; i--) {
+        const oldK = oldVector[i];
+        const newK = newVector[i];
+
+        if (newK.holes < oldK.holes) return true;
+        if (newK.holes > oldK.holes) return false;
+    }
+		
+		
+		
     return false;
 }
 
