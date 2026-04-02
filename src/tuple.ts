@@ -1153,7 +1153,7 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
             //console.log(`[Optimizer] Selected k=${k} (${budgetGenerated}/${totalPossible} combos planned)`);
             return k;
         }
-    }
+    //}
 
     // If everything is saturated, we return the highest possible k (ticketSize - 1)
     return ticketSize - 1;
@@ -1296,7 +1296,19 @@ public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number
  * @param k               The size of the combinations to track (e.g., 2 for pairs).
  * @returns               An object containing the frequency mask and coverage analytics.
  */
-public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number, k: number) {
+public static getGlobalKFrequencyMask(
+	system: number[][],
+	alphabetLength: number,
+	k: number
+): {
+  mask: Uint32Array;
+  totalPossible: number;
+  totalPlacements: number;
+  uniqueCovered: number;
+  holes: number;
+  minFrequency: number;
+  maxFrequency: number;
+} {
     const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
     const mask = new Uint32Array(totalPossible); 
     let uniqueCovered = 0;
@@ -1362,13 +1374,13 @@ public static getGlobalKFrequencyMask(system: number[][], alphabetLength: number
  * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
  * @returns {Array}              An array where index i contains the frequency analytics for k = i + 1.
  */
-public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
+/*public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
     const results: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> = [];
     for (let k = 1; k <= kMax; k++) {
         results.push(TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, k));
     }
     return results;
-}
+}*/
 
 
 /**
@@ -1511,7 +1523,7 @@ public static getTargetCoverageStats(
  * @param targetK          The target tuple size to protect.
  * @returns                A projection vector aligned with base k from 1..targetK.
  */
-public static getTargetCoverageVector(
+/*public static getTargetCoverageVector(
     vector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     alphabetLength: number,
     targetK: number
@@ -1524,7 +1536,7 @@ public static getTargetCoverageVector(
     }
 
     return results;
-}
+}*/
 
 
 
@@ -1537,13 +1549,13 @@ public static getTargetCoverageVector(
  * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
  * @returns {number[]}           An array where index i contains the unique combination count for k = i + 1.
  */
-public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> {
+/*public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> {
     const results: Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> = [];
     for (let k = 1; k <= kMax; k++) {
         results.push(TupleHelper.getGlobalKExpansionBitmask(system, alphabetSize, k));
     }
     return results;
-}
+}*/
 
 
 
@@ -1583,13 +1595,14 @@ public static getExpansionVector(system: number[][], alphabetSize: number, kMax:
  * @param newVector   Candidate frequency mask vector after mutation.
  * @returns           True if the candidate is better, false otherwise.
  */
+/*
 public static isFrequencyMaskVectorMutationBetter(
     oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
     newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
 ): boolean {
     if (oldVector == null) return true;
     const length = Math.min(oldVector.length, newVector.length);
-    if (length === 0) return false;
+    if (length === 0) return false;*/
 
 	/*
     if (length === 1) {
@@ -1645,10 +1658,10 @@ public static isFrequencyMaskVectorMutationBetter(
 	*/
 
 
-    for (let i = length - 1; i >= 0; i--) {
-    //for (let i = 0; i <= length - 1; i++) {
+    //for (let i = length - 1; i >= 0; i--) {
+    /*for (let i = 0; i <= length - 1; i++) {
         const oldK = oldVector[i];
-        const newK = newVector[i];
+        const newK = newVector[i];*/
         //const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
         //const oldAtMax = oldK.uniqueCovered >= maxReachable;
         //const newAtMax = newK.uniqueCovered >= maxReachable;
@@ -1656,21 +1669,26 @@ public static isFrequencyMaskVectorMutationBetter(
         // If both systems already saturate this level, it no longer discriminates.
         //if (oldAtMax && newAtMax) continue;
 
+
         // Otherwise, priority is to maximize expansion at the current level.
         //if (newK.holes < oldK.holes) return true;
         //if (newK.holes > oldK.holes) return false;
 		
         //if (newK.maxFrequency < oldK.maxFrequency) return true;
         //if (newK.maxFrequency > oldK.maxFrequency) return false;
-		
-        //if (newK.minFrequency > oldK.minFrequency) return true;
-        //if (newK.minFrequency < oldK.minFrequency) return false;
+
+        /*if (newK.minFrequency > oldK.minFrequency) return true;
+        if (newK.minFrequency < oldK.minFrequency) return false;
+
+        if (newK.maxFrequency > oldK.maxFrequency) return true;
+        if (newK.maxFrequency < oldK.maxFrequency) return false;*/
 
 
-        const oldRange = oldK.maxFrequency - oldK.minFrequency;
-        const newRange = newK.maxFrequency - newK.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
+
+        //const oldRange = oldK.maxFrequency - oldK.minFrequency;
+        //const newRange = newK.maxFrequency - newK.minFrequency;
+        //if (newRange < oldRange) return true;
+        //if (newRange > oldRange) return false;
 
         //if (newK.holes < oldK.holes) return true;
         //if (newK.holes > oldK.holes) return false;
@@ -1693,10 +1711,11 @@ public static isFrequencyMaskVectorMutationBetter(
 
         if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
         if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;*/
-    }
+    //}
 
 
-    for (let i = length - 1; i >= 0; i--) {
+    //for (let i = length - 1; i >= 0; i--) {
+	/*for (let i = 0; i <= length - 1; i++) {
         const oldK = oldVector[i];
         const newK = newVector[i];
 
@@ -1707,7 +1726,7 @@ public static isFrequencyMaskVectorMutationBetter(
 		
 		
     return false;
-}
+}*/
 
 
 
@@ -1776,7 +1795,7 @@ public static isFrequencyMaskVectorMutationBetter(
     }
 
     return false;
-}
+}*/
 
 
 /**
