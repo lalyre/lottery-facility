@@ -14,7 +14,7 @@ export class DrawBox {
 	 * PS:
 	 * do not consider the item at index 0.
 	 */
-	public constructor (count: number) {
+	public constructor(count: number) {
 		// super();
 
 		if (count === undefined) throw new Error('Need to pass a count parameter');
@@ -35,7 +35,7 @@ export class DrawBox {
 	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
 	 * @return          a random selection of numbers picked in the draw box.
 	 */
-	public draw (size:number, nbSwap:number = 50): number[] {
+	public draw(size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		this.shuffle(nbSwap);
 		return this._balls.slice(0, size);
@@ -52,6 +52,7 @@ export class DrawBox {
 	 * @return          - An array of random valid combinations (number[][]).
 	 */
 	public drawRandomSystem(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		if (size > this._balls.length) throw new Error("Ticket size cannot exceed number of balls");
 		const results: number[][] = [];
 		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size, nbSwap));
 		return results;
@@ -68,21 +69,26 @@ export class DrawBox {
 	 * @return          - An array of balanced combinations (number[][]).
 	 */
 	public drawSingleBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		if (size > this._balls.length) throw new Error("Ticket size cannot exceed number of balls");
 		const results: number[][] = [];
 		let currentCycle: number[] = [];
 
 		for (let i = 0; i < nbTickets; i++) {
-			// If the current cycle doesn't have enough balls left for a full ticket
 			if (currentCycle.length < size) {
-				// We refresh the cycle (New shuffle of the 50 balls)
+				const remaining = currentCycle;
+				const remainingSet = new Set(remaining);
+
 				this.shuffle(nbSwap);
-				currentCycle = [...this._balls]; 
+				const newCycle = [...this._balls];
+
+				const filtered = newCycle.filter(n => !remainingSet.has(n));
+				currentCycle = remaining.concat(filtered);
 			}
 
-			// We take the first 'size' balls and remove them from the current cycle
 			const ticket = currentCycle.splice(0, size);
 			results.push(ticket);
 		}
+
 		return results;
 	}
 
@@ -90,8 +96,6 @@ export class DrawBox {
 
 
 
-
-	
 
 	public drawPairBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
 		const results: number[][] = [];
