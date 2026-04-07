@@ -33,7 +33,7 @@ export class DrawBox {
 	 *
 	 * @param size      size of the random selection of numbers.
 	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
-	 * @return          a random selection of numbers picked in the draw box.
+	 * @returns         a random selection of numbers picked in the draw box.
 	 */
 	public draw(size:number, nbSwap:number = 50): number[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
@@ -43,16 +43,16 @@ export class DrawBox {
 
 
 	/**
-	 * Generates a system of tickets using pure randomness.
-	 * Each ticket is independently drawn and contains no duplicate number.
+	 * Generates a set of tickets using pure randomness.
+	 * Each ticket is drawn independently.
 	 *
-	 * @param nbTickets - Total number of tickets to generate.
-	 * @param size      - Number of balls per ticket.
-	 * @param nbSwap    - Shuffle intensity for each draw (default: 50).
-	 * @return          - An array of random valid combinations (number[][]).
+	 * @param nbTickets   Total number of tickets to generate.
+	 * @param size        Number of balls per ticket.
+	 * @param nbSwap      Shuffle intensity for each draw (default 50).
+	 * @returns           An array of random valid tickets.
 	 */
-	public drawRandomSystem(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
-		if (size > this._balls.length) throw new Error("Ticket size cannot exceed number of balls");
+	public drawRandomTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		if (size > this._count) throw new Error('Invalid size parameter');
 		const results: number[][] = [];
 		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size, nbSwap));
 		return results;
@@ -60,16 +60,17 @@ export class DrawBox {
 
 
 	/**
-	 * Generates a balanced set of tickets using the Harmonic Reservoir technique.
-	 * Ensures each number appears an equal number of times across all tickets (±1).
+	 * Generates a globally balanced set of tickets using the Harmonic Reservoir method.
+	 * Each number appears across the full output as evenly as possible, with a maximum
+	 * frequency difference of 1 between any two numbers.
 	 *
-	 * @param nbTickets - Total number of tickets to generate.
-	 * @param size      - Number of balls per ticket.
-	 * @param nbSwap    - Shuffle intensity for each cycle (default: 50).
-	 * @return          - An array of balanced combinations (number[][]).
+	 * @param nbTickets   Total number of tickets to generate.
+	 * @param size        Number of balls per ticket.
+	 * @param nbSwap      Shuffle intensity for each cycle (default 50).
+	 * @returns           An array of individually balanced tickets.
 	 */
-	public drawSingleBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
-		if (size > this._balls.length) throw new Error("Ticket size cannot exceed number of balls");
+	public drawIndividualBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		if (size > this._count) throw new Error('Invalid size parameter');
 		const results: number[][] = [];
 		let currentCycle: number[] = [];
 
@@ -97,7 +98,7 @@ export class DrawBox {
 
 
 
-	public drawPairBalanced(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawPairBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
 		const results: number[][] = [];
 		return results;
 	}
@@ -112,7 +113,7 @@ export class DrawBox {
 	 * Shuffle the balls in the draw box.
 	 *
 	 * @param nbSwap    number of shuffle operations.
-	 * @return          none.
+	 * @returns         none.
 	 */
 	public shuffle (nbSwap:number): void {
 		for (let i = 0; i < nbSwap; i++) {
