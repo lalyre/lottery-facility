@@ -96,9 +96,7 @@ const sizes = cli.flags.size;
 let ticketsByBox = [];
 for (let i = 0; i < totals.length; i++) {
 	const box = new lotteryFacility.DrawBox(totals[i]);
-	// On génère TOUTES les grilles d'un coup de manière équilibrée pour chaque tirage
-	// Cela remplace l'ancien calcul manuel de réservoir
-	ticketsByBox[i] = box.drawBalanced(nb, sizes[i], nbSwap);
+	ticketsByBox[i] = box.drawIndividualBalancedTickets(nb, sizes[i], nbSwap);
 }
 
 
