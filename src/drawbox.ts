@@ -89,24 +89,39 @@ export class DrawBox {
 			const ticket = currentCycle.splice(0, size);
 			results.push(ticket);
 		}
-
 		return results;
 	}
 
 
-
-
-
-
+	/**
+	 * Generates tickets balanced at the pair level.
+	 *
+	 * The goal of this method is to maximize pair diversity across the generated
+	 * system, so that numbers are associated with different partners as evenly as
+	 * possible.
+	 *
+	 * @param nbTickets   Total number of tickets to generate.
+	 * @param size        Number of balls per ticket.
+	 * @param nbSwap      Shuffle intensity used during generation (default 50).
+	 * @returns           An array of pair-balanced tickets.
+	 */
 	public drawPairBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+		if (size > this._count) throw new Error('Invalid size parameter');
 		const results: number[][] = [];
+
+
+
+
+
+
+
+
+
+
+
+		
 		return results;
 	}
-
-
-
-
-
 
 
 	/**
