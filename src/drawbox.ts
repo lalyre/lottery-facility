@@ -8,11 +8,7 @@ export class DrawBox {
 
 
 	/**
-	 * Build a draw box of lottery balls from 1 to len
-	 * 1 <= len
-	 *
-	 * PS:
-	 * do not consider the item at index 0.
+	 * Build a draw box of lottery balls from 1 to len (1 <= len)
 	 */
 	public constructor(count: number) {
 		// super();
@@ -85,7 +81,6 @@ export class DrawBox {
 				const filtered = newCycle.filter(n => !remainingSet.has(n));
 				currentCycle = remaining.concat(filtered);
 			}
-
 			const ticket = currentCycle.splice(0, size);
 			results.push(ticket);
 		}
@@ -110,16 +105,6 @@ export class DrawBox {
 		const results: number[][] = [];
 
 
-
-
-
-
-
-
-
-
-
-		
 		return results;
 	}
 
