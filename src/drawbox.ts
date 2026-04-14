@@ -73,13 +73,9 @@ export class DrawBox {
 		for (let i = 0; i < nbTickets; i++) {
 			if (currentCycle.length < size) {
 				const remaining = currentCycle;
-				const remainingSet = new Set(remaining);
-
 				this.shuffle(nbSwap);
-				const newCycle = [...this._balls];
-
-				const filtered = newCycle.filter(n => !remainingSet.has(n));
-				currentCycle = remaining.concat(filtered);
+				const nextCycle = this._buildBoundarySafeCycle(remaining, size);
+				currentCycle = remaining.concat(nextCycle);
 			}
 			const ticket = currentCycle.splice(0, size);
 			results.push(ticket);
@@ -128,6 +124,22 @@ export class DrawBox {
 		const aux = this._balls[a];
 		this._balls[a] = this._balls[b];
 		this._balls[b] = aux;
+	}
+
+
+	private _buildBoundarySafeCycle (remaining: number[], size: number): number[] {
+		if (remaining.length === 0) return [...this._balls];
+
+		const needed = size - remaining.length;
+		const remainingSet = new Set(remaining);
+		const head: number[] = [];
+		const tail: number[] = [];
+
+		for (const ball of this._balls) {
+			if (head.length < needed && !remainingSet.has(ball)) head.push(ball);
+			else tail.push(ball);
+		}
+		return head.concat(tail);
 	}
 }
 
