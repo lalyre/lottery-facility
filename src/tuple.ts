@@ -1,6 +1,19 @@
 'use strict';
 export type Tuple = number[];		//export type Tuple<T> = T[];
 
+export type NumberNeighborhoodCount = {
+	neighbor: number;
+	count: number;
+};
+
+export type NumberNeighborhoodCounts = {
+	ball: number;
+	neighbors: NumberNeighborhoodCount[];
+	min: number;
+	max: number;
+	average: number;
+};
+
 
 export class TupleHelper {
 	/**
@@ -153,11 +166,9 @@ export class TupleHelper {
 		const colCount = array[0].length;
 
 		// Validate all rows have the same length
-		for (let i = 1; i < rowCount; i++) {
-			if (array[i].length !== colCount) {
+		for (let i = 1; i < rowCount; i++)
+			if (array[i].length !== colCount)
 				throw new Error("All sub-arrays must have the same length for transposition.");
-			}
-		}
 
 		let transposed: number[][] = Array.from({ length: colCount }, () => []);
 		for (let i = 0; i < rowCount; i++)
@@ -188,9 +199,8 @@ export class TupleHelper {
 		const originMap = new Map<number, number>();
 
 		// Build a map for quick lookups from origin to target numbers
-		for (let i = 0; i < originAlphabet.length; i++) {
+		for (let i = 0; i < originAlphabet.length; i++)
 			originMap.set(originAlphabet[i], targetAlphabet[i]);
-		}
 
 		for (const num of tuple) {
 			if (!originMap.has(num)) throw new Error(`Number ${num} not found in the origin alphabet.`);
@@ -312,7 +322,6 @@ export class TupleHelper {
 		const gap = sorted[i + 1] - sorted[i];
 		if (gap < minGap) minGap = gap;
 	  }
-
 	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
 	}
 
@@ -349,7 +358,6 @@ export class TupleHelper {
 
 	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
 	  if (wrapGap < minGap) minGap = wrapGap;
-
 	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
 	}
 
@@ -383,7 +391,6 @@ export class TupleHelper {
 		const gap = sorted[i + 1] - sorted[i];
 		if (gap > maxGap) maxGap = gap;
 	  }
-
 	  return maxGap;
 	}
 
@@ -968,8 +975,68 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				}
 			}
 		}
-
 		return Array.from(neighbors);
+	}
+
+
+	/**
+	 * Gets the neighborhood occurrence statistics of a specific number in a system.
+	 * It returns each distinct neighbor found with its occurrence count alongside the tested ball,
+	 * plus aggregate statistics computed from these counts.
+	 *
+	 * @param ball      The reference ball number.
+	 * @param system    The array of tuples (the lottery system).
+	 * @return          The tested ball, its neighbors with occurrence counts, and min/max/average stats.
+	 */
+	public static getNumberNeighborhoodCounts(ball: number, system: Tuple[]): NumberNeighborhoodCounts {
+		const neighborCounts = new Map<number, number>();
+
+		for (let i = 0; i < system.length; i++) {
+			const tuple = system[i];
+			if (!tuple.includes(ball)) continue;
+
+			for (let j = 0; j < tuple.length; j++) {
+				const neighbor = tuple[j];
+				if (neighbor === ball) continue;
+				neighborCounts.set(neighbor, (neighborCounts.get(neighbor) ?? 0) + 1);
+			}
+		}
+
+		const neighbors = Array.from(neighborCounts.entries())
+			.sort((a, b) => a[0] - b[0])
+			.map(([neighbor, count]) => ({
+				neighbor,
+				count
+			}));
+
+		if (neighbors.length === 0) {
+			return {
+				ball,
+				neighbors: [],
+				min: 0,
+				max: 0,
+				average: 0
+			};
+		}
+
+		let min = neighbors[0].count;
+		let max = neighbors[0].count;
+		let total = 0;
+
+		for (let i = 0; i < neighbors.length; i++) {
+			const count = neighbors[i].count;
+			if (count < min) min = count;
+			if (count > max) max = count;
+			total += count;
+		}
+
+		return {
+			ball,
+			neighbors,
+			min,
+			max,
+			average: total / neighbors.length
+		};
 	}
 
 
@@ -1005,11 +1072,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			const neighbors = TupleHelper.getNumberNeighborhood(ball, system);
 			
 			// Add each neighbor to the global Set (Set automatically handles uniqueness)
-			for (let j = 0; j < neighbors.length; j++) {
-				unionSet.add(neighbors[j]);
-			}
+			for (let j = 0; j < neighbors.length; j++) unionSet.add(neighbors[j]);
 		}
-
 		return Array.from(unionSet);
 	}
 
