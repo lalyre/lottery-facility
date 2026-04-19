@@ -1,10 +1,12 @@
 'use strict';
 export type Tuple = number[];		//export type Tuple<T> = T[];
 
+
 export type NumberNeighborhoodCount = {
 	neighbor: number;
 	count: number;
 };
+
 
 export type NumberNeighborhoodCounts = {
 	ball: number;
@@ -12,6 +14,17 @@ export type NumberNeighborhoodCounts = {
 	min: number;
 	max: number;
 	average: number;
+};
+
+
+export const comparisonOperators = {
+	 "<": (a: number, b: number) => a  < b,
+	"<=": (a: number, b: number) => a <= b,
+	"==": (a: number, b: number) => a == b,
+	"!=": (a: number, b: number) => a !== b,
+	">=": (a: number, b: number) => a >= b,
+	 ">": (a: number, b: number) => a  > b,
+	 "*": (hits: number, total: number) => hits === total
 };
 
 
@@ -56,16 +69,16 @@ export class TupleHelper {
 
 
 	/**
-     * Compute the sum of all numbers in a lottery tuple.
-     * @param numbers   array of balls number.
-     * @return          the sum of all elements. Returns 0 if numbers is null or empty.
-     * * Example:
-     * sum([1, 2, 3, 4]) => 10
-     */
-    public static sum(numbers: Tuple | null): number {
-        if (!numbers || numbers.length === 0) return 0;
-        return numbers.reduce((acc, val) => acc + val, 0);
-    }
+	* Compute the sum of all numbers in a lottery tuple.
+	* @param numbers   array of balls number.
+	* @return          the sum of all elements. Returns 0 if numbers is null or empty.
+	* * Example:
+	* sum([1, 2, 3, 4]) => 10
+	*/
+	public static sum(numbers: Tuple | null): number {
+		if (!numbers || numbers.length === 0) return 0;
+		return numbers.reduce((acc, val) => acc + val, 0);
+	}
 
 
 	/**
@@ -238,7 +251,6 @@ export class TupleHelper {
 	public static union(arr1:Tuple, arr2:Tuple, duplicate:boolean = false): Tuple {
 		if (!arr1) return duplicate ? arr2 : Array.from(new Set(arr2));
 		if (!arr2) return duplicate ? arr1 : Array.from(new Set(arr1));
-
 		if (duplicate) return [...arr1, ...arr2];
 		return Array.from(new Set([...arr1, ...arr2]));
 	}
@@ -286,7 +298,6 @@ export class TupleHelper {
 
 		for (let j = 0; j < tuple.length; j++) {
 			if (alphabet.indexOf(tuple[j]) === -1) return null;		// Item not in alphabet
-
 			const pos:number = alphabet.indexOf(tuple[j]);
 			complement[j] = alphabet[alphabet.length-1 - pos];
 		}
@@ -313,16 +324,16 @@ export class TupleHelper {
 	 *                -  0 if tuple has 0 or 1 element
 	 */
 	public static linearMinimumGap(tuple: number[]): number {
-	  if (!tuple) return -1;
-	  if (tuple.length <= 1) return 0;
-	  const sorted = [...tuple].sort((a, b) => a - b);
-	  let minGap = Number.POSITIVE_INFINITY;
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		let minGap = Number.POSITIVE_INFINITY;
 
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap < minGap) minGap = gap;
-	  }
-	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+		for (let i = 0; i < sorted.length - 1; i++) {
+			const gap = sorted[i + 1] - sorted[i];
+			if (gap < minGap) minGap = gap;
+		}
+		return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
 	}
 
 
@@ -345,20 +356,20 @@ export class TupleHelper {
 	 *                  -  0 if tuple has 0 or 1 element
 	 */
 	public static modularMinimumGap(tuple: number[], poolSize: number): number {
-	  if (!tuple) return -1;
-	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
-	  if (tuple.length <= 1) return 0;
-	  const sorted = [...tuple].sort((a, b) => a - b);
+		if (!tuple) return -1;
+		if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+		if (tuple.length <= 1) return 0;
+		const sorted = [...tuple].sort((a, b) => a - b);
 
-	  let minGap = Number.POSITIVE_INFINITY;
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap < minGap) minGap = gap;
-	  }
+		let minGap = Number.POSITIVE_INFINITY;
+		for (let i = 0; i < sorted.length - 1; i++) {
+			const gap = sorted[i + 1] - sorted[i];
+			if (gap < minGap) minGap = gap;
+		}
 
-	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
-	  if (wrapGap < minGap) minGap = wrapGap;
-	  return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
+		const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+		if (wrapGap < minGap) minGap = wrapGap;
+		return minGap === Number.POSITIVE_INFINITY ? 0 : minGap;
 	}
 
 
@@ -381,17 +392,16 @@ export class TupleHelper {
 	 *                -  0 if tuple has 0 or 1 element
 	 */
 	public static linearMaximumGap(tuple: number[]): number {
-	  if (!tuple) return -1;
-	  if (tuple.length <= 1) return 0;
+		if (!tuple) return -1;
+		if (tuple.length <= 1) return 0;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		let maxGap = 0;
 
-	  const sorted = [...tuple].sort((a, b) => a - b);
-	  let maxGap = 0;
-
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap > maxGap) maxGap = gap;
-	  }
-	  return maxGap;
+		for (let i = 0; i < sorted.length - 1; i++) {
+			const gap = sorted[i + 1] - sorted[i];
+			if (gap > maxGap) maxGap = gap;
+		}
+		return maxGap;
 	}
 
 
@@ -414,21 +424,21 @@ export class TupleHelper {
 	 *                  -  0 if tuple has 0 or 1 element
 	 */
 	public static modularMaximumGap(tuple: number[], poolSize: number): number {
-	  if (!tuple) return -1;
-	  if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
-	  if (tuple.length <= 1) return 0;
+		if (!tuple) return -1;
+		if (!Number.isInteger(poolSize) || poolSize < 2) return -1;
+		if (tuple.length <= 1) return 0;
 
-	  const sorted = [...tuple].sort((a, b) => a - b);
-	  let maxGap = 0;
+		const sorted = [...tuple].sort((a, b) => a - b);
+		let maxGap = 0;
 
-	  for (let i = 0; i < sorted.length - 1; i++) {
-		const gap = sorted[i + 1] - sorted[i];
-		if (gap > maxGap) maxGap = gap;
-	  }
+		for (let i = 0; i < sorted.length - 1; i++) {
+			const gap = sorted[i + 1] - sorted[i];
+			if (gap > maxGap) maxGap = gap;
+		}
 
-	  const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
-	  if (wrapGap > maxGap) maxGap = wrapGap;
-	  return maxGap;
+		const wrapGap = poolSize + sorted[0] - sorted[sorted.length - 1];
+		if (wrapGap > maxGap) maxGap = wrapGap;
+		return maxGap;
 	}
 
 
@@ -963,15 +973,12 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 */
 	public static getNumberNeighborhood(ball: number, system: Tuple[]): Tuple {
 		const neighbors = new Set<number>();
-
 		for (let i = 0; i < system.length; i++) {
 			const tuple = system[i];
 			if (tuple.includes(ball)) {
 				for (let j = 0; j < tuple.length; j++) {
 					const num = tuple[j];
-					if (num !== ball) {
-						neighbors.add(num);
-					}
+					if (num !== ball) neighbors.add(num);
 				}
 			}
 		}
@@ -1015,7 +1022,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				neighbors: [],
 				min: 0,
 				max: 0,
-				average: 0
+				range: 0,
+				average: 0,
 			};
 		}
 
@@ -1035,7 +1043,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			neighbors,
 			min,
 			max,
-			average: total / neighbors.length
+			range: max - min,
+			average: total / neighbors.length,
 		};
 	}
 
@@ -1061,7 +1070,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param system    The array of tuples.
 	 * @return          A Tuple containing the union of all reachable unique neighbors.
 	 */
-	public static getSubTupleNeighborhood(subTuple: Tuple, system: Tuple[]): Tuple {
+	/*public static getSubTupleNeighborhood(subTuple: Tuple, system: Tuple[]): Tuple {
 		const unionSet = new Set<number>();
 
 		// Iterate through each number in the subset (e.g., alphabet 1-50)
@@ -1075,7 +1084,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			for (let j = 0; j < neighbors.length; j++) unionSet.add(neighbors[j]);
 		}
 		return Array.from(unionSet);
-	}
+	}*/
 
 
 	/**
@@ -1087,9 +1096,9 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
 	 * @return          The total sum of all individual vertex degrees.
 	 */
-	public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
+	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
 		return TupleHelper.getSubTupleNeighborhood(alphabet, system).length;
-	}
+	}*/
 
 
 
@@ -1237,7 +1246,7 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
  * @param ticketSize       The number of balls per ticket.
  * @return                 The theoretical maximum number of unique k-combinations.
  */
-public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: number, k: number, ticketSize: number): number {
+/*public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: number, k: number, ticketSize: number): number {
     // 1. How many unique k-combinations can the alphabet possibly offer?
     // Example for k=2 and n=50: 1225
     const totalSpace = Number(TupleHelper.binomial(alphabet_length, k));
@@ -1250,7 +1259,7 @@ public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: num
     // The maximum is the lower of these two values.
     // You cannot cover more than what exists, and you cannot cover more than what you play.
     return Math.min(totalSpace, budgetCapacity);
-}
+}*/
 
 
 
@@ -1263,7 +1272,7 @@ public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: num
 	 * @param k          The size of the combinations to generate (e.g., 2 for pairs).
 	 * @returns          An array of arrays, each containing a unique combination of size k.
 	 */
-	public static getCombinations(arr: number[], k: number): number[][] {
+	/*public static getCombinations(arr: number[], k: number): number[][] {
 		const results: number[][] = [];
 		function backtrack(start: number, path: number[]) {
 			if (path.length === k) {
@@ -1278,7 +1287,7 @@ public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: num
 		}
 		backtrack(0, []);
 		return results;
-	}
+	}*/
 
 
 
@@ -1291,7 +1300,7 @@ public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: num
  * @param {number} k - The size of the combination.
  * @returns {number} The unique index.
  */
-public static getCombinationIndex(sortedTuple: number[], k: number): number {
+/*public static getCombinationIndex(sortedTuple: number[], k: number): number {
     let index = 0;
     for (let i = 0; i < k; i++) {
         // Combinadics formula: sum of binom(n_i, k - i)
@@ -1299,7 +1308,7 @@ public static getCombinationIndex(sortedTuple: number[], k: number): number {
         index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
     }
     return index;
-}
+}*/
 
 
 
@@ -1313,7 +1322,7 @@ public static getCombinationIndex(sortedTuple: number[], k: number): number {
  * @param k              The depth of the expansion.
  * @returns              The total number of unique k-combinations covered.
  */
-public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number, k: number): number {
+/*public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number, k: number): number {
     const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
     const bitmask = new Uint8Array(totalPossible);
     let uniqueCount = 0;
@@ -1346,7 +1355,7 @@ public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number
     }
 
     return uniqueCount;
-}
+}*/
 
 
 
@@ -1360,6 +1369,7 @@ public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number
  * @param k               The size of the combinations to track (e.g., 2 for pairs).
  * @returns               An object containing the frequency mask and coverage analytics.
  */
+/*
 public static getGlobalKFrequencyMask(
 	system: number[][],
 	alphabetLength: number,
@@ -1425,7 +1435,7 @@ public static getGlobalKFrequencyMask(
         minFrequency: finalMinFreq,
         maxFrequency: maxFreq,
     };
-}
+}*/
 
 
 
@@ -1459,6 +1469,7 @@ public static getGlobalKFrequencyMask(
  * @param targetK          The target tuple size to protect.
  * @returns                Number of leaking tuples.
  */
+/*
 public static countUncoveredCombinations(
     baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
     alphabetLength: number,
@@ -1509,7 +1520,7 @@ public static countUncoveredCombinations(
 
     exploreTargets(1, 0);
     return leakCount;
-}
+}*/
 
 
 /**
@@ -1522,12 +1533,14 @@ public static countUncoveredCombinations(
  * @param targetK        The leak tuple size to count.
  * @returns              Number of leaks of size targetK.
  */
+/*
 public static leaksCount(system: number[][], alphabetSize: number, baseK: number, targetK: number): number {
     if (baseK < 1 || targetK < baseK) return 0;
 
     const baseStats = TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, baseK);
     return TupleHelper.countUncoveredCombinations(baseStats, alphabetSize, baseK, targetK);
-}
+}*/
+
 
 
 /**
@@ -1544,6 +1557,7 @@ public static leaksCount(system: number[][], alphabetSize: number, baseK: number
  * @param targetK          The target tuple size to protect.
  * @returns                Coverage projection statistics from baseK to targetK.
  */
+/*
 public static getTargetCoverageStats(
     baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
     alphabetLength: number,
@@ -1573,7 +1587,8 @@ public static getTargetCoverageStats(
         uncoveredTargets,
         coverageRatio: totalTargets === 0 ? 0 : coveredTargets / totalTargets,
     };
-}
+}*/
+
 
 
 /**
@@ -2117,15 +2132,7 @@ export class Permutation {
 
 
 
-export const comparisonOperators = {
-	 "<": (a: number, b: number) => a  < b,
-	"<=": (a: number, b: number) => a <= b,
-	"==": (a: number, b: number) => a == b,
-	"!=": (a: number, b: number) => a !== b,
-	">=": (a: number, b: number) => a >= b,
-	 ">": (a: number, b: number) => a  > b,
-	 "*": (hits: number, total: number) => hits === total
-};
+
 
 
 export interface TupleFilter {
