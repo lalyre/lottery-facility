@@ -3,7 +3,7 @@ import { copyFile } from 'fs';
 import {
 	TupleHelper,
 	CartesianProduct,
-} from '../src/main';
+} from '../src/index';
 
 
 describe('CartesianProduct module', () => {
