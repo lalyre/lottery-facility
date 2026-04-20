@@ -264,6 +264,22 @@ describe('TupleHelper module', () => {
 	});
 
 
+	test('TupleHelper.getNumberThresholdNeighborhood test', () => {
+		const system = [
+			[1, 2, 3, 4],
+			[1, 2, 5, 6],
+			[1, 2, 7, 8],
+			[1, 3, 5, 7],
+			[1, 3, 9, 10],
+			[4, 5, 6, 7],
+		];
+
+		expect(TupleHelper.getNumberThresholdNeighborhood(1, 3, ">=", system)).toStrictEqual([2, 3]);
+		expect(TupleHelper.getNumberThresholdNeighborhood(1, 2, "==", system)).toStrictEqual([3, 5, 7]);
+		expect(TupleHelper.getNumberThresholdNeighborhood(1, 1, "<=", system)).toStrictEqual([4, 6, 8, 9, 10]);
+	});
+
+
 	test('TupleHelper.tupleToRank test', () => {
 		expect(TupleHelper.tupleToRank(5, [1])).toBe(1n);
 		expect(TupleHelper.tupleToRank(5, [2])).toBe(2n);

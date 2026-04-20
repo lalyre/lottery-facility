@@ -13,6 +13,7 @@ export type NumberNeighborhoodCounts = {
 	neighbors: NumberNeighborhoodCount[];
 	min: number;
 	max: number;
+	range: number;
 	average: number;
 };
 
@@ -987,6 +988,67 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
+	 * Gets the neighborhood of a specific number filtered by a co-occurrence threshold.
+	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
+	 * against the given level are returned.
+	 *
+	 * @param ball                  The reference ball number.
+	 * @param level                 The threshold value to compare against.
+	 * @param comparisonsOperator   The comparison operator applied to each co-occurrence count.
+	 * @param system                The array of tuples (the lottery system).
+	 * @return                      A Tuple containing all neighbors matching the threshold condition.
+	 */
+	public static getNumberThresholdNeighborhood(
+		ball: number,
+		level: number,
+		comparisonsOperator: keyof typeof comparisonOperators,
+		system: Tuple[]
+	): Tuple {
+		if (level < 0 || !Number.isFinite(level)) throw new Error("Invalid level parameter");
+		const comparator = comparisonOperators[comparisonsOperator];
+		if (!comparator) throw new Error("Invalid comparison operator");
+
+		return TupleHelper.getNumberNeighborhoodCounts(ball, system).neighbors
+			.filter(item => comparator(item.count, level))
+			.map(item => item.neighbor);
+	}
+
+
+	/**
+	 * Computes the real degree of a number within the system.
+	 * The degree is defined as the cardinality of its unique neighborhood.
+	 *
+	 * @param ball      The ball number.
+	 * @param system    The array of tuples.
+	 * @return          The number of unique neighbors (distinct connections).
+	 */
+	public static getNumberDegree(ball: number, system: Tuple[]): number {
+		return TupleHelper.getNumberNeighborhood(ball, system).length;
+	}
+
+
+	/**
+	 * Computes the threshold degree of a number within the system.
+	 * The threshold degree is the number of neighbors whose co-occurrence count with the tested ball
+	 * satisfies the comparison operator against the given level.
+	 *
+	 * @param ball                  The ball number.
+	 * @param level                 The threshold value to compare against.
+	 * @param comparisonsOperator   The comparison operator applied to each co-occurrence count.
+	 * @param system                The array of tuples.
+	 * @return                      The number of neighbors matching the threshold condition.
+	 */
+	public static getNumberThresholdDegree(
+		ball: number,
+		level: number,
+		comparisonsOperator: keyof typeof comparisonOperators,
+		system: Tuple[]
+	): number {
+		return TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system).length;
+	}
+
+
+	/**
 	 * Gets the neighborhood occurrence statistics of a specific number in a system.
 	 * It returns each distinct neighbor found with its occurrence count alongside the tested ball,
 	 * plus aggregate statistics computed from these counts.
@@ -1046,19 +1108,6 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			range: max - min,
 			average: total / neighbors.length,
 		};
-	}
-
-
-	/**
-	 * Computes the real degree of a number within the system.
-	 * The degree is defined as the cardinality of its unique neighborhood.
-	 *
-	 * @param ball      The ball number.
-	 * @param system    The array of tuples.
-	 * @return          The number of unique neighbors (distinct connections).
-	 */
-	public static getNumberDegree(ball: number, system: Tuple[]): number {
-		return TupleHelper.getNumberNeighborhood(ball, system).length;
 	}
 
 
