@@ -988,6 +988,44 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
+	 * Computes the real degree of a number within the system.
+	 * The degree is defined as the cardinality of its unique neighborhood.
+	 *
+	 * @param ball      The ball number.
+	 * @param system    The array of tuples.
+	 * @return          The number of unique neighbors (distinct connections).
+	 */
+	public static getNumberNeighborhoodDegree(ball: number, system: Tuple[]): number {
+		return TupleHelper.getNumberNeighborhood(ball, system).length;
+	}
+
+
+	/**
+	 * Computes the neighborhood degree for every ball of the reference alphabet.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          An array containing each ball, its neighborhood degree and its neighborhood set.
+	 */
+	public static getSystemNeighborhoodDegrees(
+		system: Tuple[],
+		alphabet: Tuple
+	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
+		if (!alphabet) return [];
+		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+
+		return uniqueAlphabet.map(ball => {
+			const neighborhood = TupleHelper.getNumberNeighborhood(ball, system);
+			return {
+				ball,
+				degree: neighborhood.length,
+				neighborhood,
+			};
+		});
+	}
+
+
+	/**
 	 * Gets the non-adjacent numbers of a specific ball in a system.
 	 * Non-adjacent numbers are the alphabet values that never appear in the same tuple as the ball.
 	 *
@@ -1072,80 +1110,6 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
-	 * Computes the real degree of a number within the system.
-	 * The degree is defined as the cardinality of its unique neighborhood.
-	 *
-	 * @param ball      The ball number.
-	 * @param system    The array of tuples.
-	 * @return          The number of unique neighbors (distinct connections).
-	 */
-	public static getNumberDegree(ball: number, system: Tuple[]): number {
-		return TupleHelper.getNumberNeighborhood(ball, system).length;
-	}
-
-
-	/**
-	 * Computes the neighborhood degree for every ball of the reference alphabet.
-	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          An array containing each ball, its neighborhood degree and its neighborhood set.
-	 */
-	public static getSystemNeighborhoodDegrees(
-		system: Tuple[],
-		alphabet: Tuple
-	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
-		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
-
-		return uniqueAlphabet.map(ball => {
-			const neighborhood = TupleHelper.getNumberNeighborhood(ball, system);
-			return {
-				ball,
-				degree: neighborhood.length,
-				neighborhood,
-			};
-		});
-	}
-
-
-	/**
-	 * Gets the intersection of all tuples in the system that contain the specified ball.
-	 *
-	 * @param ball      The reference ball number.
-	 * @param system    The array of tuples (the lottery system).
-	 * @return          A Tuple containing the intersection of all tuples that contain the ball.
-	 */
-	/*public static getNumberIntersectionTuple(ball: number, system: Tuple[]): Tuple {
-		const matchingTuples = system.filter(tuple => tuple.includes(ball));
-		if (matchingTuples.length === 0) return [];
-
-		let intersection = [...matchingTuples[0]];
-		for (let i = 1; i < matchingTuples.length; i++) {
-			const currentSet = new Set<number>(matchingTuples[i]);
-			intersection = intersection.filter(num => currentSet.has(num));
-			if (intersection.length === 0) break;
-		}
-
-		return intersection;
-	}*/
-
-
-	/**
-	 * Gets the intersection tuple for every ball of the reference alphabet.
-	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          An array containing the intersection tuple associated with each ball.
-	 */
-	/*public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
-		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
-		return uniqueAlphabet.map(ball => TupleHelper.getNumberIntersectionTuple(ball, system));
-	}*/
-
-
-	/**
 	 * Computes the threshold degree of a number within the system.
 	 * The threshold degree is the number of neighbors whose co-occurrence count with the tested ball
 	 * satisfies the comparison operator against the given level.
@@ -1227,6 +1191,51 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			average: total / neighbors.length,
 		};
 	}
+
+
+
+
+
+
+	/**
+	 * Gets the intersection of all tuples in the system that contain the specified ball.
+	 *
+	 * @param ball      The reference ball number.
+	 * @param system    The array of tuples (the lottery system).
+	 * @return          A Tuple containing the intersection of all tuples that contain the ball.
+	 */
+	/*public static getNumberIntersectionTuple(ball: number, system: Tuple[]): Tuple {
+		const matchingTuples = system.filter(tuple => tuple.includes(ball));
+		if (matchingTuples.length === 0) return [];
+
+		let intersection = [...matchingTuples[0]];
+		for (let i = 1; i < matchingTuples.length; i++) {
+			const currentSet = new Set<number>(matchingTuples[i]);
+			intersection = intersection.filter(num => currentSet.has(num));
+			if (intersection.length === 0) break;
+		}
+
+		return intersection;
+	}*/
+
+
+	/**
+	 * Gets the intersection tuple for every ball of the reference alphabet.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          An array containing the intersection tuple associated with each ball.
+	 */
+	/*public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+		if (!alphabet) return [];
+		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+		return uniqueAlphabet.map(ball => TupleHelper.getNumberIntersectionTuple(ball, system));
+	}*/
+
+
+
+
+
 
 
 	/**
