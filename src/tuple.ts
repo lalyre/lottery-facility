@@ -1116,7 +1116,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param system    The array of tuples (the lottery system).
 	 * @return          A Tuple containing the intersection of all tuples that contain the ball.
 	 */
-	public static getNumberIntersectionTuple(ball: number, system: Tuple[]): Tuple {
+	/*public static getNumberIntersectionTuple(ball: number, system: Tuple[]): Tuple {
 		const matchingTuples = system.filter(tuple => tuple.includes(ball));
 		if (matchingTuples.length === 0) return [];
 
@@ -1128,7 +1128,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		}
 
 		return intersection;
-	}
+	}*/
 
 
 	/**
@@ -1138,11 +1138,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The complete reference alphabet used by the system.
 	 * @return          An array containing the intersection tuple associated with each ball.
 	 */
-	public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+	/*public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
 		if (!alphabet) return [];
 		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
 		return uniqueAlphabet.map(ball => TupleHelper.getNumberIntersectionTuple(ball, system));
-	}
+	}*/
 
 
 	/**
