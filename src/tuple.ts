@@ -988,6 +988,63 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
+	 * Gets the non-adjacent numbers of a specific ball in a system.
+	 * Non-adjacent numbers are the alphabet values that never appear in the same tuple as the ball.
+	 *
+	 * @param ball      The reference ball number.
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          A Tuple containing all non-adjacent numbers.
+	 */
+	public static getNumberNonAdjacent(ball: number, system: Tuple[], alphabet: Tuple): Tuple {
+		if (!alphabet) return [];
+		const neighbors = new Set<number>(TupleHelper.getNumberNeighborhood(ball, system));
+		return alphabet
+			.filter((num, index, array) => array.indexOf(num) === index)
+			.filter(num => num !== ball && !neighbors.has(num));
+	}
+
+
+	/**
+	 * Computes the non-adjacent degree of a specific ball in a system.
+	 * This is the number of alphabet values that never appear with the ball.
+	 *
+	 * @param ball      The reference ball number.
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          The number of non-adjacent numbers.
+	 */
+	public static getNumberNonAdjacentDegree(ball: number, system: Tuple[], alphabet: Tuple): number {
+		return TupleHelper.getNumberNonAdjacent(ball, system, alphabet).length;
+	}
+
+
+	/**
+	 * Computes the non-adjacent degree for every ball of the reference alphabet.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          An array containing each ball, its non-adjacent degree and its non-adjacent set.
+	 */
+	public static getSystemNonAdjacentDegrees(
+		system: Tuple[],
+		alphabet: Tuple
+	): Array<{ ball: number; degree: number; nonAdjacent: Tuple }> {
+		if (!alphabet) return [];
+		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+
+		return uniqueAlphabet.map(ball => {
+			const nonAdjacent = TupleHelper.getNumberNonAdjacent(ball, system, uniqueAlphabet);
+			return {
+				ball,
+				degree: nonAdjacent.length,
+				nonAdjacent,
+			};
+		});
+	}
+
+
+	/**
 	 * Gets the neighborhood of a specific number filtered by a co-occurrence threshold.
 	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
 	 * against the given level are returned.
@@ -1024,6 +1081,31 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 */
 	public static getNumberDegree(ball: number, system: Tuple[]): number {
 		return TupleHelper.getNumberNeighborhood(ball, system).length;
+	}
+
+
+	/**
+	 * Computes the neighborhood degree for every ball of the reference alphabet.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          An array containing each ball, its neighborhood degree and its neighborhood set.
+	 */
+	public static getSystemNeighborhoodDegrees(
+		system: Tuple[],
+		alphabet: Tuple
+	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
+		if (!alphabet) return [];
+		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+
+		return uniqueAlphabet.map(ball => {
+			const neighborhood = TupleHelper.getNumberNeighborhood(ball, system);
+			return {
+				ball,
+				degree: neighborhood.length,
+				neighborhood,
+			};
+		});
 	}
 
 
