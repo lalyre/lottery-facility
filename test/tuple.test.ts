@@ -255,8 +255,8 @@ describe('TupleHelper module', () => {
 		let alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 		let a1 = [8, 3, 1];
 		let a2 = [10, 2, 4, 5];
-		let c1 = TupleHelper.complement(alphabet, a1);
-		let c2 = TupleHelper.complement(alphabet, a2);
+		let c1 = TupleHelper.symmetricComplement(alphabet, a1);
+		let c2 = TupleHelper.symmetricComplement(alphabet, a2);
 		let s1 = TupleHelper.toString(c1, " ");
 		let s2 = TupleHelper.toString(c2, " ");
 		expect(s1).toBe("03 08 10");

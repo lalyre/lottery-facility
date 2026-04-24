@@ -286,12 +286,17 @@ export class TupleHelper {
 
 
 	/**
-	 * Compute the complement tuple of a lottery tuple relatively to a global alphabet
-	 * @param alphabet      array of balls number.
-	 * @param tuple         array of balls number.
-	 * @return              array containing balls numbers of the complement tuple.
+	 * Computes the symmetric complement of a tuple relative to an alphabet ordering.
+	 * Each element is replaced by the element at the mirrored position in the alphabet.
+	 *
+	 * Example with alphabet [1, 2, 3, 4, 5]:
+	 * symmetricComplement([1,2,3,4,5], [1,3,5]) => [5,3,1]
+	 *
+	 * @param alphabet      Array of balls number used as the reference ordering.
+	 * @param tuple         Array of balls number to mirror inside the alphabet.
+	 * @return              Array containing mirrored values, or null if a value is outside the alphabet.
 	 */
-	public static complement(alphabet:Tuple, tuple:Tuple): Tuple|null {
+	public static symmetricComplement(alphabet:Tuple, tuple:Tuple): Tuple|null {
 		if (!alphabet) return null;
 		if (!tuple) return null;
 		const complement:number[] = [];
@@ -303,6 +308,73 @@ export class TupleHelper {
 			complement[j] = alphabet[alphabet.length-1 - pos];
 		}
 		return complement;
+	}
+
+
+	/**
+	 * Computes the set complement of a tuple relative to a reference alphabet.
+	 * It returns all alphabet values that are not present in the tuple.
+	 *
+	 * Example with alphabet [1, 2, 3, 4, 5]:
+	 * setComplement([1,2,3,4,5], [2,4]) => [1,3,5]
+	 *
+	 * @param alphabet      Reference alphabet.
+	 * @param tuple         Tuple to subtract from the alphabet.
+	 * @return              The relative complement alphabet \ tuple, or null if tuple contains values outside alphabet.
+	 */
+	public static setComplement(alphabet:Tuple, tuple:Tuple): Tuple|null {
+		if (!alphabet) return null;
+		if (!tuple) return null;
+
+		const alphabetSet = new Set(alphabet);
+		for (let i = 0; i < tuple.length; i++) {
+			if (!alphabetSet.has(tuple[i])) return null;
+		}
+
+		return TupleHelper.difference(alphabet, tuple);
+	}
+
+
+	/**
+	 * Computes the set complement of every tuple in a system relative to a reference alphabet.
+	 *
+	 * For each input tuple, this method returns the values from `alphabet` that are not present
+	 * in that tuple. In set notation, each returned tuple is:
+	 *
+	 *     alphabet \ tuple
+	 *
+	 * This is a pure set-based operation applied line by line. It does not depend on co-occurrence
+	 * analysis across the whole system, so it is different from non-adjacency methods such as
+	 * `getNumberNonAdjacent(...)` or `getSystemNonAdjacentTuples(...)`.
+	 *
+	 * Example:
+	 * ```ts
+	 * const alphabet = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+	 * const system = [
+	 *   [1, 2, 3],
+	 *   [4, 5, 6]
+	 * ];
+	 *
+	 * TupleHelper.getSystemSetComplements(system, alphabet);
+	 * // => [
+	 * //   [4, 5, 6, 7, 8, 9, 10],
+	 * //   [1, 2, 3, 7, 8, 9, 10]
+	 * // ]
+	 * ```
+	 *
+	 * Validation:
+	 * - If `alphabet` is null, returns an empty array.
+	 * - If one tuple contains a value outside `alphabet`, that tuple result is `null`.
+	 *
+	 * @param system    The array of tuples for which set complements must be computed.
+	 * @param alphabet  The reference alphabet used as the universal set.
+	 * @return          An array of tuples where each entry is the set complement of the
+	 *                  corresponding input tuple relative to `alphabet`.
+	 */
+	public static getSystemSetComplements(system: Tuple[], alphabet: Tuple): Array<Tuple|null> {
+		if (!alphabet) return [];
+		if (!system) return [];
+		return system.map(tuple => TupleHelper.setComplement(alphabet, tuple));
 	}
 
 
@@ -1079,6 +1151,21 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				nonAdjacent,
 			};
 		});
+	}
+
+
+	/**
+	 * Builds the non-adjacent tuple system for a reference alphabet.
+	 * For each ball in the alphabet, it returns a tuple made of the ball itself
+	 * followed by all alphabet values that never appear with it in the system.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          A tuple system where each tuple is [ball, ...nonAdjacent(ball)].
+	 */
+	public static getSystemNonAdjacentTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
+			.map(item => [item.ball, ...item.nonAdjacent].sort((a, b) => a - b));
 	}
 
 
