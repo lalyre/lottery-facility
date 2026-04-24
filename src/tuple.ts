@@ -25,7 +25,6 @@ export const comparisonOperators = {
 	"!=": (a: number, b: number) => a !== b,
 	">=": (a: number, b: number) => a >= b,
 	 ">": (a: number, b: number) => a  > b,
-	 "*": (hits: number, total: number) => hits === total
 };
 
 
