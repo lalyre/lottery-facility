@@ -35,6 +35,7 @@ Roadmap
 ==================================
 * Adding length filter, collision filter and scorage filter in the API.
 * Adding filters pipeline in the API.
+* Adding drawRandomTickets() and drawIndividualBalancedTickets() in DrawBox class.
 * Adding translate function in the API.
 * Adding cartesian_product CLI utility.
 * Adding complement CLI utility.
