@@ -1040,7 +1040,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 *
 	 * @param ball      The reference ball number.
 	 * @param system    The array of tuples (the lottery system).
-	 * @return          A Tuple containing all unique adjacent numbers (neighbors).
+	 * @return          A Tuple containing all unique neighbor numbers.
 	 */
 	public static getNumberNeighborhood(ball: number, system: Tuple[]): Tuple {
 		const neighbors = new Set<number>();
@@ -1082,7 +1082,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		return uniqueAlphabet.map(ball => {
 			const neighborhood = TupleHelper.getNumberNeighborhood(ball, system);
@@ -1105,7 +1105,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @return          A tuple system where each tuple is [ball, ...neighbor(ball)].
 	 */
 	public static getSystemNeighborhoodTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
-		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
+		return TupleHelper.getSystemNeighborhoodDegrees(system, alphabet)
 			.map(item => [item.ball, ...item.neighborhood].sort((a, b) => a - b));
 	}
 
@@ -1154,7 +1154,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple
 	): Array<{ ball: number; degree: number; nonAdjacent: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		return uniqueAlphabet.map(ball => {
 			const nonAdjacent = TupleHelper.getNumberNonAdjacent(ball, system, uniqueAlphabet);
@@ -1246,7 +1246,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		return uniqueAlphabet.map(ball => {
 			const neighborhood = TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system);
@@ -1357,7 +1357,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 */
 	/*public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
 		if (!alphabet) return [];
-		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 		return uniqueAlphabet.map(ball => TupleHelper.getNumberIntersectionTuple(ball, system));
 	}*/
 
