@@ -329,7 +329,6 @@ export class TupleHelper {
 		for (let i = 0; i < tuple.length; i++) {
 			if (!alphabetSet.has(tuple[i])) return null;
 		}
-
 		return TupleHelper.difference(alphabet, tuple);
 	}
 
@@ -1097,6 +1096,21 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
+	 * Builds the neighborhood tuple system for a reference alphabet.
+	 * For each ball in the alphabet, it returns a tuple made of the ball itself
+	 * followed by all alphabet values that appear with it in the system.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          A tuple system where each tuple is [ball, ...neighbor(ball)].
+	 */
+	public static getSystemNeighborhoodTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
+			.map(item => [item.ball, ...item.neighborhood].sort((a, b) => a - b));
+	}
+
+
+	/**
 	 * Gets the non-adjacent numbers of a specific ball in a system.
 	 * Non-adjacent numbers are the alphabet values that never appear in the same tuple as the ball.
 	 *
@@ -1206,13 +1220,42 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param system                The array of tuples.
 	 * @return                      The number of neighbors matching the threshold condition.
 	 */
-	public static getNumberThresholdDegree(
+	public static getNumberThresholdNeighborhoodDegree(
 		ball: number,
 		level: number,
 		comparisonsOperator: keyof typeof comparisonOperators,
 		system: Tuple[]
 	): number {
 		return TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system).length;
+	}
+
+
+	/**
+	 * Computes the neighborhood degree for every ball of the reference alphabet filtered by a co-occurrence threshold.
+	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
+	 * against the given level are considered.
+	 *
+	 * @param system    The array of tuples (the lottery system).
+	 * @param alphabet  The complete reference alphabet used by the system.
+	 * @return          An array containing each ball, its neighborhood degree and its neighborhood set.
+	 */
+	public static getSystemThresholdNeighborhoodDegrees(
+		system: Tuple[],
+		level: number,
+		comparisonsOperator: keyof typeof comparisonOperators,
+		alphabet: Tuple
+	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
+		if (!alphabet) return [];
+		const uniqueAlphabet = alphabet.filter((num, index, array) => array.indexOf(num) === index);
+
+		return uniqueAlphabet.map(ball => {
+			const neighborhood = TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system);
+			return {
+				ball,
+				degree: neighborhood.length,
+				neighborhood,
+			};
+		});
 	}
 
 
