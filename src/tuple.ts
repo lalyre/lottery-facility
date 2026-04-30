@@ -1104,10 +1104,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The complete reference alphabet used by the system.
 	 * @return          A tuple system where each tuple is [ball, ...neighbor(ball)].
 	 */
-	public static getSystemNeighborhoodTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+	/*public static getSystemNeighborhoodTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
 		return TupleHelper.getSystemNeighborhoodDegrees(system, alphabet)
 			.map(item => [item.ball, ...item.neighborhood].sort((a, b) => a - b));
-	}
+	}*/
 
 
 	/**
@@ -1176,10 +1176,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The complete reference alphabet used by the system.
 	 * @return          A tuple system where each tuple is [ball, ...nonAdjacent(ball)].
 	 */
-	public static getSystemNonAdjacentTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
+	/*public static getSystemNonAdjacentTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
 		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
 			.map(item => [item.ball, ...item.nonAdjacent].sort((a, b) => a - b));
-	}
+	}*/
 
 
 	/**
