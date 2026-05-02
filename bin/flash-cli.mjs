@@ -6,7 +6,7 @@ import meow from 'meow';
 import colors from 'ansi-colors';
 import cliProgress from 'cli-progress';
 import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
-const FILE_LIMIT = 500000;
+const FILE_LIMIT = 600000;
 
 
 const cli = meow(`
@@ -92,11 +92,10 @@ const totals = cli.flags.total;
 const sizes = cli.flags.size;
 
 
-// --- Initialisation des boîtes et génération harmonique ---
-let ticketsByBox = [];
+// --- Initialisation des boîtes  ---
+let boxes = [];
 for (let i = 0; i < totals.length; i++) {
-	const box = new lotteryFacility.DrawBox(totals[i]);
-	ticketsByBox[i] = box.drawIndividualBalancedTickets(nb, sizes[i], nbSwap);
+	boxes[i] = new lotteryFacility.DrawBox(totals[i]);
 }
 
 
@@ -142,7 +141,7 @@ for (let i = 0; i < nb; i++) {
 // Assemblage de la ligne (Combinaison principale + éventuelles étoiles)
 	let ballsSet = [];
 	for (let j = 0; j < totals.length; j++) {
-		ballsSet[j] = ticketsByBox[j][i];
+		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
 	}
 
 	let str = "";
