@@ -11,10 +11,11 @@ export type NumberNeighborhoodCount = {
 export type NumberNeighborhoodCounts = {
 	ball: number;
 	neighbors: NumberNeighborhoodCount[];
-	min: number;
-	max: number;
-	range: number;
-	average: number;
+	occurencesMin: number;
+	occurencesMax: number;
+	occurencesRange: number;
+	occurencesAverage: number;
+	degree: number;
 };
 
 
@@ -1293,10 +1294,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			return {
 				ball,
 				neighbors: [],
-				min: 0,
-				max: 0,
-				range: 0,
-				average: 0,
+				occurencesMin: 0,
+				occurencesMax: 0,
+				occurencesRange: 0,
+				occurencesAverage: 0,
+				degree: 0,
 			};
 		}
 
@@ -1314,10 +1316,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		return {
 			ball,
 			neighbors,
-			min,
-			max,
-			range: max - min,
-			average: total / neighbors.length,
+			occurencesMin: min,
+			occurencesMax: max,
+			occurencesRange: max - min,
+			occurencesAverage: total / neighbors.length,
+			degree: neighbors.length,
 		};
 	}
 
