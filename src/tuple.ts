@@ -1210,7 +1210,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		if (!comparator) throw new Error("Invalid comparison operator");
 
 		// Get counts for numbers that have at least 1 co-occurrence
-		const neighborhoodStats = TupleHelper.getNumberNeighborhoodCounts(ball, system);
+		const neighborhoodStats = TupleHelper.getNumberNeighborhoodCounts(ball, system, alphabet);
 		const existingNeighborsMap = new Map<number, number>();
 
 		neighborhoodStats.neighbors.forEach(item => {
@@ -1283,58 +1283,46 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 	/**
-	 * Gets the neighborhood occurrence statistics of a specific number in a system.
-	 * It returns each distinct neighbor found with its occurrence count alongside the tested ball,
-	 * plus aggregate statistics computed from these counts.
+	 * Computes neighborhood counts for a specific ball, including non-connected numbers from the alphabet.
 	 *
-	 * @param ball      The reference ball number.
-	 * @param system    The array of tuples (the lottery system).
-	 * @return          The tested ball, its neighbors with occurrence counts, and min/max/average stats.
+	 * @param ball       The reference ball number.
+	 * @param system     The array of tuples (the lottery system).
+	 * @param alphabet   The full list of possible numbers to ensure count=0 are included.
+	 * @returns          Comprehensive neighborhood statistics for the given ball.
 	 */
-	public static getNumberNeighborhoodCounts(ball: number, system: Tuple[]): NumberNeighborhoodCounts {
-		const neighborCounts = new Map<number, number>();
+	public static getNumberNeighborhoodCounts(
+		ball: number,
+		system: Tuple[],
+		alphabet: Tuple,
+	): NumberNeighborhoodCounts {
+		const counts = new Map<number, number>();
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 
-		for (let i = 0; i < system.length; i++) {
-			const tuple = system[i];
-			if (!tuple.includes(ball)) continue;
+		// 1. Initialize all alphabet numbers (except the ball itself) to 0
+		uniqueAlphabet.forEach(num => {
+			if (num !== ball) counts.set(num, 0);
+		});
 
-			for (let j = 0; j < tuple.length; j++) {
-				const neighbor = tuple[j];
-				if (neighbor === ball) continue;
-				neighborCounts.set(neighbor, (neighborCounts.get(neighbor) ?? 0) + 1);
+		// 2. Count existing co-occurrences
+		system.forEach(tuple => {
+			if (tuple.includes(ball)) {
+				tuple.forEach(neighbor => {
+					if (neighbor !== ball && counts.has(neighbor)) counts.set(neighbor, (counts.get(neighbor) || 0) + 1);
+				});
 			}
-		}
+		});
 
-		const neighbors = Array.from(neighborCounts.entries())
-			.sort((a, b) => a[0] - b[0])
-			.map(([neighbor, count]) => ({
-				neighbor,
-				count
-			}));
+		// 3. Convert map to list of neighbor objects
+		const neighbors: NumberNeighborhoodCount[] = Array.from(counts.entries()).map(
+			([neighbor, count]) => ({ neighbor, count })
+		);
 
-		if (neighbors.length === 0) {
-			return {
-				ball,
-				neighbors: [],
-				occurencesMin: 0,
-				occurencesMax: 0,
-				occurencesRange: 0,
-				occurencesSum: 0,
-				occurencesAverage: 0,
-				degree: 0,
-			};
-		}
-
-		let min = neighbors[0].count;
-		let max = neighbors[0].count;
-		let total = 0;
-
-		for (let i = 0; i < neighbors.length; i++) {
-			const count = neighbors[i].count;
-			if (count < min) min = count;
-			if (count > max) max = count;
-			total += count;
-		}
+		// If alphabet is empty or only contains the ball, handle edge cases
+		const occurrenceValues = neighbors.map(n => n.count);
+		const min = occurrenceValues.length > 0 ? Math.min(...occurrenceValues) : 0;
+		const max = occurrenceValues.length > 0 ? Math.max(...occurrenceValues) : 0;
+		const total = occurrenceValues.reduce((a, b) => a + b, 0);
+		const degree = neighbors.filter(n => n.count > 0).length;
 
 		return {
 			ball,
@@ -1343,8 +1331,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			occurencesMax: max,
 			occurencesRange: max - min,
 			occurencesSum: total,
-			occurencesAverage: total / neighbors.length,
-			degree: neighbors.length,
+			occurencesAverage: total / (neighbors.length || 1),
+			degree: degree // The number of actual connections (count > 0)
 		};
 	}
 
@@ -1379,7 +1367,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 		// 1. Compute individual statistics for each ball
 		const ballsStats = uniqueAlphabet.map(ball => {
-			const stats = TupleHelper.getNumberNeighborhoodCounts(ball, system);
+			const stats = TupleHelper.getNumberNeighborhoodCounts(ball, system, alphabet);
 			const min = stats.occurencesMin;
 			const max = stats.occurencesMax;
 			const total = stats.occurencesSum;
