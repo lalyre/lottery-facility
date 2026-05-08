@@ -1371,7 +1371,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			const min = stats.occurencesMin;
 			const max = stats.occurencesMax;
 			const total = stats.occurencesSum;
-			const degree = stats.neighbors.length;
+			const degree = stats.degree;
 
 			return {
 				ball,
@@ -1380,7 +1380,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				occurencesMax: max,
 				occurencesRange: max - min,
 				occurencesSum: total,
-				occurencesAverage: total / (degree || 1),
+				occurencesAverage: total / (alphabet.length - 1),
 				degree: degree,
 			};
 		});
