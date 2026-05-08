@@ -14,6 +14,7 @@ export type NumberNeighborhoodCounts = {
 	occurencesMin: number;
 	occurencesMax: number;
 	occurencesRange: number;
+	occurencesSum: number;
 	occurencesAverage: number;
 	degree: number;
 };
@@ -1188,25 +1189,42 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
 	 * against the given level are returned.
 	 *
-	 * @param ball                  The reference ball number.
-	 * @param level                 The threshold value to compare against.
-	 * @param comparisonsOperator   The comparison operator applied to each co-occurrence count.
-	 * @param system                The array of tuples (the lottery system).
-	 * @return                      A Tuple containing all neighbors matching the threshold condition.
+	 * @param {number} ball - The reference number to analyze.
+	 * @param {number} level - The threshold value for the comparison.
+	 * @param {keyof typeof comparisonOperators} comparisonsOperator - The operator to use (e.g., "==", ">=", "<").
+	 * @param {Tuple[]} system - The collection of tuples (the dataset).
+	 * @param {Tuple} alphabet - The complete set of possible numbers in the system.
+	 * @returns {Tuple} A Tuple containing all numbers from the alphabet that satisfy the condition.
+	 * @throws {Error} If the level is invalid or the operator is not supported.
 	 */
 	public static getNumberThresholdNeighborhood(
 		ball: number,
 		level: number,
 		comparisonsOperator: keyof typeof comparisonOperators,
-		system: Tuple[]
+		system: Tuple[],
+		alphabet: Tuple,
 	): Tuple {
 		if (level < 0 || !Number.isFinite(level)) throw new Error("Invalid level parameter");
+
 		const comparator = comparisonOperators[comparisonsOperator];
 		if (!comparator) throw new Error("Invalid comparison operator");
 
-		return TupleHelper.getNumberNeighborhoodCounts(ball, system).neighbors
-			.filter(item => comparator(item.count, level))
-			.map(item => item.neighbor);
+		// Get counts for numbers that have at least 1 co-occurrence
+		const neighborhoodStats = TupleHelper.getNumberNeighborhoodCounts(ball, system);
+		const existingNeighborsMap = new Map<number, number>();
+
+		neighborhoodStats.neighbors.forEach(item => {
+			existingNeighborsMap.set(item.neighbor, item.count);
+		});
+
+		// Iterate through the unique alphabet to include those with a count of 0
+		const uniqueAlphabet = Array.from(new Set(alphabet));
+		return uniqueAlphabet
+			.filter(num => num !== ball) // On ne se compte pas soi-même comme voisin
+			.filter(num => {
+				const count = existingNeighborsMap.get(num) ?? 0;
+				return comparator(count, level);
+			});
 	}
 
 
@@ -1219,15 +1237,17 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param level                 The threshold value to compare against.
 	 * @param comparisonsOperator   The comparison operator applied to each co-occurrence count.
 	 * @param system                The array of tuples.
+	 * @param alphabet              The complete set of possible numbers in the system.
 	 * @return                      The number of neighbors matching the threshold condition.
 	 */
 	public static getNumberThresholdNeighborhoodDegree(
 		ball: number,
 		level: number,
 		comparisonsOperator: keyof typeof comparisonOperators,
-		system: Tuple[]
+		system: Tuple[],
+		alphabet: Tuple,
 	): number {
-		return TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system).length;
+		return TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system, alphabet).length;
 	}
 
 
@@ -1236,21 +1256,23 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
 	 * against the given level are considered.
 	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          An array containing each ball, its neighborhood degree and its neighborhood set.
+	 * @param system                The array of tuples (the lottery system).
+	 * @param level                 The threshold value to compare against.
+	 * @param comparisonsOperator   The comparison operator applied to each co-occurrence count.
+	 * @param alphabet              The complete reference alphabet used by the system.
+	 * @return                      An array containing each ball, its neighborhood degree and its neighborhood set.
 	 */
 	public static getSystemThresholdNeighborhoodDegrees(
 		system: Tuple[],
 		level: number,
 		comparisonsOperator: keyof typeof comparisonOperators,
-		alphabet: Tuple
+		alphabet: Tuple,
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
 		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		return uniqueAlphabet.map(ball => {
-			const neighborhood = TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system);
+			const neighborhood = TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system, alphabet);
 			return {
 				ball,
 				degree: neighborhood.length,
@@ -1297,6 +1319,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				occurencesMin: 0,
 				occurencesMax: 0,
 				occurencesRange: 0,
+				occurencesSum: 0,
 				occurencesAverage: 0,
 				degree: 0,
 			};
@@ -1319,6 +1342,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			occurencesMin: min,
 			occurencesMax: max,
 			occurencesRange: max - min,
+			occurencesSum: total,
 			occurencesAverage: total / neighbors.length,
 			degree: neighbors.length,
 		};
