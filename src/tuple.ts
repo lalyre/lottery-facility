@@ -1404,7 +1404,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 		const occMin = Math.min(...allMinValues);
 		const occMax = Math.max(...allMaxValues);
-		const occSum = ballsStats.reduce((acc, b) => acc + b.occurencesSum, 0);
+		
+		const totalPerceivedOccurrences = ballsStats.reduce((acc, b) => acc + b.occurencesSum, 0);
+		const totalPairsInSystem = system.length * (system[0].length * (system[0].length - 1) / 2);
+		const numberOfPossiblePairs = (uniqueAlphabet.length * (uniqueAlphabet.length - 1)) / 2;
 
 		// 3. Aggregate global Degree statistics
 		const allDegrees = ballsStats.map(b => b.degree);
@@ -1416,8 +1419,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			occurencesMin: occMin,
 			occurencesMax: occMax,
 			occurencesRange: occMax - occMin,
-			occurencesSum: occSum,
-			occurencesAverage: occSum / (ballsStats.length || 1),
+			occurencesSum: totalPerceivedOccurrences / 2,
+			occurencesAverage: (totalPerceivedOccurrences / 2) / numberOfPossiblePairs,
 
 			degreesMin: degMin,
 			degreesMax: degMax,
