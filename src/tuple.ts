@@ -1349,6 +1349,85 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 
 
+	/**
+	 * Computes neighborhood statistics for the entire system based on a reference alphabet.
+	 * This method calculates co-occurrence counts and degrees for every ball in the alphabet,
+	 * then aggregates these values to provide global system statistics.
+	 *
+	 * @param {Tuple[]} system - The collection of tuples (the dataset).
+	 * @param {Tuple} alphabet - The complete reference alphabet.
+	 * @returns {Object} Global statistics and detailed per-ball data.
+	 */
+	public static getSystemNeighborhoodCounts(
+		system: Tuple[],
+		alphabet: Tuple,
+	): {
+		occurencesMin: number;
+		occurencesMax: number;
+		occurencesRange: number;
+		occurencesSum: number;
+		occurencesAverage: number;
+		degreesMin: number;
+		degreesMax: number;
+		degreesRange: number;
+		degreesSum: number;
+		degreesAverage: number;
+		balls: Array<any>;
+	} {
+		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
+		const uniqueAlphabet = Array.from(new Set(alphabet));
+
+		// 1. Compute individual statistics for each ball
+		const ballsStats = uniqueAlphabet.map(ball => {
+			const stats = TupleHelper.getNumberNeighborhoodCounts(ball, system);
+			const min = stats.occurencesMin;
+			const max = stats.occurencesMax;
+			const total = stats.occurencesSum;
+			const degree = stats.neighbors.length;
+
+			return {
+				ball,
+				neighbors: stats.neighbors,
+				occurencesMin: min,
+				occurencesMax: max,
+				occurencesRange: max - min,
+				occurencesSum: total,
+				occurencesAverage: total / (degree || 1),
+				degree: degree,
+			};
+		});
+
+		// 2. Aggregate global Occurrence statistics
+		// We look for the absolute min/max across all neighborhood records
+		const allMinValues = ballsStats.map(b => b.occurencesMin);
+		const allMaxValues = ballsStats.map(b => b.occurencesMax);
+
+		const occMin = Math.min(...allMinValues);
+		const occMax = Math.max(...allMaxValues);
+		const occSum = ballsStats.reduce((acc, b) => acc + b.occurencesSum, 0);
+
+		// 3. Aggregate global Degree statistics
+		const allDegrees = ballsStats.map(b => b.degree);
+		const degMin = Math.min(...allDegrees);
+		const degMax = Math.max(...allDegrees);
+		const degSum = allDegrees.reduce((acc, b) => acc + b, 0);
+
+		return {
+			occurencesMin: occMin,
+			occurencesMax: occMax,
+			occurencesRange: occMax - occMin,
+			occurencesSum: occSum,
+			occurencesAverage: occSum / (ballsStats.length || 1),
+
+			degreesMin: degMin,
+			degreesMax: degMax,
+			degreesRange: degMax - degMin,
+			degreesSum: degSum,
+			degreesAverage: degSum / (ballsStats.length || 1),
+
+			balls: ballsStats
+		};
+	}
 
 
 
