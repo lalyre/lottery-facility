@@ -1401,13 +1401,12 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		// We look for the absolute min/max across all neighborhood records
 		const allMinValues = ballsStats.map(b => b.occurencesMin);
 		const allMaxValues = ballsStats.map(b => b.occurencesMax);
+		const allAverages = ballsStats.map(b => b.occurencesAverage);
 
 		const occMin = Math.min(...allMinValues);
 		const occMax = Math.max(...allMaxValues);
-		
-		const totalPerceivedOccurrences = ballsStats.reduce((acc, b) => acc + b.occurencesSum, 0);
-		const totalPairsInSystem = system.length * (system[0].length * (system[0].length - 1) / 2);
-		const numberOfPossiblePairs = (uniqueAlphabet.length * (uniqueAlphabet.length - 1)) / 2;
+		const occSum = ballsStats.reduce((acc, b) => acc + b.occurencesSum, 0);
+		const globalOccAverage = allAverages.reduce((a, b) => a + b, 0) / allAverages.length;
 
 		// 3. Aggregate global Degree statistics
 		const allDegrees = ballsStats.map(b => b.degree);
@@ -1419,8 +1418,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			occurencesMin: occMin,
 			occurencesMax: occMax,
 			occurencesRange: occMax - occMin,
-			occurencesSum: totalPerceivedOccurrences / 2,
-			occurencesAverage: (totalPerceivedOccurrences / 2) / numberOfPossiblePairs,
+			occurencesSum: occSum / 2,
+			occurencesAverage: globalOccAverage,
 
 			degreesMin: degMin,
 			degreesMax: degMax,
