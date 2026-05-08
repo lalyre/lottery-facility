@@ -1184,6 +1184,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}*/
 
 
+
+
 	/**
 	 * Gets the neighborhood of a specific number filtered by a co-occurrence threshold.
 	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
@@ -1269,16 +1271,23 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple,
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = Array.from(new Set(alphabet));
+		if (level < 0 || !Number.isFinite(level)) throw new Error("Invalid level parameter");
 
-		return uniqueAlphabet.map(ball => {
-			const neighborhood = TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system, alphabet);
-			return {
+		const comparator = comparisonOperators[comparisonsOperator];
+		if (!comparator) throw new Error("Invalid comparison operator");
+		
+		const uniqueAlphabet = Array.from(new Set(alphabet));
+		return uniqueAlphabet
+			.map(ball => ({
 				ball,
-				degree: neighborhood.length,
-				neighborhood,
-			};
-		});
+				neighborhood: TupleHelper.getNumberThresholdNeighborhood(ball, level, comparisonsOperator, system, alphabet),
+			}))
+			.filter(item => item.neighborhood.length > 0)
+			.map(item => ({
+				ball: item.ball,
+				degree: item.neighborhood.length,
+				neighborhood: item.neighborhood,
+			}));
 	}
 
 
