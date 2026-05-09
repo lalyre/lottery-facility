@@ -1303,10 +1303,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		system: Tuple[],
 		alphabet: Tuple,
 	): NumberNeighborhoodCounts {
-		if (!alphabet) return [];
-		const counts = new Map<number, number>();
+		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
 
 		// 1. Initialize all alphabet numbers (except the ball itself) to 0
+		const counts = new Map<number, number>();
 		const uniqueAlphabet = Array.from(new Set(alphabet));
 		uniqueAlphabet.forEach(num => {
 			if (num !== ball) counts.set(num, 0);

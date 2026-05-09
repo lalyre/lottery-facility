@@ -1,10 +1,11 @@
 'use strict';
 import { RandomHelper } from './random';
+import { Tuple, TupleHelper } from './tuple';
 
 
 export class DrawBox {
 	private readonly _count: number;
-	private readonly _balls: number[];
+	private readonly _balls: Tuple;
 
 
 	/**
@@ -21,7 +22,7 @@ export class DrawBox {
 
 
 	get count(): number { return this._count; }
-	get balls(): number[] { return this._balls; }
+	get balls(): Tuple { return this._balls; }
 
 
 	/**
@@ -31,7 +32,7 @@ export class DrawBox {
 	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
 	 * @returns         a random selection of numbers picked in the draw box.
 	 */
-	public draw(size:number, nbSwap:number = 50): number[] {
+	public draw(size:number, nbSwap:number = 50): Tuple {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		this.shuffle(nbSwap);
 		return this._balls.slice(0, size);
@@ -47,9 +48,9 @@ export class DrawBox {
 	 * @param nbSwap      Shuffle intensity for each draw (default 50).
 	 * @returns           An array of random valid tickets.
 	 */
-	public drawRandomTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawRandomTickets(nbTickets: number, size: number, nbSwap: number = 50): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		const results: number[][] = [];
+		const results: Tuple[] = [];
 		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size, nbSwap));
 		return results;
 	}
@@ -65,10 +66,10 @@ export class DrawBox {
 	 * @param nbSwap      Shuffle intensity for each cycle (default 50).
 	 * @returns           An array of individually balanced tickets.
 	 */
-	public drawIndividualBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawIndividualBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		const results: number[][] = [];
-		let currentCycle: number[] = [];
+		const results: Tuple[] = [];
+		let currentCycle: Tuple = [];
 
 		for (let i = 0; i < nbTickets; i++) {
 			if (currentCycle.length < size) {
@@ -85,23 +86,78 @@ export class DrawBox {
 
 
 	/**
-	 * Generates tickets balanced at the pair level.
+	 * Generates tickets by maximizing the number of unique pairs coverage.
+	 * The goal of this method is to maximize unique pairs diversity across the generated system (related to the Covering Design problem).
 	 *
-	 * The goal of this method is to maximize pair diversity across the generated
-	 * system, so that numbers are associated with different partners as evenly as
-	 * possible.
-	 *
-	 * @param nbTickets   Total number of tickets to generate.
-	 * @param size        Number of balls per ticket.
-	 * @param nbSwap      Shuffle intensity used during generation (default 50).
-	 * @returns           An array of pair-balanced tickets.
+	 * @param nbTickets - Total number of tickets to generate.
+	 * @param size - Number of balls per ticket.
+	 * @param nbAttempts - Number of iterations to find the best candidate (default 500).
+	 * @param startingSystem - An optional existing system to build upon.
+	 * @param nbSwap - Shuffle intensity used during generation (default 50).
+	 * @returns An array of tickets optimized for unique pair diversity.
 	 */
-	public drawPairBalancedTickets(nbTickets: number, size: number, nbSwap: number = 50): number[][] {
+	public drawUniquePairsPriorityTickets(
+		nbTickets: number,
+		size: number, 
+		nbAttempts: number = 500,
+		startingSystem: Tuple[]|null = null,
+		nbSwap: number = 50,
+	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		const results: number[][] = [];
+
+		const levelOfUniquePairs = 1;
+		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+		let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, levelOfUniquePairs, "==", this._balls);
+		let bestLevelCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;			// pairs are counted twice
+
+		// Find a better system
+		for (let i = 0; i < nbAttempts; i++) {
+			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+			let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, levelOfUniquePairs, "==", this._balls);
+			let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;			// pairs are counted twice
+
+			if (currentLevelCount > bestLevelCount) {
+				bestSystem = currentSystem;
+				bestStats = currentStats;
+				bestLevelCount = currentLevelCount;
+			}
+		}
+		return bestSystem;
+	}
 
 
-		return results;
+	/**
+	 * Generates tickets by maximizing hitting pairs ability.
+	 * The goal of this method is to maximize hitting pairs capability across the generated system ((related to the Hitting Set problem).
+	 *
+	 * @param nbTickets - Total number of tickets to generate.
+	 * @param size - Number of balls per ticket.
+	 * @param nbAttempts - Number of iterations to find the best candidate (default 500).
+	 * @param startingSystem - An optional existing system to build upon.
+	 * @param nbSwap - Shuffle intensity used during generation (default 50).
+	 * @returns An array of tickets optimized for unique pair distribution.
+	 */
+	public drawHittingPairsAbilityTickets(
+		nbTickets: number,
+		size: number, 
+		nbAttempts: number = 500,
+		startingSystem: Tuple[]|null = null,
+		nbSwap: number = 50,
+	): Tuple[] {
+		
+		
+		
+		
+		
+		
+		// Implementation...
+		
+		
+		
+		
+		
+		
+		return [];
 	}
 
 
@@ -127,13 +183,13 @@ export class DrawBox {
 	}
 
 
-	private _buildBoundarySafeCycle (remaining: number[], size: number): number[] {
+	private _buildBoundarySafeCycle (remaining: Tuple, size: number): Tuple {
 		if (remaining.length === 0) return [...this._balls];
 
 		const needed = size - remaining.length;
 		const remainingSet = new Set(remaining);
-		const head: number[] = [];
-		const tail: number[] = [];
+		const head: Tuple = [];
+		const tail: Tuple = [];
 
 		for (const ball of this._balls) {
 			if (head.length < needed && !remainingSet.has(ball)) head.push(ball);
