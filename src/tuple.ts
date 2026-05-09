@@ -1084,8 +1084,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = Array.from(new Set(alphabet));
 
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 		return uniqueAlphabet.map(ball => {
 			const neighborhood = TupleHelper.getNumberNeighborhood(ball, system);
 			return {
@@ -1123,6 +1123,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 */
 	public static getNumberNonAdjacent(ball: number, system: Tuple[], alphabet: Tuple): Tuple {
 		if (!alphabet) return [];
+
 		const neighbors = new Set<number>(TupleHelper.getNumberNeighborhood(ball, system));
 		return alphabet
 			.filter((num, index, array) => array.indexOf(num) === index)
@@ -1156,8 +1157,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		alphabet: Tuple
 	): Array<{ ball: number; degree: number; nonAdjacent: Tuple }> {
 		if (!alphabet) return [];
-		const uniqueAlphabet = Array.from(new Set(alphabet));
 
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 		return uniqueAlphabet.map(ball => {
 			const nonAdjacent = TupleHelper.getNumberNonAdjacent(ball, system, uniqueAlphabet);
 			return {
@@ -1206,15 +1207,14 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		system: Tuple[],
 		alphabet: Tuple,
 	): Tuple {
+		if (!alphabet) return [];
 		if (level < 0 || !Number.isFinite(level)) throw new Error("Invalid level parameter");
-
 		const comparator = comparisonOperators[comparisonsOperator];
 		if (!comparator) throw new Error("Invalid comparison operator");
 
 		// Get counts for numbers that have at least 1 co-occurrence
 		const neighborhoodStats = TupleHelper.getNumberNeighborhoodCounts(ball, system, alphabet);
 		const existingNeighborsMap = new Map<number, number>();
-
 		neighborhoodStats.neighbors.forEach(item => {
 			existingNeighborsMap.set(item.neighbor, item.count);
 		});
@@ -1222,7 +1222,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		// Iterate through the unique alphabet to include those with a count of 0
 		const uniqueAlphabet = Array.from(new Set(alphabet));
 		return uniqueAlphabet
-			.filter(num => num !== ball) // On ne se compte pas soi-même comme voisin
+			.filter(num => num !== ball)		// Do no count yourself as a neighbor
 			.filter(num => {
 				const count = existingNeighborsMap.get(num) ?? 0;
 				return comparator(count, level);
@@ -1272,10 +1272,9 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	): Array<{ ball: number; degree: number; neighborhood: Tuple }> {
 		if (!alphabet) return [];
 		if (level < 0 || !Number.isFinite(level)) throw new Error("Invalid level parameter");
-
 		const comparator = comparisonOperators[comparisonsOperator];
 		if (!comparator) throw new Error("Invalid comparison operator");
-		
+
 		const uniqueAlphabet = Array.from(new Set(alphabet));
 		return uniqueAlphabet
 			.map(ball => ({
@@ -1304,10 +1303,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		system: Tuple[],
 		alphabet: Tuple,
 	): NumberNeighborhoodCounts {
+		if (!alphabet) return [];
 		const counts = new Map<number, number>();
-		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		// 1. Initialize all alphabet numbers (except the ball itself) to 0
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 		uniqueAlphabet.forEach(num => {
 			if (num !== ball) counts.set(num, 0);
 		});
@@ -1369,12 +1369,12 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		degreesRange: number;
 		degreesSum: number;
 		degreesAverage: number;
-		balls: Array<any>;
+		balls: Array<NumberNeighborhoodCounts>;
 	} {
 		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
-		const uniqueAlphabet = Array.from(new Set(alphabet));
 
 		// 1. Compute individual statistics for each ball
+		const uniqueAlphabet = Array.from(new Set(alphabet));
 		const ballsStats = uniqueAlphabet.map(ball => {
 			const stats = TupleHelper.getNumberNeighborhoodCounts(ball, system, alphabet);
 			const min = stats.occurencesMin;
@@ -1389,7 +1389,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 				occurencesMax: max,
 				occurencesRange: max - min,
 				occurencesSum: total,
-				occurencesAverage: total / (alphabet.length - 1),
+				occurencesAverage: total / (uniqueAlphabet.length - 1),
 				degree: degree,
 			};
 		});
@@ -1422,7 +1422,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			degreesMax: degMax,
 			degreesRange: degMax - degMin,
 			degreesSum: degSum,
-			degreesAverage: degSum / (ballsStats.length || 1),
+			degreesAverage: degSum / (allDegrees.length || 1),
 
 			balls: ballsStats
 		};
