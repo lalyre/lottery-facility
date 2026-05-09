@@ -104,21 +104,22 @@ export class DrawBox {
 		nbSwap: number = 50,
 	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		let bestSystem = startingSystem ? [...startingSystem] : TupleHelper.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
 		let bestGlobalStats = TupleHelper.getSystemNeighborhoodCounts(bestSystem, this._balls);
 
 		// Find a better system
 		for (let i = 0; i < nbAttempts; i++) {
-			let currentSystem = TupleHelper.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
 			let currentGlobalStats = TupleHelper.getSystemNeighborhoodCounts(currentSystem, this._balls);
 			const maxLevel = Math.min(currentGlobalStats.occurencesMax, bestGlobalStats.occurencesMax);
+			const minLevel = Math.min(currentGlobalStats.occurencesMin, bestGlobalStats.occurencesMin); minLevel = (minLevel == 0) ? 1 : minLevel;
 
-			for (let level = 1; level <= maxLevel; level++) {
+			for (let level = minLevel; level <= maxLevel; level++) {
 				let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, level, "==", this._balls);
 				let bestLevelCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
 
 				let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, level, "==", this._balls);
-				let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;				// pairs are counted twice
+				let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;					// pairs are counted twice
 
 				if (currentLevelCount > bestLevelCount) {
 					bestSystem = currentSystem;
