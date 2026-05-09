@@ -86,17 +86,17 @@ export class DrawBox {
 
 
 	/**
-	 * Generates tickets by maximizing the number of unique pairs coverage.
-	 * The goal of this method is to maximize unique pairs diversity across the generated system (related to the Covering Design problem).
+	 * Generates tickets by maximizing the number of pairs coverage.
+	 * The goal of this method is to maximize pairs diversity across the generated system (related to the Covering Design problem).
 	 *
 	 * @param nbTickets - Total number of tickets to generate.
 	 * @param size - Number of balls per ticket.
 	 * @param nbAttempts - Number of iterations to find the best candidate (default 500).
 	 * @param startingSystem - An optional existing system to build upon.
 	 * @param nbSwap - Shuffle intensity used during generation (default 50).
-	 * @returns An array of tickets optimized for unique pair diversity.
+	 * @returns An array of tickets optimized for pairs diversity.
 	 */
-	public drawUniquePairsPriorityTickets(
+	public drawMaximizePairsCoveringTickets(
 		nbTickets: number,
 		size: number, 
 		nbAttempts: number = 500,
@@ -104,22 +104,30 @@ export class DrawBox {
 		nbSwap: number = 50,
 	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-
-		const levelOfUniquePairs = 1;
-		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
-		let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, levelOfUniquePairs, "==", this._balls);
-		let bestLevelCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;			// pairs are counted twice
+		let bestSystem = startingSystem ? [...startingSystem] : TupleHelper.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+		let bestGlobalStats = TupleHelper.getSystemNeighborhoodCounts(bestSystem, this._balls);
 
 		// Find a better system
 		for (let i = 0; i < nbAttempts; i++) {
-			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
-			let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, levelOfUniquePairs, "==", this._balls);
-			let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;			// pairs are counted twice
+			let currentSystem = TupleHelper.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+			let currentGlobalStats = TupleHelper.getSystemNeighborhoodCounts(currentSystem, this._balls);
+			const maxLevel = Math.min(currentGlobalStats.occurencesMax, bestGlobalStats.occurencesMax);
 
-			if (currentLevelCount > bestLevelCount) {
-				bestSystem = currentSystem;
-				bestStats = currentStats;
-				bestLevelCount = currentLevelCount;
+			for (let level = 1; level <= maxLevel; level++) {
+				let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, level, "==", this._balls);
+				let bestLevelCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
+
+				let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, level, "==", this._balls);
+				let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;				// pairs are counted twice
+
+				if (currentLevelCount > bestLevelCount) {
+					bestSystem = currentSystem;
+					bestGlobalStats = currentGlobalStats;
+					break;
+				}
+				if (currentLevelCount < bestLevelCount) {
+					break;
+				}
 			}
 		}
 		return bestSystem;
@@ -128,7 +136,7 @@ export class DrawBox {
 
 	/**
 	 * Generates tickets by maximizing hitting pairs ability.
-	 * The goal of this method is to maximize hitting pairs capability across the generated system ((related to the Hitting Set problem).
+	 * The goal of this method is to maximize hitting pairs capability across the generated system (related to the Hitting Set problem).
 	 *
 	 * @param nbTickets - Total number of tickets to generate.
 	 * @param size - Number of balls per ticket.
@@ -137,7 +145,7 @@ export class DrawBox {
 	 * @param nbSwap - Shuffle intensity used during generation (default 50).
 	 * @returns An array of tickets optimized for unique pair distribution.
 	 */
-	public drawHittingPairsAbilityTickets(
+	public drawMaximizePairsHittingTickets(
 		nbTickets: number,
 		size: number, 
 		nbAttempts: number = 500,
