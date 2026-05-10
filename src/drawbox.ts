@@ -96,7 +96,7 @@ export class DrawBox {
 	 * @param nbSwap - Shuffle intensity used during generation (default 50).
 	 * @returns An array of tickets optimized for pairs diversity.
 	 */
-	public drawMaximizePairsCoveringTickets(
+	public drawMaximizePairCoveringTickets(
 		nbTickets: number,
 		size: number, 
 		nbAttempts: number = 500,
@@ -111,24 +111,23 @@ export class DrawBox {
 		for (let i = 0; i < nbAttempts; i++) {
 			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
 			let currentGlobalStats = TupleHelper.getSystemNeighborhoodCounts(currentSystem, this._balls);
-			const maxLevel = Math.min(currentGlobalStats.occurencesMax, bestGlobalStats.occurencesMax);
-			const minLevel = Math.min(currentGlobalStats.occurencesMin, bestGlobalStats.occurencesMin); minLevel = (minLevel == 0) ? 1 : minLevel;
+			let maxLevel = Math.min(currentGlobalStats.occurencesMax, bestGlobalStats.occurencesMax);
+			let minLevel = Math.min(currentGlobalStats.occurencesMin, bestGlobalStats.occurencesMin); minLevel = (minLevel == 0) ? 1 : minLevel;
+
+			let bestCount = 0;
+			let currenCount = 0;
 
 			for (let level = minLevel; level <= maxLevel; level++) {
 				let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, level, "==", this._balls);
-				let bestLevelCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
+				bestCount += bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
 
 				let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, level, "==", this._balls);
-				let currentLevelCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;					// pairs are counted twice
+				currentCount += currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;					// pairs are counted twice
+			}
 
-				if (currentLevelCount > bestLevelCount) {
-					bestSystem = currentSystem;
-					bestGlobalStats = currentGlobalStats;
-					break;
-				}
-				if (currentLevelCount < bestLevelCount) {
-					break;
-				}
+			if (currentCount > bestCount) {
+				bestSystem = currentSystem;
+				bestGlobalStats = currentGlobalStats;
 			}
 		}
 		return bestSystem;
@@ -146,7 +145,7 @@ export class DrawBox {
 	 * @param nbSwap - Shuffle intensity used during generation (default 50).
 	 * @returns An array of tickets optimized for unique pair distribution.
 	 */
-	public drawMaximizePairsHittingTickets(
+	public drawMaximizePairHittingTickets(
 		nbTickets: number,
 		size: number, 
 		nbAttempts: number = 500,
