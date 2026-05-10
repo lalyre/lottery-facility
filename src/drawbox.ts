@@ -114,16 +114,11 @@ export class DrawBox {
 			let maxLevel = Math.min(currentGlobalStats.occurencesMax, bestGlobalStats.occurencesMax);
 			let minLevel = Math.min(currentGlobalStats.occurencesMin, bestGlobalStats.occurencesMin); minLevel = (minLevel == 0) ? 1 : minLevel;
 
-			let bestCount = 0;
-			let currenCount = 0;
+			let bestStats = TupleHelper.getSystemNeighborhoodDegrees(bestSystem, this._balls);
+			let bestCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
 
-			for (let level = minLevel; level <= maxLevel; level++) {
-				let bestStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(bestSystem, level, "==", this._balls);
-				bestCount += bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
-
-				let currentStats = TupleHelper.getSystemThresholdNeighborhoodDegrees(currentSystem, level, "==", this._balls);
-				currentCount += currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;					// pairs are counted twice
-			}
+			let currentStats = TupleHelper.getSystemNeighborhoodDegrees(currentSystem, this._balls);
+			let currentCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;					// pairs are counted twice
 
 			if (currentCount > bestCount) {
 				bestSystem = currentSystem;
