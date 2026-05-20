@@ -104,7 +104,6 @@ export class DrawBox {
 		// ---------------------------------------------------
 		// 1. Build perfectly balanced global pool
 		// ---------------------------------------------------
-
 		const totalSlots = nbTickets * size;
 		const globalPool: number[] = [];
 
@@ -123,9 +122,7 @@ export class DrawBox {
 		// ---------------------------------------------------
 		// 2. Pair frequency tracking
 		// ---------------------------------------------------
-
 		const pairCount = new Map<string, number>();
-
 		const getPairKey = (a:number, b:number): string => {
 			return a < b ? `${a}-${b}` : `${b}-${a}`;
 		};
@@ -133,21 +130,16 @@ export class DrawBox {
 		// ---------------------------------------------------
 		// 3. Build tickets greedily
 		// ---------------------------------------------------
-
 		const results: Tuple[] = [];
-
 		for (let t = 0; t < nbTickets; t++) {
-
 			const ticket: Tuple = [];
 
 			while (ticket.length < size) {
-
 				let bestIndex = -1;
 				let bestScore = Number.MAX_SAFE_INTEGER;
 
 				// test several candidates
 				for (let i = 0; i < globalPool.length; i++) {
-
 					const candidate = globalPool[i];
 
 					// avoid duplicates in same ticket
@@ -155,7 +147,6 @@ export class DrawBox {
 
 					// compute pair repetition score
 					let score = 0;
-
 					for (const existing of ticket) {
 						const key = getPairKey(candidate, existing);
 						score += pairCount.get(key) || 0;
@@ -171,9 +162,8 @@ export class DrawBox {
 				// fallback safety
 				if (bestIndex === -1) break;
 
-				const chosen = globalPool.splice(bestIndex, 1)[0];
-
 				// update pair frequencies
+				const chosen = globalPool.splice(bestIndex, 1)[0];
 				for (const existing of ticket) {
 					const key = getPairKey(chosen, existing);
 					pairCount.set(key, (pairCount.get(key) || 0) + 1);
@@ -181,7 +171,6 @@ export class DrawBox {
 
 				ticket.push(chosen);
 			}
-
 			results.push(ticket.sort((a, b) => a - b));
 		}
 		return results;
