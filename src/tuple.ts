@@ -20,6 +20,28 @@ export type NumberNeighborhoodCounts = {
 };
 
 
+export type SystemPairFrequencyStats = {
+	totalPairs: number;
+	coveredPairs: number;
+	uncoveredPairs: number;
+	totalPlacements: number;
+	minFrequency: number;
+	maxFrequency: number;
+	repeatedPairs: number;
+	duplicatePlacements: number;
+	frequencies: Map<string, number>;
+};
+
+
+export type SystemPairDistanceStats = {
+	manhattanDistance: number;
+	sharedCoveredPairs: number;
+	sharedRepeatedPairs: number;
+	overlapWeight: number;
+	repeatedOverlapWeight: number;
+};
+
+
 export const comparisonOperators = {
 	 "<": (a: number, b: number) => a  < b,
 	"<=": (a: number, b: number) => a <= b,
@@ -1425,6 +1447,114 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			degreesAverage: degSum / (allDegrees.length || 1),
 
 			balls: ballsStats
+		};
+	}
+
+
+	/**
+	 * Computes the exact pair frequency field of a system over a reference alphabet.
+	 *
+	 * @param system    The array of tuples.
+	 * @param alphabet  The reference alphabet used to evaluate the full pair universe.
+	 * @returns         Pair frequency analytics and the raw frequency map.
+	 */
+	public static getSystemPairFrequencyStats(
+		system: Tuple[],
+		alphabet: Tuple,
+	): SystemPairFrequencyStats {
+		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
+
+		const uniqueAlphabet = Array.from(new Set(alphabet)).sort((a, b) => a - b);
+		const frequencies = new Map<string, number>();
+		let totalPlacements = 0;
+
+		for (const ticket of system) {
+			const uniqueTicket = Array.from(new Set(ticket)).sort((a, b) => a - b);
+			for (let i = 0; i < uniqueTicket.length; i++) {
+				for (let j = i + 1; j < uniqueTicket.length; j++) {
+					const key = `${uniqueTicket[i]}-${uniqueTicket[j]}`;
+					frequencies.set(key, (frequencies.get(key) || 0) + 1);
+					totalPlacements++;
+				}
+			}
+		}
+
+		const totalPairs = Number(TupleHelper.binomial(uniqueAlphabet.length, 2));
+		const coveredPairs = frequencies.size;
+		const uncoveredPairs = totalPairs - coveredPairs;
+		let maxFrequency = 0;
+		let minPositiveFrequency = Number.MAX_SAFE_INTEGER;
+		let repeatedPairs = 0;
+		let duplicatePlacements = 0;
+
+		for (const frequency of frequencies.values()) {
+			if (frequency > maxFrequency) maxFrequency = frequency;
+			if (frequency < minPositiveFrequency) minPositiveFrequency = frequency;
+			if (frequency > 1) {
+				repeatedPairs++;
+				duplicatePlacements += frequency - 1;
+			}
+		}
+
+		return {
+			totalPairs,
+			coveredPairs,
+			uncoveredPairs,
+			totalPlacements,
+			minFrequency: uncoveredPairs > 0 ? 0 : (frequencies.size === 0 ? 0 : minPositiveFrequency),
+			maxFrequency,
+			repeatedPairs,
+			duplicatePlacements,
+			frequencies,
+		};
+	}
+
+
+	/**
+	 * Compares 2 systems through their pair frequency fields.
+	 *
+	 * @param left      The first system.
+	 * @param right     The second system.
+	 * @param alphabet  The shared reference alphabet.
+	 * @returns         Distance and overlap indicators between the 2 pair distributions.
+	 */
+	public static getSystemPairDistanceStats(
+		left: Tuple[],
+		right: Tuple[],
+		alphabet: Tuple,
+	): SystemPairDistanceStats {
+		const leftStats = TupleHelper.getSystemPairFrequencyStats(left, alphabet);
+		const rightStats = TupleHelper.getSystemPairFrequencyStats(right, alphabet);
+		const keys = new Set<string>([
+			...leftStats.frequencies.keys(),
+			...rightStats.frequencies.keys(),
+		]);
+
+		let manhattanDistance = 0;
+		let sharedCoveredPairs = 0;
+		let sharedRepeatedPairs = 0;
+		let overlapWeight = 0;
+		let repeatedOverlapWeight = 0;
+
+		for (const key of keys) {
+			const leftFrequency = leftStats.frequencies.get(key) || 0;
+			const rightFrequency = rightStats.frequencies.get(key) || 0;
+			const overlap = Math.min(leftFrequency, rightFrequency);
+
+			manhattanDistance += Math.abs(leftFrequency - rightFrequency);
+			overlapWeight += overlap;
+
+			if (leftFrequency > 0 && rightFrequency > 0) sharedCoveredPairs++;
+			if (leftFrequency > 1 && rightFrequency > 1) sharedRepeatedPairs++;
+			if (overlap > 1) repeatedOverlapWeight += overlap - 1;
+		}
+
+		return {
+			manhattanDistance,
+			sharedCoveredPairs,
+			sharedRepeatedPairs,
+			overlapWeight,
+			repeatedOverlapWeight,
 		};
 	}
 

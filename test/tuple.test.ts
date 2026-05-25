@@ -280,6 +280,35 @@ describe('TupleHelper module', () => {
 	});
 
 
+	test('TupleHelper pair frequency and distance stats test', () => {
+		const alphabet = [1, 2, 3, 4];
+		const leftSystem = [
+			[1, 2, 3],
+			[1, 2, 4],
+		];
+		const rightSystem = [
+			[1, 3, 4],
+			[2, 3, 4],
+		];
+
+		const leftStats = TupleHelper.getSystemPairFrequencyStats(leftSystem, alphabet);
+		expect(leftStats.totalPairs).toBe(6);
+		expect(leftStats.coveredPairs).toBe(5);
+		expect(leftStats.uncoveredPairs).toBe(1);
+		expect(leftStats.totalPlacements).toBe(6);
+		expect(leftStats.maxFrequency).toBe(2);
+		expect(leftStats.repeatedPairs).toBe(1);
+		expect(leftStats.duplicatePlacements).toBe(1);
+
+		const distance = TupleHelper.getSystemPairDistanceStats(leftSystem, rightSystem, alphabet);
+		expect(distance.manhattanDistance).toBe(6);
+		expect(distance.sharedCoveredPairs).toBe(4);
+		expect(distance.sharedRepeatedPairs).toBe(0);
+		expect(distance.overlapWeight).toBe(3);
+		expect(distance.repeatedOverlapWeight).toBe(0);
+	});
+
+
 	test('TupleHelper.tupleToRank test', () => {
 		expect(TupleHelper.tupleToRank(5, [1])).toBe(1n);
 		expect(TupleHelper.tupleToRank(5, [2])).toBe(2n);
