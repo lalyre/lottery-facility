@@ -190,7 +190,7 @@ export class DrawBox {
 	 */
 	public drawMaximizePairCoveringTickets(
 		nbTickets: number,
-		size: number, 
+		size: number,
 		nbAttempts: number = 500,
 		startingSystem: Tuple[]|null = null,
 		nbSwap: number = 50,

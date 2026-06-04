@@ -33,6 +33,9 @@ export type SystemPairFrequencyStats = {
 };
 
 
+
+
+/*
 export type SystemPairDistanceStats = {
 	manhattanDistance: number;
 	sharedCoveredPairs: number;
@@ -40,6 +43,9 @@ export type SystemPairDistanceStats = {
 	overlapWeight: number;
 	repeatedOverlapWeight: number;
 };
+*/
+
+
 
 
 export const comparisonOperators = {
@@ -535,6 +541,13 @@ export class TupleHelper {
 		if (wrapGap > maxGap) maxGap = wrapGap;
 		return maxGap;
 	}
+
+
+
+
+
+
+
 
 
 	/**
@@ -1058,6 +1071,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 
+
+
+
+
+
 	/**
 	 * Gets the neighborhood of a specific number in a system.
 	 * The neighborhood is the set of all unique numbers that appear in the same tuples as the ball.
@@ -1119,6 +1137,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 
 
+
+
+
+
 	/**
 	 * Builds the neighborhood tuple system for a reference alphabet.
 	 * For each ball in the alphabet, it returns a tuple made of the ball itself
@@ -1132,6 +1154,11 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		return TupleHelper.getSystemNeighborhoodDegrees(system, alphabet)
 			.map(item => [item.ball, ...item.neighborhood].sort((a, b) => a - b));
 	}*/
+
+
+
+
+
 
 
 	/**
@@ -1192,6 +1219,10 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 
 
+
+
+
+
 	/**
 	 * Builds the non-adjacent tuple system for a reference alphabet.
 	 * For each ball in the alphabet, it returns a tuple made of the ball itself
@@ -1205,6 +1236,9 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
 			.map(item => [item.ball, ...item.nonAdjacent].sort((a, b) => a - b));
 	}*/
+
+
+
 
 
 
@@ -1451,6 +1485,16 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 
 
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Computes the exact pair frequency field of a system over a reference alphabet.
 	 *
@@ -1458,6 +1502,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The reference alphabet used to evaluate the full pair universe.
 	 * @returns         Pair frequency analytics and the raw frequency map.
 	 */
+	/* 
 	public static getSystemPairFrequencyStats(
 		system: Tuple[],
 		alphabet: Tuple,
@@ -1507,7 +1552,12 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			duplicatePlacements,
 			frequencies,
 		};
-	}
+	}*/
+
+
+
+
+
 
 
 	/**
@@ -1518,7 +1568,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	 * @param alphabet  The shared reference alphabet.
 	 * @returns         Distance and overlap indicators between the 2 pair distributions.
 	 */
-	public static getSystemPairDistanceStats(
+	/*public static getSystemPairDistanceStats(
 		left: Tuple[],
 		right: Tuple[],
 		alphabet: Tuple,
@@ -1556,7 +1606,7 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			overlapWeight,
 			repeatedOverlapWeight,
 		};
-	}
+	}*/
 
 
 
@@ -2501,6 +2551,11 @@ public static isFrequencyMaskKMutationBetter(
 
     return false;
 }*/
+
+
+
+
+
 
 
 
