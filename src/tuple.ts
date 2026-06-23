@@ -20,6 +20,7 @@ export type NumberNeighborhoodCounts = {
 };
 
 
+/*
 export type SystemPairFrequencyStats = {
 	totalPairs: number;
 	coveredPairs: number;
@@ -31,6 +32,23 @@ export type SystemPairFrequencyStats = {
 	duplicatePlacements: number;
 	frequencies: Map<string, number>;
 };
+
+
+export type SystemTrioFrequencyStats = {
+	totalTrios: number;
+	coveredTrios: number;
+	uncoveredTrios: number;
+	
+	totalPlacements: number;
+	minFrequency: number;
+	maxFrequency: number;
+	repeatedTrios: number;
+	duplicatePlacements: number;
+	
+	frequencies: Map<string, number>;
+};
+*/
+
 
 
 
