@@ -51,153 +51,144 @@ export class CombinationHelper {
 	}
 
 
-/**
- * Computes the Schönheim lower bound for a covering design C(v, k, t).
- *
- * This bound gives a universal theoretical minimum number of blocks (lines)
- * required to cover all t-subsets of a v-element universe using blocks of size k.
- *
- * Formula (nested ceilings):
- *
- *     L ≥ ceil( v / k * ceil( (v−1)/(k−1) * ceil( (v−2)/(k−2) * ... ) ) )
- *
- * This implementation evaluates the nested ceilings using integer arithmetic,
- * entirely with BigInt, via the identity:
- *
- *     ceil(a / b) = (a + b − 1) / b         // integer division
- *
- * Notes:
- * - The bound is valid for any covering problem C(total, size, guarantee).
- * - If `lineCount` is below this value, a covering system is mathematically impossible.
- * - If `lineCount` is above this value, feasibility is not guaranteed but possible.
- *
- * @param total      v — Total number of elements in the universe.
- * @param size       k — Size of each block (line).
- * @param guarantee  t — Size of subsets that must all be covered.
- *
- * @returns          The Schönheim lower bound as a standard JavaScript number.
- *
- * ---
- * Implementation note:
- *   The code below was drafted with the assistance of ChatGPT (OpenAI GPT-5.1),
- *   during an exploration of covering designs and lottery system theory.
- *   The Schönheim lower bound itself is a classical mathematical result due
- *   to E. Schönheim (“On coverings of pairs by quadruples”, 1964).
- *   This comment is kept as a small tribute to both the mathematician and
- *   the assistant who helped shape this API.
- * ---
- */
-public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
-    let L = 1n;
-    for (let i = 0; i < guarantee; i++) {
-        const a = BigInt(total - i);
-        const b = BigInt(size - i);
-        L = (L * (a + b - 1n)) / b;  // ceil(a/b)
-    }
-    return Number(L);
-}
+	/**
+	 * Computes the Schönheim lower bound for a covering design C(v, k, t).
+	 *
+	 * This bound gives a universal theoretical minimum number of blocks (lines)
+	 * required to cover all t-subsets of a v-element universe using blocks of size k.
+	 *
+	 * Formula (nested ceilings):
+	 *
+	 *     L ≥ ceil( v / k * ceil( (v−1)/(k−1) * ceil( (v−2)/(k−2) * ... ) ) )
+	 *
+	 * This implementation evaluates the nested ceilings using integer arithmetic,
+	 * entirely with BigInt, via the identity:
+	 *
+	 *     ceil(a / b) = (a + b − 1) / b         // integer division
+	 *
+	 * Notes:
+	 * - The bound is valid for any covering problem C(total, size, guarantee).
+	 * - If `lineCount` is below this value, a covering system is mathematically impossible.
+	 * - If `lineCount` is above this value, feasibility is not guaranteed but possible.
+	 *
+	 * @param total      v — Total number of elements in the universe.
+	 * @param size       k — Size of each block (line).
+	 * @param guarantee  t — Size of subsets that must all be covered.
+	 *
+	 * @returns          The Schönheim lower bound as a standard JavaScript number.
+	 *
+	 * ---
+	 * Implementation note:
+	 *   The code below was drafted with the assistance of ChatGPT (OpenAI GPT-5.1),
+	 *   during an exploration of covering designs and lottery system theory.
+	 *   The Schönheim lower bound itself is a classical mathematical result due
+	 *   to E. Schönheim (“On coverings of pairs by quadruples”, 1964).
+	 *   This comment is kept as a small tribute to both the mathematician and
+	 *   the assistant who helped shape this API.
+	 * ---
+	 */
+	public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
+		let L = 1n;
+		for (let i = 0; i < guarantee; i++) {
+			const a = BigInt(total - i);
+			const b = BigInt(size - i);
+			L = (L * (a + b - 1n)) / b;  // ceil(a/b)
+		}
+		return Number(L);
+	}
+	public static coveringLowerBound = CombinationHelper.schoenheimLowerBound;
 
 
-public static coveringLowerBound = CombinationHelper.schoenheimLowerBound;
+	/**
+	 * Computes a lower bound for a Hitting Set H(v, k, m, t).
+	 * * A Hitting Set (or lottery design) ensures that for any winning draw of size m 
+	 * out of v elements, at least one of our blocks of size k will share at least 
+	 * t elements with it.
+	 * * This bound is derived from Turán-type problems for hypergraphs and is often 
+	 * referred to as the Katona-Nemetz-Simonyi bound. It provides the absolute 
+	 * floor for the number of lines required to "hit" any possible draw.
+	 * * Formula:
+	 * L ≥ ceil( comb(v, t) / (comb(k, t) * comb(m, t) / 1) )
+	 * * For EuroMillions (2/5 guarantee), parameters are v=50, k=5, m=5, t=2.
+	 * * @param v — Total number of elements in the universe (e.g., 50).
+	 * @param k — Size of each played block/line (e.g., 5).
+	 * @param m — Size of the drawn winning combination (e.g., 5).
+	 * @param t — Minimum number of matching elements required (e.g., 2).
+	 * * @returns The Turán-type lower bound as a standard JavaScript number.
+	 * * ---
+	 * Implementation note:
+	 * This code was refined with the assistance of Gemini AI (Google),
+	 * exploring the frontiers of combinatorial optimization and hitting sets.
+	 * The mathematical foundation rests upon the work of G.O.H. Katona, 
+	 * T. Nemetz, and M. Simonyi (“On the Hamming distance of functions”, 1970),
+	 * as well as the Turán Number applications in extremal set theory.
+	 * ---
+	 */
+	public static turanLowerBound(v: number, k: number, m: number, t: number): number {
+		/**
+		 * Helper function to compute Binomial Coefficients (n choose r) 
+		 * using BigInt to prevent overflow during intermediate multiplications.
+		 */
+		const combinations = (n: number, r: number): bigint => {
+			if (r < 0 || r > n) return 0n;
+			if (r === 0 || r === n) return 1n;
+			if (r > n / 2) r = n - r;
+
+			let res = 1n;
+			for (let i = 1n; i <= BigInt(r); i++) {
+				res = res * (BigInt(n) - i + 1n) / i;
+			}
+			return res;
+		};
+
+		const totalPairs = combinations(v, t);         // Total subsets of size t in the universe
+		const pairsPerBlock = combinations(k, t);      // t-subsets provided by one played line
+		const pairsPerDraw = combinations(m, t);       // t-subsets available in one winning draw
+
+		// The denominator represents the "hitting power" of a single block.
+		const denominator = pairsPerBlock * pairsPerDraw;
+
+		// Applying the ceiling division: ceil(a / b) = (a + b - 1) / b
+		const L = (totalPairs + (denominator - 1n)) / denominator;
+
+		return Number(L);
+	}
+	public static hittingLowerBound = CombinationHelper.turanLowerBound;
 
 
-
-
-/**
- * Computes a lower bound for a Hitting Set H(v, k, m, t).
- * * A Hitting Set (or lottery design) ensures that for any winning draw of size m 
- * out of v elements, at least one of our blocks of size k will share at least 
- * t elements with it.
- * * This bound is derived from Turán-type problems for hypergraphs and is often 
- * referred to as the Katona-Nemetz-Simonyi bound. It provides the absolute 
- * floor for the number of lines required to "hit" any possible draw.
- * * Formula:
- * L ≥ ceil( comb(v, t) / (comb(k, t) * comb(m, t) / 1) )
- * * For EuroMillions (2/5 guarantee), parameters are v=50, k=5, m=5, t=2.
- * * @param v — Total number of elements in the universe (e.g., 50).
- * @param k — Size of each played block/line (e.g., 5).
- * @param m — Size of the drawn winning combination (e.g., 5).
- * @param t — Minimum number of matching elements required (e.g., 2).
- * * @returns The Turán-type lower bound as a standard JavaScript number.
- * * ---
- * Implementation note:
- * This code was refined with the assistance of Gemini AI (Google),
- * exploring the frontiers of combinatorial optimization and hitting sets.
- * The mathematical foundation rests upon the work of G.O.H. Katona, 
- * T. Nemetz, and M. Simonyi (“On the Hamming distance of functions”, 1970),
- * as well as the Turán Number applications in extremal set theory.
- * ---
- */
-public static turanLowerBound(v: number, k: number, m: number, t: number): number {
-    /**
-     * Helper function to compute Binomial Coefficients (n choose r) 
-     * using BigInt to prevent overflow during intermediate multiplications.
-     */
-    const combinations = (n: number, r: number): bigint => {
-        if (r < 0 || r > n) return 0n;
-        if (r === 0 || r === n) return 1n;
-        if (r > n / 2) r = n - r;
-        
-        let res = 1n;
-        for (let i = 1n; i <= BigInt(r); i++) {
-            res = res * (BigInt(n) - i + 1n) / i;
-        }
-        return res;
-    };
-
-    const totalPairs = combinations(v, t);         // Total subsets of size t in the universe
-    const pairsPerBlock = combinations(k, t);      // t-subsets provided by one played line
-    const pairsPerDraw = combinations(m, t);       // t-subsets available in one winning draw
-
-    // The denominator represents the "hitting power" of a single block.
-    const denominator = pairsPerBlock * pairsPerDraw;
-    
-    // Applying the ceiling division: ceil(a / b) = (a + b - 1) / b
-    const L = (totalPairs + (denominator - 1n)) / denominator;
-
-    return Number(L);
-}
-
-
-public static hittingLowerBound = CombinationHelper.turanLowerBound;
-
-
-
-
-/**
- * Tests whether a covering system (covering design) exists with a given number of lines.
- *
- * Conceptually:
- * - There are `total` elements in the universe (0..total-1).
- * - Each line (block / ticket) contains exactly `size` distinct elements.
- * - We want every subset of size `guarantee` (e.g. every pair if guarantee = 2)
- *   to appear in at least one of the lines.
- *
- * This function returns TRUE or FALSE depending on `lineCount`:
- * - Returns FALSE if, even in the best possible case, `lineCount` lines cannot cover
- *   all subsets of size `guarantee` (based on a combinatorial lower bound).
- * - Returns TRUE if `lineCount` is greater than or equal to C(total, guarantee),
- *   because a trivial covering always exists (one line per subset).
- * - Otherwise, it falls into the “interesting zone” and calls an internal search
- *   algorithm (`searchCoveringSystem`) to decide if such a covering system actually exists.
- *
- * Parameters:
- * @param total      Total number of elements in the universe (e.g. 8 numbers, 50 numbers, …)
- * @param size       Size of each line (block size, e.g. 3 for triplets, 5 for Euromillions grids)
- * @param guarantee  Size of the subsets that must be covered (e.g. 2 to cover all pairs)
- * @param lineCount  Number of lines allowed in the system
- *
- * @returns          TRUE if a covering system exists with at most `lineCount` lines,
- *                   FALSE otherwise.
- */
-public static coveringExists(total:number, size:number, guarantee:number, lineCount:number): boolean {
-	if (total <= 0 || size <= 0 || guarantee <= 0 || lineCount <= 0) return false;
-	if (size < guarantee) return false;
-	if (total < size) return false;
-	const minLines = CombinationHelper.coveringLowerBound(total, size, guarantee);
-	return (lineCount >= minLines);
-}
-
+	/**
+	 * Tests whether a covering system (covering design) exists with a given number of lines.
+	 *
+	 * Conceptually:
+	 * - There are `total` elements in the universe (0..total-1).
+	 * - Each line (block / ticket) contains exactly `size` distinct elements.
+	 * - We want every subset of size `guarantee` (e.g. every pair if guarantee = 2)
+	 *   to appear in at least one of the lines.
+	 *
+	 * This function returns TRUE or FALSE depending on `lineCount`:
+	 * - Returns FALSE if, even in the best possible case, `lineCount` lines cannot cover
+	 *   all subsets of size `guarantee` (based on a combinatorial lower bound).
+	 * - Returns TRUE if `lineCount` is greater than or equal to C(total, guarantee),
+	 *   because a trivial covering always exists (one line per subset).
+	 * - Otherwise, it falls into the “interesting zone” and calls an internal search
+	 *   algorithm (`searchCoveringSystem`) to decide if such a covering system actually exists.
+	 *
+	 * Parameters:
+	 * @param total      Total number of elements in the universe (e.g. 8 numbers, 50 numbers, …)
+	 * @param size       Size of each line (block size, e.g. 3 for triplets, 5 for Euromillions grids)
+	 * @param guarantee  Size of the subsets that must be covered (e.g. 2 to cover all pairs)
+	 * @param lineCount  Number of lines allowed in the system
+	 *
+	 * @returns          TRUE if a covering system exists with at most `lineCount` lines,
+	 *                   FALSE otherwise.
+	 */
+	public static coveringExists(total:number, size:number, guarantee:number, lineCount:number): boolean {
+		if (total <= 0 || size <= 0 || guarantee <= 0 || lineCount <= 0) return false;
+		if (size < guarantee) return false;
+		if (total < size) return false;
+		const minLines = CombinationHelper.coveringLowerBound(total, size, guarantee);
+		return (lineCount >= minLines);
+	}
 }
 
 

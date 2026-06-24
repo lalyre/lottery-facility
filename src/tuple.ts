@@ -60,13 +60,14 @@ export type NumberNeighborhoodCounts = {
 };
 
 
-export type SystemPairDistanceStats = {
+
+/*export type SystemPairDistanceStats = {
 	manhattanDistance: number;
 	sharedCoveredPairs: number;
 	sharedRepeatedPairs: number;
 	overlapWeight: number;
 	repeatedOverlapWeight: number;
-};
+};*/
 
 
 
@@ -84,9 +85,7 @@ export const comparisonOperators = {
 export class TupleHelper {
 	private static getCombinationIndexInternal(sortedTuple: number[], k: number): number {
 		let index = 0;
-		for (let i = 0; i < k; i++) {
-			index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
-		}
+		for (let i = 0; i < k; i++) { index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i)); }
 		return index;
 	}
 
