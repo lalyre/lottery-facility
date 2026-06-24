@@ -60,18 +60,6 @@ export type NumberNeighborhoodCounts = {
 };
 
 
-
-/*export type SystemPairDistanceStats = {
-	manhattanDistance: number;
-	sharedCoveredPairs: number;
-	sharedRepeatedPairs: number;
-	overlapWeight: number;
-	repeatedOverlapWeight: number;
-};*/
-
-
-
-
 export const comparisonOperators = {
 	 "<": (a: number, b: number) => a  < b,
 	"<=": (a: number, b: number) => a <= b,
@@ -83,76 +71,6 @@ export const comparisonOperators = {
 
 
 export class TupleHelper {
-	private static getCombinationIndexInternal(sortedTuple: number[], k: number): number {
-		let index = 0;
-		for (let i = 0; i < k; i++) { index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i)); }
-		return index;
-	}
-
-
-	private static buildKFrequencyMask(
-		system: Tuple[],
-		alphabetLength: number,
-		k: number,
-	): {
-		mask: Uint32Array;
-		totalPossible: number;
-		totalPlacements: number;
-		uniqueCovered: number;
-		holes: number;
-		minFrequency: number;
-		maxFrequency: number;
-	} {
-		const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
-		const mask = new Uint32Array(totalPossible);
-		let uniqueCovered = 0;
-		let totalPlacements = 0;
-		const tempCombo = new Array<number>(k);
-
-		const process = (ticket: number[], start: number, depth: number): void => {
-			if (depth === k) {
-				const idx = TupleHelper.getCombinationIndexInternal(tempCombo, k);
-				if (mask[idx] === 0) uniqueCovered++;
-				mask[idx]++;
-				totalPlacements++;
-				return;
-			}
-
-			for (let i = start; i < ticket.length; i++) {
-				tempCombo[depth] = ticket[i];
-				process(ticket, i + 1, depth + 1);
-			}
-		};
-
-		for (const ticket of system) {
-			const uniqueTicket = Array.from(new Set(ticket));
-			if (uniqueTicket.length < k) continue;
-			const sortedTicket = uniqueTicket.sort((a, b) => b - a);
-			process(sortedTicket, 0, 0);
-		}
-
-		let maxFrequency = 0;
-		let minFrequency = Infinity;
-		let holes = 0;
-
-		for (const frequency of mask) {
-			if (frequency === 0) holes++;
-			if (frequency > maxFrequency) maxFrequency = frequency;
-			if (frequency < minFrequency) minFrequency = frequency;
-		}
-
-		return {
-			mask,
-			totalPossible,
-			totalPlacements,
-			uniqueCovered,
-			holes,
-			minFrequency: holes > 0 ? 0 : (minFrequency === Infinity ? 0 : minFrequency),
-			maxFrequency,
-		};
-	}
-
-
 	/**
 	 * Get lottery tuple string
 	 * @param numbers   array of balls number.
@@ -229,6 +147,25 @@ export class TupleHelper {
 			const chunk = numbers.slice(startIndex, endIndex);
 			result.push(chunk);
 			startIndex = endIndex;
+		}
+		return result;
+	}
+
+
+	/**
+	 * Splits an array into multiple lines, each containing a fixed number of elements
+	 * @param array      The array to split.
+	 * @param size       The number of elements per line.
+	 * @return           A 2D array where each sub-array represents a line.
+	 */
+	public static split_into_lines(array: Tuple, size: number): Tuple[] {
+		let result: Tuple[] = [];
+		for (let i = 0; i < array.length; i += size) {
+			if (i + size <= array.length) {
+				result.push(array.slice(i, i + size));
+			} else {
+				result.push(array.slice(i));
+			}
 		}
 		return result;
 	}
@@ -644,522 +581,9 @@ export class TupleHelper {
 
 
 
-	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee` for a tuple,
-	 * using ALL pairwise linear differences inside each g-subset (not only consecutive gaps).
-	 *
-	 * The gap spectrum is the set of distinct signatures; this function returns its size.
-	 *
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @returns          Number of distinct gap signatures.
-	 */
-	/*public static linearGapSpectrumCardinality(tuple: Tuple, guarantee: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
 
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		const signatures = new Set<string>();
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-	
-		const addSignatureAllPairs = () => {
-			const diffs: number[] = [];
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = i + 1; j < guarantee; j++) {
-					diffs.push(sorted[idx[j]] - sorted[idx[i]]);
-				}
-			}
-			diffs.sort((a, b) => a - b);
-			signatures.add(diffs.join(','));
-		};
 
-		while (true) {
-			addSignatureAllPairs();
 
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-
-		return signatures.size;
-	}*/
-
-
-	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee`
-	 * using ALL pairwise modular (circular) distances inside each g-subset.
-	 *
-	 * Distance for a pair (a,b) = min((b-a mod v), v-(b-a mod v)) with b>a in the subset.
-	 * Signature = sorted list of all such distances.
-	 * Distances are in [1, floor(v/2)] (0 is excluded).
-	 * No validation is done to ensure tuple values are within [0, v-1].
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          Number of distinct gap signatures.
-	 */
-	/*public static modularGapSpectrumCardinality(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		const signatures = new Set<string>();
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-	
-		const addSignatureAllPairsMod = () => {
-			const diffs: number[] = [];
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = i + 1; j < guarantee; j++) {
-					const a = sorted[idx[i]];
-					const b = sorted[idx[j]];
-					const d = (b - a) % poolSize; // b>=a since sorted, so d in [0, poolSize)
-					const circ = Math.min(d, poolSize - d);
-					if (circ !== 0) diffs.push(circ);
-				}
-			}
-			diffs.sort((x, y) => x - y);
-			signatures.add(diffs.join(','));
-		};
-
-		while (true) {
-			addSignatureAllPairsMod();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-		return signatures.size;
-	}*/
-
-
-	/**
-	 * Computes the cardinality of the gap spectrum of order `guarantee`
-	 * using ALL ordered modular (circular) differences inside each g-subset.
-	 *
-	 * Difference for a pair (a,b) = (b-a mod v) with a != b in the subset.
-	 * This includes "inverse" differences because both orders are counted.
-	 * Signature = sorted list of all such differences (excluding 0).
-	 * No validation is done to ensure tuple values are within [0, v-1].
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          Number of distinct gap signatures.
-	 */
-	/*public static modularGapSpectrumCardinalityWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		const signatures = new Set<string>();
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSignatureAllOrderedPairsMod = () => {
-			const diffs: number[] = [];
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = 0; j < guarantee; j++) {
-					if (i === j) continue;
-					const a = sorted[idx[i]];
-					const b = sorted[idx[j]];
-					const d = (b - a) % poolSize;
-					if (d !== 0) diffs.push(d);
-				}
-			}
-			diffs.sort((x, y) => x - y);
-			signatures.add(diffs.join(','));
-		};
-
-		while (true) {
-			addSignatureAllOrderedPairsMod();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-		return signatures.size;
-	}*/
-
-
-	/**
-	 * Computes the total sum of ALL pairwise linear differences
-	 * over all g-subsets of indices.
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @returns          The total sum of all computed gaps.
-	 */
-	/*public static linearGapSpectrumSum(tuple: Tuple, guarantee: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		let totalSum = 0;
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSubsetAllPairDiffs = () => {
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = i + 1; j < guarantee; j++) {
-					totalSum += (sorted[idx[j]] - sorted[idx[i]]);
-				}
-			}
-		};
-
-		while (true) {
-			addSubsetAllPairDiffs();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-		return totalSum;
-	}*/
-
-
-	/**
-	 * Computes the total sum of ALL pairwise modular (circular) distances
-	 * over all g-subsets of indices.
-	 * Distances are in [1, floor(v/2)] (0 is excluded).
-	 * No validation is done to ensure tuple values are within [0, v-1].
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          The total sum of all computed circular gaps.
-	 */
-	/*public static modularGapSpectrumSum(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		let totalSum = 0;
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-		
-		const addSubsetAllPairCircDiffs = () => {
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = i + 1; j < guarantee; j++) {
-					const a = sorted[idx[i]];
-					const b = sorted[idx[j]];
-					const d = (b - a) % poolSize;
-					const circ = Math.min(d, poolSize - d);
-					totalSum += circ;
-				}
-			}
-		};
-
-		while (true) {
-			addSubsetAllPairCircDiffs();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-		return totalSum;
-	}*/
-
-
-	/**
-	 * Computes the total sum of ALL ordered modular (circular) differences
-	 * over all g-subsets of indices (includes inverse differences).
-	 * Differences are in [1, v-1] (0 is excluded).
-	 * No validation is done to ensure tuple values are within [0, v-1].
-	 *
-	 * @param tuple      Tuple of numbers (values are sorted ascending internally).
-	 * @param guarantee  Size of index subsets (g >= 2).
-	 * @param poolSize   Size of the circular pool.
-	 * @returns          The total sum of all computed ordered modular differences.
-	 */
-	/*public static modularGapSpectrumSumWithInverses(tuple: number[], guarantee: number, poolSize: number): number {
-		if (!tuple || tuple.length < guarantee || guarantee < 2) return 0;
-		if (!Number.isFinite(poolSize) || poolSize <= 0) return 0;
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const n = sorted.length;
-		let totalSum = 0;
-		const idx: number[] = Array.from({ length: guarantee }, (_, i) => i);
-
-		const addSubsetAllOrderedPairDiffs = () => {
-			for (let i = 0; i < guarantee; i++) {
-				for (let j = 0; j < guarantee; j++) {
-					if (i === j) continue;
-					const a = sorted[idx[i]];
-					const b = sorted[idx[j]];
-					const d = (b - a) % poolSize;
-					if (d !== 0) totalSum += d;
-				}
-			}
-		};
-
-		while (true) {
-			addSubsetAllOrderedPairDiffs();
-
-			let i = guarantee - 1;
-			while (i >= 0 && idx[i] === i + n - guarantee) i--;
-			if (i < 0) break;
-
-			idx[i]++;
-			for (let j = i + 1; j < guarantee; j++) {
-				idx[j] = idx[j - 1] + 1;
-			}
-		}
-
-		return totalSum;
-	}*/
-
-
-	/**
-	 * Computes modular difference statistics for a tuple.
-	 * By default counts ordered differences, so inverses are included.
-	 * Differences are modulo poolSize; 0 is excluded.
-	 * No validation is done to ensure tuple values are within [0, poolSize-1].
-	 *
-	 * @param tuple       Tuple of numbers.
-	 * @param poolSize    Size of the circular pool.
-	 * @param ordered     If true, count (a,b) and (b,a) separately. Default true.
-	 * @returns           Differences list, sum, cardinality, and per-difference counts.
-	 *                   `counts` length is poolSize (index 0 unused; valid diffs are 1..v-1).
-	 */
-	/*public static modularDifferenceStats(
-		tuple: number[],
-		poolSize: number,
-		ordered: boolean = true,
-	): {
-		differences: number[];
-		sum: number;
-		cardinality: number;
-		counts: number[];
-	} {
-		if (!tuple || tuple.length < 2) {
-			return { differences: [], sum: 0, cardinality: 0, counts: [] };
-		}
-		if (!Number.isFinite(poolSize) || poolSize <= 0) {
-			return { differences: [], sum: 0, cardinality: 0, counts: [] };
-		}
-
-		const sorted = [...tuple].sort((a, b) => a - b);
-		const differences: number[] = [];
-		const counts: number[] = new Array(poolSize).fill(0);
-		let sum = 0;
-
-		if (ordered) {
-			for (let i = 0; i < sorted.length; i++) {
-				for (let j = 0; j < sorted.length; j++) {
-					if (i === j) continue;
-					const d = (sorted[j] - sorted[i]) % poolSize;
-					if (d === 0) continue;
-					differences.push(d);
-					counts[d]++;
-					sum += d;
-				}
-			}
-		} else {
-			for (let i = 0; i < sorted.length; i++) {
-				for (let j = i + 1; j < sorted.length; j++) {
-					const d = (sorted[j] - sorted[i]) % poolSize;
-					if (d === 0) continue;
-					differences.push(d);
-					counts[d]++;
-					sum += d;
-				}
-			}
-		}
-
-		return {
-			differences,
-			sum,
-			cardinality: new Set(differences).size,
-			counts,
-		};
-	}*/
-
-
-
-
-
-
-	/*public static generateGapSeries(max: number, gap: number): Tuple[] {
-		const covered = new Set<number>();
-		const result: Tuple[] = [];
-
-		while (covered.size < max) {
-			// Trouver le plus petit numéro non couvert
-			let start = 1;
-			for (let i = 1; i <= max; i++) {
-				if (!covered.has(i)) {
-					start = i;
-					break;
-				}
-			}
-
-			const serie: number[] = [];
-			let current = start;
-
-			while (!covered.has(current)) {
-				serie.push(current);
-				covered.add(current);
-				current = (current + gap - 1) % max + 1;
-			}
-
-			// Ajouter le premier élément à la fin pour boucler la série
-			serie.push(start);
-
-			result.push(serie);
-		}
-
-		return result;
-	}*/
-
-
-	/**
-	 * Merge multiple arrays of balls number in an interleaved way
-	 * @param arrays     array of Tuple arrays.
-	 * @return           merged array.
-	 */
-	/*public static interleaved_merge(arrays: Array<Tuple>): Tuple {
-		let mergedArray: Tuple = [];
-		let maxLength = Math.max(...arrays.map(arr => arr.length));
-
-		for (let i = 0; i < maxLength; i++)
-			for (let arr of arrays)
-				if (i < arr.length) mergedArray.push(arr[i]);
-		return mergedArray;
-	}*/
-
-
-
-	/**
-	 * Splits an array into multiple lines, each containing a fixed number of elements
-	 * @param array      The array to split.
-	 * @param size       The number of elements per line.
-	 * @return           A 2D array where each sub-array represents a line.
-	 */
-	/*public static split_into_lines(array: Tuple, size: number): Tuple[] {
-		let result: Tuple[] = [];
-		for (let i = 0; i < array.length; i += size) {
-			if (i + size <= array.length) {
-				result.push(array.slice(i, i + size));
-			} else {
-				result.push(array.slice(i));
-			}
-		}
-		return result;
-	}*/
-
-
-
-	/**
-	 * All possible extractions of nbParts of input array minus one
-	 * @param numbers     array of balls number.
-	 * @param nbParts     count of parts to split input array.
-	 * @return            all possible concatenations of nbParts of input array excluding one.
-	 */
-	/*public static splitAndExtract_Nminus1(numbers:Tuple, nbParts:number): Array<Tuple> {
-		if (nbParts < 0) throw new Error('Invalid nbParts parameter');
-		if (nbParts <= 1) return [];
-		if (!numbers) return [];
-		if (numbers.length < nbParts) return [];
-		const parts: Array<Tuple> = TupleHelper.split (numbers, nbParts);
-		return TupleHelper.extract_Nminus1 (...parts);
-	}*/
-
-
-	/**
-	 * All possible extractions of parts minus one
-	 * @param parts       array of arrays of balls number.
-	 * @return            all possible concatenations of input arrays excluding one.
-	 */
-	/*public static extract_Nminus1(...parts: Array<Tuple>): Array<Tuple> {
-		if (!parts) return [];
-		if (parts.length <= 1) return [];
-		const result: Array<Tuple> = [];
-		for (let i = parts.length-1; i >= 0; i--) {
-			const remainingParts: Array<Tuple> = parts.filter((_, index) => index !== i);
-			const mergedArray = TupleHelper.concat(...remainingParts);
-			result.push(mergedArray);
-		}
-		return result;
-	}*/
-
-
-
-	/**
-	 * Merges consecutive pairs of arrays into a single array
-	 * @param parts       array of arrays of balls number.
-	 * @return            an array that is half the length of the input array, with consecutive pairs of elements merged.
-	 */
-	/*public static pairwise_merge(...parts: Array<Tuple>): Array<Tuple> {
-		if (!parts) return [];
-		if (parts.length <= 1) return [];
-		const result: Array<Tuple> = [];
-		for (let i = 0; i < parts.length; i += 2) {
-			if (i + 1 < parts.length) {
-				result.push([...parts[i], ...parts[i+1]]);
-			} else {
-				result.push([...parts[i]]);
-			}
-		}
-		return result;
-	}*/
-
-
-
-/*
-private static packGapsBigInt(gaps: number[], bitsPerGap: number): bigint {
-	let key = 0n;
-	const shift = BigInt(bitsPerGap);
-	for (let i = 0; i < gaps.length; i++) {
-		key = (key << shift) | BigInt(gaps[i]);
-	}
-	return key;
-}
-
-
-private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: number): number[] {
-	const gaps = new Array<number>(gapCount);
-	const mask = (1n << BigInt(bitsPerGap)) - 1n;
-	for (let i = gapCount - 1; i >= 0; i--) {
-		gaps[i] = Number(key & mask);
-		key >>= BigInt(bitsPerGap);
-	}
-	return gaps;
-}
-*/
-
-// Example:
-// const gaps = [2, 3, 5];
-// const bits = 3; // enough for max gap <= 7
-// const key = TupleHelper.packGapsBigInt(gaps, bits);
-// const restored = TupleHelper.unpackGapsBigInt(key, bits, gaps.length);
-//Et tu stockes dans Set<bigint>
 
 
 
@@ -1235,23 +659,6 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 
-	/**
-	 * Builds the neighborhood tuple system for a reference alphabet.
-	 * For each ball in the alphabet, it returns a tuple made of the ball itself
-	 * followed by all alphabet values that appear with it in the system.
-	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          A tuple system where each tuple is [ball, ...neighbor(ball)].
-	 */
-	/*public static getSystemNeighborhoodTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
-		return TupleHelper.getSystemNeighborhoodDegrees(system, alphabet)
-			.map(item => [item.ball, ...item.neighborhood].sort((a, b) => a - b));
-	}*/
-
-
-
-
 
 
 
@@ -1312,24 +719,6 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		});
 	}
 
-
-
-
-
-
-	/**
-	 * Builds the non-adjacent tuple system for a reference alphabet.
-	 * For each ball in the alphabet, it returns a tuple made of the ball itself
-	 * followed by all alphabet values that never appear with it in the system.
-	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          A tuple system where each tuple is [ball, ...nonAdjacent(ball)].
-	 */
-	/*public static getSystemNonAdjacentTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
-		return TupleHelper.getSystemNonAdjacentDegrees(system, alphabet)
-			.map(item => [item.ball, ...item.nonAdjacent].sort((a, b) => a - b));
-	}*/
 
 
 
@@ -1583,7 +972,74 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 
+	private static getCombinationIndexInternal(sortedTuple: number[], k: number): number {
+		let index = 0;
+		for (let i = 0; i < k; i++) { index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i)); }
+		return index;
+	}
 
+
+	private static buildKFrequencyMask(
+		system: Tuple[],
+		alphabetLength: number,
+		k: number,
+	): {
+		mask: Uint32Array;
+		totalPossible: number;
+		totalPlacements: number;
+		uniqueCovered: number;
+		holes: number;
+		minFrequency: number;
+		maxFrequency: number;
+	} {
+		const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
+		const mask = new Uint32Array(totalPossible);
+		let uniqueCovered = 0;
+		let totalPlacements = 0;
+		const tempCombo = new Array<number>(k);
+
+		const process = (ticket: number[], start: number, depth: number): void => {
+			if (depth === k) {
+				const idx = TupleHelper.getCombinationIndexInternal(tempCombo, k);
+				if (mask[idx] === 0) uniqueCovered++;
+				mask[idx]++;
+				totalPlacements++;
+				return;
+			}
+
+			for (let i = start; i < ticket.length; i++) {
+				tempCombo[depth] = ticket[i];
+				process(ticket, i + 1, depth + 1);
+			}
+		};
+
+		for (const ticket of system) {
+			const uniqueTicket = Array.from(new Set(ticket));
+			if (uniqueTicket.length < k) continue;
+			const sortedTicket = uniqueTicket.sort((a, b) => b - a);
+			process(sortedTicket, 0, 0);
+		}
+
+		let maxFrequency = 0;
+		let minFrequency = Infinity;
+		let holes = 0;
+
+		for (const frequency of mask) {
+			if (frequency === 0) holes++;
+			if (frequency > maxFrequency) maxFrequency = frequency;
+			if (frequency < minFrequency) minFrequency = frequency;
+		}
+
+		return {
+			mask,
+			totalPossible,
+			totalPlacements,
+			uniqueCovered,
+			holes,
+			minFrequency: holes > 0 ? 0 : (minFrequency === Infinity ? 0 : minFrequency),
+			maxFrequency,
+		};
+	}
 
 
 
@@ -1704,287 +1160,8 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	}
 
 
-	/*public static getSystemPairDistanceStats(
-		left: Tuple[],
-		right: Tuple[],
-		alphabet: Tuple,
-	): SystemPairDistanceStats {
-		const leftStats = TupleHelper.getSystemPairFrequencyStats(left, alphabet);
-		const rightStats = TupleHelper.getSystemPairFrequencyStats(right, alphabet);
-
-		let manhattanDistance = 0;
-		let sharedCoveredPairs = 0;
-		let sharedRepeatedPairs = 0;
-		let overlapWeight = 0;
-		let repeatedOverlapWeight = 0;
-
-		for (let i = 0; i < leftStats.mask.length; i++) {
-			const leftFrequency = leftStats.mask[i];
-			const rightFrequency = rightStats.mask[i];
-			const overlap = Math.min(leftFrequency, rightFrequency);
-
-			manhattanDistance += Math.abs(leftFrequency - rightFrequency);
-			overlapWeight += overlap;
-
-			if (leftFrequency > 0 && rightFrequency > 0) sharedCoveredPairs++;
-			if (leftFrequency > 1 && rightFrequency > 1) sharedRepeatedPairs++;
-			if (overlap > 1) repeatedOverlapWeight += overlap - 1;
-		}
-
-		return {
-			manhattanDistance,
-			sharedCoveredPairs,
-			sharedRepeatedPairs,
-			overlapWeight,
-			repeatedOverlapWeight,
-		};
-	}*/
 
 
-
-
-
-
-
-	/**
-	 * Gets the intersection of all tuples in the system that contain the specified ball.
-	 *
-	 * @param ball      The reference ball number.
-	 * @param system    The array of tuples (the lottery system).
-	 * @return          A Tuple containing the intersection of all tuples that contain the ball.
-	 */
-	/*public static getNumberIntersectionTuple(ball: number, system: Tuple[]): Tuple {
-		const matchingTuples = system.filter(tuple => tuple.includes(ball));
-		if (matchingTuples.length === 0) return [];
-
-		let intersection = [...matchingTuples[0]];
-		for (let i = 1; i < matchingTuples.length; i++) {
-			const currentSet = new Set<number>(matchingTuples[i]);
-			intersection = intersection.filter(num => currentSet.has(num));
-			if (intersection.length === 0) break;
-		}
-
-		return intersection;
-	}*/
-
-
-	/**
-	 * Gets the intersection tuple for every ball of the reference alphabet.
-	 *
-	 * @param system    The array of tuples (the lottery system).
-	 * @param alphabet  The complete reference alphabet used by the system.
-	 * @return          An array containing the intersection tuple associated with each ball.
-	 */
-	/*public static getSystemIntersectionTuples(system: Tuple[], alphabet: Tuple): Tuple[] {
-		if (!alphabet) return [];
-		const uniqueAlphabet = Array.from(new Set(alphabet));
-		return uniqueAlphabet.map(ball => TupleHelper.getNumberIntersectionTuple(ball, system));
-	}*/
-
-
-
-
-
-
-
-	/**
-	 * Gets the collective neighborhood of a subset of numbers.
-	 * It computes the union of the neighborhoods of each number in the subTuple.
-	 * @param subTuple  The subset of numbers (e.g., a pair or a potential ticket).
-	 *
-	 * @param system    The array of tuples.
-	 * @return          A Tuple containing the union of all reachable unique neighbors.
-	 */
-	/*public static getSubTupleNeighborhood(subTuple: Tuple, system: Tuple[]): Tuple {
-		const unionSet = new Set<number>();
-
-		// Iterate through each number in the subset (e.g., alphabet 1-50)
-		for (let i = 0; i < subTuple.length; i++) {
-			const ball = subTuple[i];
-			
-			// Retrieve the neighborhood for this specific ball
-			const neighbors = TupleHelper.getNumberNeighborhood(ball, system);
-			
-			// Add each neighbor to the global Set (Set automatically handles uniqueness)
-			for (let j = 0; j < neighbors.length; j++) unionSet.add(neighbors[j]);
-		}
-		return Array.from(unionSet);
-	}*/
-
-
-	/**
-	 * Computes the Global Expansion Score of the entire system.
-	 * This is the sum of the degrees of all numbers in the alphabet (1 to 50).
-	 * Higher values indicate better dispersion and fewer redundant connections.
-	 *
-	 * @param system    The array of tuples.
-	 * @param alphabet  The pool of available numbers (e.g., [1, 2, ..., 50]).
-	 * @return          The total sum of all individual vertex degrees.
-	 */
-	/*public static getGlobalExpansion(system: Tuple[], alphabet: Tuple): number {
-		return TupleHelper.getSubTupleNeighborhood(alphabet, system).length;
-	}*/
-
-
-
-
-	/**
-	 * Gets the k-sized neighborhood of a specific number.
-	 * It finds all unique combinations of size 'k' that appear alongside the ball.
-	 *
-	 * @param ball      The reference ball.
-	 * @param system    The lottery system.
-	 * @param k         The size of the neighbor groups to track (1 for singles, 2 for pairs, etc.).
-	 * @return          An array of Tuples, each representing a unique k-combination found.
-	 */
-	/*public static getNumberKNeighborhood(ball: number, system: Tuple[], k: number): Tuple[] {
-		const combinationsFound = new Map<string, Tuple>();
-
-		for (const ticket of system) {
-			if (ticket.includes(ball)) {
-				// Get all numbers in the ticket except the reference ball
-				const others = ticket.filter(num => num !== ball);
-				
-				// Generate all possible combinations of size 'k' from the other numbers
-				// If ticket is [10, 1, 2, 3] and ball is 10, others are [1, 2, 3]
-				// If k=2, subsets are [1, 2], [1, 3], [2, 3]
-				const subsets = TupleHelper.getCombinations(others, k); 
-				
-				for (const sub of subsets) {
-					const key = [...sub].sort((a, b) => a - b).join('-');
-					if (!combinationsFound.has(key)) {
-						combinationsFound.set(key, sub);
-					}
-				}
-			}
-		}
-
-		return Array.from(combinationsFound.values());
-	}*/
-
-
-	/**
-	 * Computes the k-degree of a number within the system.
-	 * The k-degree represents the total number of unique combinations of size 'k' 
-	 * that this specific ball "sees" or reaches within its shared tuples.
-	 *
-	 * @param ball      The reference ball number to analyze.
-	 * @param system    The array of tuples (the lottery system).
-	 * @param k         The size of the combinations to track (e.g., 1 for neighbors, 2 for pairs).
-	 * @return          The count of unique k-sized sets in the ball's orbit.
-	 */
-	/*public static getNumberKDegree(ball: number, system: Tuple[], k: number): number {
-		return TupleHelper.getNumberKNeighborhood(ball, system, k).length;
-	}*/
-
-
-	/**
-	 * Gets the collective k-neighborhood for a group of numbers.
-	 * It merges all unique k-sized combinations reachable by any of the numbers in the subTuple,
-	 * ensuring no duplicates are counted across the entire subset.
-	 *
-	 * @param subTuple  The subset of numbers (e.g., the alphabet or a specific ticket).
-	 * @param system    The array of tuples (the lottery system).
-	 * @param k         The size of the neighbor groups to collect (1, 2, 3...).
-	 * @return          An array of unique k-sized Tuples reachable by the subTuple.
-	 */
-	/*public static getSubTupleKNeighborhood(subTuple: Tuple, system: Tuple[], k: number): Tuple[] {
-		const globalMap = new Map<string, Tuple>();
-
-		for (const ball of subTuple) {
-			const kNeighbors = TupleHelper.getNumberKNeighborhood(ball, system, k);
-			for (const sub of kNeighbors) {
-				// We sort the combination to ensure unique string keys (e.g., "1-2" vs "2-1")
-				const key = [...sub].sort((a, b) => a - b).join('-');
-				globalMap.set(key, sub);
-			}
-		}
-
-		return Array.from(globalMap.values());
-	}*/
-
-
-
-	/**
-	 * Computes the Global K-Expansion Score of the entire system.
-	 * This is the total number of UNIQUE k-sized combinations covered by the system.
-	 *
-	 * @param system    The array of tuples.
-	 * @param alphabet  The pool of available numbers (e.g., [1 to 50]).
-	 * @param k         The size of the combinations to track (1, 2, 3...).
-	 * @return          The cardinality (length) of the collective k-neighborhood.
-	 */
-	/*public static getGlobalKExpansion(system: Tuple[], alphabet: Tuple, k: number): number {
-		return TupleHelper.getSubTupleKNeighborhood(alphabet, system, k).length;
-	}*/
-
-
-
-/**
- * Constant defining the point where the combinatorial search becomes too constrained.
- * At 80%, we switch to a deeper 'k' to maintain search fluidity.
- */
-//public static readonly SATURATION_THRESHOLD = 0.8;
-
-
-/**
- * Determines the optimal depth 'k' dynamically.
- * It will increment k as long as the budget doesn't saturate the total space.
- *
- * @param nbTickets   Number of tickets in your budget.
- * @param alphabet    The pool of numbers (e.g., 1 to 25 or 1 to 50).
- * @param ticketSize  The number of balls per ticket (10 for Crescendo, 5 for Loto).
- * @return            The optimal k-value (1, 2, 3, 4...).
- */
- /*
-public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number): number {
-    const n = alphabet.length;
-    
-    // We test each k from 1 up to ticketSize - 1
-    for (let k = 1; k < ticketSize; k++) {
-        const totalPossible = Number(TupleHelper.binomial(n, k));
-        const combinationsPerTicket = Number(TupleHelper.binomial(ticketSize, k));
-        const budgetGenerated = nbTickets * combinationsPerTicket;
-
-        // If we haven't reached the saturation threshold yet, this k is our "sweet spot".
-        if (budgetGenerated < totalPossible * TupleHelper.SATURATION_THRESHOLD) {
-            //console.log(`[Optimizer] Selected k=${k} (${budgetGenerated}/${totalPossible} combos planned)`);
-            return k;
-        }
-    //}
-
-    // If everything is saturated, we return the highest possible k (ticketSize - 1)
-    return ticketSize - 1;
-}
-*/
-
-
-
-
-/**
- * Computes the absolute maximum expansion score possible for a given budget.
- * This is the "Perfect Score" that the Monte Carlo tries to reach.
- *
- * @param nbTickets        Number of tickets in the system.
- * @param alphabet_length  The pool size of numbers (e.g., 56).
- * @param k                The depth of expansion (1, 2, 3, 4, etc...).
- * @param ticketSize       The number of balls per ticket.
- * @return                 The theoretical maximum number of unique k-combinations.
- */
-/*public static getTheoreticalMaxExpansion(nbTickets: number, alphabet_length: number, k: number, ticketSize: number): number {
-    // 1. How many unique k-combinations can the alphabet possibly offer?
-    // Example for k=2 and n=50: 1225
-    const totalSpace = Number(TupleHelper.binomial(alphabet_length, k));
-
-    // 2. How many k-combinations does your budget generate in total?
-    // Example for k=2, 70 tickets: 70 * binom(5, 2) = 700
-    const combinationsPerTicket = Number(TupleHelper.binomial(ticketSize, k));
-    const budgetCapacity = nbTickets * combinationsPerTicket;
-
-    // The maximum is the lower of these two values.
-    // You cannot cover more than what exists, and you cannot cover more than what you play.
-    return Math.min(totalSpace, budgetCapacity);
-}*/
 
 
 
@@ -2094,7 +1271,7 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
  * @param k               The size of the combinations to track (e.g., 2 for pairs).
  * @returns               An object containing the frequency mask and coverage analytics.
  */
-public static getGlobalKFrequencyMask(
+/*public static getGlobalKFrequencyMask(
 	system: number[][],
 	alphabetLength: number,
 	k: number
@@ -2108,538 +1285,7 @@ public static getGlobalKFrequencyMask(
   maxFrequency: number;
 } {
 	return TupleHelper.buildKFrequencyMask(system, alphabetLength, k);
-}
-
-
-
-/**
- * Computes the frequency mask analytics vector for a system from k=1 up to kMax.
- * Each entry contains the same statistics returned by getGlobalKFrequencyMask().
- *
- * @param {number[][]} system    - The list of tickets (lottery grids) in the current system.
- * @param {number} alphabetSize  - The total size of the ball pool (e.g., 25).
- * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
- * @returns {Array}              An array where index i contains the frequency analytics for k = i + 1.
- */
-/*public static getFrequencyMaskVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> {
-    const results: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>> = [];
-    for (let k = 1; k <= kMax; k++) {
-        results.push(TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, k));
-    }
-    return results;
 }*/
-
-
-/**
- * Counts how many targetK-subsets contain no covered baseK-subset at all.
- *
- * A target tuple is a leak when none of its internal baseK-subsets is covered
- * by the system mask built at level baseK.
- *
- * @param baseStats        Frequency analytics returned for the chosen baseK.
- * @param alphabetLength   The total numbers in the pool.
- * @param baseK            The size of the covered subsets to test.
- * @param targetK          The target tuple size to protect.
- * @returns                Number of leaking tuples.
- */
-/*
-public static countUncoveredCombinations(
-    baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
-    alphabetLength: number,
-    baseK: number,
-    targetK: number
-): number {
-    if (baseK < 1 || targetK < baseK) return 0;
-    if (baseStats == null || baseStats.mask == null) return 0;
-    if (alphabetLength < targetK) return 0;
-
-    let leakCount = 0;
-    const targetTuple = new Array(targetK);
-    const baseTuple = new Array(baseK);
-
-    const hasCoveredBaseSubset = (tuple: number[]): boolean => {
-        const exploreBase = (start: number, depth: number): boolean => {
-            if (depth === baseK) {
-                const idx = TupleHelper.getCombinationIndex(baseTuple, baseK);
-                return baseStats.mask[idx] > 0;
-            }
-
-            for (let i = start; i < tuple.length; i++) {
-                baseTuple[depth] = tuple[i];
-                if (exploreBase(i + 1, depth + 1)) return true;
-            }
-
-            return false;
-        };
-
-        return exploreBase(0, 0);
-    };
-
-    const exploreTargets = (startValue: number, depth: number): void => {
-        if (depth === targetK) {
-            const descendingTuple = [...targetTuple].sort((a, b) => b - a);
-            if (!hasCoveredBaseSubset(descendingTuple)) leakCount++;
-            return;
-        }
-
-        const remaining = targetK - depth;
-        const maxStart = alphabetLength - remaining + 1;
-
-        for (let value = startValue; value <= maxStart; value++) {
-            targetTuple[depth] = value;
-            exploreTargets(value + 1, depth + 1);
-        }
-    };
-
-    exploreTargets(1, 0);
-    return leakCount;
-}*/
-
-
-/**
- * Counts the number of targetK-tuples that contain no covered baseK-subset in
- * the system.
- *
- * @param system         The system to analyze.
- * @param alphabetSize   The total numbers in the pool.
- * @param baseK          The covered subset size to use.
- * @param targetK        The leak tuple size to count.
- * @returns              Number of leaks of size targetK.
- */
-/*
-public static leaksCount(system: number[][], alphabetSize: number, baseK: number, targetK: number): number {
-    if (baseK < 1 || targetK < baseK) return 0;
-
-    const baseStats = TupleHelper.getGlobalKFrequencyMask(system, alphabetSize, baseK);
-    return TupleHelper.countUncoveredCombinations(baseStats, alphabetSize, baseK, targetK);
-}*/
-
-
-
-/**
- * Projects a base-k coverage mask onto a target space and counts how many
- * target tuples are protected by at least one covered base subset.
- *
- * This is the relevant metric when full base-space saturation is unnecessary.
- * Example: with baseK=2 and targetK=5, we only care that every 5-tuple
- * contains at least one covered pair, not that every pair is covered globally.
- *
- * @param baseStats        Frequency analytics returned for the chosen baseK.
- * @param alphabetLength   The total numbers in the pool.
- * @param baseK            The size of the covered subsets to test.
- * @param targetK          The target tuple size to protect.
- * @returns                Coverage projection statistics from baseK to targetK.
- */
-/*
-public static getTargetCoverageStats(
-    baseStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
-    alphabetLength: number,
-    baseK: number,
-    targetK: number
-) {
-    if (baseK < 1 || targetK < baseK || alphabetLength < targetK) {
-        return {
-            baseK,
-            targetK,
-            totalTargets: 0,
-            coveredTargets: 0,
-            uncoveredTargets: 0,
-            coverageRatio: 0,
-        };
-    }
-
-    const totalTargets = Number(TupleHelper.binomial(alphabetLength, targetK));
-    const uncoveredTargets = TupleHelper.countUncoveredCombinations(baseStats, alphabetLength, baseK, targetK);
-    const coveredTargets = totalTargets - uncoveredTargets;
-
-    return {
-        baseK,
-        targetK,
-        totalTargets,
-        coveredTargets,
-        uncoveredTargets,
-        coverageRatio: totalTargets === 0 ? 0 : coveredTargets / totalTargets,
-    };
-}*/
-
-
-
-/**
- * Computes the target-space coverage projection for each k-level frequency mask.
- *
- * Each entry answers: "with the covered base-k subsets of this system, how much
- * of the targetK space is protected?"
- *
- * @param vector           The frequency mask vector returned by getFrequencyMaskVector().
- * @param alphabetLength   The total numbers in the pool.
- * @param targetK          The target tuple size to protect.
- * @returns                A projection vector aligned with base k from 1..targetK.
- */
-/*public static getTargetCoverageVector(
-    vector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
-    alphabetLength: number,
-    targetK: number
-) {
-    const results = [];
-    const length = Math.min(vector.length, targetK);
-
-    for (let i = 0; i < length; i++) {
-        results.push(TupleHelper.getTargetCoverageStats(vector[i], alphabetLength, i + 1, targetK));
-    }
-
-    return results;
-}*/
-
-
-
-/**
- * Computes the expansion score vector for a system from k=1 up to kMax.
- * Each entry contains the unique combination count for the corresponding k.
- *
- * @param {number[][]} system    - The list of tickets (lottery grids) in the current system.
- * @param {number} alphabetSize  - The total size of the ball pool (e.g., 25).
- * @param {number} kMax          - The maximum depth for combinations (e.g., 4).
- * @returns {number[]}           An array where index i contains the unique combination count for k = i + 1.
- */
-/*public static getExpansionVector(system: number[][], alphabetSize: number, kMax: number): Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> {
-    const results: Array<ReturnType<typeof TupleHelper.getGlobalKExpansionBitmask>> = [];
-    for (let k = 1; k <= kMax; k++) {
-        results.push(TupleHelper.getGlobalKExpansionBitmask(system, alphabetSize, k));
-    }
-    return results;
-}*/
-
-
-
-
-
-
-
-
-/**
- * Determines if a mutation should be accepted based on a hierarchical (lexicographical) expansion score comparison.
- * The priority is given to the first elements of the array (lower k values).
- * Logic:
- * 1. Iterates through scores from index 0 to n.
- * 2. If a new score at level i is higher, the mutation is better (returns true).
- * 3. If a new score at level i is lower, the mutation is worse (returns false).
- * 4. If scores are equal at level i, it proceeds to level i+1 to break the tie.
- *
- * @param {number[]} oldScores  - Array of current scores [k1, k2, ..., kn].
- * @param {number[]} newScores  - Array of new scores [k1, k2, ..., kn] after mutation.
- * @returns {boolean}           True if the mutation improves the system hierarchy, false otherwise.
- */
- /*public static isExpansionVectorMutationBetter(oldScores: number[], newScores: number[]): boolean {
-    for (let i = 0; i < oldScores.length; i++) {
-        if (newScores[i] > oldScores[i]) return true;					// Higher score at the current priority level means an overall improvement
-        if (newScores[i] < oldScores[i]) return false;					// Lower score at the current priority level means a regression
-    }																	// If equal, the loop continues to the next level (i + 1) to decide
-    return false;														// If the loop finishes, all scores are identical
-}*/
-
-
-
-/**
- * Determines if a mutation should be accepted based on a hierarchical comparison
- * of frequency mask vectors.
- *
- * @param oldVector   Current frequency mask vector.
- * @param newVector   Candidate frequency mask vector after mutation.
- * @returns           True if the candidate is better, false otherwise.
- */
-/*
-public static isFrequencyMaskVectorMutationBetter(
-    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
-    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
-): boolean {
-    if (oldVector == null) return true;
-    const length = Math.min(oldVector.length, newVector.length);
-    if (length === 0) return false;*/
-
-	/*
-    if (length === 1) {
-        const oldK1 = oldVector[0];
-        const newK1 = newVector[0];
-
-        if (newK1.holes < oldK1.holes) return true;
-        if (newK1.holes > oldK1.holes) return false;
-
-        if (newK1.maxFrequency < oldK1.maxFrequency) return true;
-        if (newK1.maxFrequency > oldK1.maxFrequency) return false;
-
-        const oldRange = oldK1.maxFrequency - oldK1.minFrequency;
-        const newRange = newK1.maxFrequency - newK1.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
-
-        if (newK1.minFrequency > oldK1.minFrequency) return true;
-        if (newK1.minFrequency < oldK1.minFrequency) return false;
-
-        return false;
-    }
-
-    if (length === 2) {
-        const oldK2 = oldVector[1];
-        const newK2 = newVector[1];
-
-        if (newK2.holes < oldK2.holes) return true;
-        if (newK2.holes > oldK2.holes) return false;
-
-        if (newK2.maxFrequency < oldK2.maxFrequency) return true;
-        if (newK2.maxFrequency > oldK2.maxFrequency) return false;
-
-        const oldRange = oldK2.maxFrequency - oldK2.minFrequency;
-        const newRange = newK2.maxFrequency - newK2.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
-
-        if (newK2.minFrequency > oldK2.minFrequency) return true;
-        if (newK2.minFrequency < oldK2.minFrequency) return false;
-
-        const oldK1 = oldVector[0];
-        const newK1 = newVector[0];
-
-        if (newK1.holes < oldK1.holes) return true;
-        if (newK1.holes > oldK1.holes) return false;
-
-        if (newK1.maxFrequency < oldK1.maxFrequency) return true;
-        if (newK1.maxFrequency > oldK1.maxFrequency) return false;
-
-        return false;
-    }
-	*/
-
-
-    //for (let i = length - 1; i >= 0; i--) {
-    /*for (let i = 0; i <= length - 1; i++) {
-        const oldK = oldVector[i];
-        const newK = newVector[i];*/
-        //const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
-        //const oldAtMax = oldK.uniqueCovered >= maxReachable;
-        //const newAtMax = newK.uniqueCovered >= maxReachable;
-
-        // If both systems already saturate this level, it no longer discriminates.
-        //if (oldAtMax && newAtMax) continue;
-
-
-        // Otherwise, priority is to maximize expansion at the current level.
-        //if (newK.holes < oldK.holes) return true;
-        //if (newK.holes > oldK.holes) return false;
-		
-        //if (newK.maxFrequency < oldK.maxFrequency) return true;
-        //if (newK.maxFrequency > oldK.maxFrequency) return false;
-
-        /*if (newK.minFrequency > oldK.minFrequency) return true;
-        if (newK.minFrequency < oldK.minFrequency) return false;
-
-        if (newK.maxFrequency > oldK.maxFrequency) return true;
-        if (newK.maxFrequency < oldK.maxFrequency) return false;*/
-
-
-
-        //const oldRange = oldK.maxFrequency - oldK.minFrequency;
-        //const newRange = newK.maxFrequency - newK.minFrequency;
-        //if (newRange < oldRange) return true;
-        //if (newRange > oldRange) return false;
-
-        //if (newK.holes < oldK.holes) return true;
-        //if (newK.holes > oldK.holes) return false;
-
-
-        // Same expansion on the current pivot: compress the level below.
-        /*const oldKMinus1 = oldVector[i - 1];
-        const newKMinus1 = newVector[i - 1];
-
-        if (newKMinus1.holes > oldKMinus1.holes) return true;
-        if (newKMinus1.holes < oldKMinus1.holes) return false;
-
-        if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
-        if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
-
-        const oldRange = oldKMinus1.maxFrequency - oldKMinus1.minFrequency;
-        const newRange = newKMinus1.maxFrequency - newKMinus1.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
-
-        if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
-        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;*/
-    //}
-
-
-    //for (let i = length - 1; i >= 0; i--) {
-	/*for (let i = 0; i <= length - 1; i++) {
-        const oldK = oldVector[i];
-        const newK = newVector[i];
-
-        if (newK.holes < oldK.holes) return true;
-        if (newK.holes > oldK.holes) return false;
-    }
-		
-		
-		
-    return false;
-}*/
-
-
-
-/*
-public static isFrequencyMaskVectorMutationBetter(
-    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
-    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>
-): boolean {
-    if (oldVector == null) return true;
-    if (oldVector.length === 0 || newVector.length === 0) return newVector.length > oldVector.length;
-
-    const length = Math.min(oldVector.length, newVector.length);
-
-    for (let i = length - 1; i >= 1; i--) {
-        const oldK = oldVector[i];
-        const newK = newVector[i];
-        const maxReachable = Math.min(oldK.totalPossible, oldK.totalPlacements);
-        const oldAtMax = oldK.uniqueCovered >= maxReachable;
-        const newAtMax = newK.uniqueCovered >= maxReachable;
-
-        // If both systems already saturate this level, it no longer discriminates.
-        if (oldAtMax && newAtMax) continue;
-
-        // Otherwise, priority is to maximize expansion at the current level.
-        if (newK.uniqueCovered > oldK.uniqueCovered) return true;
-        if (newK.uniqueCovered < oldK.uniqueCovered) return false;
-
-        // Same expansion on the current pivot: compress the level below.
-        const oldKMinus1 = oldVector[i - 1];
-        const newKMinus1 = newVector[i - 1];
-
-        if (newKMinus1.uniqueCovered < oldKMinus1.uniqueCovered) return true;
-        if (newKMinus1.uniqueCovered > oldKMinus1.uniqueCovered) return false;
-
-        if (newKMinus1.maxFrequency < oldKMinus1.maxFrequency) return true;
-        if (newKMinus1.maxFrequency > oldKMinus1.maxFrequency) return false;
-
-        const oldRange = oldKMinus1.maxFrequency - oldKMinus1.minFrequency;
-        const newRange = newKMinus1.maxFrequency - newKMinus1.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
-
-        if (newKMinus1.minFrequency > oldKMinus1.minFrequency) return true;
-        if (newKMinus1.minFrequency < oldKMinus1.minFrequency) return false;
-    }
-
-    // Terminal optimization on k=2: once higher pairs (K, K-1) no longer discriminate,
-    // we minimize k=2 coverage itself and then prefer the cleanest frequency field.
-    if (length > 1) {
-        const oldK2 = oldVector[1];
-        const newK2 = newVector[1];
-
-        if (newK2.uniqueCovered < oldK2.uniqueCovered) return true;
-        if (newK2.uniqueCovered > oldK2.uniqueCovered) return false;
-
-        if (newK2.maxFrequency < oldK2.maxFrequency) return true;
-        if (newK2.maxFrequency > oldK2.maxFrequency) return false;
-
-        const oldRange = oldK2.maxFrequency - oldK2.minFrequency;
-        const newRange = newK2.maxFrequency - newK2.minFrequency;
-        if (newRange < oldRange) return true;
-        if (newRange > oldRange) return false;
-
-        if (newK2.minFrequency > oldK2.minFrequency) return true;
-        if (newK2.minFrequency < oldK2.minFrequency) return false;
-    }
-
-    return false;
-}*/
-
-
-/**
- * Determines if a mutation is better for a given target space.
- *
- * The primary criterion is no longer the raw base-space expansion
- * (`uniqueCovered` / `holes`), but the projected protection of the targetK
- * space: how many target tuples still have no covered base subset.
- *
- * Example: for targetK=5 and baseK=2, this compares systems by the number of
- * 5-tuples that contain no covered pair at all.
- *
- * @param oldVector        Current frequency mask vector.
- * @param newVector        Candidate frequency mask vector after mutation.
- * @param alphabetLength   The total numbers in the pool.
- * @param targetK          The target tuple size to protect.
- * @returns                True if the candidate is better, false otherwise.
- */
-/*public static isTargetCoverageVectorMutationBetter(
-    oldVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
-    newVector: Array<ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>>,
-    alphabetLength: number,
-    targetK: number
-): boolean {
-    if (oldVector == null) return true;
-    const length = Math.min(oldVector.length, newVector.length, targetK);
-    if (length === 0) return false;
-
-    for (let i = 0; i < length; i++) {
-        const baseK = i + 1;
-        const oldProjection = TupleHelper.getTargetCoverageStats(oldVector[i], alphabetLength, baseK, targetK);
-        const newProjection = TupleHelper.getTargetCoverageStats(newVector[i], alphabetLength, baseK, targetK);
-
-        if (newProjection.uncoveredTargets < oldProjection.uncoveredTargets) return true;
-        if (newProjection.uncoveredTargets > oldProjection.uncoveredTargets) return false;
-
-        const oldK = oldVector[i];
-        const newK = newVector[i];
-
-        if (newK.maxFrequency < oldK.maxFrequency) return true;
-        if (newK.maxFrequency > oldK.maxFrequency) return false;
-
-        if (newK.minFrequency > oldK.minFrequency) return true;
-        if (newK.minFrequency < oldK.minFrequency) return false;
-
-        if (newK.holes < oldK.holes) return true;
-        if (newK.holes > oldK.holes) return false;
-    }
-
-    return false;
-}*/
-
-
-
-
-
-
-/**
- * Determines if a mutation should be accepted for a single k-level frequency mask.
- * The comparison is based on the same local statistics used by the vector version.
- *
- * @param oldStats   Current frequency mask analytics for a given k.
- * @param newStats   Candidate frequency mask analytics for the same k.
- * @returns          True if the candidate is better, false otherwise.
- */
- /*
-public static isFrequencyMaskKMutationBetter(
-    oldStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>,
-    newStats: ReturnType<typeof TupleHelper.getGlobalKFrequencyMask>
-): boolean {
-    if (newStats.uniqueCovered > oldStats.uniqueCovered) return true;
-    if (newStats.uniqueCovered < oldStats.uniqueCovered) return false;
-
-    if (newStats.maxFrequency < oldStats.maxFrequency) return true;
-    if (newStats.maxFrequency > oldStats.maxFrequency) return false;
-
-    const oldRange = oldStats.maxFrequency - oldStats.minFrequency;
-    const newRange = newStats.maxFrequency - newStats.minFrequency;
-    if (newRange < oldRange) return true;
-    if (newRange > oldRange) return false;
-
-    if (newStats.minFrequency > oldStats.minFrequency) return true;
-    if (newStats.minFrequency < oldStats.minFrequency) return false;
-
-    return false;
-}*/
-
-
-
-
-
-
 
 
 
