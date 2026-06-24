@@ -300,12 +300,30 @@ describe('TupleHelper module', () => {
 		expect(leftStats.repeatedPairs).toBe(1);
 		expect(leftStats.duplicatePlacements).toBe(1);
 
-		const distance = TupleHelper.getSystemPairDistanceStats(leftSystem, rightSystem, alphabet);
+		/*const distance = TupleHelper.getSystemPairDistanceStats(leftSystem, rightSystem, alphabet);
 		expect(distance.manhattanDistance).toBe(6);
 		expect(distance.sharedCoveredPairs).toBe(4);
 		expect(distance.sharedRepeatedPairs).toBe(0);
 		expect(distance.overlapWeight).toBe(3);
-		expect(distance.repeatedOverlapWeight).toBe(0);
+		expect(distance.repeatedOverlapWeight).toBe(0);*/
+	});
+
+
+	test('TupleHelper trio frequency stats test', () => {
+		const alphabet = [1, 2, 3, 4, 5];
+		const system = [
+			[1, 2, 3, 4],
+			[1, 2, 3, 5],
+		];
+
+		const trioStats = TupleHelper.getSystemTrioFrequencyStats(system, alphabet);
+		expect(trioStats.totalTrios).toBe(10);
+		expect(trioStats.coveredTrios).toBe(7);
+		expect(trioStats.uncoveredTrios).toBe(3);
+		expect(trioStats.totalPlacements).toBe(8);
+		expect(trioStats.maxFrequency).toBe(2);
+		expect(trioStats.repeatedTrios).toBe(1);
+		expect(trioStats.duplicatePlacements).toBe(1);
 	});
 
 

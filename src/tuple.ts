@@ -2,6 +2,46 @@
 export type Tuple = number[];		//export type Tuple<T> = T[];
 
 
+export type SystemKFrequencyStats = {
+	k: number;
+	totalPossible: number;
+	totalPlacements: number;
+	uniqueCovered: number;
+	holes: number;
+	minFrequency: number;
+	maxFrequency: number;
+	repeatedCombinations: number;
+	duplicatePlacements: number;
+	mask: Uint32Array;
+};
+
+
+export type SystemPairFrequencyStats = {
+	totalPairs: number;
+	coveredPairs: number;
+	uncoveredPairs: number;
+	totalPlacements: number;
+	minFrequency: number;
+	maxFrequency: number;
+	repeatedPairs: number;
+	duplicatePlacements: number;
+	mask: Uint32Array;
+};
+
+
+export type SystemTrioFrequencyStats = {
+	totalTrios: number;
+	coveredTrios: number;
+	uncoveredTrios: number;
+	totalPlacements: number;
+	minFrequency: number;
+	maxFrequency: number;
+	repeatedTrios: number;
+	duplicatePlacements: number;
+	mask: Uint32Array;
+};
+
+
 export type NumberNeighborhoodCount = {
 	neighbor: number;
 	count: number;
@@ -20,40 +60,6 @@ export type NumberNeighborhoodCounts = {
 };
 
 
-/*
-export type SystemPairFrequencyStats = {
-	totalPairs: number;
-	coveredPairs: number;
-	uncoveredPairs: number;
-	totalPlacements: number;
-	minFrequency: number;
-	maxFrequency: number;
-	repeatedPairs: number;
-	duplicatePlacements: number;
-	frequencies: Map<string, number>;
-};
-
-
-export type SystemTrioFrequencyStats = {
-	totalTrios: number;
-	coveredTrios: number;
-	uncoveredTrios: number;
-	
-	totalPlacements: number;
-	minFrequency: number;
-	maxFrequency: number;
-	repeatedTrios: number;
-	duplicatePlacements: number;
-	
-	frequencies: Map<string, number>;
-};
-*/
-
-
-
-
-
-/*
 export type SystemPairDistanceStats = {
 	manhattanDistance: number;
 	sharedCoveredPairs: number;
@@ -61,7 +67,6 @@ export type SystemPairDistanceStats = {
 	overlapWeight: number;
 	repeatedOverlapWeight: number;
 };
-*/
 
 
 
@@ -77,6 +82,78 @@ export const comparisonOperators = {
 
 
 export class TupleHelper {
+	private static getCombinationIndexInternal(sortedTuple: number[], k: number): number {
+		let index = 0;
+		for (let i = 0; i < k; i++) {
+			index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
+		}
+		return index;
+	}
+
+
+	private static buildKFrequencyMask(
+		system: Tuple[],
+		alphabetLength: number,
+		k: number,
+	): {
+		mask: Uint32Array;
+		totalPossible: number;
+		totalPlacements: number;
+		uniqueCovered: number;
+		holes: number;
+		minFrequency: number;
+		maxFrequency: number;
+	} {
+		const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
+		const mask = new Uint32Array(totalPossible);
+		let uniqueCovered = 0;
+		let totalPlacements = 0;
+		const tempCombo = new Array<number>(k);
+
+		const process = (ticket: number[], start: number, depth: number): void => {
+			if (depth === k) {
+				const idx = TupleHelper.getCombinationIndexInternal(tempCombo, k);
+				if (mask[idx] === 0) uniqueCovered++;
+				mask[idx]++;
+				totalPlacements++;
+				return;
+			}
+
+			for (let i = start; i < ticket.length; i++) {
+				tempCombo[depth] = ticket[i];
+				process(ticket, i + 1, depth + 1);
+			}
+		};
+
+		for (const ticket of system) {
+			const uniqueTicket = Array.from(new Set(ticket));
+			if (uniqueTicket.length < k) continue;
+			const sortedTicket = uniqueTicket.sort((a, b) => b - a);
+			process(sortedTicket, 0, 0);
+		}
+
+		let maxFrequency = 0;
+		let minFrequency = Infinity;
+		let holes = 0;
+
+		for (const frequency of mask) {
+			if (frequency === 0) holes++;
+			if (frequency > maxFrequency) maxFrequency = frequency;
+			if (frequency < minFrequency) minFrequency = frequency;
+		}
+
+		return {
+			mask,
+			totalPossible,
+			totalPlacements,
+			uniqueCovered,
+			holes,
+			minFrequency: holes > 0 ? 0 : (minFrequency === Infinity ? 0 : minFrequency),
+			maxFrequency,
+		};
+	}
+
+
 	/**
 	 * Get lottery tuple string
 	 * @param numbers   array of balls number.
@@ -1513,79 +1590,121 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 
 
 
-	/**
-	 * Computes the exact pair frequency field of a system over a reference alphabet.
-	 *
-	 * @param system    The array of tuples.
-	 * @param alphabet  The reference alphabet used to evaluate the full pair universe.
-	 * @returns         Pair frequency analytics and the raw frequency map.
-	 */
-	/* 
-	public static getSystemPairFrequencyStats(
-		system: Tuple[],
-		alphabet: Tuple,
-	): SystemPairFrequencyStats {
+	private static normalizeSystemToAlphabet(system: Tuple[], alphabet: Tuple): { normalizedSystem: Tuple[]; uniqueAlphabet: Tuple } {
 		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
 
 		const uniqueAlphabet = Array.from(new Set(alphabet)).sort((a, b) => a - b);
-		const frequencies = new Map<string, number>();
-		let totalPlacements = 0;
+		const rankByValue = new Map<number, number>();
 
-		for (const ticket of system) {
+		for (let i = 0; i < uniqueAlphabet.length; i++) rankByValue.set(uniqueAlphabet[i], i + 1);
+
+		const normalizedSystem = system.map((ticket) => {
 			const uniqueTicket = Array.from(new Set(ticket)).sort((a, b) => a - b);
-			for (let i = 0; i < uniqueTicket.length; i++) {
-				for (let j = i + 1; j < uniqueTicket.length; j++) {
-					const key = `${uniqueTicket[i]}-${uniqueTicket[j]}`;
-					frequencies.set(key, (frequencies.get(key) || 0) + 1);
-					totalPlacements++;
-				}
-			}
-		}
+			return uniqueTicket.map((value) => {
+				const rank = rankByValue.get(value);
+				if (rank === undefined) throw new Error(`Ball ${value} is not part of the reference alphabet.`);
+				return rank;
+			});
+		});
 
-		const totalPairs = Number(TupleHelper.binomial(uniqueAlphabet.length, 2));
-		const coveredPairs = frequencies.size;
-		const uncoveredPairs = totalPairs - coveredPairs;
-		let maxFrequency = 0;
-		let minPositiveFrequency = Number.MAX_SAFE_INTEGER;
-		let repeatedPairs = 0;
+		return { normalizedSystem, uniqueAlphabet };
+	}
+
+
+	/**
+	 * Computes the exact k-combination frequency field of a system over a reference alphabet.
+	 *
+	 * @param system    The array of tuples.
+	 * @param alphabet  The reference alphabet used to evaluate the full k-combination universe.
+	 * @param k         The size of the tracked sub-combinations.
+	 * @returns         Frequency analytics for the chosen k level.
+	 */
+	public static getSystemKFrequencyStats(
+		system: Tuple[],
+		alphabet: Tuple,
+		k: number,
+	): SystemKFrequencyStats {
+		if (!Number.isInteger(k) || k <= 0) throw new Error("k must be a positive integer.");
+
+		const { normalizedSystem, uniqueAlphabet } = TupleHelper.normalizeSystemToAlphabet(system, alphabet);
+		const baseStats = TupleHelper.buildKFrequencyMask(normalizedSystem, uniqueAlphabet.length, k);
+
+		let repeatedCombinations = 0;
 		let duplicatePlacements = 0;
-
-		for (const frequency of frequencies.values()) {
-			if (frequency > maxFrequency) maxFrequency = frequency;
-			if (frequency < minPositiveFrequency) minPositiveFrequency = frequency;
+		for (const frequency of baseStats.mask) {
 			if (frequency > 1) {
-				repeatedPairs++;
+				repeatedCombinations++;
 				duplicatePlacements += frequency - 1;
 			}
 		}
 
 		return {
-			totalPairs,
-			coveredPairs,
-			uncoveredPairs,
-			totalPlacements,
-			minFrequency: uncoveredPairs > 0 ? 0 : (frequencies.size === 0 ? 0 : minPositiveFrequency),
-			maxFrequency,
-			repeatedPairs,
+			k,
+			totalPossible: baseStats.totalPossible,
+			totalPlacements: baseStats.totalPlacements,
+			uniqueCovered: baseStats.uniqueCovered,
+			holes: baseStats.holes,
+			minFrequency: baseStats.minFrequency,
+			maxFrequency: baseStats.maxFrequency,
+			repeatedCombinations,
 			duplicatePlacements,
-			frequencies,
+			mask: baseStats.mask,
 		};
-	}*/
-
-
-
-
-
+	}
 
 
 	/**
-	 * Compares 2 systems through their pair frequency fields.
+	 * Computes the exact pair frequency field of a system over a reference alphabet.
 	 *
-	 * @param left      The first system.
-	 * @param right     The second system.
-	 * @param alphabet  The shared reference alphabet.
-	 * @returns         Distance and overlap indicators between the 2 pair distributions.
+	 * @param system    The array of tuples.
+	 * @param alphabet  The reference alphabet used to evaluate the full pair universe.
+	 * @returns         Pair frequency analytics and the raw frequency mask.
 	 */
+	public static getSystemPairFrequencyStats(
+		system: Tuple[],
+		alphabet: Tuple,
+	): SystemPairFrequencyStats {
+		const stats = TupleHelper.getSystemKFrequencyStats(system, alphabet, 2);
+		return {
+			totalPairs: stats.totalPossible,
+			coveredPairs: stats.uniqueCovered,
+			uncoveredPairs: stats.holes,
+			totalPlacements: stats.totalPlacements,
+			minFrequency: stats.minFrequency,
+			maxFrequency: stats.maxFrequency,
+			repeatedPairs: stats.repeatedCombinations,
+			duplicatePlacements: stats.duplicatePlacements,
+			mask: stats.mask,
+		};
+	}
+
+
+	/**
+	 * Computes the exact trio frequency field of a system over a reference alphabet.
+	 *
+	 * @param system    The array of tuples.
+	 * @param alphabet  The reference alphabet used to evaluate the full trio universe.
+	 * @returns         Trio frequency analytics and the raw frequency mask.
+	 */
+	public static getSystemTrioFrequencyStats(
+		system: Tuple[],
+		alphabet: Tuple,
+	): SystemTrioFrequencyStats {
+		const stats = TupleHelper.getSystemKFrequencyStats(system, alphabet, 3);
+		return {
+			totalTrios: stats.totalPossible,
+			coveredTrios: stats.uniqueCovered,
+			uncoveredTrios: stats.holes,
+			totalPlacements: stats.totalPlacements,
+			minFrequency: stats.minFrequency,
+			maxFrequency: stats.maxFrequency,
+			repeatedTrios: stats.repeatedCombinations,
+			duplicatePlacements: stats.duplicatePlacements,
+			mask: stats.mask,
+		};
+	}
+
+
 	/*public static getSystemPairDistanceStats(
 		left: Tuple[],
 		right: Tuple[],
@@ -1593,10 +1712,6 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 	): SystemPairDistanceStats {
 		const leftStats = TupleHelper.getSystemPairFrequencyStats(left, alphabet);
 		const rightStats = TupleHelper.getSystemPairFrequencyStats(right, alphabet);
-		const keys = new Set<string>([
-			...leftStats.frequencies.keys(),
-			...rightStats.frequencies.keys(),
-		]);
 
 		let manhattanDistance = 0;
 		let sharedCoveredPairs = 0;
@@ -1604,9 +1719,9 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 		let overlapWeight = 0;
 		let repeatedOverlapWeight = 0;
 
-		for (const key of keys) {
-			const leftFrequency = leftStats.frequencies.get(key) || 0;
-			const rightFrequency = rightStats.frequencies.get(key) || 0;
+		for (let i = 0; i < leftStats.mask.length; i++) {
+			const leftFrequency = leftStats.mask[i];
+			const rightFrequency = rightStats.mask[i];
 			const overlap = Math.min(leftFrequency, rightFrequency);
 
 			manhattanDistance += Math.abs(leftFrequency - rightFrequency);
@@ -1625,6 +1740,9 @@ private static unpackGapsBigInt(key: bigint, bitsPerGap: number, gapCount: numbe
 			repeatedOverlapWeight,
 		};
 	}*/
+
+
+
 
 
 
@@ -1977,7 +2095,6 @@ public static getOptimalK(nbTickets: number, alphabet: Tuple, ticketSize: number
  * @param k               The size of the combinations to track (e.g., 2 for pairs).
  * @returns               An object containing the frequency mask and coverage analytics.
  */
-/*
 public static getGlobalKFrequencyMask(
 	system: number[][],
 	alphabetLength: number,
@@ -1991,59 +2108,8 @@ public static getGlobalKFrequencyMask(
   minFrequency: number;
   maxFrequency: number;
 } {
-    const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
-    const mask = new Uint32Array(totalPossible); 
-    let uniqueCovered = 0;
-    let totalPlacements = 0;
-
-    const tempCombo = new Array(k);
-
-    const process = (ticket: number[], targetK: number, start: number, depth: number) => {
-        if (depth === targetK) {
-            const idx = TupleHelper.getCombinationIndex(tempCombo, targetK);
-            if (mask[idx] === 0) uniqueCovered++;
-            mask[idx]++;
-            totalPlacements++;
-            return;
-        }
-
-        for (let i = start; i < ticket.length; i++) {
-            tempCombo[depth] = ticket[i];
-            process(ticket, targetK, i + 1, depth + 1);
-        }
-    };
-
-    for (const ticket of system) {
-        // Combinadics requires descending order for index calculation
-        const sortedTicket = [...ticket].sort((a, b) => b - a);
-        process(sortedTicket, k, 0, 0);
-    }
-
-    // --- COVERAGE FIELD ANALYSIS ---
-    let maxFreq = 0;
-    let minFreq = Infinity;
-    let holes = 0;
-
-    for (let i = 0; i < totalPossible; i++) {
-        const val = mask[i];
-        if (val === 0) holes++;
-        if (val > maxFreq) maxFreq = val;
-        if (val < minFreq) minFreq = val;
-    }
-
-    // If there are holes, the absolute minimum frequency is 0
-    const finalMinFreq = holes > 0 ? 0 : (minFreq === Infinity ? 0 : minFreq);
-
-    return {
-        mask,                    // The raw frequency field [0, 1, 2, 0, 1...]
-        totalPossible,           // Universe size (e.g., 1225 for k=2)
-        totalPlacements,         // Total number of k-combination placements, including duplicates
-        uniqueCovered,           // Number of unique combinations touched (Expansion)
-        holes,                   // Number of "leaks" (combinations with 0 coverage)
-        minFrequency: finalMinFreq,
-        maxFrequency: maxFreq,
-    };
-}*/
+	return TupleHelper.buildKFrequencyMask(system, alphabetLength, k);
+}
 
 
 
