@@ -197,19 +197,19 @@ export class DrawBox {
 	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
-		let bestStats = TupleHelper.getSystemNeighborhoodDegrees(bestSystem, this._balls);
-		let bestCount = bestStats.reduce((acc, item) => acc + item.degree, 0) / 2;							// pairs are counted twice
+		let bestCount = TupleHelper.getSystemPairFrequencyStats(bestSystem, this._balls).coveredPairs;
+		let bestTrioCount = TupleHelper.getSystemTrioFrequencyStats(bestSystem, this._balls).coveredTrios;
 
 		// Find a better system
 		for (let i = 0; i < nbAttempts; i++) {
 			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
-			let currentStats = TupleHelper.getSystemNeighborhoodDegrees(currentSystem, this._balls);
-			let currentCount = currentStats.reduce((acc, item) => acc + item.degree, 0) / 2;				// pairs are counted twice
+			let currentCount = TupleHelper.getSystemPairFrequencyStats(currentSystem, this._balls).coveredPairs;
+			let currentTrioCount = TupleHelper.getSystemTrioFrequencyStats(currentSystem, this._balls).coveredTrios;
 
-			if (currentCount > bestCount) {
+			if (currentCount > bestCount || (currentCount === bestCount && currentTrioCount > bestTrioCount)) {
 				bestSystem = currentSystem;
-				bestStats = currentStats;
 				bestCount = currentCount;
+				bestTrioCount = currentTrioCount;
 			}
 		}
 		return bestSystem;
