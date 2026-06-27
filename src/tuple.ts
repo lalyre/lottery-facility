@@ -968,13 +968,21 @@ export class TupleHelper {
 	}
 
 
-
-
-
-
-	private static getCombinationIndexInternal(sortedTuple: number[], k: number): number {
+	/**
+	 * Computes the unique lexicographical index of a combination (Combinadics).
+	 * ASSUMES the input tuple is ALREADY SORTED in DESCENDING order to save CPU.
+	 *
+	 * @param {number[]} sortedTuple - The combination (must be sorted DESC).
+	 * @param {number} k - The size of the combination.
+	 * @returns {number} The unique index.
+	 */
+	public static getCombinationIndex(sortedTuple: number[], k: number): number {
 		let index = 0;
-		for (let i = 0; i < k; i++) { index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i)); }
+		for (let i = 0; i < k; i++) {
+			// Combinadics formula: sum of binom(n_i, k - i)
+			// We use n_i - 1 because lottery numbers usually start at 1s
+			index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
+		}
 		return index;
 	}
 
@@ -1000,7 +1008,7 @@ export class TupleHelper {
 
 		const process = (ticket: number[], start: number, depth: number): void => {
 			if (depth === k) {
-				const idx = TupleHelper.getCombinationIndexInternal(tempCombo, k);
+				const idx = TupleHelper.getCombinationIndex(tempCombo, k);
 				if (mask[idx] === 0) uniqueCovered++;
 				mask[idx]++;
 				totalPlacements++;
@@ -1042,15 +1050,16 @@ export class TupleHelper {
 	}
 
 
-
-
-
-	private static normalizeSystemToAlphabet(system: Tuple[], alphabet: Tuple): { normalizedSystem: Tuple[]; uniqueAlphabet: Tuple } {
+	private static normalizeSystemToAlphabet(
+		system: Tuple[],
+		alphabet: Tuple,
+	): {
+		normalizedSystem: Tuple[];
+		uniqueAlphabet: Tuple;
+	} {
 		if (!alphabet || alphabet.length === 0) throw new Error("Alphabet cannot be null or empty.");
-
 		const uniqueAlphabet = Array.from(new Set(alphabet)).sort((a, b) => a - b);
 		const rankByValue = new Map<number, number>();
-
 		for (let i = 0; i < uniqueAlphabet.length; i++) rankByValue.set(uniqueAlphabet[i], i + 1);
 
 		const normalizedSystem = system.map((ticket) => {
@@ -1061,7 +1070,6 @@ export class TupleHelper {
 				return rank;
 			});
 		});
-
 		return { normalizedSystem, uniqueAlphabet };
 	}
 
@@ -1166,135 +1174,6 @@ export class TupleHelper {
 
 
 
-	/**
-	 * Generates all possible combinations of size k from a given array.
-	 * Used to decompose a full ticket into its smaller constituent sets.
-	 *
-	 * @param arr        The source array of numbers (e.g., a ticket of 10 numbers).
-	 * @param k          The size of the combinations to generate (e.g., 2 for pairs).
-	 * @returns          An array of arrays, each containing a unique combination of size k.
-	 */
-	/*public static getCombinations(arr: number[], k: number): number[][] {
-		const results: number[][] = [];
-		function backtrack(start: number, path: number[]) {
-			if (path.length === k) {
-				results.push([...path]);
-				return;
-			}
-			for (let i = start; i < arr.length; i++) {
-				path.push(arr[i]);
-				backtrack(i + 1, path);
-				path.pop();
-			}
-		}
-		backtrack(0, []);
-		return results;
-	}*/
-
-
-
-
-/**
- * Computes the unique lexicographical index of a combination (Combinadics).
- * ASSUMES the input tuple is ALREADY SORTED in DESCENDING order to save CPU.
- *
- * @param {number[]} sortedTuple - The combination (must be sorted DESC).
- * @param {number} k - The size of the combination.
- * @returns {number} The unique index.
- */
-/*public static getCombinationIndex(sortedTuple: number[], k: number): number {
-    let index = 0;
-    for (let i = 0; i < k; i++) {
-        // Combinadics formula: sum of binom(n_i, k - i)
-        // We use n_i - 1 because lottery numbers usually start at 1s
-        index += Number(TupleHelper.binomial(sortedTuple[i] - 1, k - i));
-    }
-    return index;
-}*/
-
-
-
-
-/**
- * Optimized Global Expansion Score using a Bitmask (Uint8Array).
- * Calculates how many unique combinations of size k are covered by the entire system.
- *
- * @param system         The list of all tickets currently in the game.
- * @param alphabetLength The total size of the ball pool (e.g., 50).
- * @param k              The depth of the expansion.
- * @returns              The total number of unique k-combinations covered.
- */
-/*public static getGlobalKExpansionBitmask(system: Tuple[], alphabetLength: number, k: number): number {
-    const totalPossible = Number(TupleHelper.binomial(alphabetLength, k));
-    const bitmask = new Uint8Array(totalPossible);
-    let uniqueCount = 0;
-
-    // We pre-allocate a single buffer for the combination to avoid GC pressure
-    const tempCombo = new Array(k);
-
-    // Reuse the same recursive logic for maximum performance
-    const process = (ticket: number[], targetK: number, start: number, depth: number) => {
-        if (depth === targetK) {
-            // tempCombo is already sorted descending because ticket is sorted descending
-            const idx = TupleHelper.getCombinationIndex(tempCombo, targetK);
-            if (bitmask[idx] === 0) {
-                bitmask[idx] = 1;
-                uniqueCount++;
-            }
-            return;
-        }
-
-        for (let i = start; i < ticket.length; i++) {
-            tempCombo[depth] = ticket[i];
-            process(ticket, targetK, i + 1, depth + 1);
-        }
-    };
-
-    for (const ticket of system) {
-        // Sort DESCENDING to match our Combinadics requirement
-        const sortedTicket = [...ticket].sort((a, b) => b - a);
-        process(sortedTicket, k, 0, 0);
-    }
-
-    return uniqueCount;
-}*/
-
-
-
-
-/**
- * Optimized Global Frequency Mask using Uint32Array.
- * Records exactly how many times each k-combination appears in the system.
- *
- * @param system          The list of all tickets (e.g., number[][]).
- * @param alphabetLength  The total numbers in the pool (e.g., 50 for EuroMillions).
- * @param k               The size of the combinations to track (e.g., 2 for pairs).
- * @returns               An object containing the frequency mask and coverage analytics.
- */
-/*public static getGlobalKFrequencyMask(
-	system: number[][],
-	alphabetLength: number,
-	k: number
-): {
-  mask: Uint32Array;
-  totalPossible: number;
-  totalPlacements: number;
-  uniqueCovered: number;
-  holes: number;
-  minFrequency: number;
-  maxFrequency: number;
-} {
-	return TupleHelper.buildKFrequencyMask(system, alphabetLength, k);
-}*/
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Factorial function
@@ -1377,6 +1256,41 @@ export class TupleHelper {
 		rank++;
 		return rank;
 	}*/
+
+
+
+
+
+
+
+	/**
+	 * Generates all possible combinations of size k from a given array.
+	 * Used to decompose a full ticket into its smaller constituent sets.
+	 *
+	 * @param arr        The source array of numbers (e.g., a ticket of 10 numbers).
+	 * @param k          The size of the combinations to generate (e.g., 2 for pairs).
+	 * @returns          An array of arrays, each containing a unique combination of size k.
+	 */
+	/*public static getCombinations(arr: number[], k: number): number[][] {
+		const results: number[][] = [];
+		function backtrack(start: number, path: number[]) {
+			if (path.length === k) {
+				results.push([...path]);
+				return;
+			}
+			for (let i = start; i < arr.length; i++) {
+				path.push(arr[i]);
+				backtrack(i + 1, path);
+				path.pop();
+			}
+		}
+		backtrack(0, []);
+		return results;
+	}*/
+
+
+
+
 
 
 	/**
