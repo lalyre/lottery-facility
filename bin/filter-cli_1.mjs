@@ -645,6 +645,7 @@ const printOutput = function (inputLinesCount, testedCombination, hits_count_str
 
 
 // Test all combinations of input file
+let nbSelection = 0;
 let globalRepetition = 0;
 let additions = 0;
 let inputLinesCount = 0;
@@ -1433,6 +1434,7 @@ outerLoop: for await (const line of rl) {
 	if (coverLinesMode) {
 		console.log(coveredLines)
 	}
+	nbSelection++;
 
 
 	// Select the tested combination and get global track records
@@ -1465,6 +1467,7 @@ if (coverStatsMode) {
 }
 
 console.warn("Nb selected:   "  + selectedCombinations.length);
+console.warn("Nb selection:   "  + nbSelection);
 //console.warn("Total score:   "  + globalScore);
 //console.warn("Total failure: "  + globalFailure);
 
