@@ -59,7 +59,16 @@ let displayDate = cli.flags.date;
 // Eurojackpot		https://www.beatlottery.co.uk/
 
 
+// https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/statistiques
+// https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique
+
+
+// https://www.fdj.fr/jeux-de-tirage/crescendo/statistiques
+// https://www.fdj.fr/jeux-de-tirage/crescendo/historique
+
+
 // https://www.fdj.fr/jeux-de-tirage/loto/statistiques
+// https://www.fdj.fr/jeux-de-tirage/loto/historique
 // https://media.fdj.fr/static-draws/csv/loto/loto_201911.zip
 // https://media.fdj.fr/static-draws/csv/loto/loto_201902.zip
 // https://media.fdj.fr/static-draws/csv/loto/loto_201703.zip
