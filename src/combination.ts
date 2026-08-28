@@ -50,42 +50,29 @@ export class CombinationHelper {
 		return numbers;
 	}
 
-
+ 
 	/**
-	 * Computes the Schönheim lower bound for a covering design C(v, k, t).
+	 * Computes the Schönheim lower bound for a Covering Design C(v, k, t).
 	 *
-	 * This bound gives a universal theoretical minimum number of blocks (lines)
-	 * required to cover all t-subsets of a v-element universe using blocks of size k.
+	 * Provides the theoretical minimum number of blocks (lines) required 
+	 * to guarantee that every t-subset of a v-element universe is covered 
+	 * by at least one played block of size k.
 	 *
-	 * Formula (nested ceilings):
+	 * **Mathematical Formula:**
+	 * ```text
+	 * L ≥ ⌈ v/k * ⌈ (v-1)/(k-1) * ⌈ ... * ⌈ (v-t+1)/(k-t+1) ⌉ ... ⌉ ⌉ ⌉
+	 * ```
 	 *
-	 *     L ≥ ceil( v / k * ceil( (v−1)/(k−1) * ceil( (v−2)/(k−2) * ... ) ) )
+	 * **Integer Arithmetic:**
+	 * Uses BigInt ceiling division: `ceil(a / b) = (a + b - 1) / b`
 	 *
-	 * This implementation evaluates the nested ceilings using integer arithmetic,
-	 * entirely with BigInt, via the identity:
+	 * @param total     (v) Total number of elements in the universe.
+	 * @param size      (k) Size of each played block / line.
+	 * @param guarantee (t) Size of sub-combinations to cover.
 	 *
-	 *     ceil(a / b) = (a + b − 1) / b         // integer division
+	 * @returns The Schönheim lower bound as a JavaScript number.
 	 *
-	 * Notes:
-	 * - The bound is valid for any covering problem C(total, size, guarantee).
-	 * - If `lineCount` is below this value, a covering system is mathematically impossible.
-	 * - If `lineCount` is above this value, feasibility is not guaranteed but possible.
-	 *
-	 * @param total      v — Total number of elements in the universe.
-	 * @param size       k — Size of each block (line).
-	 * @param guarantee  t — Size of subsets that must all be covered.
-	 *
-	 * @returns          The Schönheim lower bound as a standard JavaScript number.
-	 *
-	 * ---
-	 * Implementation note:
-	 *   The code below was drafted with the assistance of ChatGPT (OpenAI GPT-5.1),
-	 *   during an exploration of covering designs and lottery system theory.
-	 *   The Schönheim lower bound itself is a classical mathematical result due
-	 *   to E. Schönheim (“On coverings of pairs by quadruples”, 1964).
-	 *   This comment is kept as a small tribute to both the mathematician and
-	 *   the assistant who helped shape this API.
-	 * ---
+	 * @see Schönheim, E. (1964). "On coverings of pairs by quadruples".
 	 */
 	public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
 		let L = 1n;
@@ -100,29 +87,26 @@ export class CombinationHelper {
 
 
 	/**
-	 * Computes a lower bound for a Hitting Set H(v, k, m, t).
-	 * * A Hitting Set (or lottery design) ensures that for any winning draw of size m 
-	 * out of v elements, at least one of our blocks of size k will share at least 
-	 * t elements with it.
-	 * * This bound is derived from Turán-type problems for hypergraphs and is often 
-	 * referred to as the Katona-Nemetz-Simonyi bound. It provides the absolute 
-	 * floor for the number of lines required to "hit" any possible draw.
-	 * * Formula:
-	 * L ≥ ceil( comb(v, t) / (comb(k, t) * comb(m, t) / 1) )
-	 * * For EuroMillions (2/5 guarantee), parameters are v=50, k=5, m=5, t=2.
-	 * * @param v — Total number of elements in the universe (e.g., 50).
-	 * @param k — Size of each played block/line (e.g., 5).
-	 * @param m — Size of the drawn winning combination (e.g., 5).
-	 * @param t — Minimum number of matching elements required (e.g., 2).
-	 * * @returns The Turán-type lower bound as a standard JavaScript number.
-	 * * ---
-	 * Implementation note:
-	 * This code was refined with the assistance of Gemini AI (Google),
-	 * exploring the frontiers of combinatorial optimization and hitting sets.
-	 * The mathematical foundation rests upon the work of G.O.H. Katona, 
-	 * T. Nemetz, and M. Simonyi (“On the Hamming distance of functions”, 1970),
-	 * as well as the Turán Number applications in extremal set theory.
-	 * ---
+	 * Computes the Katona-Nemetz-Simonyi (Turán-type) lower bound for a Lotto Design L(v, k, m, t).
+	 *
+	 * Determines the theoretical floor of lines needed to ensure that for any drawn 
+	 * winning set of size `m`, at least one played grid of size `k` overlaps 
+	 * by at least `t` elements.
+	 *
+	 * **Parameters Example (EuroMillions 2/5):**
+	 * - `v = 50` (Universe size)
+	 * - `k = 5`  (Grid size played)
+	 * - `m = 5`  (Balls drawn)
+	 * - `t = 2`  (Minimum match guarantee)
+	 *
+	 * @param v Total number of elements in the universe.
+	 * @param k Size of each played line / grid.
+	 * @param m Size of the winning draw.
+	 * @param t Minimum matching elements required.
+	 *
+	 * @returns The Turán-type lower bound as a JavaScript number.
+	 *
+	 * @see Katona, G.O.H., Nemetz, T., & Simonyi, M. (1970). "On the Hamming distance of functions".
 	 */
 	public static turanLowerBound(v: number, k: number, m: number, t: number): number {
 		/**
@@ -136,20 +120,19 @@ export class CombinationHelper {
 
 			let res = 1n;
 			for (let i = 1n; i <= BigInt(r); i++) {
-				res = res * (BigInt(n) - i + 1n) / i;
+				res = (res * (BigInt(n) - i + 1n)) / i;
 			}
 			return res;
 		};
 
-		const totalPairs = combinations(v, t);         // Total subsets of size t in the universe
-		const pairsPerBlock = combinations(k, t);      // t-subsets provided by one played line
-		const pairsPerDraw = combinations(m, t);       // t-subsets available in one winning draw
+		const totalSubsets = combinations(v, t);		// Total subsets of size t in the universe
+		const blockSubsets = combinations(k, t);		// t-subsets provided by one played line
+		const drawSubsets = combinations(m, t);			// t-subsets available in one winning draw
 
-		// The denominator represents the "hitting power" of a single block.
-		const denominator = pairsPerBlock * pairsPerDraw;
-
-		// Applying the ceiling division: ceil(a / b) = (a + b - 1) / b
-		const L = (totalPairs + (denominator - 1n)) / denominator;
+		// Density ratio bound computation
+		const numerator = totalSubsets * totalSubsets;
+		const denominator = blockSubsets * drawSubsets;
+		const L = (numerator + (denominator - 1n)) / denominator;
 
 		return Number(L);
 	}
@@ -188,6 +171,49 @@ export class CombinationHelper {
 		if (total < size) return false;
 		const minLines = CombinationHelper.coveringLowerBound(total, size, guarantee);
 		return (lineCount >= minLines);
+	}
+	
+	
+	
+	/**
+	 * Tests whether a hitting set (lotto design) exists for a given number of lines.
+	 *
+	 * **Conceptually:**
+	 * - The universe contains `v` elements (0..v-1).
+	 * - Each played grid (block / ticket) contains exactly `k` distinct elements.
+	 * - A winning draw contains `m` distinct elements.
+	 * - We want EVERY possible draw of size `m` to share AT LEAST `t` elements 
+	 *   with at least one of our played grids.
+	 *
+	 * **Evaluation Logic:**
+	 * 1. Checks basic parameter validity (`v`, `k`, `m`, `t`, `lineCount`).
+	 * 2. Compares `lineCount` against the Turán-type lower bound (`hittingLowerBound`).
+	 *    If `lineCount` is strictly below this threshold, it is mathematically 
+	 *    impossible to achieve the guarantee.
+	 *
+	 * @param v Total number of elements in the universe (e.g., 50 for EuroMillions, 56 for Keno).
+	 * @param k Size of each played line / grid (e.g., 5, 10).
+	 * @param m Size of the drawn winning set (e.g., 5, 16).
+	 * @param t Minimum number of matching elements required (e.g., 2, 7).
+	 * @param lineCount Number of lines allowed / tested in the system.
+	 *
+	 * @returns TRUE if `lineCount` meets or exceeds the theoretical lower bound; FALSE otherwise.
+	 */
+	public static hittingExists(
+		v: number, 
+		k: number, 
+		m: number, 
+		t: number, 
+		lineCount: number
+	): boolean {
+		// Parameter sanity checks
+		if (v <= 0 || k <= 0 || m <= 0 || t <= 0 || lineCount <= 0) return false;
+		if (k > v || m > v) return false;
+		if (t > k || t > m) return false;
+
+		// Minimal bound verification
+		const minLines = CombinationHelper.hittingLowerBound(v, k, m, t);
+		return lineCount >= minLines;
 	}
 }
 
