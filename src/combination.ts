@@ -73,19 +73,23 @@ export class CombinationHelper {
 	 * @returns The Schönheim lower bound as a JavaScript number.
 	 *
 	 * @see Schönheim, E. (1964). "On coverings of pairs by quadruples".
-	 */
-	public static schoenheimLowerBound(total: number, size: number, guarantee: number): number {
+	 */	
+	public static schoenheimLowerBound(
+		total: number,
+		size: number,
+		guarantee: number
+	): number {
 		let L = 1n;
-		for (let i = 0; i < guarantee; i++) {
+		for (let i = guarantee - 1; i >= 0; i--) {
 			const a = BigInt(total - i);
 			const b = BigInt(size - i);
-			L = (L * (a + b - 1n)) / b;  // ceil(a/b)
+			L = (L * a + b - 1n) / b;
 		}
 		return Number(L);
 	}
 	public static coveringLowerBound = CombinationHelper.schoenheimLowerBound;
 
-
+	
 	/**
 	 * Computes the Katona-Nemetz-Simonyi (Turán-type) lower bound for a Lotto Design L(v, k, m, t).
 	 *
@@ -108,7 +112,12 @@ export class CombinationHelper {
 	 *
 	 * @see Katona, G.O.H., Nemetz, T., & Simonyi, M. (1970). "On the Hamming distance of functions".
 	 */
-	public static turanLowerBound(v: number, k: number, m: number, t: number): number {
+	public static turanLowerBound(
+		v: number,
+		k: number,
+		m: number,
+		t: number
+	): number {
 		/**
 		 * Helper function to compute Binomial Coefficients (n choose r) 
 		 * using BigInt to prevent overflow during intermediate multiplications.
@@ -129,11 +138,9 @@ export class CombinationHelper {
 		const blockSubsets = combinations(k, t);		// t-subsets provided by one played line
 		const drawSubsets = combinations(m, t);			// t-subsets available in one winning draw
 
-		// Density ratio bound computation
-		const numerator = totalSubsets * totalSubsets;
-		const denominator = blockSubsets * drawSubsets;
-		const L = (numerator + (denominator - 1n)) / denominator;
-
+		// Elementary Turán counting bound: T(v,m,t) >= ceil(C(v,t) / C(m,t))
+		const turan = (totalSubsets + drawSubsets - 1n) / drawSubsets;
+		const lines = (turan + blockSubsets - 1n) / blockSubsets;				// Convert t-subsets into played blocks of size k
 		return Number(L);
 	}
 	public static hittingLowerBound = CombinationHelper.turanLowerBound;
