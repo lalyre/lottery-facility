@@ -727,6 +727,125 @@ export class TupleHelper {
 
 
 	/**
+	 * Searches for a maximum-cardinality subset of the alphabet whose intersection with
+	 * every tuple in the system contains strictly fewer than `threshold` numbers.
+	 * Numbers must occur together in a single tuple to reach the threshold;
+	 * connections spread across multiple tuples do not count.
+	 *
+	 * For example, with threshold = 3, [1, 2, 3] is admissible when [1, 2]
+	 * and [2, 3] occur in separate tuples but no tuple contains all three numbers.
+	 *
+	 * The search stops when it finishes or reaches `maxIterations`, returning
+	 * the largest admissible subset found so far. An iteration is one visited
+	 * search node. Optimality is only guaranteed when the search completes.
+	 *
+	 * @param system        The array of tuples (the lottery system).
+	 * @param alphabet      The complete set of candidate numbers.
+	 * @param threshold     The minimum number of selected numbers occurring together
+	 *                      in one tuple that makes the subset inadmissible.
+	 * @param maxIterations The maximum number of search nodes to visit (a positive safe integer).
+	 * @returns             The largest admissible subset found within the iteration budget.
+	 * Duplicate numbers are treated as a single number. Numbers outside the alphabet
+	 * are ignored. The result preserves alphabet order and inputs are not modified.
+	 * A greedy completion at each visited node supplies an admissible incumbent,
+	 * even with a budget of one iteration. Preprocessing is outside the node budget.
+	 *
+	 * @throws {Error} If inputs are not arrays of finite numbers, or threshold and
+	 *                 maxIterations are not positive safe integers.
+	 */
+	public static maximumIndependentSet(
+		system: Tuple[],
+		alphabet: Tuple,
+		threshold: number,
+		maxIterations: number
+	): Tuple {
+		if (!Number.isSafeInteger(threshold) || threshold < 1) throw new Error('Invalid threshold');
+		if (!Number.isSafeInteger(maxIterations) || maxIterations < 1) throw new Error('Invalid maxIterations');
+		const isTuple = (value: unknown): value is Tuple =>
+			Array.isArray(value) && value.every(number => typeof number === 'number' && Number.isFinite(number));
+		if (!isTuple(alphabet) || !Array.isArray(system) || !system.every(isTuple)) {
+			throw new Error('Invalid system or alphabet');
+		}
+
+		const numbers = Array.from(new Set(alphabet));
+		const indices = new Map(numbers.map((number, index) => [number, index]));
+		const capacity = threshold - 1;
+		const rows: number[][] = [];
+		const seen = new Set<string>();
+		for (const tuple of system) {
+			const row = Array.from(new Set(tuple))
+				.filter(number => indices.has(number))
+				.map(number => indices.get(number)!)
+				.sort((a, b) => a - b);
+			if (row.length <= capacity) continue;
+			const key = row.join(',');
+			if (!seen.has(key)) {
+				seen.add(key);
+				rows.push(row);
+			}
+		}
+		if (rows.length === 0) return numbers;
+
+		const memberships: number[][] = numbers.map(() => []);
+		rows.forEach((row, rowIndex) => row.forEach(index => memberships[index].push(rowIndex)));
+		const counts = rows.map(() => 0);
+		const selected: number[] = [];
+		let best: number[] = [];
+		let iterations = 0;
+
+		const search = (remaining: number[]): void => {
+			if (iterations >= maxIterations) return;
+			iterations++;
+			// Saturated rows forbid all their remaining numbers.
+			const candidates = remaining.filter(index => memberships[index].every(row => counts[row] < capacity));
+			if (selected.length > best.length) best = [...selected];
+			if (selected.length + candidates.length <= best.length) return;
+
+			// Prefer less constrained numbers to quickly obtain a feasible completion.
+			const greedyCounts = [...counts];
+			const greedy = [...selected];
+			const ordered = [...candidates].sort((a, b) => memberships[a].length - memberships[b].length || a - b);
+			for (const index of ordered) {
+				if (memberships[index].every(row => greedyCounts[row] < capacity)) {
+					greedy.push(index);
+					for (const row of memberships[index]) greedyCounts[row]++;
+				}
+			}
+			if (greedy.length > best.length) best = greedy;
+
+			// Bound disjoint groups of candidates by the residual capacity of a row.
+			// Removing each bounded group prevents counting the same restriction twice.
+			const uncovered = new Set(candidates);
+			let upperBound = selected.length + candidates.length;
+			for (let row = 0; row < rows.length; row++) {
+				const group = rows[row].filter(index => uncovered.has(index));
+				const available = capacity - counts[row];
+				if (group.length > available) {
+					upperBound -= group.length - available;
+					for (const index of group) uncovered.delete(index);
+				}
+				if (upperBound <= best.length) return;
+			}
+			if (iterations >= maxIterations) return;
+
+			// Branch on a highly constrained number to trigger propagation early.
+			const pivot = ordered[ordered.length - 1];
+			const next = candidates.filter(index => index !== pivot);
+			selected.push(pivot);
+			for (const row of memberships[pivot]) counts[row]++;
+			search(next);
+			for (const row of memberships[pivot]) counts[row]--;
+			selected.pop();
+			search(next);
+		};
+
+		search(numbers.map((_, index) => index));
+		const bestIndices = new Set(best);
+		return numbers.filter((_, index) => bestIndices.has(index));
+	}
+
+
+	/**
 	 * Gets the neighborhood of a specific number filtered by a co-occurrence threshold.
 	 * Only neighbors whose occurrence count with the tested ball satisfies the comparison operator
 	 * against the given level are returned.

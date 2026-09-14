@@ -141,7 +141,7 @@ export class CombinationHelper {
 		// Elementary Turán counting bound: T(v,m,t) >= ceil(C(v,t) / C(m,t))
 		const turan = (totalSubsets + drawSubsets - 1n) / drawSubsets;
 		const lines = (turan + blockSubsets - 1n) / blockSubsets;				// Convert t-subsets into played blocks of size k
-		return Number(L);
+		return Number(lines);
 	}
 	public static hittingLowerBound = CombinationHelper.turanLowerBound;
 
