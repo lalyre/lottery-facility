@@ -7,12 +7,10 @@ import * as lotteryFacility from '../dist/cjs/index.js';
 // Covering design of 2/TICKET_SIZE if 2/TOTAL_BALLS
 const TOTAL_BALLS = 56;
 const TICKET_SIZE = 10;
-const BUDGET_TICKETS = 20;
+const BUDGET_TICKETS = 23;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
-const PRIMARY_K = 2;
-const SECONDARY_K = 3;
-const ALPHABET = Array.from({ length: TOTAL_BALLS }, (_, index) => index + 1);
+const TRACKED_K = [2, 3, 4, 5];
 
 const parseSystem = (text) => {
     const trimmed = text.trim();
@@ -27,15 +25,23 @@ const parseSystem = (text) => {
 const bootSystem = `
 `;
 const referenceSystem = parseSystem(bootSystem);
+if (referenceSystem.length > BUDGET_TICKETS) {
+    throw new Error(
+        `Le bootSystem contient ${referenceSystem.length} grilles pour un budget total de ${BUDGET_TICKETS}.`
+    );
+}
+const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
 
 console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
 console.log(`Configuration: ${TICKET_SIZE}/${TOTAL_BALLS}`);
 console.log(`Budget: ${BUDGET_TICKETS} tickets`);
-console.log(`Reference: ${referenceSystem.length} tickets`);
-console.log(`Score: paires puis triplets`);
+console.log(`Reference fixe: ${referenceSystem.length} tickets`);
+console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
+console.log(`Score: non-redondance des sous-ensembles K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
 let bestTickets = [];
+let bestScore = null;
 let statusActive = false;
 
 const getEvaluatedSystem = (system, reference = []) => {
@@ -43,52 +49,107 @@ const getEvaluatedSystem = (system, reference = []) => {
 };
 
 const getKStats = (system, k) => {
-    return lotteryFacility.TupleHelper.getSystemKFrequencyStats(system, ALPHABET, k);
+    const frequencies = new Map();
+    let totalPlacements = 0;
+
+    const visit = (ticket, start, depth, combination) => {
+        if (depth === k) {
+            const key = combination.join('-');
+            frequencies.set(key, (frequencies.get(key) ?? 0) + 1);
+            totalPlacements++;
+            return;
+        }
+        for (let index = start; index <= ticket.length - (k - depth); index++) {
+            combination[depth] = ticket[index];
+            visit(ticket, index + 1, depth + 1, combination);
+        }
+    };
+
+    for (const rawTicket of system) {
+        const ticket = [...new Set(rawTicket)].sort((left, right) => left - right);
+        if (ticket.length >= k) visit(ticket, 0, 0, new Array(k));
+    }
+
+    let maxFrequency = 0;
+    let collisionPenalty = 0;
+    for (const frequency of frequencies.values()) {
+        maxFrequency = Math.max(maxFrequency, frequency);
+        collisionPenalty += frequency * (frequency - 1) / 2;
+    }
+
+    return {
+        k,
+        uniqueCovered: frequencies.size,
+        totalPossible: Number(lotteryFacility.TupleHelper.binomial(TOTAL_BALLS, k)),
+        duplicatePlacements: totalPlacements - frequencies.size,
+        collisionPenalty,
+        maxFrequency,
+    };
 };
 
 const getSystemScore = (system, reference = []) => {
     const evaluatedSystem = getEvaluatedSystem(system, reference);
-    return {
-        pairs: getKStats(evaluatedSystem, PRIMARY_K),
-        triplets: getKStats(evaluatedSystem, SECONDARY_K),
-    };
+    return TRACKED_K.map((k) => getKStats(evaluatedSystem, k));
 };
 
-const formatKStats = (label, stats) => {
-    return `${label}:${stats.uniqueCovered}/${stats.totalPossible} Dup:${stats.duplicatePlacements} Max:${stats.maxFrequency}`;
+const formatKStats = (stats) => {
+    return `K${stats.k}:${stats.uniqueCovered}/${stats.totalPossible} Dup:${stats.duplicatePlacements} Col:${stats.collisionPenalty} Max:${stats.maxFrequency}`;
 };
 
-const formatScore = (system, reference = []) => {
-    const score = getSystemScore(system, reference);
-    return `${formatKStats('P', score.pairs)} | ${formatKStats('T', score.triplets)}`;
+const formatScore = (score) => {
+    return score.map(formatKStats).join(' | ');
 };
 
-const isBetterScore = (leftSystem, rightSystem, reference = []) => {
-    if (!rightSystem || rightSystem.length === 0) return true;
-
-    const left = getSystemScore(leftSystem, reference);
-    const right = getSystemScore(rightSystem, reference);
-
-    if (left.pairs.uniqueCovered !== right.pairs.uniqueCovered) {
-        return left.pairs.uniqueCovered > right.pairs.uniqueCovered;
+const isBetterScore = (left, right) => {
+    if (!right) return true;
+    for (let index = 0; index < left.length; index++) {
+        if (left[index].uniqueCovered !== right[index].uniqueCovered) {
+            return left[index].uniqueCovered > right[index].uniqueCovered;
+        }
     }
-    if (left.triplets.uniqueCovered !== right.triplets.uniqueCovered) {
-        return left.triplets.uniqueCovered > right.triplets.uniqueCovered;
-    }
-    if (left.pairs.duplicatePlacements !== right.pairs.duplicatePlacements) {
-        return left.pairs.duplicatePlacements < right.pairs.duplicatePlacements;
-    }
-    if (left.triplets.duplicatePlacements !== right.triplets.duplicatePlacements) {
-        return left.triplets.duplicatePlacements < right.triplets.duplicatePlacements;
-    }
-    if (left.pairs.maxFrequency !== right.pairs.maxFrequency) {
-        return left.pairs.maxFrequency < right.pairs.maxFrequency;
-    }
-    if (left.triplets.maxFrequency !== right.triplets.maxFrequency) {
-        return left.triplets.maxFrequency < right.triplets.maxFrequency;
+    for (let index = 0; index < left.length; index++) {
+        if (left[index].collisionPenalty !== right[index].collisionPenalty) {
+            return left[index].collisionPenalty < right[index].collisionPenalty;
+        }
+        if (left[index].maxFrequency !== right[index].maxFrequency) {
+            return left[index].maxFrequency < right[index].maxFrequency;
+        }
     }
 
     return false;
+};
+
+const improveNonRedundancy = (system, reference = [], attempts = NB_SWAP) => {
+    let current = system.map((ticket) => [...ticket].sort((left, right) => left - right));
+    let currentScore = getSystemScore(current, reference);
+    if (system.length < 2 || attempts < 1) return { system: current, score: currentScore };
+
+    for (let attempt = 0; attempt < attempts; attempt++) {
+        const firstTicketIndex = Math.floor(Math.random() * current.length);
+        let secondTicketIndex = Math.floor(Math.random() * (current.length - 1));
+        if (secondTicketIndex >= firstTicketIndex) secondTicketIndex++;
+
+        const firstTicket = current[firstTicketIndex];
+        const secondTicket = current[secondTicketIndex];
+        const firstBallIndex = Math.floor(Math.random() * firstTicket.length);
+        const secondBallIndex = Math.floor(Math.random() * secondTicket.length);
+        const firstBall = firstTicket[firstBallIndex];
+        const secondBall = secondTicket[secondBallIndex];
+        if (firstBall === secondBall || firstTicket.includes(secondBall) || secondTicket.includes(firstBall)) continue;
+
+        const candidate = current.map((ticket) => [...ticket]);
+        candidate[firstTicketIndex][firstBallIndex] = secondBall;
+        candidate[secondTicketIndex][secondBallIndex] = firstBall;
+        candidate[firstTicketIndex].sort((left, right) => left - right);
+        candidate[secondTicketIndex].sort((left, right) => left - right);
+
+        const candidateScore = getSystemScore(candidate, reference);
+        if (isBetterScore(candidateScore, currentScore)) {
+            current = candidate;
+            currentScore = candidateScore;
+        }
+    }
+    return { system: current, score: currentScore };
 };
 
 const clearStatusLine = () => {
@@ -116,13 +177,23 @@ let iter = 0;
 while (true) {
     iter++;
 
-    const currentTickets = box.drawMaximizePairCoveringTickets(BUDGET_TICKETS, TICKET_SIZE, 1, null, NB_SWAP);
+    const initialTickets = box.drawMaximizePairCoveringTickets(
+        generatedTicketsCount,
+        TICKET_SIZE,
+        1,
+        null,
+        NB_SWAP
+    );
+    const improved = improveNonRedundancy(initialTickets, referenceSystem);
+    const currentTickets = improved.system;
+    const currentScore = improved.score;
     if (iter % STATUS_EVERY === 0) {
-        writeStatusLine(`Test en cours (iter. ${iter}) ->   ${formatScore(currentTickets, referenceSystem)}`);
+        writeStatusLine(`Test en cours (iter. ${iter}) ->   ${formatScore(currentScore)}`);
     }
 
-    if (isBetterScore(currentTickets, bestTickets, referenceSystem)) {
+    if (isBetterScore(currentScore, bestScore)) {
         bestTickets = currentTickets;
+        bestScore = currentScore;
         flushStatusLine();
 
         referenceSystem.forEach((ticket) => {
@@ -136,7 +207,7 @@ while (true) {
         });
 
         process.stdout.write(
-            `Record trouve (iter. ${iter}) (${new Date().toISOString()}) ->   ${formatScore(bestTickets, referenceSystem)}\n`
+            `Record trouve (iter. ${iter}) (${new Date().toISOString()}) ->   ${formatScore(bestScore)}\n`
         );
 
         console.log();
