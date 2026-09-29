@@ -7,7 +7,10 @@ import * as lotteryFacility from '../dist/cjs/index.js';
 // Covering design of 2/TICKET_SIZE if 2/TOTAL_BALLS
 const TOTAL_BALLS = 56;
 const TICKET_SIZE = 10;
+const DRAW_SIZE = 16;
+const TARGET_HITS = 5;
 const BUDGET_TICKETS = 23;
+const MONTE_CARLO_DRAWS = 10000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
 const TRACKED_K = [2, 3, 4, 5];
@@ -34,15 +37,51 @@ const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
 
 console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
 console.log(`Configuration: ${TICKET_SIZE}/${TOTAL_BALLS}`);
+console.log(`Tirage: ${DRAW_SIZE}/${TOTAL_BALLS}`);
+console.log(`Objectif: ${TARGET_HITS}/${TICKET_SIZE}`);
 console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
 console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
-console.log(`Score: non-redondance des sous-ensembles K2 a K5`);
+console.log(`Monte-Carlo: ${MONTE_CARLO_DRAWS} tirages fixes par execution`);
+console.log(`Score: echecs Monte-Carlo, deficit, puis non-redondance K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
 let bestTickets = [];
 let bestScore = null;
 let statusActive = false;
+
+const toMask = (numbers) => {
+    let low = 0;
+    let high = 0;
+    for (const number of numbers) {
+        if (number <= 32) {
+            low |= 1 << (number - 1);
+        } else {
+            high |= 1 << (number - 33);
+        }
+    }
+    return { low, high };
+};
+
+const popcount32 = (value) => {
+    value -= (value >>> 1) & 0x55555555;
+    value = (value & 0x33333333) + ((value >>> 2) & 0x33333333);
+    return (((value + (value >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
+};
+
+const createRandomDrawMask = () => {
+    const numbers = Array.from({ length: TOTAL_BALLS }, (_, index) => index + 1);
+    for (let index = 0; index < DRAW_SIZE; index++) {
+        const selectedIndex = index + Math.floor(Math.random() * (TOTAL_BALLS - index));
+        [numbers[index], numbers[selectedIndex]] = [numbers[selectedIndex], numbers[index]];
+    }
+    return toMask(numbers.slice(0, DRAW_SIZE));
+};
+
+const monteCarloDraws = Array.from(
+    { length: MONTE_CARLO_DRAWS },
+    createRandomDrawMask
+);
 
 const getEvaluatedSystem = (system, reference = []) => {
     return reference.length > 0 ? [...reference, ...system] : system;
@@ -87,9 +126,38 @@ const getKStats = (system, k) => {
     };
 };
 
+const getRedundancyScore = (system) => {
+    return TRACKED_K.map((k) => getKStats(system, k));
+};
+
+const getCoverageStats = (system) => {
+    const ticketMasks = system.map(toMask);
+    let failures = 0;
+    let deficit = 0;
+
+    for (const drawMask of monteCarloDraws) {
+        let bestHits = 0;
+        for (const ticketMask of ticketMasks) {
+            const hits = popcount32(drawMask.low & ticketMask.low)
+                + popcount32(drawMask.high & ticketMask.high);
+            if (hits > bestHits) bestHits = hits;
+            if (bestHits >= TARGET_HITS) break;
+        }
+        if (bestHits < TARGET_HITS) {
+            failures++;
+            deficit += TARGET_HITS - bestHits;
+        }
+    }
+
+    return { failures, deficit, total: monteCarloDraws.length };
+};
+
 const getSystemScore = (system, reference = []) => {
     const evaluatedSystem = getEvaluatedSystem(system, reference);
-    return TRACKED_K.map((k) => getKStats(evaluatedSystem, k));
+    return {
+        coverage: getCoverageStats(evaluatedSystem),
+        redundancy: getRedundancyScore(evaluatedSystem),
+    };
 };
 
 const formatKStats = (stats) => {
@@ -97,22 +165,30 @@ const formatKStats = (stats) => {
 };
 
 const formatScore = (score) => {
-    return score.map(formatKStats).join(' | ');
+    const coverage = score.coverage;
+    const monteCarlo = `MC Echecs:${coverage.failures}/${coverage.total} Deficit:${coverage.deficit}`;
+    return `${monteCarlo} | ${score.redundancy.map(formatKStats).join(' | ')}`;
 };
 
 const isBetterScore = (left, right) => {
     if (!right) return true;
-    for (let index = 0; index < left.length; index++) {
-        if (left[index].uniqueCovered !== right[index].uniqueCovered) {
-            return left[index].uniqueCovered > right[index].uniqueCovered;
+    if (left.coverage.failures !== right.coverage.failures) {
+        return left.coverage.failures < right.coverage.failures;
+    }
+    if (left.coverage.deficit !== right.coverage.deficit) {
+        return left.coverage.deficit < right.coverage.deficit;
+    }
+    for (let index = 0; index < left.redundancy.length; index++) {
+        if (left.redundancy[index].uniqueCovered !== right.redundancy[index].uniqueCovered) {
+            return left.redundancy[index].uniqueCovered > right.redundancy[index].uniqueCovered;
         }
     }
-    for (let index = 0; index < left.length; index++) {
-        if (left[index].collisionPenalty !== right[index].collisionPenalty) {
-            return left[index].collisionPenalty < right[index].collisionPenalty;
+    for (let index = 0; index < left.redundancy.length; index++) {
+        if (left.redundancy[index].collisionPenalty !== right.redundancy[index].collisionPenalty) {
+            return left.redundancy[index].collisionPenalty < right.redundancy[index].collisionPenalty;
         }
-        if (left[index].maxFrequency !== right[index].maxFrequency) {
-            return left[index].maxFrequency < right[index].maxFrequency;
+        if (left.redundancy[index].maxFrequency !== right.redundancy[index].maxFrequency) {
+            return left.redundancy[index].maxFrequency < right.redundancy[index].maxFrequency;
         }
     }
 
