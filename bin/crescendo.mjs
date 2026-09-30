@@ -6,14 +6,19 @@ import * as lotteryFacility from '../dist/cjs/index.js';
 // === CONFIGURATION DURCIE (HARDCODED) ===
 // Covering design of 2/TICKET_SIZE if 2/TOTAL_BALLS
 const TOTAL_BALLS = 56;
-const TICKET_SIZE = 10;
+const TICKET_SIZE = 6;
 const DRAW_SIZE = 16;
-const TARGET_HITS = 5;
-const BUDGET_TICKETS = 23;
+const TARGET_HITS = 4;
+const TARGET_COUNT = 2; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+const BUDGET_TICKETS = 40;
 const MONTE_CARLO_DRAWS = 10000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
 const TRACKED_K = [2, 3, 4, 5];
+
+if (!Number.isInteger(TARGET_COUNT) || TARGET_COUNT < 1 || TARGET_COUNT > BUDGET_TICKETS) {
+    throw new Error(`TARGET_COUNT doit etre un entier entre 1 et ${BUDGET_TICKETS}.`);
+}
 
 const parseSystem = (text) => {
     const trimmed = text.trim();
@@ -38,12 +43,12 @@ const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
 console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
 console.log(`Configuration: ${TICKET_SIZE}/${TOTAL_BALLS}`);
 console.log(`Tirage: ${DRAW_SIZE}/${TOTAL_BALLS}`);
-console.log(`Objectif: ${TARGET_HITS}/${TICKET_SIZE}`);
+console.log(`Objectif: au moins ${TARGET_COUNT} grilles a ${TARGET_HITS}/${TICKET_SIZE} ou mieux par tirage`);
 console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
 console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
 console.log(`Monte-Carlo: ${MONTE_CARLO_DRAWS} tirages fixes par execution`);
-console.log(`Score: echecs Monte-Carlo, deficit, puis non-redondance K2 a K5`);
+console.log(`Score: echecs Monte-Carlo, deficit en grilles, puis non-redondance K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
 let bestTickets = [];
@@ -136,16 +141,16 @@ const getCoverageStats = (system) => {
     let deficit = 0;
 
     for (const drawMask of monteCarloDraws) {
-        let bestHits = 0;
+        let qualifyingTickets = 0;
         for (const ticketMask of ticketMasks) {
             const hits = popcount32(drawMask.low & ticketMask.low)
                 + popcount32(drawMask.high & ticketMask.high);
-            if (hits > bestHits) bestHits = hits;
-            if (bestHits >= TARGET_HITS) break;
+            if (hits >= TARGET_HITS) qualifyingTickets++;
+            if (qualifyingTickets >= TARGET_COUNT) break;
         }
-        if (bestHits < TARGET_HITS) {
+        if (qualifyingTickets < TARGET_COUNT) {
             failures++;
-            deficit += TARGET_HITS - bestHits;
+            deficit += TARGET_COUNT - qualifyingTickets;
         }
     }
 
@@ -166,7 +171,7 @@ const formatKStats = (stats) => {
 
 const formatScore = (score) => {
     const coverage = score.coverage;
-    const monteCarlo = `MC Echecs:${coverage.failures}/${coverage.total} Deficit:${coverage.deficit}`;
+    const monteCarlo = `MC Echecs:${coverage.failures}/${coverage.total} DeficitGrilles:${coverage.deficit}`;
     return `${monteCarlo} | ${score.redundancy.map(formatKStats).join(' | ')}`;
 };
 
