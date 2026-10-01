@@ -1,9 +1,35 @@
+// ==========================================
+// 1. PARAMÈTRES DU JEU
+// ==========================================
+const TOTAL_BALLS = 28;  // Total de numéros dans l'urne (ex: 28)
+const DRAW_SIZE   = 12;  // Nombre de numéros tirés par le tirage (ex: 12)
+const TARGET_MATCH = 6;  // Nombre minimum de bons numéros visés
 
+// ==========================================
+// 2. TES GRILLES (Format texte brut)
+// ==========================================
+const rawTextSystem = `
+1 2 3 4 5 6 7
+8 9 10 11 12 13 14
+15 16 17 18 19 20 21
+22 23 24 25 26 27 28
+`;
 
-// Nombre total de tirages virtuels C(28, 12)
-const TOTAL_DRAWS = 30421755;
+// ==========================================
+// 3. MOTEUR UNIVERSEL (Ne rien modifier)
+// ==========================================
 
-// Parser pour extraire les grilles depuis une chaîne multi-lignes
+// Calcul combinatoire C(n, k)
+function combinationsCount(n, k) {
+    if (k < 0 || k > n) return 0;
+    if (k === 0 || k === n) return 1;
+    let c = 1;
+    for (let i = 1; i <= k; i++) {
+        c = (c * (n - i + 1)) / i;
+    }
+    return Math.round(c);
+}
+
 const parseSystem = (text) => {
     const trimmed = text.trim();
     if (trimmed === "") return [];
@@ -14,7 +40,6 @@ const parseSystem = (text) => {
         .map((line) => line.split(/\s+/).map(Number));
 };
 
-// Convertit un tableau de numéros [1..28] en masque de bits
 function arrayToBitmask(numbers) {
     let mask = 0;
     for (let i = 0; i < numbers.length; i++) {
@@ -23,49 +48,58 @@ function arrayToBitmask(numbers) {
     return mask;
 }
 
-// Algorithme de Gosper : génère la combinaison suivante à 12 bits
+// Fonction binaire universelle (inchangée)
+function popcount(v) {
+    v = v - ((v >> 1) & 0x55555555);
+    v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+    return (((v + (v >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+}
+
+// Algorithme de Gosper universel
 function nextCombination(v) {
     const t = (v | (v - 1)) + 1;
     return t | ((((t & -t) / (v & -v)) >> 1) - 1);
 }
 
-// 1. Tes grilles brutes au format texte
-const rawTextSystem = `
-1 2 3 4 5 6
-7 8 9 10 11 12
-13 14 15 16 17 18
-19 20 21 22 23 24
-25 26 27 28 1 2
-`;
-
-// 2. Conversion du texte en tableaux puis en masques binaires
+// Execution
 const myGrids = parseSystem(rawTextSystem);
+
+if (myGrids.length === 0) {
+    console.log("Erreur : aucune grille détectée.");
+    process.exit(1);
+}
+
 const gridMasks = myGrids.map(arrayToBitmask);
 const gridCount = gridMasks.length;
+const detectedGridSize = myGrids[0].length;
+const totalDraws = combinationsCount(TOTAL_BALLS, DRAW_SIZE);
 
-console.log(`Grilles chargées : ${gridCount}`);
-console.time("Évaluation des 30M de tirages");
+console.log(`Grilles chargées    : ${gridCount}`);
+console.log(`Taille détectée     : ${detectedGridSize} numéros par grille`);
+console.log(`Objectif            : au moins ${TARGET_MATCH}/${DRAW_SIZE} bons numéros parmi ${TOTAL_BALLS}`);
+console.log(`Tirages à évaluer   : ${totalDraws.toLocaleString('fr-FR')}\n`);
 
-let maskDraw = (1 << 12) - 1; // Premier tirage binaire (bits 0 à 11 à 1)
+console.time("Évaluation");
+
+let maskDraw = (1 << DRAW_SIZE) - 1;
 let coveredCount = 0;
 
-// 3. Boucle sur les 30 421 755 tirages de 12 numéros
-for (let i = 0; i < TOTAL_DRAWS; i++) {
+for (let i = 0; i < totalDraws; i++) {
     for (let j = 0; j < gridCount; j++) {
-        // Test de couverture instantané : (grille & tirage) === grille
-        if ((gridMasks[j] & maskDraw) === gridMasks[j]) {
+        if (popcount(gridMasks[j] & maskDraw) >= TARGET_MATCH) {
             coveredCount++;
-            break; // Ce tirage est couvert, passage au suivant
+            break;
         }
     }
     maskDraw = nextCombination(maskDraw);
 }
 
-console.timeEnd("Évaluation des 30M de tirages");
+console.timeEnd("Évaluation");
 
-// 4. Bilan
-const coveragePct = ((coveredCount / TOTAL_DRAWS) * 100).toFixed(2);
-console.log(`Tirages couverts à 6/12 : ${coveredCount.toLocaleString('fr-FR')} / ${TOTAL_DRAWS.toLocaleString('fr-FR')} (${coveragePct} %)`);
+const coveragePct = ((coveredCount / totalDraws) * 100).toFixed(2);
+console.log(`\nTirages couverts : ${coveredCount.toLocaleString('fr-FR')} / ${totalDraws.toLocaleString('fr-FR')} (${coveragePct} %)`);
+
+
 
 
 
