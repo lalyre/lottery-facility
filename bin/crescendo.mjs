@@ -5,12 +5,12 @@ import * as lotteryFacility from '../dist/cjs/index.js';
 
 // === CONFIGURATION DURCIE (HARDCODED) ===
 // Covering design of 2/TICKET_SIZE if 2/TOTAL_BALLS
-const TOTAL_BALLS = 56;
-const TICKET_SIZE = 6;
-const DRAW_SIZE = 16;
-const TARGET_HITS = 4;
-const TARGET_COUNT = 2; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
-const BUDGET_TICKETS = 40;
+const TOTAL_BALLS = 20;
+const DRAW_SIZE = 8;
+const TICKET_SIZE = 10;
+const TARGET_HITS = 5;
+const TARGET_COUNT = 5; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+const BUDGET_TICKETS = 20;
 const MONTE_CARLO_DRAWS = 10000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
