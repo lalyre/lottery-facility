@@ -103,4 +103,43 @@ console.log(`\nTirages couverts : ${coveredCount.toLocaleString('fr-FR')} / ${to
 
 
 
+/*
 
+class BitSet {
+    constructor(totalBalls, grid = []) {
+        this.size = Math.ceil(totalBalls / 32);
+        this.words = new Uint32Array(this.size);
+        for (const num of grid) {
+            this.add(num);
+        }
+    }
+
+    add(num) {
+        const index = Math.floor((num - 1) / 32);
+        const bit = (num - 1) % 32;
+        this.words[index] |= (1 << bit);
+    }
+
+    // Compte le nombre de numéros en commun avec un autre BitSet
+    overlapWith(other) {
+        let count = 0;
+        for (let i = 0; i < this.size; i++) {
+            let v = this.words[i] & other.words[i];
+            // Popcount 32 bits rapide
+            v = v - ((v >> 1) & 0x55555555);
+            v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+            count += (((v + (v >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+        }
+        return count;
+    }
+}
+
+// Exemple sur 200 numéros
+const TOTAL_NUMEROS = 200;
+const grille1 = new BitSet(TOTAL_NUMEROS, [10, 80, 150, 199]);
+const grille2 = new BitSet(TOTAL_NUMEROS, [5, 80, 150, 200]);
+
+console.log(`Numéros en commun : ${grille1.overlapWith(grille2)}`); // Résultat : 2
+
+
+*/
