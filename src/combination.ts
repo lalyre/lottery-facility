@@ -4,48 +4,61 @@ import { TupleHelper, Tuple } from "./tuple";
 
 export class CombinationHelper {
 	/**
-	 * Give the rank of a given tuple
+	 * Compute the zero-based lexicographic rank of a nonempty tuple.
+	 * The first combination has rank 0n; the last has rank C(max, length) - 1n.
 	 * @param max       the maximum possible number value used in balls numbers.
-	 * @param numbers   array of balls number (tuple).
-	 * @return          the rank of the tuple.
+	 * @param numbers   ball numbers starting at 1; sorted in place in ascending order.
+	 * @return          zero-based rank as bigint, or -1n for a rejected input.
 	 */
 	public static tupleToRank(max:number, numbers:Tuple): bigint {
 		if (max < 0) return -1n;
 		if (!numbers) return -1n;
 		const len:number = numbers.length;
+		if (len === 0) return -1n;
 		numbers.sort((a, b) => {return a - b;});
 
-		let rank:bigint = TupleHelper.binomial(max, len);
-		for (let i = len; i > 0; i--) {
-			if (numbers[len-i] > max) return -1n;
-			rank -= TupleHelper.binomial(max-numbers[len-i]+1, i);
-			if (i > 1) rank += TupleHelper.binomial(max-numbers[len-i], i-1);
+		// Zero-based lexicographic rank. Pascal's identity reduces the
+		// original two binomial coefficients per ball to one.
+		let rank:bigint = TupleHelper.binomial(max, len) - 1n;
+		for (let i = 0; i < len; i++) {
+			if (numbers[i] > max) return -1n;
+			rank -= TupleHelper.binomial(max - numbers[i], len - i);
 		}
-		rank++;
 		return rank;
 	}
 
 
 	/**
-	 * Give the tuple corresponding to the given rank
+	 * Return the nonempty tuple at a zero-based lexicographic rank.
 	 * @param max       the maximum possible number value used in balls numbers.
 	 * @param length    the length of the tuple to be returned.
-	 * @param rank      the rank of the tuple to be returned.
-	 * @return          the tuple corresponding to the given rank.
+	 * @param rank      bigint in [0n, C(max, length) - 1n].
+	 * @return          ascending ball numbers starting at 1, or [] for an invalid rank or size.
 	 */
 	public static rankToTuple(max:number, length:number, rank:bigint): Tuple {
 		if (max <= 0) return [];
 		if (length <= 0) return [];
 		if (length > max) return [];
-		if (rank <= 0 || rank > TupleHelper.binomial(max, length)) return [];
-		const numbers = Array.from({ length: length }, (_, i) => 0);
-
+		if (rank < 0 || rank >= TupleHelper.binomial(max, length)) return [];
+		const numbers: Tuple = [];
+		let remaining = rank;
+		let minimum = 1;
 		for (let i = 0; i < length; i++) {
-			for (let k = max; k >= length; k--) {
-				let m = k;
-				for (let j = length-1; j >= i; j--) { numbers[j] = m; m--; }
-				if (CombinationHelper.tupleToRank(max, numbers) <= rank) break;
+			const size = length - i;
+			const total = TupleHelper.binomial(max - minimum + 1, size);
+			let low = minimum;
+			let high = max - size + 1;
+			// Count the combinations skipped by a candidate prefix and
+			// find its ball directly, without ranking temporary tuples.
+			while (low < high) {
+				const middle = low + Math.ceil((high - low) / 2);
+				const skipped = total - TupleHelper.binomial(max - middle + 1, size);
+				if (skipped <= remaining) low = middle;
+				else high = middle - 1;
 			}
+			remaining -= total - TupleHelper.binomial(max - low + 1, size);
+			numbers.push(low);
+			minimum = low + 1;
 		}
 		return numbers;
 	}
