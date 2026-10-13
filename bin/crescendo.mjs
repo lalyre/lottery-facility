@@ -3,14 +3,13 @@
 import readline from 'node:readline';
 import * as lotteryFacility from '../dist/cjs/index.js';
 
-// === CONFIGURATION DURCIE (HARDCODED) ===
-// Covering design of 2/TICKET_SIZE if 2/TOTAL_BALLS
-const TOTAL_BALLS = 20;
-const DRAW_SIZE = 8;
+// === CONFIGURATION ===
+const TOTAL_BALLS = 25;
+const DRAW_SIZE = 10;
 const TICKET_SIZE = 10;
-const TARGET_HITS = 5;
+const TARGET_HITS = 7;
 const TARGET_COUNT = 5; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
-const BUDGET_TICKETS = 20;
+const BUDGET_TICKETS = 50;
 const MONTE_CARLO_DRAWS = 10000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
@@ -33,11 +32,13 @@ const parseSystem = (text) => {
 const bootSystem = `
 `;
 const referenceSystem = parseSystem(bootSystem);
+
 if (referenceSystem.length > BUDGET_TICKETS) {
     throw new Error(
         `Le bootSystem contient ${referenceSystem.length} grilles pour un budget total de ${BUDGET_TICKETS}.`
     );
 }
+
 const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
 
 console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
@@ -48,7 +49,7 @@ console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
 console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
 console.log(`Monte-Carlo: ${MONTE_CARLO_DRAWS} tirages fixes par execution`);
-console.log(`Score: echecs Monte-Carlo, deficit en grilles, puis non-redondance K2 a K5`);
+console.log(`Score: total de grilles gagnantes, echecs, deficit, puis non-redondance K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
 let bestTickets = [];
@@ -110,7 +111,7 @@ const getKStats = (system, k) => {
     };
 
     for (const rawTicket of system) {
-        const ticket = [...new Set(rawTicket)].sort((left, right) => left - right);
+        const ticket = [...new Set(rawTicket)].sort((a, b) => a - b);
         if (ticket.length >= k) visit(ticket, 0, 0, new Array(k));
     }
 
@@ -139,22 +140,38 @@ const getCoverageStats = (system) => {
     const ticketMasks = system.map(toMask);
     let failures = 0;
     let deficit = 0;
+    let qualifyingTicketsTotal = 0;
 
     for (const drawMask of monteCarloDraws) {
         let qualifyingTickets = 0;
+
+        // Compter toutes les grilles gagnantes, sans s'arreter a TARGET_COUNT.
         for (const ticketMask of ticketMasks) {
             const hits = popcount32(drawMask.low & ticketMask.low)
                 + popcount32(drawMask.high & ticketMask.high);
-            if (hits >= TARGET_HITS) qualifyingTickets++;
-            if (qualifyingTickets >= TARGET_COUNT) break;
+
+            if (hits >= TARGET_HITS) {
+                qualifyingTickets++;
+            }
         }
+
+        // Total de grilles gagnantes sur tous les tirages simules.
+        ///////////////qualifyingTicketsTotal += qualifyingTickets;
+
         if (qualifyingTickets < TARGET_COUNT) {
             failures++;
             deficit += TARGET_COUNT - qualifyingTickets;
-        }
+        } else {
+			qualifyingTicketsTotal += qualifyingTickets;
+		}
     }
 
-    return { failures, deficit, total: monteCarloDraws.length };
+    return {
+        failures,
+        deficit,
+        qualifyingTicketsTotal,
+        total: monteCarloDraws.length
+    };
 };
 
 const getSystemScore = (system, reference = []) => {
@@ -171,23 +188,40 @@ const formatKStats = (stats) => {
 
 const formatScore = (score) => {
     const coverage = score.coverage;
-    const monteCarlo = `MC Echecs:${coverage.failures}/${coverage.total} DeficitGrilles:${coverage.deficit}`;
+    const monteCarlo =
+        `MC Echecs:${coverage.failures}/${coverage.total}` +
+        ` DeficitGrilles:${coverage.deficit}` +
+        ` GrillesGagnantes:${coverage.qualifyingTicketsTotal}`;
+
     return `${monteCarlo} | ${score.redundancy.map(formatKStats).join(' | ')}`;
 };
 
 const isBetterScore = (left, right) => {
     if (!right) return true;
+
+    // PRIORITE 1 : maximiser le total de grilles gagnantes.
+    if (left.coverage.qualifyingTicketsTotal !== right.coverage.qualifyingTicketsTotal) {
+        return left.coverage.qualifyingTicketsTotal > right.coverage.qualifyingTicketsTotal;
+    }
+
+    // PRIORITE 2 : minimiser les tirages avec moins de TARGET_COUNT gagnantes.
     if (left.coverage.failures !== right.coverage.failures) {
         return left.coverage.failures < right.coverage.failures;
     }
+
+    // PRIORITE 3 : minimiser le deficit total de grilles.
     if (left.coverage.deficit !== right.coverage.deficit) {
         return left.coverage.deficit < right.coverage.deficit;
     }
+
+    // PRIORITE 4 : maximiser la couverture des combinaisons uniques.
     for (let index = 0; index < left.redundancy.length; index++) {
         if (left.redundancy[index].uniqueCovered !== right.redundancy[index].uniqueCovered) {
             return left.redundancy[index].uniqueCovered > right.redundancy[index].uniqueCovered;
         }
     }
+
+    // PRIORITE 5 : minimiser les répétitions.
     for (let index = 0; index < left.redundancy.length; index++) {
         if (left.redundancy[index].collisionPenalty !== right.redundancy[index].collisionPenalty) {
             return left.redundancy[index].collisionPenalty < right.redundancy[index].collisionPenalty;
@@ -201,9 +235,12 @@ const isBetterScore = (left, right) => {
 };
 
 const improveNonRedundancy = (system, reference = [], attempts = NB_SWAP) => {
-    let current = system.map((ticket) => [...ticket].sort((left, right) => left - right));
+    let current = system.map((ticket) => [...ticket].sort((a, b) => a - b));
     let currentScore = getSystemScore(current, reference);
-    if (system.length < 2 || attempts < 1) return { system: current, score: currentScore };
+
+    if (system.length < 2 || attempts < 1) {
+        return { system: current, score: currentScore };
+    }
 
     for (let attempt = 0; attempt < attempts; attempt++) {
         const firstTicketIndex = Math.floor(Math.random() * current.length);
@@ -216,20 +253,27 @@ const improveNonRedundancy = (system, reference = [], attempts = NB_SWAP) => {
         const secondBallIndex = Math.floor(Math.random() * secondTicket.length);
         const firstBall = firstTicket[firstBallIndex];
         const secondBall = secondTicket[secondBallIndex];
-        if (firstBall === secondBall || firstTicket.includes(secondBall) || secondTicket.includes(firstBall)) continue;
+
+        if (
+            firstBall === secondBall ||
+            firstTicket.includes(secondBall) ||
+            secondTicket.includes(firstBall)
+        ) continue;
 
         const candidate = current.map((ticket) => [...ticket]);
         candidate[firstTicketIndex][firstBallIndex] = secondBall;
         candidate[secondTicketIndex][secondBallIndex] = firstBall;
-        candidate[firstTicketIndex].sort((left, right) => left - right);
-        candidate[secondTicketIndex].sort((left, right) => left - right);
+        candidate[firstTicketIndex].sort((a, b) => a - b);
+        candidate[secondTicketIndex].sort((a, b) => a - b);
 
         const candidateScore = getSystemScore(candidate, reference);
+
         if (isBetterScore(candidateScore, currentScore)) {
             current = candidate;
             currentScore = candidateScore;
         }
     }
+
     return { system: current, score: currentScore };
 };
 
@@ -242,7 +286,10 @@ const clearStatusLine = () => {
 
 const writeStatusLine = (text) => {
     const columns = process.stdout.columns ?? 120;
-    const safeText = text.length >= columns ? text.slice(0, Math.max(0, columns - 4)) + "..." : text;
+    const safeText = text.length >= columns
+        ? text.slice(0, Math.max(0, columns - 4)) + "..."
+        : text;
+
     clearStatusLine();
     process.stdout.write(safeText);
     statusActive = true;
@@ -255,6 +302,7 @@ const flushStatusLine = () => {
 };
 
 let iter = 0;
+
 while (true) {
     iter++;
 
@@ -265,11 +313,13 @@ while (true) {
         null,
         NB_SWAP
     );
+
     const improved = improveNonRedundancy(initialTickets, referenceSystem);
     const currentTickets = improved.system;
     const currentScore = improved.score;
+
     if (iter % STATUS_EVERY === 0) {
-        writeStatusLine(`Test en cours (iter. ${iter}) ->   ${formatScore(currentScore)}`);
+        writeStatusLine(`Test en cours (iter. ${iter}) -> ${formatScore(currentScore)}`);
     }
 
     if (isBetterScore(currentScore, bestScore)) {
@@ -281,17 +331,21 @@ while (true) {
             const sortedTicket = lotteryFacility.TupleHelper.toCanonicalString(ticket, ' ');
             console.log(`${sortedTicket}`);
         });
+
         console.log();
+
         bestTickets.forEach((ticket) => {
             const sortedTicket = lotteryFacility.TupleHelper.toCanonicalString(ticket, ' ');
             console.log(`${sortedTicket}`);
         });
 
         process.stdout.write(
-            `Record trouve (iter. ${iter}) (${new Date().toISOString()}) ->   ${formatScore(bestScore)}\n`
+            `Record trouve (iter. ${iter}) (${new Date().toISOString()}) -> ${formatScore(bestScore)}\n`
         );
 
         console.log();
         console.log();
     }
 }
+
+
