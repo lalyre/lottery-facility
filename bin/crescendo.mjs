@@ -4,12 +4,12 @@ import readline from 'node:readline';
 import * as lotteryFacility from '../dist/cjs/index.js';
 
 // === CONFIGURATION ===
-const TOTAL_BALLS = 25;
-const DRAW_SIZE = 10;
+const TOTAL_BALLS = 56;
+const DRAW_SIZE = 27;
 const TICKET_SIZE = 10;
 const TARGET_HITS = 7;
-const TARGET_COUNT = 5; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
-const BUDGET_TICKETS = 50;
+const TARGET_COUNT = 1; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+const BUDGET_TICKETS = 10;
 const MONTE_CARLO_DRAWS = 10000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 1000;
@@ -49,7 +49,7 @@ console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
 console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
 console.log(`Monte-Carlo: ${MONTE_CARLO_DRAWS} tirages fixes par execution`);
-console.log(`Score: total de grilles gagnantes, echecs, deficit, puis non-redondance K2 a K5`);
+console.log(`Score: echecs, deficit, total de grilles gagnantes sur les tirages reussis, puis non-redondance K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
 let bestTickets = [];
@@ -189,7 +189,7 @@ const formatKStats = (stats) => {
 const formatScore = (score) => {
     const coverage = score.coverage;
     const monteCarlo =
-        `MC Echecs:${coverage.failures}/${coverage.total}` +
+        `MC Echecs:${coverage.failures}/${coverage.total} (${(100 * coverage.failures / coverage.total).toFixed(2)}%)` +
         ` DeficitGrilles:${coverage.deficit}` +
         ` GrillesGagnantes:${coverage.qualifyingTicketsTotal}`;
 
@@ -199,19 +199,19 @@ const formatScore = (score) => {
 const isBetterScore = (left, right) => {
     if (!right) return true;
 
-    // PRIORITE 1 : maximiser le total de grilles gagnantes.
-    if (left.coverage.qualifyingTicketsTotal !== right.coverage.qualifyingTicketsTotal) {
-        return left.coverage.qualifyingTicketsTotal > right.coverage.qualifyingTicketsTotal;
-    }
-
-    // PRIORITE 2 : minimiser les tirages avec moins de TARGET_COUNT gagnantes.
+    // PRIORITE 1 : minimiser les tirages avec moins de TARGET_COUNT gagnantes.
     if (left.coverage.failures !== right.coverage.failures) {
         return left.coverage.failures < right.coverage.failures;
     }
 
-    // PRIORITE 3 : minimiser le deficit total de grilles.
+    // PRIORITE 2 : minimiser le deficit total de grilles.
     if (left.coverage.deficit !== right.coverage.deficit) {
         return left.coverage.deficit < right.coverage.deficit;
+    }
+
+    // PRIORITE 3 : maximiser les grilles gagnantes sur les tirages reussis.
+    if (left.coverage.qualifyingTicketsTotal !== right.coverage.qualifyingTicketsTotal) {
+        return left.coverage.qualifyingTicketsTotal > right.coverage.qualifyingTicketsTotal;
     }
 
     // PRIORITE 4 : maximiser la couverture des combinaisons uniques.
