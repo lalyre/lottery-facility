@@ -40,6 +40,26 @@ export class DrawBox {
 
 
 	/**
+	 * Draw a uniform selection without replacement using partial Fisher-Yates.
+	 * Leaves the draw box unchanged. Each call draws a new independent ticket.
+	 *
+	 * @param size Number of balls to draw (integer between 0 and count).
+	 * @returns A randomly ordered ticket containing distinct balls.
+	 */
+	public drawFisherYates(size: number): Tuple {
+		if (!Number.isInteger(size) || size < 0 || size > this._count) {
+			throw new Error('Invalid size parameter');
+		}
+		const numbers = [...this._balls];
+		for (let index = 0; index < size; index++) {
+			const selectedIndex = index + Math.floor(Math.random() * (numbers.length - index));
+			[numbers[index], numbers[selectedIndex]] = [numbers[selectedIndex], numbers[index]];
+		}
+		return numbers.slice(0, size);
+	}
+
+
+	/**
 	 * Generates a set of tickets using pure randomness.
 	 * Each ticket is drawn independently.
 	 *

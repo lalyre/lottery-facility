@@ -4,8 +4,8 @@ import readline from 'node:readline';
 import * as lotteryFacility from '../dist/cjs/index.js';
 
 // === CONFIGURATION ===
-const TOTAL_BALLS = 56;
-const DRAW_SIZE = 27;
+const TOTAL_BALLS = 25;
+const DRAW_SIZE = 12;
 const TICKET_SIZE = 10;
 const TARGET_HITS = 7;
 const TARGET_COUNT = 1; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
@@ -33,10 +33,47 @@ const bootSystem = `
 `;
 const referenceSystem = parseSystem(bootSystem);
 
+// Jeu complet servant uniquement de record initial a battre (bootSystem inclus s'il y en a un).
+// Laisser vide pour commencer sans record. Une grille par ligne, comme bootSystem.
+const startingSystem = `
+01 02 03 08 16 17 18 19 20 25
+03 05 06 07 12 16 20 22 23 24
+01 02 03 05 06 10 11 14 15 21
+04 05 11 12 14 15 18 20 23 25
+01 02 05 08 09 10 12 19 22 24
+01 04 07 09 13 16 18 20 21 22
+04 06 09 10 11 12 13 15 17 19
+02 09 13 14 16 17 22 23 24 25
+06 07 08 10 11 17 18 21 23 25
+03 04 07 08 13 14 15 19 21 24
+`;
+const startingTickets = parseSystem(startingSystem);
+
+const validateSystem = (system, name) => {
+    system.forEach((ticket, index) => {
+        if (
+            ticket.length !== TICKET_SIZE ||
+            new Set(ticket).size !== TICKET_SIZE ||
+            ticket.some((number) => !Number.isInteger(number) || number < 1 || number > TOTAL_BALLS)
+        ) {
+            throw new Error(
+                `${name}, grille ${index + 1} : fournir ${TICKET_SIZE} numeros distincts entre 1 et ${TOTAL_BALLS}.`
+            );
+        }
+    });
+};
+
+validateSystem(referenceSystem, 'bootSystem');
+validateSystem(startingTickets, 'startingSystem');
+
 if (referenceSystem.length > BUDGET_TICKETS) {
     throw new Error(
         `Le bootSystem contient ${referenceSystem.length} grilles pour un budget total de ${BUDGET_TICKETS}.`
     );
+}
+
+if (startingTickets.length > 0 && startingTickets.length !== BUDGET_TICKETS) {
+    throw new Error(`Le startingSystem doit contenir exactement ${BUDGET_TICKETS} grilles, ou etre vide.`);
 }
 
 const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
@@ -301,11 +338,19 @@ const flushStatusLine = () => {
     statusActive = false;
 };
 
+if (startingTickets.length > 0) {
+    // Le jeu de depart est complet : ne pas lui ajouter referenceSystem une seconde fois.
+    bestScore = getSystemScore(startingTickets);
+    console.log(`Record initial (startingSystem) -> ${formatScore(bestScore)}`);
+    console.log();
+}
+
 let iter = 0;
 
 while (true) {
     iter++;
 
+    // Generation equilibree : decommenter ce bloc et commenter le suivant pour comparer.
     const initialTickets = box.drawMaximizePairCoveringTickets(
         generatedTicketsCount,
         TICKET_SIZE,
@@ -313,6 +358,12 @@ while (true) {
         null,
         NB_SWAP
     );
+
+    // Generation aleatoire pure : grilles independantes, sans remise dans chaque grille.
+    // const initialTickets = Array.from(
+    //     { length: generatedTicketsCount },
+    //     () => box.drawFisherYates(TICKET_SIZE).sort((a, b) => a - b)
+    // );
 
     const improved = improveNonRedundancy(initialTickets, referenceSystem);
     const currentTickets = improved.system;
