@@ -4,15 +4,30 @@ import readline from 'node:readline';
 import * as lotteryFacility from '../dist/cjs/index.js';
 
 // === CONFIGURATION ===
+
+// TARGET_COUNT		Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+
+
 const TOTAL_BALLS = 25;
 const DRAW_SIZE = 12;
 const TICKET_SIZE = 10;
 const TARGET_HITS = 7;
-const TARGET_COUNT = 1; // Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+const TARGET_COUNT = 1;
 const BUDGET_TICKETS = 10;
-const MONTE_CARLO_DRAWS = 10000;
+
+
+
+// const TOTAL_BALLS = 56;
+// const DRAW_SIZE = 23;
+// const TICKET_SIZE = 10;
+// const TARGET_HITS = 6;
+// const TARGET_COUNT = 8;
+// const BUDGET_TICKETS = 50;
+
+
+const MONTE_CARLO_DRAWS = 100000;
 const NB_SWAP = 200;
-const STATUS_EVERY = 1000;
+const STATUS_EVERY = 500;
 const TRACKED_K = [2, 3, 4, 5];
 
 if (!Number.isInteger(TARGET_COUNT) || TARGET_COUNT < 1 || TARGET_COUNT > BUDGET_TICKETS) {
@@ -36,16 +51,16 @@ const referenceSystem = parseSystem(bootSystem);
 // Jeu complet servant uniquement de record initial a battre (bootSystem inclus s'il y en a un).
 // Laisser vide pour commencer sans record. Une grille par ligne, comme bootSystem.
 const startingSystem = `
-01 02 03 08 16 17 18 19 20 25
-03 05 06 07 12 16 20 22 23 24
-01 02 03 05 06 10 11 14 15 21
-04 05 11 12 14 15 18 20 23 25
-01 02 05 08 09 10 12 19 22 24
-01 04 07 09 13 16 18 20 21 22
-04 06 09 10 11 12 13 15 17 19
-02 09 13 14 16 17 22 23 24 25
-06 07 08 10 11 17 18 21 23 25
-03 04 07 08 13 14 15 19 21 24
+01 04 06 09 13 14 16 19 20 23
+01 02 03 05 07 11 17 19 20 25
+02 04 05 07 08 12 15 16 19 24
+05 06 07 08 09 11 12 14 21 22
+01 03 04 05 10 11 13 15 18 21
+01 08 10 17 18 19 21 22 23 24
+02 10 11 12 14 15 16 17 20 23
+03 06 12 13 15 16 17 21 22 25
+03 04 08 09 14 18 20 22 24 25
+02 06 07 09 10 13 18 23 24 25
 `;
 const startingTickets = parseSystem(startingSystem);
 
