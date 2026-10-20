@@ -1,7 +1,39 @@
 #!/usr/bin/env node
 'use strict'
 import readline from 'node:readline';
+import { createReadStream } from 'node:fs';
+import { parseArgs } from 'node:util';
 import * as lotteryFacility from '../dist/cjs/index.js';
+
+const { values: options } = parseArgs({
+    options: {
+        combinations: { type: 'string' },
+        help: { type: 'boolean', short: 'h' },
+    },
+});
+
+if (options.help) {
+    console.log(`Usage: node bin/crescendo.mjs [--combinations fichier.txt]
+
+Une combinaison par ligne, numeros separes par des espaces, taille libre.
+Les lignes vides sont ignorees et les lignes repetees sont conservees.
+Les lignes commencant par # sont des commentaires.
+Un en-tete facultatif, unique et place avant les combinaisons, definit les seuils :
+  @hits 3=3 4=3 12=7
+Cela demande 3 correspondances pour les tailles 3 et 4, et 7 pour la taille 12.
+Toute taille absente utilise TARGET_HITS ; sans en-tete, toutes l'utilisent.
+Tailles et seuils : entiers entre 1 et TOTAL_BALLS, sans taille repetee.
+Un seuil superieur a la taille reste autorise : la combinaison sera en echec.
+TARGET_COUNT reste le nombre minimum de grilles atteignant le seuil.
+Le pourcentage de couverture porte sur toutes les lignes de combinaisons du fichier.
+Exemple commente : bin/examples/crescendo-combinations.txt
+Sans fichier, les tirages Monte-Carlo sont generes comme auparavant.`);
+    process.exit(0);
+}
+
+if (options.combinations !== undefined && options.combinations.trim() === '') {
+    throw new Error('--combinations doit designer un fichier non vide.');
+}
 
 // === CONFIGURATION ===
 
@@ -95,12 +127,13 @@ const generatedTicketsCount = BUDGET_TICKETS - referenceSystem.length;
 
 console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
 console.log(`Configuration: ${TICKET_SIZE}/${TOTAL_BALLS}`);
-console.log(`Tirage: ${DRAW_SIZE}/${TOTAL_BALLS}`);
-console.log(`Objectif: au moins ${TARGET_COUNT} grilles a ${TARGET_HITS}/${TICKET_SIZE} ou mieux par tirage`);
+if (!options.combinations) console.log(`Tirage: ${DRAW_SIZE}/${TOTAL_BALLS}`);
+console.log(options.combinations
+    ? `Objectif: au moins ${TARGET_COUNT} grilles atteignant le seuil de chaque combinaison (TARGET_HITS par defaut: ${TARGET_HITS})`
+    : `Objectif: au moins ${TARGET_COUNT} grilles a ${TARGET_HITS}/${TICKET_SIZE} ou mieux par tirage`);
 console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
 console.log(`Grilles generees: ${generatedTicketsCount} tickets`);
-console.log(`Monte-Carlo: ${MONTE_CARLO_DRAWS} tirages fixes par execution`);
 console.log(`Score: echecs, deficit, total de grilles gagnantes sur les tirages reussis, puis non-redondance K2 a K5`);
 
 const box = new lotteryFacility.DrawBox(TOTAL_BALLS);
@@ -136,10 +169,78 @@ const createRandomDrawMask = () => {
     return toMask(numbers.slice(0, DRAW_SIZE));
 };
 
-const monteCarloDraws = Array.from(
-    { length: MONTE_CARLO_DRAWS },
-    createRandomDrawMask
-);
+// Format : commentaires #, puis un unique @hits taille=seuil ... facultatif,
+// puis une combinaison par ligne. Les tailles absentes gardent TARGET_HITS.
+// Les repetitions de lignes pesent autant de fois dans le score ; TARGET_COUNT
+// s'applique toujours. Un seuil impossible n'est jamais abaisse automatiquement.
+const loadCombinationMasks = async (filePath) => {
+    const input = createReadStream(filePath, { encoding: 'utf8' });
+    const lines = readline.createInterface({
+        input,
+        crlfDelay: Infinity,
+    });
+    const masks = [];
+    const hitsBySize = new Map();
+    let hasHeader = false;
+    let lineNumber = 0;
+    const invalidLine = (message) => new Error(`${filePath}, ligne ${lineNumber} : ${message}`);
+    try {
+        for await (const line of lines) {
+            lineNumber++;
+            const trimmed = line.trim();
+            if (trimmed === '' || trimmed.startsWith('#')) continue;
+            if (trimmed.startsWith('@')) {
+                if (hasHeader || masks.length > 0) {
+                    throw invalidLine('un seul en-tete @hits est autorise, avant les combinaisons.');
+                }
+                const [directive, ...rules] = trimmed.split(/\s+/);
+                if (directive !== '@hits' || rules.length === 0) {
+                    throw invalidLine('en-tete attendu : @hits 3=3 4=3 12=7.');
+                }
+                for (const rule of rules) {
+                    if (!/^\d+=\d+$/.test(rule)) {
+                        throw invalidLine(`regle invalide "${rule}" : utiliser taille=seuil.`);
+                    }
+                    const [size, hits] = rule.split('=').map(Number);
+                    if (![size, hits].every((value) => Number.isInteger(value) && value >= 1 && value <= TOTAL_BALLS)) {
+                        throw invalidLine(`taille et seuil doivent etre des entiers entre 1 et ${TOTAL_BALLS}.`);
+                    }
+                    if (hitsBySize.has(size)) {
+                        throw invalidLine(`taille ${size} definie plusieurs fois dans @hits.`);
+                    }
+                    hitsBySize.set(size, hits);
+                }
+                hasHeader = true;
+                continue;
+            }
+            const numbers = trimmed.split(/\s+/).map(Number);
+            if (
+                new Set(numbers).size !== numbers.length ||
+                numbers.some((number) => !Number.isInteger(number) || number < 1 || number > TOTAL_BALLS)
+            ) {
+                throw new Error(
+                    `${filePath}, ligne ${lineNumber} : fournir des numeros distincts entre 1 et ${TOTAL_BALLS}.`
+                );
+            }
+            masks.push({ ...toMask(numbers), targetHits: hitsBySize.get(numbers.length) ?? TARGET_HITS });
+        }
+    } finally {
+        lines.close();
+        input.destroy();
+    }
+    if (masks.length === 0) {
+        throw new Error(`${filePath} : aucune combinaison a evaluer.`);
+    }
+    return masks;
+};
+
+const evaluationDraws = options.combinations
+    ? await loadCombinationMasks(options.combinations)
+    : Array.from({ length: MONTE_CARLO_DRAWS }, createRandomDrawMask);
+
+console.log(options.combinations
+    ? `Fichier: ${options.combinations} (${evaluationDraws.length} combinaisons fixes par execution)`
+    : `Monte-Carlo: ${evaluationDraws.length} tirages fixes par execution`);
 
 const getEvaluatedSystem = (system, reference = []) => {
     return reference.length > 0 ? [...reference, ...system] : system;
@@ -194,15 +295,16 @@ const getCoverageStats = (system) => {
     let deficit = 0;
     let qualifyingTicketsTotal = 0;
 
-    for (const drawMask of monteCarloDraws) {
+    for (const drawMask of evaluationDraws) {
         let qualifyingTickets = 0;
+        const targetHits = drawMask.targetHits ?? TARGET_HITS;
 
         // Compter toutes les grilles gagnantes, sans s'arreter a TARGET_COUNT.
         for (const ticketMask of ticketMasks) {
             const hits = popcount32(drawMask.low & ticketMask.low)
                 + popcount32(drawMask.high & ticketMask.high);
 
-            if (hits >= TARGET_HITS) {
+            if (hits >= targetHits) {
                 qualifyingTickets++;
             }
         }
@@ -222,7 +324,7 @@ const getCoverageStats = (system) => {
         failures,
         deficit,
         qualifyingTicketsTotal,
-        total: monteCarloDraws.length
+        total: evaluationDraws.length
     };
 };
 
@@ -240,12 +342,13 @@ const formatKStats = (stats) => {
 
 const formatScore = (score) => {
     const coverage = score.coverage;
-    const monteCarlo =
-        `MC Echecs:${coverage.failures}/${coverage.total} (${(100 * coverage.failures / coverage.total).toFixed(2)}%)` +
+    const coverageText =
+        `${options.combinations ? 'Fichier' : 'MC'} Echecs:${coverage.failures}/${coverage.total} (${(100 * coverage.failures / coverage.total).toFixed(2)}%)` +
+        ` Couverture:${(100 * (coverage.total - coverage.failures) / coverage.total).toFixed(2)}%` +
         ` DeficitGrilles:${coverage.deficit}` +
         ` GrillesGagnantes:${coverage.qualifyingTicketsTotal}`;
 
-    return `${monteCarlo} | ${score.redundancy.map(formatKStats).join(' | ')}`;
+    return `${coverageText} | ${score.redundancy.map(formatKStats).join(' | ')}`;
 };
 
 const isBetterScore = (left, right) => {

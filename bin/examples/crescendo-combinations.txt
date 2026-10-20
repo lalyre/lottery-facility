@@ -1,0 +1,33 @@
+# Utilisation depuis la racine du projet :
+# node bin/crescendo.mjs --combinations bin/examples/crescendo-combinations.txt
+# Aide complete : node bin/crescendo.mjs --help
+#
+# Un seul en-tete facultatif, avant toute combinaison : taille=seuil.
+# Taille 3 : 3 numeros communs minimum avec une grille.
+# Taille 4 : 3 numeros communs minimum avec une grille.
+# Taille 12 : 7 numeros communs minimum avec une grille.
+# Toute autre taille utilise la constante TARGET_HITS du script.
+# Sans en-tete, toutes les tailles utilisent TARGET_HITS.
+# Tailles et seuils : entiers de 1 a TOTAL_BALLS, sans taille repetee.
+# Un seuil superieur a la taille est autorise et reste impossible a atteindre.
+@hits 3=3 4=3 12=7
+
+# Une combinaison par ligne, numeros distincts de 1 a TOTAL_BALLS.
+# Espaces ou tabulations ; tailles libres ; lignes vides ignorees.
+# Les commentaires commencent par # et occupent une ligne entiere.
+# TARGET_COUNT grilles au minimum doivent atteindre le seuil de chaque ligne.
+# La couverture est calculee sur les lignes du fichier, pas sur le champ total.
+# Les lignes repetees sont conservees : elles pesent plusieurs fois dans le score.
+
+# Trios : il faut les 3 numeros.
+01 05 09
+02 08 13
+
+# Quadruplet : 3 numeros sur les 4 suffisent.
+01 07 15 22
+
+# Tirage de 12 numeros : 7 correspondances minimum.
+01 02 04 06 08 10 12 14 16 18 20 22
+
+# Taille 8 non definie : TARGET_HITS (7 dans la configuration actuelle).
+01 03 05 07 09 11 13 15
