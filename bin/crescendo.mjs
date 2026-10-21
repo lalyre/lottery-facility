@@ -83,16 +83,6 @@ const referenceSystem = parseSystem(bootSystem);
 // Jeu complet servant uniquement de record initial a battre (bootSystem inclus s'il y en a un).
 // Laisser vide pour commencer sans record. Une grille par ligne, comme bootSystem.
 const startingSystem = `
-01 04 06 09 13 14 16 19 20 23
-01 02 03 05 07 11 17 19 20 25
-02 04 05 07 08 12 15 16 19 24
-05 06 07 08 09 11 12 14 21 22
-01 03 04 05 10 11 13 15 18 21
-01 08 10 17 18 19 21 22 23 24
-02 10 11 12 14 15 16 17 20 23
-03 06 12 13 15 16 17 21 22 25
-03 04 08 09 14 18 20 22 24 25
-02 06 07 09 10 13 18 23 24 25
 `;
 const startingTickets = parseSystem(startingSystem);
 
