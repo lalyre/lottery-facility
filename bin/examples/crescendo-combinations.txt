@@ -2,20 +2,24 @@
 # node bin/crescendo.mjs --combinations bin/examples/crescendo-combinations.txt
 # Aide complete : node bin/crescendo.mjs --help
 #
-# Un seul en-tete facultatif, avant toute combinaison : taille=seuil.
-# Taille 3 : 3 numeros communs minimum avec une grille.
-# Taille 4 : 3 numeros communs minimum avec une grille.
-# Taille 12 : 7 numeros communs minimum avec une grille.
-# Toute autre taille utilise la constante TARGET_HITS du script.
-# Sans en-tete, toutes les tailles utilisent TARGET_HITS.
+# Un seul en-tete facultatif, avant toute combinaison : taille=seuil:target_count.
+# Pour chaque combinaison de taille 3 : au moins 1 grille avec 3 numeros communs.
+# Pour chaque combinaison de taille 4 : au moins 2 grilles avec 3 numeros communs.
+# Pour chaque combinaison de taille 12 : au moins 5 grilles avec 7 numeros communs.
+# Le compteur est facultatif : 4=3 utilise TARGET_COUNT, 4=3:2 impose 2 grilles.
+# Les anciennes regles et les nouvelles peuvent etre melangees dans un meme en-tete.
+# Toute autre taille utilise les constantes TARGET_HITS et TARGET_COUNT du script.
+# Sans en-tete, toutes les tailles utilisent ces deux constantes.
 # Tailles et seuils : entiers de 1 a TOTAL_BALLS, sans taille repetee.
+# Compteurs : entiers de 1 a BUDGET_TICKETS.
 # Un seuil superieur a la taille est autorise et reste impossible a atteindre.
-@hits 3=3 4=3 12=7
+@hits 3=3:1 4=3:2 12=7:5
 
 # Une combinaison par ligne, numeros distincts de 1 a TOTAL_BALLS.
 # Espaces ou tabulations ; tailles libres ; lignes vides ignorees.
 # Les commentaires commencent par # et occupent une ligne entiere.
-# TARGET_COUNT grilles au minimum doivent atteindre le seuil de chaque ligne.
+# Le compteur de la taille donne le minimum de grilles atteignant le seuil de chaque ligne.
+# Une ligne est en echec si ce minimum n'est pas atteint ; son deficit est le nombre manquant.
 # La couverture est calculee sur les lignes du fichier, pas sur le champ total.
 # Les lignes repetees sont conservees : elles pesent plusieurs fois dans le score.
 
@@ -29,5 +33,5 @@
 # Tirage de 12 numeros : 7 correspondances minimum.
 01 02 04 06 08 10 12 14 16 18 20 22
 
-# Taille 8 non definie : TARGET_HITS (7 dans la configuration actuelle).
+# Taille 8 non definie : TARGET_HITS et TARGET_COUNT de la configuration du script.
 01 03 05 07 09 11 13 15

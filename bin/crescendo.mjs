@@ -18,13 +18,17 @@ if (options.help) {
 Une combinaison par ligne, numeros separes par des espaces, taille libre.
 Les lignes vides sont ignorees et les lignes repetees sont conservees.
 Les lignes commencant par # sont des commentaires.
-Un en-tete facultatif, unique et place avant les combinaisons, definit les seuils :
-  @hits 3=3 4=3 12=7
-Cela demande 3 correspondances pour les tailles 3 et 4, et 7 pour la taille 12.
-Toute taille absente utilise TARGET_HITS ; sans en-tete, toutes l'utilisent.
+Un en-tete facultatif, unique et place avant les combinaisons, definit les objectifs :
+  @hits 3=3:1 4=3:2 12=7:5
+Syntaxe : taille=seuil:target_count (compteur facultatif).
+Pour chaque combinaison de taille 3, au moins 1 grille doit avoir 3 correspondances ;
+pour la taille 4, au moins 2 grilles avec 3 correspondances ;
+pour la taille 12, au moins 5 grilles avec 7 correspondances.
+L'ancienne syntaxe reste valide : 4=3 utilise TARGET_COUNT comme compteur.
+Toute taille absente utilise TARGET_HITS et TARGET_COUNT ; sans en-tete, toutes les utilisent.
 Tailles et seuils : entiers entre 1 et TOTAL_BALLS, sans taille repetee.
+Compteurs : entiers entre 1 et BUDGET_TICKETS.
 Un seuil superieur a la taille reste autorise : la combinaison sera en echec.
-TARGET_COUNT reste le nombre minimum de grilles atteignant le seuil.
 Le pourcentage de couverture porte sur toutes les lignes de combinaisons du fichier.
 Exemple commente : bin/examples/crescendo-combinations.txt
 Sans fichier, les tirages Monte-Carlo sont generes comme auparavant.`);
@@ -37,15 +41,15 @@ if (options.combinations !== undefined && options.combinations.trim() === '') {
 
 // === CONFIGURATION ===
 
-// TARGET_COUNT		Nombre minimum de grilles atteignant TARGET_HITS par tirage.
+// TARGET_COUNT		Nombre minimum de grilles gagnantes par defaut (surchargeable par taille dans @hits).
 
 
 const TOTAL_BALLS = 25;
-const DRAW_SIZE = 12;
+const DRAW_SIZE = 10;
 const TICKET_SIZE = 10;
-const TARGET_HITS = 7;
-const TARGET_COUNT = 1;
-const BUDGET_TICKETS = 10;
+const TARGET_HITS = 8;
+const TARGET_COUNT = 3;
+const BUDGET_TICKETS = 150;
 
 
 
@@ -119,7 +123,7 @@ console.log(`--- Systeme Crescendo : Recherche Optimisee ---`);
 console.log(`Configuration: ${TICKET_SIZE}/${TOTAL_BALLS}`);
 if (!options.combinations) console.log(`Tirage: ${DRAW_SIZE}/${TOTAL_BALLS}`);
 console.log(options.combinations
-    ? `Objectif: au moins ${TARGET_COUNT} grilles atteignant le seuil de chaque combinaison (TARGET_HITS par defaut: ${TARGET_HITS})`
+    ? `Objectif: seuil et nombre minimum de grilles par taille via @hits (defauts: TARGET_HITS=${TARGET_HITS}, TARGET_COUNT=${TARGET_COUNT})`
     : `Objectif: au moins ${TARGET_COUNT} grilles a ${TARGET_HITS}/${TICKET_SIZE} ou mieux par tirage`);
 console.log(`Budget: ${BUDGET_TICKETS} tickets`);
 console.log(`Reference fixe: ${referenceSystem.length} tickets`);
@@ -159,10 +163,10 @@ const createRandomDrawMask = () => {
     return toMask(numbers.slice(0, DRAW_SIZE));
 };
 
-// Format : commentaires #, puis un unique @hits taille=seuil ... facultatif,
-// puis une combinaison par ligne. Les tailles absentes gardent TARGET_HITS.
-// Les repetitions de lignes pesent autant de fois dans le score ; TARGET_COUNT
-// s'applique toujours. Un seuil impossible n'est jamais abaisse automatiquement.
+// Format : commentaires #, puis un unique @hits taille=seuil[:target_count] facultatif,
+// puis une combinaison par ligne. Les tailles absentes gardent les deux constantes.
+// Un compteur omis garde TARGET_COUNT. Les repetitions de lignes pesent autant
+// de fois dans le score. Un seuil impossible n'est jamais abaisse automatiquement.
 const loadCombinationMasks = async (filePath) => {
     const input = createReadStream(filePath, { encoding: 'utf8' });
     const lines = readline.createInterface({
@@ -170,7 +174,7 @@ const loadCombinationMasks = async (filePath) => {
         crlfDelay: Infinity,
     });
     const masks = [];
-    const hitsBySize = new Map();
+    const targetsBySize = new Map();
     let hasHeader = false;
     let lineNumber = 0;
     const invalidLine = (message) => new Error(`${filePath}, ligne ${lineNumber} : ${message}`);
@@ -185,20 +189,23 @@ const loadCombinationMasks = async (filePath) => {
                 }
                 const [directive, ...rules] = trimmed.split(/\s+/);
                 if (directive !== '@hits' || rules.length === 0) {
-                    throw invalidLine('en-tete attendu : @hits 3=3 4=3 12=7.');
+                    throw invalidLine('en-tete attendu : @hits 3=3:1 4=3:2 12=7:5 (compteurs facultatifs).');
                 }
                 for (const rule of rules) {
-                    if (!/^\d+=\d+$/.test(rule)) {
-                        throw invalidLine(`regle invalide "${rule}" : utiliser taille=seuil.`);
+                    if (!/^\d+=\d+(?::\d+)?$/.test(rule)) {
+                        throw invalidLine(`regle invalide "${rule}" : utiliser taille=seuil[:target_count].`);
                     }
-                    const [size, hits] = rule.split('=').map(Number);
+                    const [size, hits, count = TARGET_COUNT] = rule.split(/[=:]/).map(Number);
                     if (![size, hits].every((value) => Number.isInteger(value) && value >= 1 && value <= TOTAL_BALLS)) {
                         throw invalidLine(`taille et seuil doivent etre des entiers entre 1 et ${TOTAL_BALLS}.`);
                     }
-                    if (hitsBySize.has(size)) {
+                    if (!Number.isInteger(count) || count < 1 || count > BUDGET_TICKETS) {
+                        throw invalidLine(`target_count doit etre un entier entre 1 et ${BUDGET_TICKETS}.`);
+                    }
+                    if (targetsBySize.has(size)) {
                         throw invalidLine(`taille ${size} definie plusieurs fois dans @hits.`);
                     }
-                    hitsBySize.set(size, hits);
+                    targetsBySize.set(size, { targetHits: hits, targetCount: count });
                 }
                 hasHeader = true;
                 continue;
@@ -212,7 +219,9 @@ const loadCombinationMasks = async (filePath) => {
                     `${filePath}, ligne ${lineNumber} : fournir des numeros distincts entre 1 et ${TOTAL_BALLS}.`
                 );
             }
-            masks.push({ ...toMask(numbers), targetHits: hitsBySize.get(numbers.length) ?? TARGET_HITS });
+            const targets = targetsBySize.get(numbers.length)
+                ?? { targetHits: TARGET_HITS, targetCount: TARGET_COUNT };
+            masks.push({ ...toMask(numbers), ...targets });
         }
     } finally {
         lines.close();
@@ -288,8 +297,9 @@ const getCoverageStats = (system) => {
     for (const drawMask of evaluationDraws) {
         let qualifyingTickets = 0;
         const targetHits = drawMask.targetHits ?? TARGET_HITS;
+        const targetCount = drawMask.targetCount ?? TARGET_COUNT;
 
-        // Compter toutes les grilles gagnantes, sans s'arreter a TARGET_COUNT.
+        // Compter toutes les grilles gagnantes, sans s'arreter au compteur cible.
         for (const ticketMask of ticketMasks) {
             const hits = popcount32(drawMask.low & ticketMask.low)
                 + popcount32(drawMask.high & ticketMask.high);
@@ -302,9 +312,9 @@ const getCoverageStats = (system) => {
         // Total de grilles gagnantes sur tous les tirages simules.
         ///////////////qualifyingTicketsTotal += qualifyingTickets;
 
-        if (qualifyingTickets < TARGET_COUNT) {
+        if (qualifyingTickets < targetCount) {
             failures++;
-            deficit += TARGET_COUNT - qualifyingTickets;
+            deficit += targetCount - qualifyingTickets;
         } else {
 			qualifyingTicketsTotal += qualifyingTickets;
 		}
@@ -344,7 +354,7 @@ const formatScore = (score) => {
 const isBetterScore = (left, right) => {
     if (!right) return true;
 
-    // PRIORITE 1 : minimiser les tirages avec moins de TARGET_COUNT gagnantes.
+    // PRIORITE 1 : minimiser les tirages n'atteignant pas leur compteur cible.
     if (left.coverage.failures !== right.coverage.failures) {
         return left.coverage.failures < right.coverage.failures;
     }
