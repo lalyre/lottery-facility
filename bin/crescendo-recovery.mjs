@@ -12,21 +12,23 @@ import { pathToFileURL } from 'node:url';
 // CRESCENDO entier et retirer /* et */ autour du bloc KENO. Rien d'autre
 // n'est à modifier dans le moteur ; TICKET_SIZE sélectionne la ligne de gains.
 
+
 // --- DEBUT CONFIG CRESCENDO ---
+// Crescendo : gains sans lettre. Index de chaque ligne = nombre de bons numéros.
+// Le 10/10 est un jackpot variable ; cette valeur est uniquement son plancher
+// prudent pour le classement, pas une estimation du jackpot réellement versé.
 export const TOTAL_BALLS = 25;
 export const DRAW_SIZE = 10;
 export const TICKET_SIZE = 10;
 export const BUDGET_TICKETS = 120;
 export const TARGET_GAIN = 90;
-// Crescendo : gains sans lettre. Index de chaque ligne = nombre de bons numéros.
-// Le 10/10 est un jackpot variable ; cette valeur est uniquement son plancher
-// prudent pour le classement, pas une estimation du jackpot réellement versé.
 export const JACKPOT_FLOOR = 1000;
 export const JACKPOT_HITS = 10;
 export const PAYOUTS_BY_TICKET_SIZE = {
     10: [0, 0, 0, 0, 0, 0, 1, 7, 50, 500, JACKPOT_FLOOR],
 };
 // --- FIN CONFIG CRESCENDO ---
+
 
 // KENO : exemple de barème fourni par l'utilisateur, pour une mise de 1 EUR.
 // Les paramètres 56 numéros / 16 tirés et les gains sont ceux de cet exemple.
