@@ -226,6 +226,34 @@ export function isBetterScore(left, right) {
     return false;
 }
 
+export function formatSearchProgress(round, candidate, champion, championRound, drawCount, target) {
+    let reason = 'égalité de score';
+    if (!champion) reason = 'premier système';
+    else if (candidate.successes !== champion.successes) reason = 'fréquence';
+    else if (candidate.deficit !== champion.deficit) reason = 'déficit';
+    else if (candidate.redundancy && champion.redundancy) {
+        for (let index = 0; index < candidate.redundancy.length; index++) {
+            if (candidate.redundancy[index].uniqueCovered !== champion.redundancy[index].uniqueCovered) {
+                reason = `couverture K${candidate.redundancy[index].k}`;
+                break;
+            }
+        }
+        if (reason === 'égalité de score') {
+            for (let index = 0; index < candidate.redundancy.length; index++) {
+                if (candidate.redundancy[index].collisions !== champion.redundancy[index].collisions ||
+                    candidate.redundancy[index].maxFrequency !== champion.redundancy[index].maxFrequency) {
+                    reason = `redondance K${candidate.redundancy[index].k}`;
+                    break;
+                }
+            }
+        }
+    }
+    const describe = (score) => `${(100 * score.successes / drawCount).toFixed(4)}% (${score.successes}/${drawCount}), déficit total=${score.deficit} EUR`;
+    const previous = champion ? `${describe(champion)} (passe ${championRound})` : 'aucun';
+    const decision = isBetterScore(candidate, champion) ? 'NOUVEAU CHAMPION' : 'champion conservé';
+    return `Passe ${round} | Objectif >= ${target} EUR (recherche) | Candidat : ${describe(candidate)} | Champion : ${previous} | ${decision} (${reason})`;
+}
+
 export function optimize(initial, scenarios, target, iterations, random, progress = () => {}, payouts = PAYOUT_BY_HITS, game = DEFAULT_GAME) {
     const system = initial.map((ticket) => [...ticket]);
     const masks = system.map(ticketMask);
@@ -395,11 +423,12 @@ Classement : fréquence du seuil atteint, déficit sous le seuil, redondance K2 
     console.log(`Recherche ${config.tickets} grilles de ${game.ticketSize}/${game.totalBalls}, tirage ${game.drawSize}/${game.totalBalls}, seuil ${config.target} EUR, SANS LETTRE.`);
     console.log(`Barème : ${config.payouts.map((amount, hits) => `${hits}/${game.ticketSize}=${amount}`).join(' ')}${game.jackpotHits === null ? '' : ` ; ${game.jackpotHits}/${game.ticketSize}=jackpot (plancher ${game.jackpotFloor} EUR)`}.`);
     console.log(`${config.train} tirages fixes ; ${config.rounds || 'infinité de'} passes ; Ctrl+C pour arrêter.`);
+    console.log('Comparaison candidat/champion sur les mêmes tirages de recherche ; déficit total = somme des manques sous l’objectif. La validation est indépendante.');
     try {
         for (let round = 1; !stop && (config.rounds === 0 || round <= config.rounds); round++) {
             const initial = balancedSystem(config.tickets, random, game);
             const result = optimize(initial, training, config.target, config.iterations, random, () => {}, config.payouts, game);
-            console.log(`Passe ${round} : seuil atteint ${(100 * result.score.successes / config.train).toFixed(2)}% (recherche).`);
+            console.log(formatSearchProgress(round, result.score, bestScore, bestReport?.round, config.train, config.target));
             if (isBetterScore(result.score, bestScore)) {
                 bestScore = result.score;
                 records++;
@@ -424,6 +453,7 @@ Classement : fréquence du seuil atteint, déficit sous le seuil, redondance K2 
                     system: result.system,
                 };
                 console.log(`\nRECORD ${records} — passe ${round}`);
+                console.log(`Champion en recherche : ${(100 * bestScore.successes / config.train).toFixed(4)}% (${bestScore.successes}/${config.train}) à >= ${config.target} EUR ; déficit total=${bestScore.deficit} EUR.`);
                 for (const ticket of result.system) console.log(ticket.map((number) => String(number).padStart(2, '0')).join(' '));
                 const summary = bestReport.validation.optimized;
                 const probability = summary.probabilities[config.target];

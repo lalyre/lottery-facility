@@ -666,6 +666,10 @@ balanced system and tries `--iterations 10000` swaps against the same `--train
 Use `--rounds 1` or another positive limit for a bounded run. Every new record
 prints its tickets, recovery frequency, median, conditional shortfall, and counts
 of every hit count from 0 to `TICKET_SIZE`, distinguishing grids from draws.
+Every pass also compares the candidate with the current champion: exact success
+counts, percentages, cumulative shortfall, champion pass and the deciding ranking
+criterion (frequency, shortfall, K2..K5 coverage or redundancy). These are training
+scores; the independent validation is labeled separately in the record report.
 
 An output prefix saves each record to `.record-000001.txt` and
 `.record-000001.json`, then increments the suffix. Existing files are not

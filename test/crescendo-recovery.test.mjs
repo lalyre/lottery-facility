@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { payout, popcount, ticketMask, randomGenerator, makeScenarios, balancedSystem,
     totalsFor, recoveryScore, optimize, summarize, parsePayouts, PAYOUT_BY_HITS,
     hitStatistics, isBetterScore, main, maskKey, maskCount, DEFAULT_GAME, redundancyScore,
-    selectPayouts, PAYOUTS_BY_TICKET_SIZE, JACKPOT_FLOOR } from '../bin/crescendo-recovery.mjs';
+    selectPayouts, PAYOUTS_BY_TICKET_SIZE, JACKPOT_FLOOR, formatSearchProgress } from '../bin/crescendo-recovery.mjs';
 
 test('only no-letter payouts count; jackpots have an explicit conservative floor', () => {
     assert.deepEqual(Array.from({ length: 10 }, (_, hits) => payout(hits)), [0, 0, 0, 0, 0, 0, 1, 7, 50, 500]);
@@ -131,6 +131,22 @@ test('record comparison prioritizes threshold frequency over deficit and redunda
     const b = { successes: 10, deficit: 90, redundancy: [{ uniqueCovered: 19, collisions: 1, maxFrequency: 1 }] };
     assert.ok(isBetterScore(a, b));
     assert.equal(isBetterScore(a, a), false);
+});
+
+test('progress identifies the champion, exact ranking criteria and new records', () => {
+    const champion = { successes: 2475, deficit: 1800000, redundancy: [{ k: 2, uniqueCovered: 300, collisions: 10, maxFrequency: 3 }] };
+    const worse = { ...champion, successes: 2430 };
+    const line = formatSearchProgress(31, worse, champion, 7, 30000, 90);
+    assert.match(line, /Candidat : 8\.1000% \(2430\/30000\)/);
+    assert.match(line, /Champion : 8\.2500% \(2475\/30000\).*passe 7/);
+    assert.match(line, /champion conservé \(fréquence\)/);
+    assert.match(line, /Objectif >= 90 EUR \(recherche\)/);
+    const smallerDeficit = { ...champion, deficit: champion.deficit - 1 };
+    assert.match(formatSearchProgress(32, smallerDeficit, champion, 7, 30000, 90), /NOUVEAU CHAMPION \(déficit\)/);
+    const moreCoverage = { ...champion, redundancy: [{ ...champion.redundancy[0], uniqueCovered: 301 }] };
+    assert.match(formatSearchProgress(33, moreCoverage, champion, 7, 30000, 90), /NOUVEAU CHAMPION \(couverture K2\)/);
+    assert.match(formatSearchProgress(34, champion, champion, 7, 30000, 90), /champion conservé \(égalité de score\)/);
+    assert.match(formatSearchProgress(1, champion, null, undefined, 30000, 90), /Champion : aucun.*NOUVEAU CHAMPION \(premier système\)/);
 });
 
 test('continuous search responds to Ctrl+C and keeps its evaluated record', async () => {
