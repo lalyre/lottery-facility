@@ -644,6 +644,75 @@ npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.1 "obsolete"
 
 
 
+## Crescendo: monetary recovery search
+
+The separate `bin/crescendo-recovery.mjs` tool defaults to a portfolio of 120
+distinct tickets for **one draw** (120 EUR), prioritizing the probability of
+recovering at least 90 EUR, then the average shortfall below this threshold,
+then K2..K5 coverage and redundancy. **Letters are completely ignored.**
+Swaps preserve the number frequencies: with 120 tickets, every number occurs
+exactly 48 times. The original `bin/crescendo.mjs` keeps its existing objectives.
+
+```sh
+node bin/crescendo-recovery.mjs --output results/crescendo-120-sans-lettre
+# Optional custom table (whole euros), and a bounded two-pass run:
+node bin/crescendo-recovery.mjs --payouts 6=1,7=7,8=50,9=500 --rounds 2
+node --test test/crescendo-recovery.test.mjs
+```
+
+The default search runs continuously until Ctrl+C. Each pass starts a fresh
+balanced system and tries `--iterations 10000` swaps against the same `--train
+30000` Monte Carlo draws. Only a better training score replaces the global record.
+Use `--rounds 1` or another positive limit for a bounded run. Every new record
+prints its tickets, recovery frequency, median, conditional shortfall, and counts
+of every hit count from 0 to `TICKET_SIZE`, distinguishing grids from draws.
+
+An output prefix saves each record to `.record-000001.txt` and
+`.record-000001.json`, then increments the suffix. Existing files are not
+overwritten: choose a fresh prefix for another run. Each record gets `--validation
+200000` fresh draws with a separately recorded seed, never used for selection.
+The JSON compares the pass's starting and optimized systems on this same holdout,
+including 95% Monte Carlo confidence intervals. Search scores are not validation
+results. The model version `two-uint32-without-letters-v3` identifies the generic
+engine. Earlier prototype reports may include random letters; check their assumptions.
+
+### Other games, including KENO
+
+Like `crescendo.mjs`, this tool uses **two UInt32 words** per combination, supporting
+numbers 1..64 without collisions across 32/33 or at 64. This representation applies
+to draw generation, matching, swaps, ticket uniqueness and K2..K5 redundancy.
+
+Edit the configuration block at the top of the script:
+
+- `TOTAL_BALLS`, `DRAW_SIZE`, `TICKET_SIZE` describe the game's geometry.
+- `BUDGET_TICKETS` and `TARGET_GAIN` describe the portfolio and monetary objective.
+- `PAYOUT_BY_HITS` must contain `TICKET_SIZE + 1` amounts, indexed from zero hits
+  (including any zero-hit payout) to a full match, for the selected stake/formula.
+- Set `JACKPOT_HITS = null` for a fixed-payout game. Otherwise configure its rank
+  and `JACKPOT_FLOOR` explicitly; no Crescendo jackpot rule should be assumed for KENO.
+
+Equivalent CLI options are `--total-balls`, `--draw-size`, `--ticket-size`,
+`--tickets`, `--target`, `--payouts`, `--jackpot-hits none` and `--jackpot-floor`.
+When CLI geometry differs from the configured defaults, `--payouts` is required,
+unspecified hit counts pay zero, and the jackpot is disabled unless explicitly
+requested. The KENO payout table is user-supplied, not hardcoded as a second set
+of presumed current rules. Integer euro amounts are supported.
+
+The payout model uses the [FDJ rules](https://cdn-media.fdj.fr/static/contrib/files/pdf/reglement-crescendo-2025.pdf),
+checked on 2026-10-28. Default payouts for 0..9 hits are
+`[0,0,0,0,0,0,1,7,50,500]`; the last table entry is 1000 for the default jackpot
+floor. These are configurable using `--payouts` or `PAYOUT_BY_HITS`.
+No letter reimbursements or multipliers are counted. The 19:00 jackpot redistribution is excluded,
+and a 10-hit ticket is conservatively valued at 1000 EUR (the minimum 100000 EUR
+jackpot divided by the maximum 100 copies worldwide). This lower bound suffices
+for recovery thresholds up to 1000 EUR. A configured jackpot floor must be at
+least the target. With no jackpot rank, the payout table alone determines gains.
+
+This is a heuristic search, not a proof of optimality or a minimum payout
+guarantee. Results depend on the payout model. The optimization changes the payout
+distribution, not the expected fixed payout per ticket. Do not repeatedly select
+systems using the validation set; reserve fresh scenarios for each final evaluation.
+
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
