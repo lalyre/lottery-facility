@@ -673,21 +673,30 @@ overwritten: choose a fresh prefix for another run. Each record gets `--validati
 200000` fresh draws with a separately recorded seed, never used for selection.
 The JSON compares the pass's starting and optimized systems on this same holdout,
 including 95% Monte Carlo confidence intervals. Search scores are not validation
-results. The model version `two-uint32-without-letters-v3` identifies the generic
+results. The model version `three-uint32-without-letters-v4` identifies the generic
 engine. Earlier prototype reports may include random letters; check their assumptions.
 
 ### Other games, including KENO
 
-Like `crescendo.mjs`, this tool uses **two UInt32 words** per combination, supporting
-numbers 1..64 without collisions across 32/33 or at 64. This representation applies
+Both `crescendo.mjs` and `crescendo-recovery.mjs` use **three UInt32 words** per
+combination, supporting numbers 1..96 without collisions across 32/33, 64/65 or
+at 96. This representation applies
 to draw generation, matching, swaps, ticket uniqueness and K2..K5 redundancy.
 
 Edit the configuration block at the top of the script:
 
 - `TOTAL_BALLS`, `DRAW_SIZE`, `TICKET_SIZE` describe the game's geometry.
 - `BUDGET_TICKETS` and `TARGET_GAIN` describe the portfolio and monetary objective.
-- `PAYOUT_BY_HITS` must contain `TICKET_SIZE + 1` amounts, indexed from zero hits
-  (including any zero-hit payout) to a full match, for the selected stake/formula.
+- `PAYOUTS_BY_TICKET_SIZE` maps the played size to a row of `size + 1` amounts,
+  indexed from zero hits (including any zero-hit payout) to a full match, for the
+  selected stake/formula. `TICKET_SIZE` automatically selects the row; missing or
+  incomplete rows are rejected. `PAYOUT_BY_HITS` is the derived selected row.
+  The Crescendo table is active; a commented KENO table for sizes 4..10 is provided
+  immediately below it, inside a complete configuration block. To use that
+  example, comment the entire `CONFIG CRESCENDO` block and uncomment the entire
+  `CONFIG KENO` block. It already includes 56 numbers, 16 drawn, the played size,
+  budget, target, and `JACKPOT_HITS = null`, so full matches receive their fixed
+  payout. `JACKPOT_FLOOR = 0` is declared for completeness and unused in KENO.
 - Set `JACKPOT_HITS = null` for a fixed-payout game. Otherwise configure its rank
   and `JACKPOT_FLOOR` explicitly; no Crescendo jackpot rule should be assumed for KENO.
 
@@ -701,7 +710,8 @@ of presumed current rules. Integer euro amounts are supported.
 The payout model uses the [FDJ rules](https://cdn-media.fdj.fr/static/contrib/files/pdf/reglement-crescendo-2025.pdf),
 checked on 2026-10-28. Default payouts for 0..9 hits are
 `[0,0,0,0,0,0,1,7,50,500]`; the last table entry is 1000 for the default jackpot
-floor. These are configurable using `--payouts` or `PAYOUT_BY_HITS`.
+floor, explicitly named `JACKPOT_FLOOR`. These are configurable using `--payouts`
+or `PAYOUTS_BY_TICKET_SIZE`.
 No letter reimbursements or multipliers are counted. The 19:00 jackpot redistribution is excluded,
 and a 10-hit ticket is conservatively valued at 1000 EUR (the minimum 100000 EUR
 jackpot divided by the maximum 100 copies worldwide). This lower bound suffices

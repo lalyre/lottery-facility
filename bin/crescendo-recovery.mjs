@@ -8,15 +8,61 @@ import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 // === CONFIGURATION DU JEU (comme crescendo.mjs) ===
+// Un seul bloc doit être actif. Pour passer au KENO : commenter le bloc
+// CRESCENDO entier et retirer /* et */ autour du bloc KENO. Rien d'autre
+// n'est à modifier dans le moteur ; TICKET_SIZE sélectionne la ligne de gains.
+
+// --- DEBUT CONFIG CRESCENDO ---
 export const TOTAL_BALLS = 25;
 export const DRAW_SIZE = 10;
 export const TICKET_SIZE = 10;
 export const BUDGET_TICKETS = 120;
 export const TARGET_GAIN = 90;
-export const PAYOUT_BY_HITS = Object.freeze([0, 0, 0, 0, 0, 0, 1, 7, 50, 500, 1000]);
-// Mettre null pour un jeu à gains fixes, et renseigner le dernier rang ci-dessus.
-export const JACKPOT_HITS = 10;
+// Crescendo : gains sans lettre. Index de chaque ligne = nombre de bons numéros.
+// Le 10/10 est un jackpot variable ; cette valeur est uniquement son plancher
+// prudent pour le classement, pas une estimation du jackpot réellement versé.
 export const JACKPOT_FLOOR = 1000;
+export const JACKPOT_HITS = 10;
+export const PAYOUTS_BY_TICKET_SIZE = {
+    10: [0, 0, 0, 0, 0, 0, 1, 7, 50, 500, JACKPOT_FLOOR],
+};
+// --- FIN CONFIG CRESCENDO ---
+
+// KENO : exemple de barème fourni par l'utilisateur, pour une mise de 1 EUR.
+// Les paramètres 56 numéros / 16 tirés et les gains sont ceux de cet exemple.
+// Toutes les grilles ont TICKET_SIZE numéros : choisir une taille de 4 à 10.
+// --- DEBUT CONFIG KENO ---
+/*
+export const TOTAL_BALLS = 56;
+export const DRAW_SIZE = 16;
+export const TICKET_SIZE = 10;
+export const BUDGET_TICKETS = 120;
+export const TARGET_GAIN = 90;
+export const JACKPOT_HITS = null; // Gains fixes, y compris le dernier rang.
+export const JACKPOT_FLOOR = 0;   // Inutilisé puisque JACKPOT_HITS est null.
+export const PAYOUTS_BY_TICKET_SIZE = {
+    4:  [0, 0, 0, 3, 70],
+    5:  [0, 0, 0, 2, 10, 80],
+    6:  [0, 0, 0, 0, 3, 30, 900],
+    7:  [0, 0, 0, 0, 2, 5, 90, 3000],
+    8:  [2, 0, 0, 0, 0, 5, 30, 100, 8000],
+    9:  [2, 0, 0, 0, 1, 2, 8, 25, 100, 30000],
+    10: [2, 0, 0, 0, 0, 2, 5, 15, 150, 2000, 200000],
+};
+*/
+// --- FIN CONFIG KENO ---
+
+export function selectPayouts(ticketSize, tables = PAYOUTS_BY_TICKET_SIZE) {
+    const row = tables[ticketSize];
+    if (!Array.isArray(row) || row.length !== ticketSize + 1 ||
+        !row.every((amount) => Number.isSafeInteger(amount) && amount >= 0 && amount <= 1000000)) {
+        throw new Error(`PAYOUTS_BY_TICKET_SIZE[${ticketSize}] doit contenir ${ticketSize + 1} montants entiers, du rang 0 au rang ${ticketSize}`);
+    }
+    return [...row];
+}
+
+// Sélection automatique du barème pour les grilles, toutes de même taille.
+export const PAYOUT_BY_HITS = Object.freeze(selectPayouts(TICKET_SIZE));
 export const DEFAULT_GAME = Object.freeze({ totalBalls: TOTAL_BALLS, drawSize: DRAW_SIZE, ticketSize: TICKET_SIZE,
     jackpotHits: JACKPOT_HITS, jackpotFloor: JACKPOT_FLOOR });
 
@@ -38,17 +84,18 @@ export function popcount(value) {
 }
 
 export function ticketMask(numbers) {
-    let low = 0, high = 0;
+    let low = 0, high = 0, upper = 0;
     for (const number of numbers) {
-        if (!Number.isInteger(number) || number < 1 || number > 64) throw new Error('Numéro attendu entre 1 et 64');
+        if (!Number.isInteger(number) || number < 1 || number > 96) throw new Error('Numéro attendu entre 1 et 96');
         if (number <= 32) low |= 1 << (number - 1);
-        else high |= 1 << (number - 33);
+        else if (number <= 64) high |= 1 << (number - 33);
+        else upper |= 1 << (number - 65);
     }
-    return { low: low >>> 0, high: high >>> 0 };
+    return { low: low >>> 0, high: high >>> 0, upper: upper >>> 0 };
 }
-export const maskKey = (mask) => `${mask.low}:${mask.high}`;
-export const maskCount = (mask) => popcount(mask.low) + popcount(mask.high);
-const matches = (mask, low, high = 0) => popcount(mask.low & low) + popcount(mask.high & high);
+export const maskKey = (mask) => `${mask.low}:${mask.high}:${mask.upper ?? 0}`;
+export const maskCount = (mask) => popcount(mask.low) + popcount(mask.high) + popcount(mask.upper ?? 0);
+const matches = (mask, low, high = 0, upper = 0) => popcount(mask.low & low) + popcount(mask.high & high) + popcount(mask.upper & upper);
 
 export function payout(hits, payouts = PAYOUT_BY_HITS, game = DEFAULT_GAME) {
     if (hits < 0 || hits > game.ticketSize || !Number.isInteger(hits)) throw new Error('Invalid hit count');
@@ -77,16 +124,18 @@ export function parsePayouts(text, base = PAYOUT_BY_HITS, ticketSize = TICKET_SI
 export function makeScenarios(count, random, game = DEFAULT_GAME) {
     const draws = new Uint32Array(count);
     const highDraws = new Uint32Array(count);
+    const upperDraws = new Uint32Array(count);
     for (let draw = 0; draw < count; draw++) {
         const balls = Array.from({ length: game.totalBalls }, (_, index) => index + 1);
         for (let index = 0; index < game.drawSize; index++) {
             const chosen = index + Math.floor(random() * (game.totalBalls - index));
             [balls[index], balls[chosen]] = [balls[chosen], balls[index]];
             if (balls[index] <= 32) draws[draw] |= 1 << (balls[index] - 1);
-            else highDraws[draw] |= 1 << (balls[index] - 33);
+            else if (balls[index] <= 64) highDraws[draw] |= 1 << (balls[index] - 33);
+            else upperDraws[draw] |= 1 << (balls[index] - 65);
         }
     }
-    return { draws, highDraws };
+    return { draws, highDraws, upperDraws };
 }
 
 export function balancedSystem(count, random, game = DEFAULT_GAME) {
@@ -112,7 +161,7 @@ export function totalsFor(system, scenarios, payouts = PAYOUT_BY_HITS, game = DE
     for (let ticket = 0; ticket < system.length; ticket++) {
         const mask = ticketMask(system[ticket]);
         for (let draw = 0; draw < totals.length; draw++) {
-            totals[draw] += payout(matches(mask, scenarios.draws[draw], scenarios.highDraws?.[draw]), payouts, game);
+            totals[draw] += payout(matches(mask, scenarios.draws[draw], scenarios.highDraws?.[draw], scenarios.upperDraws?.[draw]), payouts, game);
         }
     }
     return totals;
@@ -130,9 +179,9 @@ export function recoveryScore(totals, target) {
 export function redundancyScore(system) {
     return [2, 3, 4, 5].map((k) => {
         const frequencies = new Map();
-        const visit = (ticket, start, depth, low, high) => {
+        const visit = (ticket, start, depth, low, high, upper) => {
             if (depth === k) {
-                const key = `${low >>> 0}:${high >>> 0}`;
+                const key = `${low >>> 0}:${high >>> 0}:${upper >>> 0}`;
                 frequencies.set(key, (frequencies.get(key) ?? 0) + 1);
                 return;
             }
@@ -140,10 +189,11 @@ export function redundancyScore(system) {
                 const number = ticket[index];
                 visit(ticket, index + 1, depth + 1,
                     number <= 32 ? low | 1 << (number - 1) : low,
-                    number > 32 ? high | 1 << (number - 33) : high);
+                    number > 32 && number <= 64 ? high | 1 << (number - 33) : high,
+                    number > 64 ? upper | 1 << (number - 65) : upper);
             }
         };
-        for (const ticket of system) visit(ticket, 0, 0, 0, 0);
+        for (const ticket of system) visit(ticket, 0, 0, 0, 0, 0);
         let collisions = 0, maxFrequency = 0;
         for (const frequency of frequencies.values()) {
             collisions += frequency * (frequency - 1) / 2;
@@ -190,17 +240,18 @@ export function optimize(initial, scenarios, target, iterations, random, progres
         const first = system[a][ai], second = system[b][bi];
         if (system[a].includes(second) || system[b].includes(first)) continue;
         const toggle = ticketMask([first, second]);
-        const nextA = { low: (masks[a].low ^ toggle.low) >>> 0, high: (masks[a].high ^ toggle.high) >>> 0 };
-        const nextB = { low: (masks[b].low ^ toggle.low) >>> 0, high: (masks[b].high ^ toggle.high) >>> 0 };
+        const nextA = { low: (masks[a].low ^ toggle.low) >>> 0, high: (masks[a].high ^ toggle.high) >>> 0, upper: (masks[a].upper ^ toggle.upper) >>> 0 };
+        const nextB = { low: (masks[b].low ^ toggle.low) >>> 0, high: (masks[b].high ^ toggle.high) >>> 0, upper: (masks[b].upper ^ toggle.upper) >>> 0 };
         const keyA = maskKey(nextA), keyB = maskKey(nextB);
         if (keyA === keyB || (used.has(keyA) && keyA !== maskKey(masks[b])) || (used.has(keyB) && keyB !== maskKey(masks[a]))) continue;
         let successes = 0, deficit = 0;
         for (let draw = 0; draw < totals.length; draw++) {
             const drawMask = scenarios.draws[draw];
             const drawHigh = scenarios.highDraws?.[draw] ?? 0;
+            const drawUpper = scenarios.upperDraws?.[draw] ?? 0;
             const total = totals[draw]
-                - payout(matches(masks[a], drawMask, drawHigh), payouts, game) - payout(matches(masks[b], drawMask, drawHigh), payouts, game)
-                + payout(matches(nextA, drawMask, drawHigh), payouts, game) + payout(matches(nextB, drawMask, drawHigh), payouts, game);
+                - payout(matches(masks[a], drawMask, drawHigh, drawUpper), payouts, game) - payout(matches(masks[b], drawMask, drawHigh, drawUpper), payouts, game)
+                + payout(matches(nextA, drawMask, drawHigh, drawUpper), payouts, game) + payout(matches(nextB, drawMask, drawHigh, drawUpper), payouts, game);
             proposed[draw] = total;
             if (total >= target) successes++;
             else deficit += target - total;
@@ -252,7 +303,7 @@ export function hitStatistics(system, scenarios, game = DEFAULT_GAME) {
     for (let index = 0; index < scenarios.draws.length; index++) {
         const seen = Array(game.ticketSize + 1).fill(false);
         for (const mask of masks) {
-            const hits = matches(mask, scenarios.draws[index], scenarios.highDraws?.[index]);
+            const hits = matches(mask, scenarios.draws[index], scenarios.highDraws?.[index], scenarios.upperDraws?.[index]);
             gridCounts[hits]++;
             seen[hits] = true;
         }
@@ -276,7 +327,7 @@ export async function main(args = process.argv.slice(2)) {
     } });
     if (values.help) {
         console.log(`Usage : node bin/crescendo-recovery.mjs [options]
-  --total-balls 25   Univers de 2 à 64 numéros (deux UInt32)
+  --total-balls 25   Univers de 2 à 96 numéros (trois UInt32)
   --draw-size 10     Nombre de numéros tirés
   --ticket-size 10   Nombre de numéros par grille
   --jackpot-hits none Désactive le jackpot pour un barème à gains fixes
@@ -313,9 +364,9 @@ Classement : fréquence du seuil atteint, déficit sous le seuil, redondance K2 
     const changedGeometry = game.totalBalls !== TOTAL_BALLS || game.drawSize !== DRAW_SIZE || game.ticketSize !== TICKET_SIZE;
     const jackpotHits = values['jackpot-hits'] ?? (changedGeometry ? 'none' : JACKPOT_HITS);
     game.jackpotHits = jackpotHits === 'none' || jackpotHits === null ? null : Number(jackpotHits);
-    if (!Number.isInteger(game.totalBalls) || game.totalBalls < 2 || game.totalBalls > 64 ||
+    if (!Number.isInteger(game.totalBalls) || game.totalBalls < 2 || game.totalBalls > 96 ||
         ![game.drawSize, game.ticketSize].every((size) => Number.isInteger(size) && size >= 1 && size <= game.totalBalls)) {
-        throw new Error('Univers de 2 à 64 numéros ; tailles de tirage et de grille entre 1 et TOTAL_BALLS');
+        throw new Error('Univers de 2 à 96 numéros ; tailles de tirage et de grille entre 1 et TOTAL_BALLS');
     }
     if (game.jackpotHits !== null && (!Number.isInteger(game.jackpotHits) || game.jackpotHits < 0 || game.jackpotHits > game.ticketSize ||
         !Number.isSafeInteger(game.jackpotFloor) || game.jackpotFloor < config.target || game.jackpotFloor > 1000000)) {
@@ -323,10 +374,10 @@ Classement : fréquence du seuil atteint, déficit sous le seuil, redondance K2 
     }
     if (changedGeometry && values.payouts === undefined) throw new Error('Fournir --payouts pour ce jeu, afin de ne pas réutiliser le barème Crescendo');
     config.game = game;
-    config.payouts = values.payouts === undefined ? [...PAYOUT_BY_HITS]
-        : parsePayouts(values.payouts, changedGeometry ? [] : PAYOUT_BY_HITS, game.ticketSize);
+    config.payouts = values.payouts === undefined ? selectPayouts(game.ticketSize)
+        : parsePayouts(values.payouts, changedGeometry ? [] : selectPayouts(game.ticketSize), game.ticketSize);
     if (config.payouts.length !== game.ticketSize + 1 || !config.payouts.every((amount) => Number.isSafeInteger(amount) && amount >= 0 && amount <= 1000000)) {
-        throw new Error('PAYOUT_BY_HITS doit contenir un montant entier pour chaque rang de 0 à TICKET_SIZE');
+        throw new Error('Le barème doit contenir un montant entier pour chaque rang de 0 à TICKET_SIZE');
     }
     let possible = 1;
     for (let index = 1; index <= Math.min(game.ticketSize, game.totalBalls - game.ticketSize); index++) possible *= (game.totalBalls - index + 1) / index;
@@ -357,7 +408,7 @@ Classement : fréquence du seuil atteint, déficit sous le seuil, redondance K2 
                     hits: hitStatistics(system, scenarios, game),
                 });
                 bestReport = {
-                    modelVersion: 'two-uint32-without-letters-v3', config, round, record: records, validationSeed,
+                    modelVersion: 'three-uint32-without-letters-v4', config, round, record: records, validationSeed,
                     acceptedSwaps: result.accepted, score: bestScore,
                     assumptions: ['One draw; user-configured payout table', 'Letters completely excluded',
                         'No jackpot redistribution', game.jackpotHits === null ? 'Fixed payouts only' : `Jackpot rank ${game.jackpotHits}, conservative floor ${game.jackpotFloor} EUR`,

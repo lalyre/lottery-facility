@@ -1,13 +1,56 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { payout, popcount, ticketMask, randomGenerator, makeScenarios, balancedSystem,
     totalsFor, recoveryScore, optimize, summarize, parsePayouts, PAYOUT_BY_HITS,
-    hitStatistics, isBetterScore, main, maskKey, maskCount, DEFAULT_GAME, redundancyScore } from '../bin/crescendo-recovery.mjs';
+    hitStatistics, isBetterScore, main, maskKey, maskCount, DEFAULT_GAME, redundancyScore,
+    selectPayouts, PAYOUTS_BY_TICKET_SIZE, JACKPOT_FLOOR } from '../bin/crescendo-recovery.mjs';
 
 test('only no-letter payouts count; jackpots have an explicit conservative floor', () => {
     assert.deepEqual(Array.from({ length: 10 }, (_, hits) => payout(hits)), [0, 0, 0, 0, 0, 0, 1, 7, 50, 500]);
     assert.equal(payout(10), 1000);
     assert.throws(() => payout(11));
+});
+
+test('payout row selection uses the played size, including zero and full matches', () => {
+    const tables = {
+        4: [0,0,0,3,70],
+        8: [2,0,0,0,0,5,30,100,8000],
+        10: [2,0,0,0,0,2,5,15,150,2000,200000],
+    };
+    const four = selectPayouts(4, tables);
+    const eight = selectPayouts(8, tables);
+    const ten = selectPayouts(10, tables);
+    assert.equal(payout(4, four, { ...DEFAULT_GAME, ticketSize: 4, jackpotHits: null }), 70);
+    assert.equal(payout(0, eight, { ...DEFAULT_GAME, ticketSize: 8, jackpotHits: null }), 2);
+    assert.equal(payout(10, ten, { ...DEFAULT_GAME, jackpotHits: null }), 200000);
+    four[4] = 0;
+    assert.equal(tables[4][4], 70);
+    assert.throws(() => selectPayouts(6, tables), /\[6\]/);
+    assert.throws(() => selectPayouts(4, { 4: [0,0,0,3] }));
+    assert.deepEqual(selectPayouts(10), PAYOUT_BY_HITS);
+    assert.equal(PAYOUTS_BY_TICKET_SIZE[10][10], JACKPOT_FLOOR);
+});
+
+test('uncommenting the complete KENO block works for every supported played size', async () => {
+    const source = readFileSync(new URL('../bin/crescendo-recovery.mjs', import.meta.url), 'utf8');
+    const activePattern = /\/\/ --- DEBUT CONFIG CRESCENDO ---[\s\S]*?\/\/ --- FIN CONFIG CRESCENDO ---/;
+    const kenoPattern = /(\/\/ --- DEBUT CONFIG KENO ---\s*)\/\*([\s\S]*?)\*\/(\s*\/\/ --- FIN CONFIG KENO ---)/;
+    assert.match(source, activePattern);
+    assert.match(source, kenoPattern);
+    const switched = source.replace(activePattern, '// Crescendo désactivé').replace(kenoPattern, '$1$2$3');
+    const fullPayouts = { 4: 70, 5: 80, 6: 900, 7: 3000, 8: 8000, 9: 30000, 10: 200000 };
+    for (let size = 4; size <= 10; size++) {
+        const configured = switched.replace('export const TICKET_SIZE = 10;', `export const TICKET_SIZE = ${size};`);
+        const module = await import('data:text/javascript;charset=utf-8,' + encodeURIComponent(configured));
+        assert.equal(module.TOTAL_BALLS, 56);
+        assert.equal(module.DRAW_SIZE, 16);
+        assert.equal(module.TICKET_SIZE, size);
+        assert.equal(module.JACKPOT_HITS, null);
+        assert.equal(module.PAYOUT_BY_HITS.length, size + 1);
+        assert.equal(module.payout(size), fullPayouts[size]);
+        assert.equal(module.payout(0), size >= 8 ? 2 : 0);
+    }
 });
 
 test('balanced 120-ticket system contains distinct legal tickets and 48 of each number', () => {
@@ -101,7 +144,7 @@ test('continuous search responds to Ctrl+C and keeps its evaluated record', asyn
         const report = await main(['--tickets','5','--target','90','--train','50','--validation','60','--iterations','10','--rounds','0']);
         assert.equal(report.round, 1);
         assert.equal(report.system.length, 5);
-        assert.equal(report.modelVersion, 'two-uint32-without-letters-v3');
+        assert.equal(report.modelVersion, 'three-uint32-without-letters-v4');
         assert.equal(report.validation.optimized.scenarios, 60);
         assert.equal(report.training.optimized.scenarios, 50);
         assert.ok(output.some((line) => line.includes('Recherche arrêtée')));
@@ -112,13 +155,13 @@ test('continuous search responds to Ctrl+C and keeps its evaluated record', asyn
 
 test('two UInt32 words distinguish balls 1, 32, 33 and 64 without aliasing', () => {
     const mask = ticketMask([1, 32, 33, 64]);
-    assert.deepEqual(mask, { low: 0x80000001, high: 0x80000001 });
+    assert.deepEqual(mask, { low: 0x80000001, high: 0x80000001, upper: 0 });
     assert.equal(maskCount(mask), 4);
     assert.notEqual(maskKey(ticketMask([1, 2])), maskKey(ticketMask([33, 34])));
     const stats = redundancyScore([[1,2], [33,34]]);
     assert.equal(stats[0].uniqueCovered, 2);
     assert.equal(stats[0].collisions, 0);
-    assert.throws(() => ticketMask([65]));
+    assert.throws(() => ticketMask([97]));
 });
 
 test('56-ball game and eight-number tickets agree with direct Set matching after optimization', () => {
@@ -161,6 +204,39 @@ test('64-ball Monte Carlo draws retain their high word', () => {
     }
 });
 
+test('96-ball masks, redundancy, draws and swaps preserve the third UInt32', () => {
+    assert.deepEqual(ticketMask([1,32,33,64,65,96]), { low: 0x80000001, high: 0x80000001, upper: 0x80000001 });
+    assert.equal(maskCount(ticketMask([1,32,33,64,65,96])), 6);
+    assert.equal(new Set([1,33,65].map((number) => maskKey(ticketMask([number])))).size, 3);
+    assert.equal(redundancyScore([[1,2], [33,34], [65,66]])[0].uniqueCovered, 3);
+    const game = { totalBalls: 96, drawSize: 23, ticketSize: 8, jackpotHits: null, jackpotFloor: 0 };
+    const table = parsePayouts('0=2,4=3,5=10,6=50,7=1000,8=200000', [], 8);
+    const scenarios = makeScenarios(150, randomGenerator(96), game);
+    assert.ok([...scenarios.upperDraws].some((upper) => upper & 0x80000000));
+    const initial = balancedSystem(48, randomGenerator(65), game);
+    const result = optimize(initial, scenarios, 90, 100, randomGenerator(32), () => {}, table, game);
+    const totals = totalsFor(result.system, scenarios, table, game);
+    const frequency = Array(96).fill(0);
+    for (const ticket of result.system) {
+        assert.equal(maskCount(ticketMask(ticket)), 8);
+        for (const number of ticket) frequency[number - 1]++;
+    }
+    assert.deepEqual(frequency, Array(96).fill(4));
+    assert.equal(new Set(result.system.map((ticket) => maskKey(ticketMask(ticket)))).size, 48);
+    for (let index = 0; index < scenarios.draws.length; index++) {
+        const words = [scenarios.draws[index], scenarios.highDraws[index], scenarios.upperDraws[index]];
+        const winning = new Set();
+        for (let number = 1; number <= 96; number++) if (words[Math.floor((number - 1) / 32)] & 1 << ((number - 1) % 32)) winning.add(number);
+        assert.equal(winning.size, 23);
+        assert.equal(totals[index], result.system.reduce((sum, ticket) => sum + table[ticket.filter((number) => winning.has(number)).length], 0));
+    }
+    const hitCounts = hitStatistics(result.system, scenarios, game);
+    assert.equal(hitCounts.reduce((sum, entry) => sum + entry.grids, 0), 48 * 150);
+    const expected = recoveryScore(totals, 90);
+    assert.equal(result.score.successes, expected.successes);
+    assert.equal(result.score.deficit, expected.deficit);
+});
+
 test('CLI accepts a KENO-shaped game and preserves the full fixed payout rank', async () => {
     const originalLog = console.log;
     const output = [];
@@ -173,7 +249,7 @@ test('CLI accepts a KENO-shaped game and preserves the full fixed payout rank', 
         assert.equal(report.validation.optimized.hits.length, 9);
         assert.ok(output.some((line) => line.includes('8/8=2000')));
         assert.ok(report.system.flat().some((number) => number > 32));
-        await assert.rejects(main(['--total-balls','65','--rounds','1']));
+        await assert.rejects(main(['--total-balls','97','--rounds','1']));
         await assert.rejects(main(['--total-balls','56','--rounds','1']), /payouts/);
     } finally { console.log = originalLog; }
 });

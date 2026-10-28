@@ -16,6 +16,7 @@ if (options.help) {
     console.log(`Usage: node bin/crescendo.mjs [--combinations fichier.txt]
 
 Une combinaison par ligne, numeros separes par des espaces, taille libre.
+Univers configurable de 2 a 96 numeros, stockes dans trois mots UInt32.
 Les lignes vides sont ignorees et les lignes repetees sont conservees.
 Les lignes commencant par # sont des commentaires.
 Un en-tete facultatif, unique et place avant les combinaisons, definit les objectifs :
@@ -65,6 +66,11 @@ const MONTE_CARLO_DRAWS = 100000;
 const NB_SWAP = 200;
 const STATUS_EVERY = 500;
 const TRACKED_K = [2, 3, 4, 5];
+
+if (!Number.isInteger(TOTAL_BALLS) || TOTAL_BALLS < 2 || TOTAL_BALLS > 96 ||
+    ![DRAW_SIZE, TICKET_SIZE].every((size) => Number.isInteger(size) && size >= 1 && size <= TOTAL_BALLS)) {
+    throw new Error('TOTAL_BALLS doit être compris entre 2 et 96 ; DRAW_SIZE et TICKET_SIZE entre 1 et TOTAL_BALLS.');
+}
 
 if (!Number.isInteger(TARGET_COUNT) || TARGET_COUNT < 1 || TARGET_COUNT > BUDGET_TICKETS) {
     throw new Error(`TARGET_COUNT doit etre un entier entre 1 et ${BUDGET_TICKETS}.`);
@@ -138,14 +144,17 @@ let statusActive = false;
 const toMask = (numbers) => {
     let low = 0;
     let high = 0;
+    let upper = 0;
     for (const number of numbers) {
         if (number <= 32) {
             low |= 1 << (number - 1);
-        } else {
+        } else if (number <= 64) {
             high |= 1 << (number - 33);
+        } else {
+            upper |= 1 << (number - 65);
         }
     }
-    return { low, high };
+    return { low, high, upper };
 };
 
 const popcount32 = (value) => {
@@ -302,7 +311,8 @@ const getCoverageStats = (system) => {
         // Compter toutes les grilles gagnantes, sans s'arreter au compteur cible.
         for (const ticketMask of ticketMasks) {
             const hits = popcount32(drawMask.low & ticketMask.low)
-                + popcount32(drawMask.high & ticketMask.high);
+                + popcount32(drawMask.high & ticketMask.high)
+                + popcount32(drawMask.upper & ticketMask.upper);
 
             if (hits >= targetHits) {
                 qualifyingTickets++;
