@@ -63,7 +63,7 @@ const BUDGET_TICKETS = 150;
 
 
 const MONTE_CARLO_DRAWS = 100000;
-const NB_SWAP = 200;
+const NON_REDUNDANCY_ATTEMPTS = 200;
 const STATUS_EVERY = 500;
 const TRACKED_K = [2, 3, 4, 5];
 
@@ -399,7 +399,7 @@ const isBetterScore = (left, right) => {
     return false;
 };
 
-const improveNonRedundancy = (system, reference = [], attempts = NB_SWAP) => {
+const improveNonRedundancy = (system, reference = [], attempts = NON_REDUNDANCY_ATTEMPTS) => {
     let current = system.map((ticket) => [...ticket].sort((a, b) => a - b));
     let currentScore = getSystemScore(current, reference);
 
@@ -483,8 +483,7 @@ while (true) {
         generatedTicketsCount,
         TICKET_SIZE,
         1,
-        null,
-        NB_SWAP
+        null
     );
 
     // Generation aleatoire pure : grilles independantes, sans remise dans chaque grille.

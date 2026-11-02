@@ -29,12 +29,11 @@ export class DrawBox {
 	 * Draw the balls from the draw box.
 	 *
 	 * @param size      size of the random selection of numbers.
-	 * @param nbSwap    number of shuffle operations (optional parameter). Default value is 50.
 	 * @returns         a random selection of numbers picked in the draw box.
 	 */
-	public draw(size:number, nbSwap:number = 50): Tuple {
+	public draw(size:number): Tuple {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		this.shuffle(nbSwap);
+		this.shuffle();
 		return this._balls.slice(0, size);
 	}
 
@@ -65,13 +64,12 @@ export class DrawBox {
 	 *
 	 * @param nbTickets   Total number of tickets to generate.
 	 * @param size        Number of balls per ticket.
-	 * @param nbSwap      Shuffle intensity for each draw (default 50).
 	 * @returns           An array of random valid tickets.
 	 */
-	public drawRandomTickets(nbTickets: number, size: number, nbSwap: number = 50): Tuple[] {
+	public drawRandomTickets(nbTickets: number, size: number): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 		const results: Tuple[] = [];
-		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size, nbSwap));
+		for (let i = 0; i < nbTickets; i++) results.push(this.draw(size));
 		return results;
 	}
 
@@ -111,13 +109,11 @@ export class DrawBox {
 	 *
 	 * @param nbTickets   Total number of tickets to generate.
 	 * @param size        Number of balls per ticket.
-	 * @param nbSwap      Shuffle intensity parameter (reserved for compatibility) (default 50).
 	 * @returns           An array of balanced tickets optimized for pair diversity.
 	 */
 	public drawIndividualBalancedTickets(
 		nbTickets: number,
-		size: number,
-		nbSwap: number = 50
+		size: number
 	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
 
@@ -205,7 +201,6 @@ export class DrawBox {
 	 * @param size - Number of balls per ticket.
 	 * @param nbAttempts - Number of iterations to find the best candidate (default 500).
 	 * @param startingSystem - An optional existing system to build upon.
-	 * @param nbSwap - Shuffle intensity used during generation (default 50).
 	 * @returns An array of tickets optimized for pairs diversity.
 	 */
 	public drawMaximizePairCoveringTickets(
@@ -213,16 +208,15 @@ export class DrawBox {
 		size: number,
 		nbAttempts: number = 500,
 		startingSystem: Tuple[]|null = null,
-		nbSwap: number = 50,
 	): Tuple[] {
 		if (size > this._count) throw new Error('Invalid size parameter');
-		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+		let bestSystem = startingSystem ? [...startingSystem] : this.drawIndividualBalancedTickets(nbTickets, size);
 		let bestCount = TupleHelper.getSystemPairFrequencyStats(bestSystem, this._balls).coveredPairs;
 		let bestTrioCount = TupleHelper.getSystemTrioFrequencyStats(bestSystem, this._balls).coveredTrios;
 
 		// Find a better system
 		for (let i = 0; i < nbAttempts; i++) {
-			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size, nbSwap);
+			let currentSystem = this.drawIndividualBalancedTickets(nbTickets, size);
 			let currentCount = TupleHelper.getSystemPairFrequencyStats(currentSystem, this._balls).coveredPairs;
 			let currentTrioCount = TupleHelper.getSystemTrioFrequencyStats(currentSystem, this._balls).coveredTrios;
 
@@ -244,7 +238,6 @@ export class DrawBox {
 	 * @param size - Number of balls per ticket.
 	 * @param nbAttempts - Number of iterations to find the best candidate (default 500).
 	 * @param startingSystem - An optional existing system to build upon.
-	 * @param nbSwap - Shuffle intensity used during generation (default 50).
 	 * @returns An array of tickets optimized for unique pair distribution.
 	 */
 	public drawMaximizePairHittingTickets(
@@ -252,7 +245,6 @@ export class DrawBox {
 		size: number, 
 		nbAttempts: number = 500,
 		startingSystem: Tuple[]|null = null,
-		nbSwap: number = 50,
 	): Tuple[] {
 		
 		
@@ -272,15 +264,15 @@ export class DrawBox {
 
 
 	/**
-	 * Shuffle the balls in the draw box.
+	 * Shuffle the balls in place using a complete Fisher-Yates pass.
+	 * Each permutation is equally likely when the random source is uniform.
 	 *
-	 * @param nbSwap    number of shuffle operations.
 	 * @returns         none.
 	 */
-	public shuffle (nbSwap:number): void {
-		for (let i = 0; i < nbSwap; i++) {
-			const a = RandomHelper.randomNumberInRange(0, this._count-1);
-			this._swapBalls(i%this._count, a);
+	public shuffle (): void {
+		for (let i = this._count - 1; i > 0; i--) {
+			const selectedIndex = Math.floor(Math.random() * (i + 1));
+			this._swapBalls(i, selectedIndex);
 		}
 	}
 

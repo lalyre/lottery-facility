@@ -20,7 +20,6 @@ const cli = meow(`
 	  --size, -s     Size of generated combinations.
 	  --sort         Display ordered combinations (optional).
 	  --nb           Number of generated combinations.
-	  --nbSwap       Number of shuffle operations. Default value 200.
 	  --sep          Separator of balls (optional).
 
 	Description
@@ -63,11 +62,6 @@ const cli = meow(`
 			default: 1,
 			isMultiple: false,
 		},
-		nbSwap: {
-			type: 'number',
-			default: 200,
-			isMultiple: false,
-		},
 		sep: {
 			type: 'string',
 			default: '|',
@@ -87,7 +81,7 @@ if (cli.flags.total.length !== cli.flags.size.length) {
 }
 
 
-const { nb, nbSwap, sort, sep, verbose: verboseMode } = cli.flags;
+const { nb, sort, sep, verbose: verboseMode } = cli.flags;
 const totals = cli.flags.total;
 const sizes = cli.flags.size;
 
@@ -141,7 +135,7 @@ for (let i = 0; i < nb; i++) {
 // Assemblage de la ligne (Combinaison principale + éventuelles étoiles)
 	let ballsSet = [];
 	for (let j = 0; j < totals.length; j++) {
-		ballsSet[j] = boxes[j].draw(sizes[j], nbSwap);
+		ballsSet[j] = boxes[j].draw(sizes[j]);
 	}
 
 	let str = "";

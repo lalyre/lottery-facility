@@ -1,37 +1,52 @@
 'use strict';
-import { sha256 } from 'js-sha256';
 
 
 export class RandomHelper {
 	/**
-	 * Return a random number within a range of integers
+	 * Return a random safe integer within an inclusive range, using rejection
+	 * sampling to avoid modulo bias. Uses the non-cryptographic Math.random source.
 	 * @param a          integer value.
 	 * @param b          integer value.
 	 * @return           random number between a and b, both included.
 	 */
 	public static randomNumberInRange (a: number, b: number): number {
-		const min = (a < b) ? a : b;
-		const max = (a >= b) ? a : b;
-		const spread = max - min + 1;
-		const rand = RandomHelper.randomNumber() % spread;
-		return min + Math.abs(rand);
+		if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b)) {
+			throw new Error('Invalid range parameters: expected safe integers');
+		}
+		const min = BigInt(Math.min(a, b));
+		const max = BigInt(Math.max(a, b));
+		const spread = max - min + 1n;
+		if (spread === 1n) return Number(min);
+
+		// BigInt keeps even the full signed safe-integer range exact.
+		const bits = (spread - 1n).toString(2).length;
+		const byteCount = Math.ceil(bits / 8);
+		const mask = (1n << BigInt(bits)) - 1n;
+		let candidate: bigint;
+		do {
+			candidate = 0n;
+			for (const byte of RandomHelper.randomBytes(byteCount)) {
+				candidate = candidate * 256n + BigInt(byte);
+			}
+			candidate &= mask;
+		} while (candidate >= spread);
+		return Number(min + candidate);
 	}
 
 
 	/**
-	 * Return a random number
+	 * Return a non-cryptographic random integer from 0 to Number.MAX_SAFE_INTEGER.
 	 * @param            none.
 	 * @return           random integer number.
 	 */
 	public static randomNumber(): number {
-		const length = 8;
-		const randomBytes1:Uint8Array = RandomHelper.randomBytes(length);
-		let rand1:number = 0;
-		for (let i = 0; i < length; i++) {
-			rand1 <<= 8;
-			rand1 |= randomBytes1[i];
+		const bytes = RandomHelper.randomBytes(7);
+		// Five high bits plus six full bytes give exactly 53 bits.
+		let value = bytes[0] & 31;
+		for (let i = 1; i < bytes.length; i++) {
+			value = value * 256 + bytes[i];
 		}
-		return rand1;
+		return value;
 	}
 
 
@@ -41,24 +56,21 @@ export class RandomHelper {
 	 * @return           random HEX string.
 	 */
 	public static randomHEXString (len:number): string {
-		const randomBytes:Uint8Array = RandomHelper.randomBytes(len);
-		const buffer = Buffer.from(randomBytes);
-		return buffer.toString('hex');
+		return Array.from(RandomHelper.randomBytes(len),
+			byte => byte.toString(16).padStart(2, '0')).join('');
 	}
 
 
 	/**
-	 * Return a random array of bytes
-	 * @param len        length of random generated array of bytes.
+	 * Return non-cryptographic random bytes without Node.js dependencies.
+	 * @param len        integer length between 1 and 32 (inclusive).
 	 * @return           random array of bytes.
 	 */
 	public static randomBytes (len:number): Uint8Array {
-		if (len < 1 || len > 32) throw new Error('Invalid len parameter');
-		// const rand = Date.now().toString(2) + Math.random().toString(2);
-		const rand = Date.now().toString() + Math.random().toString().substring(2);
-		const hash = sha256.array(rand);
-		const arr:Uint8Array = new Uint8Array(hash.slice(0, len));
-		return arr;
+		if (!Number.isInteger(len) || len < 1 || len > 32) {
+			throw new Error('Invalid len parameter');
+		}
+		return Uint8Array.from({ length: len }, () => Math.floor(Math.random() * 256));
 	}
 }
 

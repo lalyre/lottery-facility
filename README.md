@@ -260,7 +260,6 @@ All the following documentation is available in the tools by running `--help` on
 --size, -s     Size of generated combinations.
 --sort         Display ordered combinations (optional).
 --nb           Number of generated combinations.
---nbSwap       Number of shuffle operations. Default value 200.
 ```
 
 **Description**<br>
@@ -555,7 +554,7 @@ $ cartesian_product --numbers "01|02|03" --numbers "11|12|13" --sep " "
 
 ### DrawBox
 - new DrawBox(total)
-- draw(count, nbSwap?)
+- draw(count)
 
 ### TupleHelper
 - translateAll(combinations, originAlphabet, targetAlphabet)

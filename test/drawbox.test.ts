@@ -11,10 +11,54 @@ describe('DrawBox module', () => {
 
     test('DrawBox.draw test', () => {
         const r = new DrawBox(99);
-        const a = r.draw(99, 40);
-        const b = !((a[1] === 1) && (a[2] === 2) && (a[3] === 3) && (a[4] === 4))
-        expect(b).toBe(true);
+        const random = jest.spyOn(Math, 'random').mockReturnValue(0);
+        try {
+            const a = r.draw(99);
+            expect(a).toEqual([...Array.from({ length: 98 }, (_, i) => i + 2), 1]);
+            expect(r.balls).toEqual(a);
+            a[0] = -1;
+            expect(r.balls[0]).toBe(2);
+            expect(random).toHaveBeenCalledTimes(98);
+        } finally {
+            random.mockRestore();
+        }
         expect(() => { new DrawBox(0); }).toThrow(Error);
+    });
+
+
+    test('DrawBox.shuffle produces each permutation exactly once across all Fisher-Yates choices', () => {
+        const outcomes = new Set<string>();
+        const random = jest.spyOn(Math, 'random');
+        try {
+            for (let first = 0; first < 3; first++) {
+                for (let second = 0; second < 2; second++) {
+                    const box = new DrawBox(3);
+                    const balls = box.balls;
+                    random.mockReturnValueOnce((first + 0.5) / 3)
+                        .mockReturnValueOnce((second + 0.5) / 2);
+                    box.shuffle();
+                    expect(box.balls).toBe(balls);
+                    expect([...box.balls].sort((a, b) => a - b)).toEqual([1, 2, 3]);
+                    outcomes.add(box.balls.join('-'));
+                }
+            }
+            expect(outcomes.size).toBe(6);
+            expect(random).toHaveBeenCalledTimes(12);
+        } finally {
+            random.mockRestore();
+        }
+    });
+
+    test('DrawBox.shuffle handles a single ball without consuming randomness', () => {
+        const random = jest.spyOn(Math, 'random').mockReturnValue(0);
+        try {
+            const singleton = new DrawBox(1);
+            singleton.shuffle();
+            expect(singleton.balls).toEqual([1]);
+            expect(random).not.toHaveBeenCalled();
+        } finally {
+            random.mockRestore();
+        }
     });
 
 
@@ -50,7 +94,7 @@ describe('DrawBox module', () => {
 
     test('DrawBox.drawIndividualBalancedTickets keeps full-cycle frequencies across boundaries', () => {
         const box = new DrawBox(7);
-        const tickets = box.drawIndividualBalancedTickets(14, 3, 0);
+        const tickets = box.drawIndividualBalancedTickets(14, 3);
         const frequencies = new Map<number, number>();
 
         for (const ticket of tickets) {
