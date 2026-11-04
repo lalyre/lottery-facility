@@ -726,6 +726,62 @@ guarantee. Results depend on the payout model. The optimization changes the payo
 distribution, not the expected fixed payout per ticket. Do not repeatedly select
 systems using the validation set; reserve fresh scenarios for each final evaluation.
 
+## Fixed-target covering search
+
+`target-covering.mjs` searches for the best coverage of one **fixed set of target draws**.
+A target is covered when at least `--target-count` distinct tickets share at least
+the requested number of balls (`--hits`). The default target count is one.
+Defaults: 2,000 distinct draws of 16 numbers among 56; 50 distinct five-number
+tickets; at least four matches. These are configurable examples, not payout rules.
+
+```powershell
+node bin/target-covering.mjs
+# Bounded experiment:
+node bin/target-covering.mjs --draws 2000 --tickets 50 --ticket-size 5 --hits 4 --seconds 20
+# Larger target set and budget:
+node bin/target-covering.mjs --draws 50000 --tickets 1000 --seconds 60
+# At least four distinct tickets with at least 3/4, for each covered target:
+node bin/target-covering.mjs --ticket-size 4 --hits 3 --target-count 4 --seconds 20
+```
+
+The default search continues until Ctrl+C or complete coverage, with no 90% stopping
+threshold. `--iterations` limits replacement attempts; `--seconds` limits search time,
+including construction. The final independent verification can take additional time.
+Candidate cores come from uncovered targets. When just one ball is missing from a
+ticket, every possible completion is evaluated. Greedy construction is followed by
+single-ticket replacements and occasional neutral moves. Every 10,000 replacement
+attempts, restarts alternate between perturbing the champion and a fresh construction.
+The champion is retained across restarts. Bitsets avoid rescoring all ticket/target
+pairs for each candidate. Large configurations may still take substantial time.
+The score first maximizes targets reaching their winning-ticket quota, then reduces
+the total number of winning tickets still missing below that quota. Four times 3/4
+also accepts a 4/4 ticket; this is an at-least threshold, not an exact-match condition.
+
+Use `--targets draws.txt` to load fixed targets: one draw per line, separated by spaces,
+`|`, commas or semicolons; whole-line `#` comments are allowed. JSON arrays and objects
+containing `targets` are also supported. All draws must have `--draw-size` distinct
+numbers; duplicate draws are rejected. Generated targets depend on `--seed` and the
+target geometry, not on search duration or the ticket budget.
+
+Every run saves its targets once in `<prefix>.targets.json` and each improved record
+in `<prefix>.record-NNNNNN.txt/.json`. The `.txt` contains the playable tickets; the
+`.json` gives the score, parameters and path to the targets. The final
+`<prefix>.summary.json` includes an independently recomputed coverage and the random
+baseline. `--output results/my-search` sets the prefix; existing runs are never
+overwritten. Without it, a timestamped prefix is generated.
+
+To continue from a saved system on the **same targets**, use matching game parameters:
+
+```powershell
+node bin/target-covering.mjs --targets results/my-search.targets.json --start results/my-search.summary.json --output results/my-search-next
+```
+
+The score is conditional coverage of the chosen target set. It is neither a proof of
+optimality nor the probability of success on all possible future draws. Gains and
+recovery of stakes are not modeled. `crescendo.mjs` is independent of this script.
+
+Verification: `node --test test/target-covering.test.mjs`.
+
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 

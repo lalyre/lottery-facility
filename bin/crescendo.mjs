@@ -45,21 +45,23 @@ if (options.combinations !== undefined && options.combinations.trim() === '') {
 // TARGET_COUNT		Nombre minimum de grilles gagnantes par defaut (surchargeable par taille dans @hits).
 
 
-const TOTAL_BALLS = 25;
-const DRAW_SIZE = 10;
+// Crescendo
+// const TOTAL_BALLS = 25;
+// const DRAW_SIZE = 10;
+// const TICKET_SIZE = 10;
+// const TARGET_HITS = 8;
+// const TARGET_COUNT = 3;
+// const BUDGET_TICKETS = 150;
+
+
+
+// Keno
+const TOTAL_BALLS = 56;
+const DRAW_SIZE = 16;
 const TICKET_SIZE = 10;
 const TARGET_HITS = 8;
-const TARGET_COUNT = 3;
-const BUDGET_TICKETS = 150;
-
-
-
-// const TOTAL_BALLS = 56;
-// const DRAW_SIZE = 23;
-// const TICKET_SIZE = 10;
-// const TARGET_HITS = 6;
-// const TARGET_COUNT = 8;
-// const BUDGET_TICKETS = 50;
+const TARGET_COUNT = 1;
+const BUDGET_TICKETS = 50;
 
 
 const MONTE_CARLO_DRAWS = 100000;

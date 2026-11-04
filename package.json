@@ -56,7 +56,8 @@
     "cartesian_product": "./bin/cartesian_product-cli.mjs",
     "filter": "./bin/filter-cli_1.mjs",
     "euromillions": "./bin/euromillions-cli.mjs",
-    "kenoFR": "./bin/kenoFR-cli.mjs"
+    "kenoFR": "./bin/kenoFR-cli.mjs",
+    "target-covering": "./bin/target-covering.mjs"
   },
   "repository": {
     "type": "git",
