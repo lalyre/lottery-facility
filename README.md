@@ -757,7 +757,10 @@ The score first maximizes targets reaching their winning-ticket quota, then redu
 the total number of winning tickets still missing below that quota. Four times 3/4
 also accepts a 4/4 ticket; this is an at-least threshold, not an exact-match condition.
 
-Use `--targets draws.txt` to load fixed targets: one draw per line, separated by spaces,
+Use `--combinations draws.txt` (same option as `crescendo.mjs`) or its alias
+`--targets draws.txt` to load fixed targets. Only one of these options may be supplied.
+Every row in the file is used; `--draws` only controls randomly generated targets.
+Use one draw per line, separated by spaces,
 `|`, commas or semicolons; whole-line `#` comments are allowed. JSON arrays and objects
 containing `targets` are also supported. All draws must have `--draw-size` distinct
 numbers; duplicate draws are rejected. Generated targets depend on `--seed` and the

@@ -161,6 +161,21 @@ test('CLI exports targets and independently verified records, and refuses overwr
         assert.equal(summary.verifiedCovered, 2);
         const stored = JSON.parse(readFileSync(summary.targetsFile, 'utf8'));
         assert.equal(verifyCoverage(summary.tickets, stored.targets, 4), 2);
+        const aliasArgs = [...args];
+        aliasArgs[1] = '--combinations';
+        aliasArgs[aliasArgs.length - 1] = `${output}-alias`;
+        const alias = spawnSync(process.execPath, aliasArgs, { encoding: 'utf8' });
+        assert.equal(alias.status, 0, alias.stderr);
+        const aliasSummary = JSON.parse(readFileSync(`${output}-alias.summary.json`, 'utf8'));
+        assert.equal(aliasSummary.config.draws, 2, 'all file targets used instead of the default 2000');
+        assert.deepEqual(aliasSummary.tickets, summary.tickets);
+        assert.deepEqual(JSON.parse(readFileSync(aliasSummary.targetsFile, 'utf8')).targets, stored.targets);
+        const conflict = spawnSync(process.execPath, [...aliasArgs, '--targets', targets], { encoding: 'utf8' });
+        assert.equal(conflict.status, 1);
+        assert.match(conflict.stderr, /pas les deux/);
+        const empty = spawnSync(process.execPath, ['bin/target-covering.mjs', '--combinations', ''], { encoding: 'utf8' });
+        assert.equal(empty.status, 1);
+        assert.match(empty.stderr, /chemin non vide/);
         assert.equal(spawnSync(process.execPath, args, { encoding: 'utf8' }).status, 1);
         const resume = spawnSync(process.execPath, ['bin/target-covering.mjs', '--targets', summary.targetsFile,
             '--draw-size', '5', '--tickets', '2', '--start', `${output}.summary.json`, '--output', `${output}-resumed`, '--iterations', '1'], { encoding: 'utf8' });

@@ -2,6 +2,7 @@
 // Search for distinct tickets covering a FIXED set of target draws.
 // Exemple : 50 grilles de 4 numéros, au moins 4 grilles à 3/4 par cible, sur 2000 tirages fixes.
 // node bin/target-covering.mjs --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
+// Avec tes propres tirages : ajouter --combinations mes-tirages.txt (alias de --targets).
 // Recherche continue jusqu’à Ctrl+C ou couverture complète ; ajouter --seconds 60 pour un essai limité.
 import { parseArgs } from 'node:util';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
@@ -426,7 +427,8 @@ export async function main(args = process.argv.slice(2)) {
         iterations: 'iterations', seconds: 'seconds' };
     const { values } = parseArgs({ args, options: {
         ...Object.fromEntries(Object.keys(names).map(key => [key, { type: 'string' }])),
-        targets: { type: 'string' }, start: { type: 'string' }, output: { type: 'string' },
+        targets: { type: 'string' }, combinations: { type: 'string' },
+        start: { type: 'string' }, output: { type: 'string' },
         help: { type: 'boolean', short: 'h' },
     } });
     if (values.help) {
@@ -435,6 +437,7 @@ export async function main(args = process.argv.slice(2)) {
   --target-count 1             Nombre minimum de grilles gagnantes par cible
   --tickets 50 --draws 2000 --seed 20261104
   --targets fichier.txt|json   Cibles fixes, sinon génération de tirages distincts
+  --combinations fichier      Alias de --targets, comme dans crescendo.mjs
   --start fichier.txt|json     Système initial de exactement --tickets grilles
   --candidates 24              Noyaux cibles essayés par grille à la construction
   --replacement-candidates 8   Noyaux essayés par remplacement
@@ -453,10 +456,14 @@ Les records portent uniquement sur les cibles choisies, pas sur tous les tirages
     const config = { ...DEFAULTS };
     for (const [flag, key] of Object.entries(names)) if (values[flag] !== undefined) config[key] = Number(values[flag]);
     validateConfig(config);
-    for (const flag of ['targets', 'start', 'output']) {
+    for (const flag of ['targets', 'combinations', 'start', 'output']) {
         if (values[flag] !== undefined && !values[flag].trim()) throw new Error(`${flag}: chemin non vide requis`);
     }
-    const targets = values.targets ? loadRows(values.targets, 'targets') : makeTargets(config);
+    if (values.targets !== undefined && values.combinations !== undefined) {
+        throw new Error('Utiliser --targets ou --combinations, pas les deux');
+    }
+    const inputFile = values.targets ?? values.combinations;
+    const targets = inputFile ? loadRows(inputFile, 'targets') : makeTargets(config);
     const index = new TargetIndex(targets, config);
     config.draws = targets.length;
     const initial = values.start ? loadRows(values.start, 'tickets') : undefined;
