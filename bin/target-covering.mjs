@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 // Search for distinct tickets covering a FIXED set of target draws.
+// Exemple : 50 grilles de 4 numéros, au moins 4 grilles à 3/4 par cible, sur 2000 tirages fixes.
+// node bin/target-covering.mjs --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
+// Recherche continue jusqu’à Ctrl+C ou couverture complète ; ajouter --seconds 60 pour un essai limité.
 import { parseArgs } from 'node:util';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
