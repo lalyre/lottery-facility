@@ -146,6 +146,31 @@ test('a 90 percent champion does not stop the Monte Carlo search', async () => {
     assert.equal(result.iterations, 5);
 });
 
+test('CLI accepts totalBalls and total-balls with identical results and rejects conflicting values', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-covering-alias-'));
+    try {
+        const summaries = [];
+        for (const flag of ['--totalBalls', '--total-balls']) {
+            const output = join(directory, flag.slice(2));
+            const result = spawnSync(process.execPath, ['bin/target-covering.mjs', flag, '6',
+                '--draw-size', '3', '--ticket-size', '3', '--hits', '2', '--draws', '10',
+                '--tickets', '2', '--candidates', '1', '--iterations', '2', '--output', output], { encoding: 'utf8' });
+            assert.equal(result.status, 0, result.stderr);
+            const summary = JSON.parse(readFileSync(`${output}.summary.json`, 'utf8'));
+            assert.equal(summary.config.totalBalls, 6);
+            const stored = JSON.parse(readFileSync(summary.targetsFile, 'utf8'));
+            assert.ok(stored.targets.flat().every(ball => ball >= 1 && ball <= 6));
+            summaries.push({ tickets: summary.tickets, targets: stored.targets, covered: summary.covered });
+        }
+        assert.deepEqual(summaries[0], summaries[1]);
+        const conflict = spawnSync(process.execPath, ['bin/target-covering.mjs', '--totalBalls', '25', '--total-balls', '56'], { encoding: 'utf8' });
+        assert.equal(conflict.status, 1);
+        assert.match(conflict.stderr, /Valeurs différentes/);
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+});
+
 test('CLI exports targets and independently verified records, and refuses overwriting', () => {
     const directory = mkdtempSync(join(tmpdir(), 'target-covering-'));
     try {

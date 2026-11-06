@@ -733,6 +733,7 @@ A target is covered when at least `--target-count` distinct tickets share at lea
 the requested number of balls (`--hits`). The default target count is one.
 Defaults: 2,000 distinct draws of 16 numbers among 56; 50 distinct five-number
 tickets; at least four matches. These are configurable examples, not payout rules.
+The universe size is set with `--total-balls` or its alias `--totalBalls`.
 
 ```powershell
 node bin/target-covering.mjs

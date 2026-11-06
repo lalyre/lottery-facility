@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // Search for distinct tickets covering a FIXED set of target draws.
-// Exemple : 50 grilles de 4 numéros, au moins 4 grilles à 3/4 par cible, sur 2000 tirages fixes.
-// node bin/target-covering.mjs --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
+// Exemple : univers de 56 boules, 16 tirées ; 50 grilles de 4 numéros,
+// au moins 4 grilles à 3/4 par cible, sur 2000 tirages fixes.
+// node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
+// --totalBalls (alias --total-balls) : nombre total de boules de l’univers.
+// --draw-size : nombre de boules dans chaque tirage cible.
 // Avec tes propres tirages : ajouter --combinations mes-tirages.txt (alias de --targets).
 // Recherche continue jusqu’à Ctrl+C ou couverture complète ; ajouter --seconds 60 pour un essai limité.
 import { parseArgs } from 'node:util';
@@ -421,7 +424,7 @@ export async function search(index, config, { onRecord = () => {}, onProgress = 
 }
 
 export async function main(args = process.argv.slice(2)) {
-    const names = { 'total-balls': 'totalBalls', 'draw-size': 'drawSize', 'ticket-size': 'ticketSize',
+    const names = { 'total-balls': 'totalBalls', totalBalls: 'totalBalls', 'draw-size': 'drawSize', 'ticket-size': 'ticketSize',
         hits: 'hits', 'target-count': 'targetCount', tickets: 'tickets', draws: 'draws', seed: 'seed', candidates: 'candidates',
         'replacement-candidates': 'replacementCandidates', 'restart-every': 'restartEvery',
         iterations: 'iterations', seconds: 'seconds' };
@@ -434,6 +437,7 @@ export async function main(args = process.argv.slice(2)) {
     if (values.help) {
         console.log(`Usage: node bin/target-covering.mjs [options]
   --total-balls 56 --draw-size 16 --ticket-size 5 --hits 4
+  --totalBalls 56              Alias de --total-balls : nombre total de boules
   --target-count 1             Nombre minimum de grilles gagnantes par cible
   --tickets 50 --draws 2000 --seed 20261104
   --targets fichier.txt|json   Cibles fixes, sinon génération de tirages distincts
@@ -454,6 +458,10 @@ Les records portent uniquement sur les cibles choisies, pas sur tous les tirages
         return;
     }
     const config = { ...DEFAULTS };
+    if (values['total-balls'] !== undefined && values.totalBalls !== undefined &&
+        Number(values['total-balls']) !== Number(values.totalBalls)) {
+        throw new Error('Valeurs différentes pour --total-balls et --totalBalls ; utiliser une seule valeur');
+    }
     for (const [flag, key] of Object.entries(names)) if (values[flag] !== undefined) config[key] = Number(values[flag]);
     validateConfig(config);
     for (const flag of ['targets', 'combinations', 'start', 'output']) {
