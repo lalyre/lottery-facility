@@ -10,6 +10,8 @@ conserve sa configuration actuelle.
 | [crescendo.json](crescendo.json) | Mise de 1 EUR, 10 numéros, gains sans lettre ; 10/10 valorisé à 1000 EUR pour la simulation |
 | [eurodreams.json](eurodreams.json) | Mise de 2,50 EUR, 6 numéros parmi 40, Dream ignoré ; barème conventionnel de simulation |
 | [amigo.json](amigo.json) | Mise de 2 EUR, 7 numéros parmi 28, tirage de 12 numéros sans couleurs ; minimum nominal par nombre de bons numéros |
+| [loto.json](loto.json) | Mise de 2,20 EUR, 5 numéros parmi 49, Chance ignorée ; barème de compromis |
+| [euromillions.json](euromillions.json) | Mise de 2,50 EUR, 5 numéros parmi 50, étoiles ignorées ; barème de compromis |
 
 Chaque profil indique l’univers, la taille du tirage, la mise par grille et les
 tableaux `payoutsByTicketSize`. La clé est le nombre de numéros joués ; l’indice du
@@ -46,9 +48,15 @@ node bin/target-recovery.mjs --profile profiles/amigo.json --ticket-size 7 --tic
 Les liens vers les règlements, leur date d’application et la date de vérification
 sont enregistrés dans chaque fichier. Les exclusions de modèle y sont explicites.
 
-Pour de futurs profils Loto ou EuroMillions, les gains variables devront être
-décrits comme tels, avec des montants de simulation explicitement choisis et leur
-provenance (par exemple des médianes historiques sur une période définie).
-Une estimation historique ne constitue pas un lot garanti. Les rangs devront aussi
-tenir compte du numéro Chance ou des étoiles ; un tableau indexé seulement par le
-nombre de bons numéros serait insuffisant. Aucun montant indicatif n’est inventé ici.
+Pour Loto et EuroMillions, le modèle `fixed_simulation` retient uniquement les
+5 numéros principaux. Une cible est une ligne de 5 numéros distincts, sans Chance
+ni étoiles. Les barèmes convenus pour 0 à 5 bons numéros sont respectivement
+`[0, 0, 3, 10, 200, 20000]` et `[0, 0, 2, 5, 25, 10000]` EUR.
+Ces hypothèses ne sont ni des minima garantis ni des minima historiques vérifiés.
+Le prix complet de la grille est conservé ; les gains liés à la Chance, aux étoiles,
+aux codes et aux options sont exclus du calcul. Les gains réels restent variables.
+
+```sh
+node bin/target-recovery.mjs --profile profiles/loto.json --ticket-size 5 --tickets 10 --target 15 --draws 2000
+node bin/target-recovery.mjs --profile profiles/euromillions.json --ticket-size 5 --tickets 10 --target 15 --draws 2000
+```

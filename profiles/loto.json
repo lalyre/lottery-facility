@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "loto-fr-main-numbers-estimated",
+  "name": "Loto — numéros principaux seuls, barème de compromis",
+  "currency": "EUR",
+  "totalBalls": 49,
+  "drawSize": 5,
+  "stakePerTicket": 2.2,
+  "scope": "Un seul tirage standard, numéro Chance ignoré. Barème conventionnel de simulation, sans minimum garanti ; prix complet de la grille simple conservé.",
+  "payoutModel": "fixed_simulation",
+  "payoutsByTicketSize": {
+    "5": [
+      0,
+      0,
+      3,
+      10,
+      200,
+      20000
+    ]
+  },
+  "simulationAssumptions": {
+    "guaranteedMinimum": false,
+    "explanation": "Montants convenus pour 0 à 5 bons numéros : 0, 0, 3, 10, 200, 20000 EUR. Hypothèses de compromis volontairement basses, sans minimum officiel ni minimum historique vérifié. Les gains réels sont variables. Le modèle ne compte que les numéros principaux et exclut les gains liés aux éléments complémentaires.",
+    "targetFormat": "Une ligne par tirage : 5 numéros distincts parmi 1 à 49, sans numéro Chance."
+  },
+  "excludedFeatures": [
+    "Gains liés au numéro Chance",
+    "Codes Loto",
+    "Option 2nd Tirage",
+    "Super Loto et Grand Loto",
+    "Variation réelle des lots et opérations promotionnelles"
+  ],
+  "source": {
+    "url": "https://www.fdj.fr/jeux-de-tirage/loto/gains",
+    "checkedOn": "2026-11-09",
+    "stakeUrl": "https://cdn-media.fdj.fr/static/contrib/files/pdf/reglement-loto-baisse-du-trj-012026%20VDEF.pdf",
+    "references": [
+      "5 numéros parmi 49",
+      "Prix complet d’une grille simple standard : 2.2 EUR, hors options"
+    ],
+    "simulationAmountsOrigin": "Convention choisie avec l’utilisateur ; ces montants ne sont pas issus du barème officiel ni d’une étude historique."
+  }
+}

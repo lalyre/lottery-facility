@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "euromillions-fr-main-numbers-estimated",
+  "name": "EuroMillions — numéros principaux seuls, barème de compromis",
+  "currency": "EUR",
+  "totalBalls": 50,
+  "drawSize": 5,
+  "stakePerTicket": 2.5,
+  "scope": "Un seul tirage standard, étoiles ignorées. Barème conventionnel de simulation, sans minimum garanti ; prix complet de la grille simple conservé.",
+  "payoutModel": "fixed_simulation",
+  "payoutsByTicketSize": {
+    "5": [
+      0,
+      0,
+      2,
+      5,
+      25,
+      10000
+    ]
+  },
+  "simulationAssumptions": {
+    "guaranteedMinimum": false,
+    "explanation": "Montants convenus pour 0 à 5 bons numéros : 0, 0, 2, 5, 25, 10000 EUR. Hypothèses de compromis volontairement basses, sans minimum officiel ni minimum historique vérifié. Les gains réels sont variables. Le modèle ne compte que les numéros principaux et exclut les gains liés aux éléments complémentaires.",
+    "targetFormat": "Une ligne par tirage : 5 numéros distincts parmi 1 à 50, sans étoiles."
+  },
+  "excludedFeatures": [
+    "Gains supplémentaires liés aux étoiles",
+    "My Million",
+    "Option Étoile +",
+    "Variation réelle des lots et opérations promotionnelles"
+  ],
+  "source": {
+    "url": "https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/gains",
+    "checkedOn": "2026-11-09",
+    "stakeUrl": "https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/comment-jouer",
+    "references": [
+      "5 numéros parmi 50",
+      "Prix complet d’une grille simple standard : 2.5 EUR, hors options"
+    ],
+    "simulationAmountsOrigin": "Convention choisie avec l’utilisateur ; ces montants ne sont pas issus du barème officiel ni d’une étude historique."
+  }
+}
