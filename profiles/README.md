@@ -1,8 +1,8 @@
 # Profils de gains
 
-Ces fichiers préparent le chargement des barèmes par le futur `target-recovery.mjs`.
-Ils ne sont pas encore consommés par les scripts existants : `target-covering.mjs`
-optimise des correspondances et `crescendo-recovery.mjs` conserve sa configuration actuelle.
+Ces fichiers sont chargés par `target-recovery.mjs` via `--profile`.
+`target-covering.mjs` optimise des correspondances et `crescendo-recovery.mjs`
+conserve sa configuration actuelle.
 
 | Fichier | Modèle |
 | --- | --- |

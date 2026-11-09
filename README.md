@@ -804,8 +804,59 @@ Verification: `node --test test/target-covering.test.mjs`.
 
 [profiles/keno.json](profiles/keno.json) and
 [profiles/crescendo.json](profiles/crescendo.json) contain sourced payout models for
-the planned `target-recovery.mjs`. The profiles are prepared data, not yet loaded by
-the existing scripts. See [profile conventions and variable payouts](profiles/README.md).
+`target-recovery.mjs`. See [profile conventions and variable payouts](profiles/README.md).
+
+## Fixed-target monetary recovery
+
+`target-recovery.mjs` searches for a system that reaches a requested **total gross
+payout** on as many fixed target draws as possible. It sums every ticket's payout
+according to the profile, including lower winning ranks and zero-match payouts
+when present. There are no `--hits` or `--target-count` parameters.
+The draw file needs no directive header: use one complete draw per line, with
+whole-line `#` comments and blank lines allowed. `@hits` belongs to `crescendo.mjs`
+and is not accepted here. The recovery amount comes from `--target`, not the file.
+See the [draw file with explanatory header comments](bin/examples/target-recovery-keno-draws.txt).
+
+```powershell
+# Ten EUR staked per draw; seek at least eight EUR returned, not eight EUR profit:
+node bin/target-recovery.mjs --profile profiles/keno.json --ticket-size 10 --tickets 10 --target 8 --draws 2000
+# Own target sample, search limited to 60 seconds:
+node bin/target-recovery.mjs --profile profiles/keno.json --ticket-size 10 --tickets 10 --target 8 --combinations mes-tirages.txt --seconds 60
+# Crescendo model without letters and without 19:00 jackpot redistribution:
+node bin/target-recovery.mjs --profile profiles/crescendo.json --ticket-size 10 --tickets 10 --target 8 --draws 2000
+```
+
+The profile supplies the universe, draw size, ticket stake and payout row for
+`--ticket-size`. The profile's jackpot convention and excluded features remain
+part of the simulation assumptions. Variable or missing payouts are not silently
+treated as fixed amounts. Money is calculated in integer cents; `--target 8.50`
+is accepted. Stakes are those explicitly defined by the profile.
+
+Candidates are built from deficient targets, using different winning ranks according
+to the payout row, as well as single-number mutations and random proposals.
+Complete-ticket replacements are evaluated incrementally: subtract the old ticket's
+gains, add the proposed gains and score the total system on the same targets.
+Records first maximize the number of targets reaching the requested amount, then
+minimize the sum of missing cents below that amount. Excess jackpots do not improve
+that score. Restarts alternate between champion perturbations and fresh constructions;
+the best result is preserved. This is a heuristic, not a proof of optimality.
+
+`--seed`, `--candidates`, `--replacement-candidates`, `--restart-every`, `--seconds`,
+`--iterations`, `--start` and `--output` behave as in the covering tool. Advanced
+defaults are 24, 8 and 10,000; the seed is generated and saved when omitted. The stop
+limits default to zero (continuous search). It stops at full target recovery, Ctrl+C
+or a user limit, never just because 90% is reached. No arguments, missing parameters
+and `--help` display the help with examples.
+
+Exports include `.targets.json`, `.targets.txt`, an exact `.profile.json` copy,
+each improved `.record-NNNNNN.txt/.json` and a final `.summary.json`. Each record
+also embeds the profile. The summary independently recomputes payouts with ordinary
+set intersections, and gives the random baseline, recovery frequency, shortfall,
+minimum, tenth percentile, median and mean gross payouts on the selected targets.
+These amounts describe that fixed sample and model, not guaranteed future returns.
+Existing output files are never overwritten.
+
+Verification: `node --test test/target-recovery.test.mjs test/target-covering.test.mjs`.
 
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).

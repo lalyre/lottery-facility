@@ -564,6 +564,6 @@ export async function main(args = process.argv.slice(2)) {
     }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
+if (process.argv[1] && existsSync(process.argv[1]) && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
     main().catch(error => { console.error(error.message); process.exitCode = 1; });
 }

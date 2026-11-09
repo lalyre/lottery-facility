@@ -58,7 +58,8 @@
     "filter": "./bin/filter-cli_1.mjs",
     "euromillions": "./bin/euromillions-cli.mjs",
     "kenoFR": "./bin/kenoFR-cli.mjs",
-    "target-covering": "./bin/target-covering.mjs"
+    "target-covering": "./bin/target-covering.mjs",
+    "target-recovery": "./bin/target-recovery.mjs"
   },
   "repository": {
     "type": "git",
