@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "eurodreams-fr-without-dream-estimated",
+  "name": "EuroDreams — sans numéro Dream, barème prudent de simulation",
+  "currency": "EUR",
+  "totalBalls": 40,
+  "drawSize": 6,
+  "stakePerTicket": 2.5,
+  "scope": "Un seul tirage, numéro Dream ignoré. Montants conventionnels de simulation, sans minimum garanti ; le 6/6 est valorisé à une seule mensualité de 2000 EUR.",
+  "payoutModel": "fixed_simulation",
+  "payoutsByTicketSize": {
+    "6": [0, 0, 2.5, 4, 20, 200, 2000]
+  },
+  "simulationAssumptions": {
+    "guaranteedMinimum": false,
+    "explanation": "Barème convenu pour sélectionner les jeux : 2/6 = 2.50 EUR, 3/6 = 4 EUR, 4/6 = 20 EUR, 5/6 = 200 EUR, 6/6 = 2000 EUR. Ces valeurs ne sont ni des minima officiels ni des minima historiques vérifiés. Les gains réels des rangs 3/6 à 5/6 sont variables ; le gain nominal de 2.50 EUR à 2/6 peut également être réduit par regroupement des rangs.",
+    "sixMatches": "Une seule mensualité nominale de la rente sans Dream est comptée, sans anticiper les cinq années de versements ni modéliser les conditions de partage."
+  },
+  "excludedFeatures": ["Numéro Dream et rente associée", "Variation et regroupement des gains réels", "Partage des rentes en cas de dépassement du nombre de combinaisons gagnantes", "Mensualités ultérieures de la rente", "Opérations promotionnelles"],
+  "source": {
+    "url": "https://cdn-media.fdj.fr/static/contrib/files/pdf/2025-03-reglement-eurodreams.pdf",
+    "effectiveFrom": "2025-03-31",
+    "checkedOn": "2026-11-09",
+    "references": ["Géométrie : 6 numéros parmi 40, mise de 2.50 EUR", "Article 8 : rangs de gains, rentes et partage", "Articles 8.5 à 8.7 : gains variables et possibilité de réduction du gain nominal de 2.50 EUR"],
+    "simulationAmountsOrigin": "Convention choisie avec l’utilisateur ; les montants de simulation ne sont pas issus du règlement."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "amigo-fr-without-colors",
+  "name": "Amigo — sans couleurs, minimum nominal par nombre de bons numéros",
+  "currency": "EUR",
+  "totalBalls": 28,
+  "drawSize": 12,
+  "stakePerTicket": 2,
+  "scope": "Un seul tirage de 12 numéros sans couleurs. Gain minimal du barème nominal pour chaque nombre de bons numéros, hors promotions et avant éventuel plafonnement collectif.",
+  "payoutModel": "fixed_simulation",
+  "payoutsByTicketSize": {
+    "7": [0, 0, 0, 0, 2, 3, 15, 100]
+  },
+  "simulationAssumptions": {
+    "guaranteedMinimum": false,
+    "explanation": "Les 7 numéros bleus et les 5 numéros jaunes sont réunis en une seule cible de 12 numéros distincts. Pour une grille de 7 numéros à 2 EUR, on retient le plus petit lot nominal parmi les répartitions de couleurs possibles : 4/7 = 2 EUR, 5/7 = 3 EUR, 6/7 = 15 EUR et 7/7 = 100 EUR. Les couleurs peuvent donner un gain supérieur. Ces minima nominaux restent soumis au plafonnement collectif de l’article 8.2.",
+    "targetFormat": "Une ligne par tirage : 12 numéros distincts parmi 1 à 28, sans indication de couleur."
+  },
+  "excludedFeatures": ["Suppléments de gains liés aux couleurs", "Réduction proportionnelle si les gains totaux du tirage dépassent 100 millions EUR", "Animations commerciales"],
+  "source": {
+    "url": "https://cdn-media.fdj.fr/static/contrib/files/pdf/2025-03-amigo.pdf",
+    "effectiveFrom": "2025-03-31",
+    "checkedOn": "2026-11-09",
+    "references": ["Articles 3 et 5 : grille de 7 numéros parmi 28 et mise de 2 EUR", "Article 7.5 : 7 numéros bleus et 5 numéros jaunes", "Article 8.1 : barème nominal par couleur et mise", "Article 8.2 : plafonnement collectif des gains", "Article 8.3 : animations exclues"],
+    "simulationAmountsOrigin": "Minimum du tableau officiel pour chaque nombre total de bons numéros, toutes répartitions de couleurs possibles confondues."
+  }
+}

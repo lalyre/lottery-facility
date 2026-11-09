@@ -57,8 +57,14 @@ export function cents(value, name = 'Montant') {
 export function readProfile(file, ticketSize) {
     const profile = JSON.parse(readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
     if (profile.schemaVersion !== 1 || profile.currency !== 'EUR' ||
-        !['fixed_nominal', 'fixed_base_with_jackpot_floor'].includes(profile.payoutModel)) {
-        throw new Error('Profil EUR version 1 requis, avec lots fixes ou plancher de jackpot explicite');
+        !['fixed_nominal', 'fixed_base_with_jackpot_floor', 'fixed_simulation'].includes(profile.payoutModel)) {
+        throw new Error('Profil EUR version 1 requis, avec lots fixes, plancher de jackpot ou barème de simulation explicite');
+    }
+    if (profile.payoutModel === 'fixed_simulation' &&
+        (profile.simulationAssumptions?.guaranteedMinimum !== false ||
+         typeof profile.simulationAssumptions?.explanation !== 'string' ||
+         !profile.simulationAssumptions.explanation.trim())) {
+        throw new Error('Le barème de simulation doit expliciter ses hypothèses et son absence de minimum garanti');
     }
     const row = profile.payoutsByTicketSize?.[ticketSize];
     if (!Array.isArray(row) || row.length !== ticketSize + 1 || row.some(x => typeof x !== 'number')) {

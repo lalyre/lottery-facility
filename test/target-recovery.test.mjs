@@ -33,6 +33,19 @@ test('profile rows, zero-match Keno gains and the explicit Crescendo jackpot mod
     assert.deepEqual(crescendo.payouts, [0, 0, 0, 0, 0, 0, 100, 700, 5000, 50000, 100000]);
 });
 
+test('EuroDreams simulation uses the agreed payouts and the full ticket stake without Dream', () => {
+    const model = readProfile('profiles/eurodreams.json', 6);
+    assert.equal(model.profile.totalBalls, 40);
+    assert.equal(model.profile.drawSize, 6);
+    assert.equal(model.stake, 250);
+    assert.equal(model.profile.payoutModel, 'fixed_simulation');
+    assert.equal(model.profile.simulationAssumptions.guaranteedMinimum, false);
+    assert.deepEqual(model.payouts, [0, 0, 250, 400, 2000, 20000, 200000]);
+    assert.deepEqual(verifyTotals([[1, 2, 7, 8, 9, 10], [1, 2, 3, 11, 12, 13]],
+        [[1, 2, 3, 4, 5, 6]], model.payouts), [650]);
+    assert.throws(() => readProfile('profiles/eurodreams.json', 5), /montants/);
+});
+
 test('all winning ranks are summed: two EUR at 5/10 plus five EUR at 6/10', () => {
     const { payouts } = readProfile('profiles/keno.json', 10);
     const draw = Array.from({ length: 16 }, (_, i) => i + 1);
