@@ -730,28 +730,39 @@ systems using the validation set; reserve fresh scenarios for each final evaluat
 
 `target-covering.mjs` searches for the best coverage of one **fixed set of target draws**.
 A target is covered when at least `--target-count` distinct tickets share at least
-the requested number of balls (`--hits`). The default target count is one.
-Defaults: 2,000 distinct draws of 16 numbers among 56; 50 distinct five-number
-tickets; at least four matches. These are configurable examples, not payout rules.
+the requested number of balls (`--hits`). Game geometry, ticket budget, winning-ticket
+quota and target source are required. `--iterations` and `--seconds` default to 0
+(no limit). Advanced settings are optional: 24 construction candidates, 8 replacement
+candidates and 10,000 attempts between restarts. An omitted `--seed` is generated
+automatically, printed and saved in every JSON configuration; supplying it again
+reproduces the targets and random search choices. These are configurable
+combinatorial searches, not payout rules.
 The universe size is set with `--total-balls` or its alias `--totalBalls`.
 
 ```powershell
-node bin/target-covering.mjs
+node bin/target-covering.mjs --help
 # Bounded experiment:
-node bin/target-covering.mjs --draws 2000 --tickets 50 --ticket-size 5 --hits 4 --seconds 20
+node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 2000 --tickets 50 --ticket-size 5 --hits 4 --target-count 1 --seconds 20
 # Larger target set and budget:
-node bin/target-covering.mjs --draws 50000 --tickets 1000 --seconds 60
+node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 50000 --tickets 1000 --ticket-size 5 --hits 4 --target-count 1 --seconds 60
 # At least four distinct tickets with at least 3/4, for each covered target:
-node bin/target-covering.mjs --ticket-size 4 --hits 3 --target-count 4 --seconds 20
+node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4 --seconds 20
 ```
 
-The default search continues until Ctrl+C or complete coverage, with no 90% stopping
-threshold. `--iterations` limits replacement attempts; `--seconds` limits search time,
-including construction. The final independent verification can take additional time.
+No arguments, `--help` or `-h` display help and a complete example without starting
+a search. Missing required parameters display their names and help, and exit with
+code 1 before any output is created. `--draws` is required only when generating
+targets; loading a target file supplies its actual row count instead.
+
+Omit `--iterations` and `--seconds` (or set them both to 0) to continue until Ctrl+C or complete
+coverage, with no 90% stopping threshold. A positive `--iterations` limits replacement
+attempts; a positive `--seconds` limits search time including construction. The first
+active limit reached stops the search. The final independent verification can take
+additional time. Zero disables a limit; it does not request zero work.
 Candidate cores come from uncovered targets. When just one ball is missing from a
 ticket, every possible completion is evaluated. Greedy construction is followed by
-single-ticket replacements and occasional neutral moves. Every 10,000 replacement
-attempts, restarts alternate between perturbing the champion and a fresh construction.
+single-ticket replacements and occasional neutral moves. After `--restart-every`
+replacement attempts, restarts alternate between perturbing the champion and a fresh construction.
 The champion is retained across restarts. Bitsets avoid rescoring all ticket/target
 pairs for each candidate. Large configurations may still take substantial time.
 The score first maximizes targets reaching their winning-ticket quota, then reduces
@@ -767,9 +778,12 @@ containing `targets` are also supported. All draws must have `--draw-size` disti
 numbers; duplicate draws are rejected. Generated targets depend on `--seed` and the
 target geometry, not on search duration or the ticket budget.
 
-Every run saves its targets once in `<prefix>.targets.json` and each improved record
+Every run saves its targets once in `<prefix>.targets.json` and `<prefix>.targets.txt`
+(one draw per line, zero-padded numbers separated by spaces), and each improved record
 in `<prefix>.record-NNNNNN.txt/.json`. The `.txt` contains the playable tickets; the
-`.json` gives the score, parameters and path to the targets. The final
+`.json` gives the score, parameters and paths to both target files (`targetsFile`
+and `targetsTextFile`). The text sample can be loaded again with `--combinations`.
+The final
 `<prefix>.summary.json` includes an independently recomputed coverage and the random
 baseline. `--output results/my-search` sets the prefix; existing runs are never
 overwritten. Without it, a timestamped prefix is generated.
@@ -777,7 +791,7 @@ overwritten. Without it, a timestamped prefix is generated.
 To continue from a saved system on the **same targets**, use matching game parameters:
 
 ```powershell
-node bin/target-covering.mjs --targets results/my-search.targets.json --start results/my-search.summary.json --output results/my-search-next
+node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --targets results/my-search.targets.json --tickets 50 --ticket-size 5 --hits 4 --target-count 1 --start results/my-search.summary.json --output results/my-search-next
 ```
 
 The score is conditional coverage of the chosen target set. It is neither a proof of
@@ -785,6 +799,13 @@ optimality nor the probability of success on all possible future draws. Gains an
 recovery of stakes are not modeled. `crescendo.mjs` is independent of this script.
 
 Verification: `node --test test/target-covering.test.mjs`.
+
+## Payout profiles
+
+[profiles/keno.json](profiles/keno.json) and
+[profiles/crescendo.json](profiles/crescendo.json) contain sourced payout models for
+the planned `target-recovery.mjs`. The profiles are prepared data, not yet loaded by
+the existing scripts. See [profile conventions and variable payouts](profiles/README.md).
 
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).

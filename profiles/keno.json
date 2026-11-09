@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "keno-fr-base-cash",
+  "name": "Keno — mise de 1 EUR, sans Multiplicateur, option capital",
+  "currency": "EUR",
+  "totalBalls": 56,
+  "drawSize": 16,
+  "stakePerTicket": 1,
+  "scope": "Un seul tirage, gains nominaux avant éventuels plafonnements collectifs.",
+  "payoutModel": "fixed_nominal",
+  "payoutsByTicketSize": {
+    "4": [0, 0, 0, 3, 70],
+    "5": [0, 0, 0, 2, 10, 80],
+    "6": [0, 0, 0, 0, 3, 30, 900],
+    "7": [0, 0, 0, 0, 2, 5, 90, 3000],
+    "8": [2, 0, 0, 0, 0, 5, 30, 100, 8000],
+    "9": [2, 0, 0, 0, 1, 2, 8, 25, 100, 30000],
+    "10": [2, 0, 0, 0, 0, 2, 5, 15, 150, 2000, 200000]
+  },
+  "excludedFeatures": ["Multiplicateur", "Numéro7", "Rente à vie", "Réductions collectives des lots prévues à l’article 9"],
+  "source": {
+    "url": "https://cdn-media.fdj.fr/static/contrib/files/pdf/reglement-keno-mars-2026.pdf",
+    "effectiveFrom": "2026-03-30",
+    "checkedOn": "2026-11-09",
+    "references": ["Article 2.1 : 16 numéros parmi 56", "Article 8.1 : lots pour une mise de 1 EUR", "Article 9 : plafonnements"]
+  }
+}

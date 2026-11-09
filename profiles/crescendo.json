@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "crescendo-fr-without-letter",
+  "name": "Crescendo — sans lettre, jackpot valorisé prudemment",
+  "currency": "EUR",
+  "totalBalls": 25,
+  "drawSize": 10,
+  "stakePerTicket": 1,
+  "scope": "Un seul tirage, sans lettre ni redistribution du jackpot à 19 h.",
+  "payoutModel": "fixed_base_with_jackpot_floor",
+  "payoutsByTicketSize": {
+    "10": [0, 0, 0, 0, 0, 0, 1, 7, 50, 500, 1000]
+  },
+  "jackpot": {
+    "ticketSize": 10,
+    "hits": 10,
+    "type": "shared_variable",
+    "simulationPolicy": "conservative_floor",
+    "simulationAmount": 1000,
+    "minimumPool": 100000,
+    "maximumIdenticalTickets": 100,
+    "explanation": "1000 EUR est une valeur de simulation issue de 100000 / 100 ; ce n’est pas le lot fixe du 10/10. Le gain réel dépend du jackpot et de son partage."
+  },
+  "letter": {
+    "simulationPolicy": "ignored",
+    "alphabet": ["S", "A", "M", "E", "D", "I"],
+    "fixedPayoutsWhenMatchedByTicketSize": {
+      "10": [1, 1, 1, 1, 1, 1, 2, 14, 100, 1000, null]
+    },
+    "explanation": "Tableau informatif des gains avec lettre, non ajouté aux gains sans lettre. null au 10/10 désigne le jackpot partagé, pas un gain nul."
+  },
+  "excludedFeatures": ["Gains liés à la lettre", "Redistribution du jackpot au dernier tirage", "Opérations promotionnelles", "Plafonnement collectif des gains"],
+  "source": {
+    "url": "https://cdn-media.fdj.fr/static/contrib/files/pdf/reglement-crescendo-2025.pdf",
+    "effectiveFrom": "2025-11-03",
+    "checkedOn": "2026-11-09",
+    "references": ["Articles 2 et 5 : géométrie et mise", "Article 6.2 : maximum de 100 combinaisons identiques", "Article 8.1 : gains fixes et lettre", "Articles 8.2 et 8.3 : jackpot et redistribution"]
+  }
+}

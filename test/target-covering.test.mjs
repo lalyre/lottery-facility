@@ -1,11 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { DEFAULTS, validateConfig, validateRows, makeTargets, randomGenerator,
+import { fileURLToPath } from 'node:url';
+import { validateConfig, validateRows, makeTargets, randomGenerator,
     TargetIndex, CoveringSystem, search, verifyCoverage, loadRows } from '../bin/target-covering.mjs';
+
+// Test fixtures are explicit; the CLI does not supply any numeric defaults.
+const DEFAULTS = { totalBalls: 56, drawSize: 16, ticketSize: 5, hits: 4, targetCount: 1,
+    tickets: 50, draws: 2000, seed: 20261104, candidates: 24, replacementCandidates: 8,
+    restartEvery: 10000, iterations: 0, seconds: 0 };
+const SEARCH_ARGS = ['--seed', '20261104', '--replacement-candidates', '1', '--restart-every', '10000', '--seconds', '0'];
 
 function combinations(n, size) {
     const rows = [];
@@ -154,7 +161,8 @@ test('CLI accepts totalBalls and total-balls with identical results and rejects 
             const output = join(directory, flag.slice(2));
             const result = spawnSync(process.execPath, ['bin/target-covering.mjs', flag, '6',
                 '--draw-size', '3', '--ticket-size', '3', '--hits', '2', '--draws', '10',
-                '--tickets', '2', '--candidates', '1', '--iterations', '2', '--output', output], { encoding: 'utf8' });
+                '--tickets', '2', '--target-count', '1', '--candidates', '1', '--iterations', '2',
+                ...SEARCH_ARGS, '--output', output], { encoding: 'utf8' });
             assert.equal(result.status, 0, result.stderr);
             const summary = JSON.parse(readFileSync(`${output}.summary.json`, 'utf8'));
             assert.equal(summary.config.totalBalls, 6);
@@ -178,7 +186,8 @@ test('CLI exports targets and independently verified records, and refuses overwr
         writeFileSync(targets, '# targets\n1 2 3 4 5\n1|2|3|4|6\n');
         assert.equal(loadRows(targets, 'targets').length, 2);
         const args = ['bin/target-covering.mjs', '--targets', targets, '--draw-size', '5',
-            '--tickets', '2', '--candidates', '1', '--iterations', '2', '--output', output];
+            '--total-balls', '56', '--ticket-size', '5', '--hits', '4', '--target-count', '1',
+            '--tickets', '2', '--candidates', '1', '--iterations', '2', ...SEARCH_ARGS, '--output', output];
         const result = spawnSync(process.execPath, args, { encoding: 'utf8' });
         assert.equal(result.status, 0, result.stderr);
         const summary = JSON.parse(readFileSync(`${output}.summary.json`, 'utf8'));
@@ -186,15 +195,31 @@ test('CLI exports targets and independently verified records, and refuses overwr
         assert.equal(summary.verifiedCovered, 2);
         const stored = JSON.parse(readFileSync(summary.targetsFile, 'utf8'));
         assert.equal(verifyCoverage(summary.tickets, stored.targets, 4), 2);
+        assert.equal(readFileSync(summary.targetsTextFile, 'utf8'), '01 02 03 04 05\n01 02 03 04 06\n');
+        assert.deepEqual(loadRows(summary.targetsTextFile, 'targets'), stored.targets);
+        const firstRecord = JSON.parse(readFileSync(`${output}.record-000001.json`, 'utf8'));
+        assert.equal(firstRecord.targetsTextFile, summary.targetsTextFile);
         const aliasArgs = [...args];
         aliasArgs[1] = '--combinations';
         aliasArgs[aliasArgs.length - 1] = `${output}-alias`;
         const alias = spawnSync(process.execPath, aliasArgs, { encoding: 'utf8' });
         assert.equal(alias.status, 0, alias.stderr);
         const aliasSummary = JSON.parse(readFileSync(`${output}-alias.summary.json`, 'utf8'));
-        assert.equal(aliasSummary.config.draws, 2, 'all file targets used instead of the default 2000');
+        assert.equal(aliasSummary.config.draws, 2, 'file targets determine the count without --draws');
         assert.deepEqual(aliasSummary.tickets, summary.tickets);
         assert.deepEqual(JSON.parse(readFileSync(aliasSummary.targetsFile, 'utf8')).targets, stored.targets);
+        const unlimitedArgs = [];
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] === '--seconds' || args[i] === '--iterations') { i++; continue; }
+            unlimitedArgs.push(args[i]);
+        }
+        unlimitedArgs[unlimitedArgs.length - 1] = `${output}-unlimited`;
+        const unlimited = spawnSync(process.execPath, unlimitedArgs, { encoding: 'utf8', timeout: 3000 });
+        assert.equal(unlimited.status, 0, unlimited.stderr);
+        const unlimitedSummary = JSON.parse(readFileSync(`${output}-unlimited.summary.json`, 'utf8'));
+        assert.equal(unlimitedSummary.config.seconds, 0);
+        assert.equal(unlimitedSummary.config.iterations, 0);
+        assert.equal(unlimitedSummary.covered, 2);
         const conflict = spawnSync(process.execPath, [...aliasArgs, '--targets', targets], { encoding: 'utf8' });
         assert.equal(conflict.status, 1);
         assert.match(conflict.stderr, /pas les deux/);
@@ -202,9 +227,102 @@ test('CLI exports targets and independently verified records, and refuses overwr
         assert.equal(empty.status, 1);
         assert.match(empty.stderr, /chemin non vide/);
         assert.equal(spawnSync(process.execPath, args, { encoding: 'utf8' }).status, 1);
-        const resume = spawnSync(process.execPath, ['bin/target-covering.mjs', '--targets', summary.targetsFile,
-            '--draw-size', '5', '--tickets', '2', '--start', `${output}.summary.json`, '--output', `${output}-resumed`, '--iterations', '1'], { encoding: 'utf8' });
+        const resume = spawnSync(process.execPath, ['bin/target-covering.mjs', '--targets', summary.targetsTextFile,
+            '--total-balls', '56', '--draw-size', '5', '--ticket-size', '5', '--hits', '4', '--target-count', '1',
+            '--tickets', '2', '--candidates', '1', ...SEARCH_ARGS, '--start', `${output}.summary.json`,
+            '--output', `${output}-resumed`, '--iterations', '1'], { encoding: 'utf8' });
         assert.equal(resume.status, 0, resume.stderr);
+        assert.deepEqual(JSON.parse(readFileSync(`${output}-resumed.targets.json`, 'utf8')).targets, stored.targets);
+        const reserved = join(directory, 'reserved');
+        writeFileSync(`${reserved}.targets.txt`, 'previous sample');
+        const collisionArgs = [...args];
+        collisionArgs[collisionArgs.length - 1] = reserved;
+        const collision = spawnSync(process.execPath, collisionArgs, { encoding: 'utf8' });
+        assert.equal(collision.status, 1);
+        assert.equal(readFileSync(`${reserved}.targets.txt`, 'utf8'), 'previous sample');
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+});
+
+test('no arguments and explicit help display the help without creating any files', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-covering-help-'));
+    const script = fileURLToPath(new URL('../bin/target-covering.mjs', import.meta.url));
+    try {
+        for (const args of [[], ['--help'], ['-h']]) {
+            const result = spawnSync(process.execPath, [script, ...args], { encoding: 'utf8', cwd: directory });
+            assert.equal(result.status, 0, result.stderr);
+            assert.match(result.stdout, /Usage:/);
+            assert.match(result.stdout, /Exemple complet/);
+            assert.match(result.stdout, /--totalBalls 56.*--target-count 4/);
+            assert.deepEqual(readdirSync(directory), []);
+        }
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+});
+
+test('advanced settings are optional; the automatic seed is saved, displayed and reproducible', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-covering-advanced-'));
+    try {
+        const base = ['bin/target-covering.mjs', '--totalBalls', '6', '--draw-size', '3', '--draws', '2',
+            '--tickets', '2', '--ticket-size', '3', '--hits', '2', '--target-count', '1'];
+        const output = join(directory, 'automatic');
+        const automatic = spawnSync(process.execPath, [...base, '--output', output], { encoding: 'utf8', timeout: 3000 });
+        assert.equal(automatic.status, 0, automatic.stderr);
+        const summary = JSON.parse(readFileSync(`${output}.summary.json`, 'utf8'));
+        const { config } = summary;
+        assert.ok(Number.isInteger(config.seed) && config.seed >= 0 && config.seed <= 0xFFFFFFFF);
+        assert.ok(automatic.stdout.includes(`graine ${config.seed}`));
+        assert.equal(config.candidates, 24);
+        assert.equal(config.replacementCandidates, 8);
+        assert.equal(config.restartEvery, 10000);
+        assert.equal(config.seconds, 0);
+        assert.equal(config.iterations, 0);
+        const targets = JSON.parse(readFileSync(summary.targetsFile, 'utf8'));
+        assert.equal(targets.config.seed, config.seed);
+        assert.equal(JSON.parse(readFileSync(`${output}.record-000001.json`, 'utf8')).config.seed, config.seed);
+        const replayPrefix = join(directory, 'replay');
+        const replay = spawnSync(process.execPath, [...base, '--seed', String(config.seed), '--output', replayPrefix], { encoding: 'utf8', timeout: 3000 });
+        assert.equal(replay.status, 0, replay.stderr);
+        const replaySummary = JSON.parse(readFileSync(`${replayPrefix}.summary.json`, 'utf8'));
+        assert.deepEqual(replaySummary.tickets, summary.tickets);
+        assert.deepEqual(JSON.parse(readFileSync(replaySummary.targetsFile, 'utf8')).targets, targets.targets);
+        const customPrefix = join(directory, 'custom');
+        const custom = spawnSync(process.execPath, [...base, '--seed', '0', '--candidates', '1',
+            '--replacement-candidates', '2', '--restart-every', '3', '--output', customPrefix], { encoding: 'utf8', timeout: 3000 });
+        assert.equal(custom.status, 0, custom.stderr);
+        const customConfig = JSON.parse(readFileSync(`${customPrefix}.summary.json`, 'utf8')).config;
+        assert.equal(customConfig.seed, 0);
+        assert.equal(customConfig.candidates, 1);
+        assert.equal(customConfig.replacementCandidates, 2);
+        assert.equal(customConfig.restartEvery, 3);
+    } finally {
+        rmSync(directory, { recursive: true, force: true });
+    }
+});
+
+test('required numeric parameters display help when missing; stop limits are optional', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-covering-missing-'));
+    const script = fileURLToPath(new URL('../bin/target-covering.mjs', import.meta.url));
+    const options = [
+        ['--totalBalls', '56'], ['--draw-size', '16'], ['--ticket-size', '5'], ['--hits', '4'],
+        ['--target-count', '1'], ['--tickets', '2'], ['--draws', '2'],
+    ];
+    try {
+        for (let missing = 0; missing < options.length; missing++) {
+            const args = options.filter((_, index) => index !== missing).flat();
+            const result = spawnSync(process.execPath, [script, ...args], { encoding: 'utf8', cwd: directory });
+            assert.equal(result.status, 1);
+            assert.match(result.stderr, /Paramètres manquants/);
+            assert.ok(result.stderr.includes(options[missing][0] === '--totalBalls' ? '--total-balls' : options[missing][0]));
+            assert.match(result.stdout, /Usage:/);
+            assert.match(result.stdout, /Exemple complet/);
+            assert.deepEqual(readdirSync(directory), []);
+        }
+        const malformed = spawnSync(process.execPath, [script, '--tickets'], { encoding: 'utf8', cwd: directory });
+        assert.equal(malformed.status, 1);
+        assert.match(malformed.stdout, /Usage:/);
     } finally {
         rmSync(directory, { recursive: true, force: true });
     }

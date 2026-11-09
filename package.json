@@ -20,7 +20,8 @@
   "files": [
     "bin/",
     "dist/",
-    "lib/"
+    "lib/",
+    "profiles/"
   ],
   "private": false,
   "engines": {

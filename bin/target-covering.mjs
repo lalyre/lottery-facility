@@ -5,18 +5,54 @@
 // node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
 // --totalBalls (alias --total-balls) : nombre total de boules de l’univers.
 // --draw-size : nombre de boules dans chaque tirage cible.
-// Avec tes propres tirages : ajouter --combinations mes-tirages.txt (alias de --targets).
-// Recherche continue jusqu’à Ctrl+C ou couverture complète ; ajouter --seconds 60 pour un essai limité.
+// Avec tes propres tirages : remplacer --draws 2000 par --combinations mes-tirages.txt (alias --targets).
+// --seconds et --iterations sont facultatifs et valent 0 par défaut (sans limite).
+// Choisir --seconds 60 pour un essai limité à 60 secondes.
 import { parseArgs } from 'node:util';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-export const DEFAULTS = Object.freeze({
-    totalBalls: 56, drawSize: 16, ticketSize: 5, hits: 4, targetCount: 1, tickets: 50,
-    draws: 2000, seed: 20261104, candidates: 24, replacementCandidates: 8,
-    restartEvery: 10000, iterations: 0, seconds: 0,
-});
+export const HELP = `Usage: node bin/target-covering.mjs [paramètres]
+
+Paramètres obligatoires (sans valeur par défaut) :
+  --total-balls N              Nombre total de boules, maximum 96
+  --totalBalls N               Alias de --total-balls
+  --draw-size N                Nombre de numéros par tirage cible
+  --ticket-size N              Nombre de numéros par grille
+  --hits N                     Correspondances minimales par grille gagnante
+  --target-count N             Nombre minimum de grilles gagnantes par cible
+  --tickets N                  Nombre de grilles distinctes à construire
+
+Source des cibles (au moins une source obligatoire) :
+  --draws N                    Générer N tirages distincts
+  --combinations fichier      Charger tous les tirages du fichier
+  --targets fichier           Alias de --combinations
+Avec un fichier, --draws est inutile : toutes ses lignes sont utilisées.
+
+Options facultatives :
+  --iterations N               Maximum de remplacements ; défaut 0 = sans limite
+  --seconds N                  Durée maximale ; défaut 0 = sans limite
+  --start fichier.txt|json     Système initial de exactement --tickets grilles
+  --output results/mon-essai   Préfixe des exports ; sinon préfixe horodaté
+  --help, -h                  Afficher cette aide
+
+Réglages avancés facultatifs :
+  --seed N                     Graine reproductible ; sinon générée, affichée et sauvegardée
+  --candidates N               Pistes de construction par grille ; défaut 24
+  --replacement-candidates N   Pistes par remplacement ; défaut 8
+  --restart-every N            Remplacements entre redémarrages ; défaut 10000
+
+Exemple complet : 50 grilles, au moins quatre fois 3/4, sur 2000 cibles de 16/56 :
+  node bin/target-covering.mjs --totalBalls 56 --draw-size 16 --draws 2000 --tickets 50 --ticket-size 4 --hits 3 --target-count 4
+
+Pour utiliser tes cibles, remplacer --draws 2000 par --combinations mes-tirages.txt.
+Pour un essai de 60 secondes, ajouter --seconds 60.
+Sans --seconds ni --iterations : recherche continue jusqu’à Ctrl+C ou 100 % de couverture.
+Une cible est couverte par au moins --target-count grilles distinctes atteignant --hits.
+Texte : une ligne par tirage, numéros séparés par espaces, |, virgules ou ;.
+JSON : tableau de tirages ou objet avec targets (tickets pour --start).
+Doublons refusés. Les records portent uniquement sur les cibles choisies.`;
 
 export function randomGenerator(seed) {
     let state = seed >>> 0;
@@ -94,6 +130,10 @@ export function loadRows(file, property) {
     return text.split(/\r?\n/).map(line => line.trim())
         .filter(line => line && !line.startsWith('#'))
         .map(line => line.split(/[\s|,;]+/).map(Number));
+}
+
+function formatRows(rows) {
+    return rows.map(row => row.map(number => String(number).padStart(2, '0')).join(' ')).join('\n') + '\n';
 }
 
 export function makeTargets(config) {
@@ -423,7 +463,7 @@ export async function search(index, config, { onRecord = () => {}, onProgress = 
         neutralReplacements: neutral, elapsedSeconds: (performance.now() - started) / 1000 };
 }
 
-export async function main(args = process.argv.slice(2)) {
+async function run(args) {
     const names = { 'total-balls': 'totalBalls', totalBalls: 'totalBalls', 'draw-size': 'drawSize', 'ticket-size': 'ticketSize',
         hits: 'hits', 'target-count': 'targetCount', tickets: 'tickets', draws: 'draws', seed: 'seed', candidates: 'candidates',
         'replacement-candidates': 'replacementCandidates', 'restart-every': 'restartEvery',
@@ -434,36 +474,16 @@ export async function main(args = process.argv.slice(2)) {
         start: { type: 'string' }, output: { type: 'string' },
         help: { type: 'boolean', short: 'h' },
     } });
-    if (values.help) {
-        console.log(`Usage: node bin/target-covering.mjs [options]
-  --total-balls 56 --draw-size 16 --ticket-size 5 --hits 4
-  --totalBalls 56              Alias de --total-balls : nombre total de boules
-  --target-count 1             Nombre minimum de grilles gagnantes par cible
-  --tickets 50 --draws 2000 --seed 20261104
-  --targets fichier.txt|json   Cibles fixes, sinon génération de tirages distincts
-  --combinations fichier      Alias de --targets, comme dans crescendo.mjs
-  --start fichier.txt|json     Système initial de exactement --tickets grilles
-  --candidates 24              Noyaux cibles essayés par grille à la construction
-  --replacement-candidates 8   Noyaux essayés par remplacement
-  --restart-every 10000        Redémarrage après ce nombre de remplacements
-  --iterations 0              Maximum de remplacements ; 0 = sans limite
-  --seconds 0                 Durée maximale ; 0 = sans limite
-  --output results/target     Préfixe des cibles et de chaque record .txt/.json
-Par défaut : recherche continue jusqu’à Ctrl+C ou 100 % de couverture.
-Une cible est couverte par au moins --target-count grilles distinctes atteignant --hits.
-Texte : une ligne par tirage, numéros séparés par espaces, |, virgules ou ;.
-JSON : tableau de tirages ou objet avec targets (tickets pour --start).
-Doublons refusés. Même graine et mêmes paramètres = mêmes cibles générées.
-Les records portent uniquement sur les cibles choisies, pas sur tous les tirages.`);
+    if (!args.length || values.help) {
+        console.log(HELP);
         return;
     }
-    const config = { ...DEFAULTS };
+    const config = { iterations: 0, seconds: 0, candidates: 24, replacementCandidates: 8, restartEvery: 10000 };
     if (values['total-balls'] !== undefined && values.totalBalls !== undefined &&
         Number(values['total-balls']) !== Number(values.totalBalls)) {
         throw new Error('Valeurs différentes pour --total-balls et --totalBalls ; utiliser une seule valeur');
     }
     for (const [flag, key] of Object.entries(names)) if (values[flag] !== undefined) config[key] = Number(values[flag]);
-    validateConfig(config);
     for (const flag of ['targets', 'combinations', 'start', 'output']) {
         if (values[flag] !== undefined && !values[flag].trim()) throw new Error(`${flag}: chemin non vide requis`);
     }
@@ -471,7 +491,19 @@ Les records portent uniquement sur les cibles choisies, pas sur tous les tirages
         throw new Error('Utiliser --targets ou --combinations, pas les deux');
     }
     const inputFile = values.targets ?? values.combinations;
-    const targets = inputFile ? loadRows(inputFile, 'targets') : makeTargets(config);
+    const missing = Object.entries(names).filter(([flag, key]) =>
+        flag !== 'totalBalls' && key !== 'seed' && !(key === 'draws' && inputFile) && config[key] === undefined)
+        .map(([flag]) => `--${flag}`);
+    if (missing.length) throw new Error(`Paramètres manquants : ${missing.join(', ')}`);
+    config.seed ??= Math.floor(Math.random() * 4294967296);
+    let targets;
+    if (inputFile) {
+        targets = loadRows(inputFile, 'targets');
+        if (!Array.isArray(targets)) throw new Error('Le fichier doit contenir une liste de tirages');
+        config.draws = targets.length;
+    }
+    validateConfig(config);
+    targets ??= makeTargets(config);
     const index = new TargetIndex(targets, config);
     config.draws = targets.length;
     const initial = values.start ? loadRows(values.start, 'tickets') : undefined;
@@ -481,27 +513,30 @@ Les records portent uniquement sur les cibles choisies, pas sur tous les tirages
     }
     const prefix = resolve(values.output ?? `results/target-covering-${new Date().toISOString().replace(/[:.]/g, '-')}`);
     const targetsFile = `${prefix}.targets.json`;
+    const targetsTextFile = `${prefix}.targets.txt`;
     // Refuse to overwrite another run: the targets and its records must stay linked.
-    if (existsSync(targetsFile) || existsSync(`${prefix}.record-000001.json`) || existsSync(`${prefix}.record-000001.txt`)) {
+    if (existsSync(targetsFile) || existsSync(targetsTextFile) || existsSync(`${prefix}.record-000001.json`) || existsSync(`${prefix}.record-000001.txt`)) {
         throw new Error('Préfixe de sortie déjà utilisé ; choisir un autre --output');
     }
     mkdirSync(dirname(prefix), { recursive: true });
     writeFileSync(targetsFile, JSON.stringify({ config, targets: index.targets }, null, 2), { flag: 'wx' });
+    writeFileSync(targetsTextFile, formatRows(index.targets), { flag: 'wx' });
     let records = 0, stop = false;
     const requestStop = () => { stop = true; };
     process.on('SIGINT', requestStop);
     console.log(`${config.tickets} grilles de ${config.ticketSize}/${config.totalBalls} ; objectif au moins ${config.targetCount} fois ${config.hits}/${config.ticketSize}.`);
     console.log(`${targets.length} cibles FIXES de ${config.drawSize} numéros ; graine ${config.seed}. Cibles : ${targetsFile}`);
+    console.log(`Échantillon en texte : ${targetsTextFile}`);
     console.log('Recherche du meilleur score, sans seuil à 90 %. Ctrl+C pour arrêter.');
     const saveRecord = record => {
         records++;
         const file = `${prefix}.record-${String(records).padStart(6, '0')}`;
-        const report = { model: 'fixed-target-covering-v1', config, targetsFile,
+        const report = { model: 'fixed-target-covering-v1', config, targetsFile, targetsTextFile,
             ...record, coveragePercent: 100 * record.covered / record.total,
             failures: record.total - record.covered,
             scope: 'Couverture conditionnelle de ces cibles fixes ; aucune garantie sur un nouveau tirage.' };
         writeFileSync(`${file}.json`, JSON.stringify(report, null, 2), { flag: 'wx' });
-        writeFileSync(`${file}.txt`, record.tickets.map(ticket => ticket.map(n => String(n).padStart(2, '0')).join(' ')).join('\n') + '\n', { flag: 'wx' });
+        writeFileSync(`${file}.txt`, formatRows(record.tickets), { flag: 'wx' });
         console.log(`Record ${records}: ${record.covered}/${record.total} (${report.coveragePercent.toFixed(2)} %) ; déficit ${record.deficit} ; ${record.iterations} remplacements, ${record.restarts} redémarrages -> ${file}.txt`);
     };
     try {
@@ -509,13 +544,23 @@ Les records portent uniquement sur les cibles choisies, pas sur tous les tirages
             onProgress: progress => console.log(`${progress.stage}: ${progress.ticketCount}/${config.tickets} grilles ; meilleur ${progress.covered}/${progress.total} ; ${progress.iterations} remplacements.`) });
         const verified = verifyCoverage(result.tickets, index.targets, config.hits, config.targetCount);
         if (verified !== result.covered) throw new Error('Désaccord entre le score incrémental et la vérification indépendante');
-        const summary = { config, targetsFile, ...result, verifiedCovered: verified,
+        const summary = { config, targetsFile, targetsTextFile, ...result, verifiedCovered: verified,
             coveragePercent: 100 * result.covered / result.total, records };
         writeFileSync(`${prefix}.summary.json`, JSON.stringify(summary, null, 2), { flag: 'wx' });
         console.log(`Terminé : ${verified}/${result.total} (${summary.coveragePercent.toFixed(2)} %), vérifié indépendamment. Référence aléatoire : ${result.baselineCovered}/${result.total}.`);
         return summary;
     } finally {
         process.off('SIGINT', requestStop);
+    }
+}
+
+export async function main(args = process.argv.slice(2)) {
+    try {
+        return await run(args);
+    } catch (error) {
+        console.error(error.message);
+        console.log(HELP);
+        process.exitCode = 1;
     }
 }
 
