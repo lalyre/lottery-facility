@@ -14,6 +14,22 @@ const DEFAULTS = { totalBalls: 56, drawSize: 16, ticketSize: 5, hits: 4, targetC
     restartEvery: 10000, iterations: 0, seconds: 0 };
 const SEARCH_ARGS = ['--seed', '20261104', '--replacement-candidates', '1', '--restart-every', '10000', '--seconds', '0'];
 
+test('row files accept UTF-8 and PowerShell UTF-16LE for text and JSON', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-rows-'));
+    try {
+        const rows = [[1, 2, 3], [2, 3, 4]];
+        for (const encoding of ['utf8', 'utf16le']) {
+            for (const content of ['# Tirages\r\n01 02 03\r\n\r\n02 03 04\r\n',
+                JSON.stringify(rows), JSON.stringify({ targets: rows }), JSON.stringify({ tickets: rows })]) {
+                const file = join(directory, 'rows.txt');
+                writeFileSync(file, '\uFEFF' + content, encoding);
+                const property = content.includes('tickets') ? 'tickets' : 'targets';
+                assert.deepEqual(loadRows(file, property), rows);
+            }
+        }
+    } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
 function combinations(n, size) {
     const rows = [];
     const visit = (prefix, minimum) => {

@@ -122,7 +122,10 @@ export function validateRows(rows, size, total, name) {
 }
 
 export function loadRows(file, property) {
-    const text = readFileSync(file, 'utf8').replace(/^\uFEFF/, '').trim();
+    const buffer = readFileSync(file);
+    // Windows PowerShell redirects native command output as UTF-16LE with a BOM.
+    const encoding = buffer[0] === 0xFF && buffer[1] === 0xFE ? 'utf16le' : 'utf8';
+    const text = buffer.toString(encoding).replace(/^\uFEFF/, '').trim();
     if (text.startsWith('[') || text.startsWith('{')) {
         const data = JSON.parse(text);
         return Array.isArray(data) ? data : data[property];
