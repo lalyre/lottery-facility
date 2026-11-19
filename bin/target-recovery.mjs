@@ -3,14 +3,27 @@
 // node bin/target-recovery.mjs --profile profiles/keno.json --ticket-size 10 --tickets 10 --target 8 --draws 2000
 // Replace --draws 2000 with --combinations mes-tirages.txt to use your own sample.
 import { parseArgs } from 'node:util';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
+import { closeSync, createReadStream, existsSync, mkdirSync, openSync, readFileSync, readSync,
+    realpathSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { makeTargets, randomGenerator, popcount, validateRows, validateConfig, loadRows } from './target-covering.mjs';
+import { makeTargets, randomGenerator, popcount, validateRow, validateRows, validateConfig,
+    loadRows, parseTextRow } from './target-covering.mjs';
 
 export const HELP = `Usage: node bin/target-recovery.mjs [paramètres]
 
-Paramètres obligatoires :
+Mode filtrage :
+  --filter                     Évaluer les tirages d’un fichier avec un jeu existant
+  --tickets-game fichier.txt   Jeu champion, une grille par ligne
+  --combinations fichier.txt   Stock de tirages, un tirage complet par ligne
+  --profile fichier.json       Géométrie, mise et tableau des lots
+  --target EUR                 Seuil de gain brut pour ce filtrage, ex. 15
+  --output results/mon-filtre  Préfixe facultatif des fichiers .recovered.txt et .unrecovered.txt
+  node bin/target-recovery.mjs --filter --profile profiles/keno.json --tickets-game champion.txt --combinations stock.txt --target 15
+  Chaque grille est évaluée avec le barème de sa taille dans le profil.
+  Le fichier .recovered.txt contient les gains >= au seuil, .unrecovered.txt les gains < au seuil.
+
+Paramètres obligatoires en mode recherche :
   --profile fichier.json      Géométrie, mise et tableau des lots
   --ticket-size N              Nombre de numéros par grille
   --tickets N                  Nombre de grilles distinctes
@@ -54,7 +67,7 @@ export function cents(value, name = 'Montant') {
     return result;
 }
 
-export function readProfile(file, ticketSize) {
+function loadProfile(file) {
     const profile = JSON.parse(readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
     if (profile.schemaVersion !== 1 || profile.currency !== 'EUR' ||
         !['fixed_nominal', 'fixed_base_with_jackpot_floor', 'fixed_simulation'].includes(profile.payoutModel)) {
@@ -66,13 +79,20 @@ export function readProfile(file, ticketSize) {
          !profile.simulationAssumptions.explanation.trim())) {
         throw new Error('Le barème de simulation doit expliciter ses hypothèses et son absence de minimum garanti');
     }
+    const stake = cents(profile.stakePerTicket, 'Mise par grille');
+    if (stake < 1) throw new Error('La mise du profil doit être strictement positive');
+    return { profile, stake };
+}
+
+function profilePayouts(profile, ticketSize) {
     const row = profile.payoutsByTicketSize?.[ticketSize];
     if (!Array.isArray(row) || row.length !== ticketSize + 1 || row.some(x => typeof x !== 'number')) {
         throw new Error(`Le profil doit fournir ${ticketSize + 1} montants numériques pour les grilles de ${ticketSize} numéros`);
     }
-    const payouts = row.map((amount, hits) => cents(amount, `Lot ${hits}/${ticketSize}`));
-    const stake = cents(profile.stakePerTicket, 'Mise par grille');
-    if (stake < 1) throw new Error('La mise du profil doit être strictement positive');
+    return row.map((amount, hits) => cents(amount, `Lot ${hits}/${ticketSize}`));
+}
+
+function validateJackpot(profile, ticketSize, payouts) {
     if (profile.payoutModel === 'fixed_base_with_jackpot_floor') {
         const jackpot = profile.jackpot;
         if (!jackpot || jackpot.ticketSize !== ticketSize || !Number.isInteger(jackpot.hits) ||
@@ -81,6 +101,12 @@ export function readProfile(file, ticketSize) {
             throw new Error('Plancher de jackpot absent ou incohérent avec le tableau des lots');
         }
     }
+}
+
+export function readProfile(file, ticketSize) {
+    const { profile, stake } = loadProfile(file);
+    const payouts = profilePayouts(profile, ticketSize);
+    validateJackpot(profile, ticketSize, payouts);
     return { profile, payouts, stake };
 }
 
@@ -97,6 +123,11 @@ function maskOf(row) {
     const mask = new Uint32Array(3);
     for (const ball of row) mask[(ball - 1) >>> 5] |= 1 << ((ball - 1) & 31);
     return mask;
+}
+
+function payoutForMasks(ticket, draw, payouts) {
+    const hits = popcount(ticket[0] & draw[0]) + popcount(ticket[1] & draw[1]) + popcount(ticket[2] & draw[2]);
+    return payouts[hits];
 }
 
 export function recoveryScore(totals, target) {
@@ -130,9 +161,7 @@ export class RecoveryIndex {
     gains(ticket, output = new this.ArrayType(this.targets.length)) {
         const mask = maskOf(ticket);
         for (let d = 0; d < this.masks.length; d++) {
-            const draw = this.masks[d];
-            const hits = popcount(mask[0] & draw[0]) + popcount(mask[1] & draw[1]) + popcount(mask[2] & draw[2]);
-            output[d] = this.payouts[hits];
+            output[d] = payoutForMasks(mask, this.masks[d], this.payouts);
         }
         return output;
     }
@@ -311,17 +340,135 @@ export async function searchRecovery(index, config, { onRecord = () => {}, onPro
         elapsedSeconds: (performance.now() - started) / 1000 };
 }
 
+function rowText(row) {
+    return row.map(ball => String(ball).padStart(2, '0')).join(' ');
+}
+
 function rowsText(rows) {
-    return rows.map(row => row.map(ball => String(ball).padStart(2, '0')).join(' ')).join('\n') + '\n';
+    return rows.map(rowText).join('\n') + '\n';
+}
+
+async function* drawLines(file) {
+    const fd = openSync(file, 'r');
+    const bom = Buffer.alloc(2);
+    try { readSync(fd, bom, 0, bom.length, 0); }
+    finally { closeSync(fd); }
+    const encoding = bom[0] === 0xFF && bom[1] === 0xFE ? 'utf16le' : 'utf8';
+    let remainder = '';
+    for await (const chunk of createReadStream(file, { encoding })) {
+        const lines = (remainder + chunk).split('\n');
+        remainder = lines.pop();
+        yield* lines;
+    }
+    if (remainder) yield remainder;
+}
+
+async function filterRecovery(values) {
+    const required = ['profile', 'tickets-game', 'combinations', 'target'];
+    const missing = required.filter(flag => values[flag] === undefined);
+    if (missing.length) throw new Error(`Paramètres manquants : ${missing.map(flag => '--' + flag).join(', ')}`);
+    const extra = Object.keys(values).filter(flag => !required.includes(flag) && flag !== 'filter' && flag !== 'output');
+    if (extra.length) throw new Error(`Options incompatibles avec --filter : ${extra.map(flag => '--' + flag).join(', ')}`);
+
+    const target = cents(values.target, 'Objectif');
+    if (target < 1) throw new Error('L’objectif doit être strictement positif');
+    const tickets = loadRows(values['tickets-game'], 'tickets');
+    if (!Array.isArray(tickets) || !tickets.length) throw new Error('Jeu champion : liste non vide requise');
+    const { profile } = loadProfile(values.profile);
+    const { totalBalls, drawSize } = profile;
+    if (!Number.isInteger(totalBalls) || totalBalls < 1 || totalBalls > 96 ||
+        !Number.isInteger(drawSize) || drawSize < 1 || drawSize > totalBalls) {
+        throw new Error('Univers maximal 96 ; tailles dans l’univers');
+    }
+    const payoutTables = new Map();
+    if (profile.payoutModel === 'fixed_base_with_jackpot_floor') {
+        const size = profile.jackpot?.ticketSize;
+        if (!Number.isInteger(size) || size < 1 || size > totalBalls) {
+            throw new Error('Taille de grille du jackpot absente ou invalide');
+        }
+        const payouts = profilePayouts(profile, size);
+        validateJackpot(profile, size, payouts);
+        payoutTables.set(size, { payouts, maximum: Math.max(...payouts) });
+    }
+    const seen = new Set();
+    let maximumTotal = 0;
+    const game = tickets.map((ticket, index) => {
+        const size = ticket?.length;
+        const line = index + 1;
+        if (!Number.isInteger(size) || size < 1 || size > totalBalls) {
+            throw new Error(`Jeu champion, ligne ${line} : de 1 à ${totalBalls} numéros requis`);
+        }
+        validateRow(ticket, size, totalBalls, 'Jeu champion', line);
+        const key = [...ticket].sort((a, b) => a - b).join('-');
+        if (seen.has(key)) throw new Error(`Jeu champion, ligne ${line} : doublon`);
+        seen.add(key);
+        if (!payoutTables.has(size)) {
+            const payouts = profilePayouts(profile, size);
+            payoutTables.set(size, { payouts, maximum: Math.max(...payouts) });
+        }
+        const { payouts, maximum } = payoutTables.get(size);
+        maximumTotal += maximum;
+        return { mask: maskOf(ticket), payouts };
+    });
+    if (!Number.isSafeInteger(maximumTotal)) {
+        throw new Error('Sommes trop élevées pour un calcul entier exact');
+    }
+
+    const prefix = resolve(values.output ?? `results/target-recovery-filter-${new Date().toISOString().replace(/[:.]/g, '-')}`);
+    const recovered = { file: `${prefix}.recovered.txt`, count: 0, buffer: '' };
+    const unrecovered = { file: `${prefix}.unrecovered.txt`, count: 0, buffer: '' };
+    const outputs = [recovered, unrecovered];
+    if (outputs.some(({ file }) => existsSync(file))) throw new Error('Préfixe déjà utilisé ; choisir un autre --output');
+    mkdirSync(dirname(prefix), { recursive: true });
+    let lineNumber = 0;
+    let complete = false;
+    try {
+        for (const output of outputs) output.fd = openSync(output.file, 'wx');
+        for await (const line of drawLines(values.combinations)) {
+            lineNumber++;
+            const draw = parseTextRow(line);
+            if (!draw) continue;
+            validateRow(draw, drawSize, totalBalls, 'Tirages', lineNumber);
+            const mask = maskOf(draw);
+            let total = 0;
+            for (const ticket of game) {
+                total += payoutForMasks(ticket.mask, mask, ticket.payouts);
+                if (total >= target) break;
+            }
+            const output = total >= target ? recovered : unrecovered;
+            output.count++;
+            output.buffer += rowText(draw) + '\n';
+            if (output.buffer.length >= 65536) {
+                writeFileSync(output.fd, output.buffer);
+                output.buffer = '';
+            }
+        }
+        if (!recovered.count && !unrecovered.count) throw new Error('Tirages : liste non vide requise');
+        for (const output of outputs) writeFileSync(output.fd, output.buffer);
+        complete = true;
+    } finally {
+        for (const output of outputs) {
+            if (output.fd === undefined) continue;
+            closeSync(output.fd);
+            if (!complete) unlinkSync(output.file);
+        }
+    }
+    console.log(`${recovered.count + unrecovered.count} tirages évalués, seuil ${(target / 100).toFixed(2)} EUR.`);
+    console.log(`${recovered.count} recouvrés → ${recovered.file}`);
+    console.log(`${unrecovered.count} non recouvrés → ${unrecovered.file}`);
 }
 
 export async function main(args = process.argv.slice(2)) {
     try {
         const stringFlags = ['profile', 'ticket-size', 'tickets', 'target', 'draws', 'targets', 'combinations',
-            'start', 'output', 'seed', 'candidates', 'replacement-candidates', 'restart-every', 'iterations', 'seconds'];
-        const { values } = parseArgs({ args, options: { ...Object.fromEntries(stringFlags.map(flag => [flag, { type: 'string' }])), help: { type: 'boolean', short: 'h' } } });
+            'start', 'output', 'seed', 'candidates', 'replacement-candidates', 'restart-every', 'iterations', 'seconds',
+            'tickets-game'];
+        const { values } = parseArgs({ args, options: { ...Object.fromEntries(stringFlags.map(flag => [flag, { type: 'string' }])),
+            filter: { type: 'boolean' }, help: { type: 'boolean', short: 'h' } } });
         if (!args.length || values.help) { console.log(HELP); return; }
         for (const flag of stringFlags) if (values[flag] !== undefined && !values[flag].trim()) throw new Error(`${flag}: valeur vide`);
+        if (values.filter) { await filterRecovery(values); return; }
+        if (values['tickets-game']) throw new Error('--tickets-game requiert --filter');
         const required = ['profile', 'ticket-size', 'tickets', 'target'];
         if (!values.targets && !values.combinations) required.push('draws');
         const missing = required.filter(flag => values[flag] === undefined);

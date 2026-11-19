@@ -856,6 +856,22 @@ minimum, tenth percentile, median and mean gross payouts on the selected targets
 These amounts describe that fixed sample and model, not guaranteed future returns.
 Existing output files are never overwritten.
 
+### Filter a draw stock with a champion
+
+```powershell
+node bin/target-recovery.mjs --filter --profile profiles/keno.json --tickets-game results/mon-jeu.record-000001.txt --combinations stock.txt --target 15 --output results/filtre-15
+```
+
+Use one grid per line in the champion file and one complete draw per line in the
+stock. The filter reads the stock in chunks. You can mix grid sizes in the
+champion file when the profile defines a payout table for each size. Set
+`--target` for each run. The sum of the gross payouts
+across all grids determines whether each draw goes to `filtre-15.recovered.txt`
+(at least 15 EUR) or `filtre-15.unrecovered.txt` (below 15 EUR). Both files are
+created, and the order and occurrences of draws are preserved. To search for
+another champion, pass the desired output to `--combinations` in search mode,
+with your choice of `--target`. Search mode requires distinct draws.
+
 Verification: `node --test test/target-recovery.test.mjs test/target-covering.test.mjs`.
 
 ## License

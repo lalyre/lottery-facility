@@ -175,6 +175,67 @@ test('CLI loads a profile and fixed file targets, exports both and resumes a cha
 
 function loadJSON(file) { return JSON.parse(readFileSync(file, 'utf8')); }
 
+test('filter partitions draws by the supplied threshold and keeps file order and occurrences', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-recovery-filter-'));
+    const script = fileURLToPath(new URL('../bin/target-recovery.mjs', import.meta.url));
+    try {
+        const profile = join(directory, 'profile.json'), draws = join(directory, 'draws.txt');
+        const champion = join(directory, 'champion.txt'), output = join(directory, 'filtered');
+        writeFileSync(profile, JSON.stringify({ schemaVersion: 1, currency: 'EUR', payoutModel: 'fixed_nominal',
+            totalBalls: 8, drawSize: 3, stakePerTicket: 1, payoutsByTicketSize: { 3: [0.50, 0, 1.50, 5] } }));
+        writeFileSync(champion, '1 2 3\n4 5 6\n');
+        writeFileSync(draws, '\uFEFF# Stock\r\n\r\n7 8 1\r\n2 1 4\r\n1 2 3\r\n7 8 1', 'utf16le');
+        const run = (target, prefix) => spawnSync(process.execPath, [script, '--filter', '--profile', profile,
+            '--tickets-game', champion, '--combinations', draws, '--target', target, '--output', prefix],
+        { encoding: 'utf8', timeout: 5000 });
+        const filtered = run('1.50', output);
+        assert.equal(filtered.status, 0, filtered.stderr);
+        assert.match(filtered.stdout, /4 tirages évalués/);
+        assert.equal(readFileSync(`${output}.recovered.txt`, 'utf8'), '02 01 04\n01 02 03\n');
+        assert.equal(readFileSync(`${output}.unrecovered.txt`, 'utf8'), '07 08 01\n07 08 01\n');
+
+        const higher = `${output}-higher`;
+        const rerun = run('5.51', higher);
+        assert.equal(rerun.status, 0, rerun.stderr);
+        assert.equal(readFileSync(`${higher}.recovered.txt`, 'utf8'), '');
+        assert.equal(readFileSync(`${higher}.unrecovered.txt`, 'utf8'), '07 08 01\n02 01 04\n01 02 03\n07 08 01\n');
+        assert.equal(run('1.50', output).status, 1);
+
+        writeFileSync(draws, '1 2 3\n1 1 1\n');
+        const invalid = run('1.50', `${output}-invalid`);
+        assert.equal(invalid.status, 1);
+        assert.match(invalid.stderr, /Tirages, ligne 2/);
+        assert.ok(!readdirSync(directory).some(file => file.startsWith('filtered-invalid')));
+    } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test('filter sums Keno payouts using each grid size and requires a matching payout table', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'target-recovery-mixed-'));
+    const script = fileURLToPath(new URL('../bin/target-recovery.mjs', import.meta.url));
+    const profile = fileURLToPath(new URL('../profiles/keno.json', import.meta.url));
+    try {
+        const draws = join(directory, 'draws.txt'), champion = join(directory, 'champion.txt');
+        const output = join(directory, 'filtered');
+        const recovered = '01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16\n';
+        const unrecovered = '30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45\n';
+        writeFileSync(draws, recovered + unrecovered);
+        writeFileSync(champion, '1 2 3 4 5 17 18 19\n6 7 8 9 10 11 20 21 22 23\n');
+        const run = prefix => spawnSync(process.execPath, [script, '--filter', '--profile', profile,
+            '--tickets-game', champion, '--combinations', draws, '--target', '10', '--output', prefix],
+        { encoding: 'utf8', timeout: 5000 });
+        const filtered = run(output);
+        assert.equal(filtered.status, 0, filtered.stderr);
+        assert.equal(readFileSync(`${output}.recovered.txt`, 'utf8'), recovered);
+        assert.equal(readFileSync(`${output}.unrecovered.txt`, 'utf8'), unrecovered);
+
+        writeFileSync(champion, '1 2 3 4 5 17 18 19\n6 7 8\n');
+        const unsupported = run(`${output}-unsupported`);
+        assert.equal(unsupported.status, 1);
+        assert.match(unsupported.stderr, /grilles de 3 numéros/);
+        assert.ok(!readdirSync(directory).some(file => file.startsWith('filtered-unsupported')));
+    } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
 test('help and missing parameters never start a search or create results', () => {
     const directory = mkdtempSync(join(tmpdir(), 'target-recovery-help-'));
     const script = fileURLToPath(new URL('../bin/target-recovery.mjs', import.meta.url));

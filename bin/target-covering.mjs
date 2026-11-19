@@ -105,20 +105,29 @@ export function validateConfig(config) {
     }
 }
 
+export function validateRow(row, size, total, name, line) {
+    if (!Array.isArray(row) || row.length !== size || new Set(row).size !== size ||
+        row.some(value => !Number.isInteger(value) || value < 1 || value > total)) {
+        throw new Error(`${name}, ligne ${line}: ${size} numéros distincts entre 1 et ${total} requis`);
+    }
+}
+
 export function validateRows(rows, size, total, name) {
     if (!Array.isArray(rows) || !rows.length) throw new Error(`${name}: liste non vide requise`);
     const seen = new Set();
     return rows.map((row, index) => {
-        if (!Array.isArray(row) || row.length !== size || new Set(row).size !== size ||
-            row.some(value => !Number.isInteger(value) || value < 1 || value > total)) {
-            throw new Error(`${name}, ligne ${index + 1}: ${size} numéros distincts entre 1 et ${total} requis`);
-        }
+        validateRow(row, size, total, name, index + 1);
         const canonical = [...row].sort((a, b) => a - b);
         const key = canonical.join('-');
         if (seen.has(key)) throw new Error(`${name}, ligne ${index + 1}: doublon`);
         seen.add(key);
         return canonical;
     });
+}
+
+export function parseTextRow(line) {
+    const text = line.trim();
+    if (text && !text.startsWith('#')) return text.split(/[\s|,;]+/).map(Number);
 }
 
 export function loadRows(file, property) {
@@ -130,9 +139,7 @@ export function loadRows(file, property) {
         const data = JSON.parse(text);
         return Array.isArray(data) ? data : data[property];
     }
-    return text.split(/\r?\n/).map(line => line.trim())
-        .filter(line => line && !line.startsWith('#'))
-        .map(line => line.split(/[\s|,;]+/).map(Number));
+    return text.split(/\r?\n/).map(parseTextRow).filter(Boolean);
 }
 
 function formatRows(rows) {
