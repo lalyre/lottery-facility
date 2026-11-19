@@ -591,52 +591,6 @@ https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-
 -->
 
 
-## Publish a version
-Build and test the project with these commands
-
-```sh
-npm install
-npm run build
-npm run test
-```
-
-You can see what files will be embedded in the new release with the command below. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package. Files and directories listed in the "files:" section of **package.json** file will be included in the final package.
-
-```sh
-npm pack --dry-run
-npm pack
-```
-
-Update the package version with one of the following commands. If inside a Git directory, the **package.json** file's version is changed and committed. And a new Git tag related to the new version is created.
-
-```sh
-npm version prerelease --preid=alpha
-npm version prerelease --preid=beta
-npm version prerelease --preid=rc
-npm version patch
-npm version minor
-npm version major
-```
-
-Push the new Git tag to remote origin
-
-```sh
-git push --tags
-```
-
-Go to the root of the project, and publish publicly the new package version to the NPM registry. Once published a version can be deprecated, but it cannot be deleted nor re-used.
-
-```sh
-npm publish --access public
-```
-
-
-Deprecation of NPM package versions
-
-```sh
-npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.0 "obsolete"
-npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.1 "obsolete"
-```
 
 
 
@@ -874,6 +828,9 @@ with your choice of `--target`. Search mode requires distinct draws.
 
 Verification: `node --test test/target-recovery.test.mjs test/target-covering.test.mjs`.
 
+
+
+
 ## License
 The project is released under the [MIT license](http://www.opensource.org/licenses/MIT).
 
@@ -885,6 +842,55 @@ Author: Claude Lalyre (claude.lalyre@gmail.com)
 
 ## Contributors
 * [All Contributors](./AUTHORS)
+
+
+## Publish a version
+Build and test the project with these commands
+
+```sh
+npm install
+npm run build
+npm run test
+```
+
+You can see what files will be embedded in the new release with the command below. Files and directories listed in **.gitignore** and **.npmignore** won't be in the package. Files and directories listed in the "files:" section of **package.json** file will be included in the final package.
+
+```sh
+npm pack --dry-run
+npm pack
+```
+
+Update the package version with one of the following commands. If inside a Git directory, the **package.json** file's version is changed and committed. And a new Git tag related to the new version is created.
+
+```sh
+npm version prerelease --preid=alpha
+npm version prerelease --preid=beta
+npm version prerelease --preid=rc
+npm version patch
+npm version minor
+npm version major
+```
+
+Push the new Git tag to remote origin
+
+```sh
+git push --tags
+```
+
+Go to the root of the project, and publish publicly the new package version to the NPM registry. Once published a version can be deprecated, but it cannot be deleted nor re-used.
+
+```sh
+npm publish --access public
+```
+
+
+Deprecation of NPM package versions
+
+```sh
+npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.0 "obsolete"
+npm deprecate @claudelalyre/lottery-facility@0.0.1-alpha.1 "obsolete"
+```
+
 
 
 ## Sponsors
