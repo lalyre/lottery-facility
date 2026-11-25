@@ -2,6 +2,7 @@
 'use strict'
 import fs from 'fs-extra';
 import readline from 'readline';
+import { openTextStream, readTextFile } from './input-text.mjs';
 import meow from 'meow';
 import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
@@ -62,11 +63,11 @@ if (cli.flags.globalnum) {
 		console.error(`File ${cli.flags.globalfile} does not exist`);
 		process.exit(1);
 	}
-	global_alphabet = fs.readFileSync(cli.flags.globalfile).toString().trim().split(/\r?\n/);
+	global_alphabet = readTextFile(cli.flags.globalfile).trim().split(/\r?\n/);
 }
 
 
-let fileStream = fs.createReadStream(cli.flags.file);
+let fileStream = openTextStream(cli.flags.file);
 let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,
@@ -78,7 +79,7 @@ let rl = readline.createInterface({
 	let res1 = line.trim().split(/\s+/);
 	//console.log("res1 " + res1);
 	
-	let res2 = lotteryFacility.TupleHelper.complement(global_alphabet, res1)
+	let res2 = lotteryFacility.TupleHelper.symmetricComplement(global_alphabet, res1)
 	//console.log("res2 " + res2);
 	
 	//let result_line = res2.join(" ").split(" ").filter((x, pos, a) => a.indexOf(x) === pos).map(x => x.toString().padStart(2, '0')).sort().join(" ");

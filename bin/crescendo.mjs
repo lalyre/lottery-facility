@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict'
 import readline from 'node:readline';
-import { createReadStream } from 'node:fs';
 import { parseArgs } from 'node:util';
 import * as lotteryFacility from '../dist/cjs/index.js';
+import { openTextStream } from './input-text.mjs';
 
 const { values: options } = parseArgs({
     options: {
@@ -179,7 +179,7 @@ const createRandomDrawMask = () => {
 // Un compteur omis garde TARGET_COUNT. Les repetitions de lignes pesent autant
 // de fois dans le score. Un seuil impossible n'est jamais abaisse automatiquement.
 const loadCombinationMasks = async (filePath) => {
-    const input = createReadStream(filePath, { encoding: 'utf8' });
+    const input = openTextStream(filePath);
     const lines = readline.createInterface({
         input,
         crlfDelay: Infinity,

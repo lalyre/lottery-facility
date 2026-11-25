@@ -9,9 +9,10 @@
 // --seconds et --iterations sont facultatifs et valent 0 par défaut (sans limite).
 // Choisir --seconds 60 pour un essai limité à 60 secondes.
 import { parseArgs } from 'node:util';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, realpathSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readTextFile } from './input-text.mjs';
 
 export const HELP = `Usage: node bin/target-covering.mjs [paramètres]
 
@@ -131,10 +132,7 @@ export function parseTextRow(line) {
 }
 
 export function loadRows(file, property) {
-    const buffer = readFileSync(file);
-    // Windows PowerShell redirects native command output as UTF-16LE with a BOM.
-    const encoding = buffer[0] === 0xFF && buffer[1] === 0xFE ? 'utf16le' : 'utf8';
-    const text = buffer.toString(encoding).replace(/^\uFEFF/, '').trim();
+    const text = readTextFile(file).trim();
     if (text.startsWith('[') || text.startsWith('{')) {
         const data = JSON.parse(text);
         return Array.isArray(data) ? data : data[property];

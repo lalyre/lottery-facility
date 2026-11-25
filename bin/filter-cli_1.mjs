@@ -6,6 +6,7 @@ import path from 'path';
 import meow from 'meow';
 import colors from 'ansi-colors';
 import cliProgress from 'cli-progress';
+import { openTextStream, readTextFile } from './input-text.mjs';
 import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 const SELECTION_LIMIT = 500000;
 
@@ -15,7 +16,7 @@ const cli = meow(`
 	  $ filter
 
 	Parameters
-	  --infile, -in      An input file containing one input combination per line, where some combinations will be selected according to filters restrictions.
+	  --infile, -in      An input file with one combination per line (UTF-8 or UTF-16LE with BOM).
 	  --globalnum        All items that can be used in combinations, separated by '|' or ' '.
 	  --globalfile       File containing one item per line that are used in combinations of <infile> file, and possibly others items.
 	  --selection        An input file containing one combination per line, used for initiating the selection of combinations.
@@ -267,7 +268,7 @@ if (cli.flags.globalnum) {
 		console.error(`File ${cli.flags.globalfile} does not exist`);
 		process.exit(1);
 	}
-	global_alphabet = fs.readFileSync(cli.flags.globalfile).toString().trim().split(/\r?\n/);
+	global_alphabet = readTextFile(cli.flags.globalfile).trim().split(/\r?\n/);
 }
 
 
@@ -279,7 +280,7 @@ if (cli.flags.selection) {
 		console.error(`File ${selectionFile} does not exist`);
 		process.exit(1);
 	}
-	let preselections = fs.readFileSync(selectionFile).toString().split(/\r?\n/);
+	let preselections = readTextFile(selectionFile).split(/\r?\n/);
 	let lineNum = 0;
 	for (var line of preselections) {
 		var [x, y] = line.trim().split(/:/);
@@ -413,7 +414,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			}
 
 			filterCombinations.push([]);
-			let filter_lines = fs.readFileSync(filename[i].trim()).toString().split(/\r?\n/);
+			let filter_lines = readTextFile(filename[i].trim()).split(/\r?\n/);
 			let line = 0;
 			for (let filter_line of filter_lines) {
 				var [x, y] = filter_line.trim().split(/:/);
@@ -449,7 +450,7 @@ for (let i = 0; i < filterCommand.length; i++) {
 			}
 
 			filterRestrictions.push([]);
-			let restriction_lines = fs.readFileSync(restrictions[i].trim()).toString().split(/\r?\n/);
+			let restriction_lines = readTextFile(restrictions[i].trim()).split(/\r?\n/);
 			let line = 0;
 			for (let restriction_line of restriction_lines) {
 				var [x, y] = restriction_line.trim().split(/:/);
@@ -649,7 +650,7 @@ let nbSelection = 0;
 let globalRepetition = 0;
 let additions = 0;
 let inputLinesCount = 0;
-let fileStream = fs.createReadStream(infile);
+let fileStream = openTextStream(infile);
 let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,

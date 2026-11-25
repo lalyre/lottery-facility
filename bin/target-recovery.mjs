@@ -3,10 +3,11 @@
 // node bin/target-recovery.mjs --profile profiles/keno.json --ticket-size 10 --tickets 10 --target 8 --draws 2000
 // Replace --draws 2000 with --combinations mes-tirages.txt to use your own sample.
 import { parseArgs } from 'node:util';
-import { closeSync, createReadStream, existsSync, mkdirSync, openSync, readFileSync, readSync,
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync,
     realpathSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { openTextStream } from './input-text.mjs';
 import { makeTargets, randomGenerator, popcount, validateRow, validateRows, validateConfig,
     loadRows, parseTextRow } from './target-covering.mjs';
 
@@ -349,13 +350,8 @@ function rowsText(rows) {
 }
 
 async function* drawLines(file) {
-    const fd = openSync(file, 'r');
-    const bom = Buffer.alloc(2);
-    try { readSync(fd, bom, 0, bom.length, 0); }
-    finally { closeSync(fd); }
-    const encoding = bom[0] === 0xFF && bom[1] === 0xFE ? 'utf16le' : 'utf8';
     let remainder = '';
-    for await (const chunk of createReadStream(file, { encoding })) {
+    for await (const chunk of openTextStream(file)) {
         const lines = (remainder + chunk).split('\n');
         remainder = lines.pop();
         yield* lines;

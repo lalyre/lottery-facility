@@ -2,6 +2,7 @@
 'use strict'
 import fs from 'fs-extra';
 import readline from 'readline';
+import { openTextStream, readTextFile } from './input-text.mjs';
 import meow from 'meow';
 import * as lotteryFacility from '../dist/lotteryfacility-nodebundle.umd.js';
 
@@ -82,7 +83,7 @@ if (cli.flags.originnum) {
 		console.error(`File ${cli.flags.originfile} does not exist`);
 		process.exit(1);
 	}
-	origin_alphabet = fs.readFileSync(cli.flags.originfile).toString().trim().split(/\r?\n/);
+	origin_alphabet = readTextFile(cli.flags.originfile).trim().split(/\r?\n/);
 }
 
 
@@ -94,7 +95,7 @@ if (cli.flags.targetnum) {
 		console.error(`File ${cli.flags.targetfile} does not exist`);
 		process.exit(1);
 	}
-	target_alphabet = fs.readFileSync(cli.flags.targetfile).toString().trim().split(/\r?\n/);
+	target_alphabet = readTextFile(cli.flags.targetfile).trim().split(/\r?\n/);
 }
 
 const origin_set = new Set(origin_alphabet);
@@ -106,7 +107,7 @@ if (origin_alphabet.length > target_alphabet.length) {
 }*/
 
 
-let fileStream = fs.createReadStream(cli.flags.file);
+let fileStream = openTextStream(cli.flags.file);
 let rl = readline.createInterface({
 	input: fileStream,
 	crlfDelay: Infinity,

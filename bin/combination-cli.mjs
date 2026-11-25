@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 import fs from 'fs-extra';
-import readline from 'readline';
+import { readTextFile } from './input-text.mjs';
 import path from 'path';
 import meow from 'meow';
 import colors from 'ansi-colors';
@@ -110,7 +110,7 @@ if (cli.flags.numbers) {
 		console.error(`File ${cli.flags.file} does not exist`);
 		process.exit(1);
 	}
-	items = fs.readFileSync(cli.flags.file, 'utf8').toString().trim().split(/\r?\n/);
+	items = readTextFile(cli.flags.file).trim().split(/\r?\n/);
 }
 if (total < size) {
 	console.error("Wrong <total> or <size> value.");

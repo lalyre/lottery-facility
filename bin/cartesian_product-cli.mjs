@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 import fs from 'fs-extra';
-import readline from 'readline';
+import { readTextFile } from './input-text.mjs';
 import path from 'path';
 import meow from 'meow';
 import colors from 'ansi-colors';
@@ -108,8 +108,7 @@ for (let i = 0; i < cli.flags.file.length; i++) {
 		console.error(`File ${cli.flags.file[i]} does not exist`);
 		process.exit(1);
 	}
-	let nums = fs.readFileSync(cli.flags.file[i]).toString().trim().split(/\r?\n/);
-	parts.push(nums.trim().split(/[\|]/));
+	parts.push(readTextFile(cli.flags.file[i]).trim().split(/\r?\n|\|/));
 }
 let size = parts.length;
 
@@ -149,7 +148,7 @@ for (const combination of cartesianProduct) {
 
 
 	// Get combination
-	const result_line = lotteryFacility.TupleHelper.toCanonicalString (cartesianProduct.currentCombination, SEP);
+	const result_line = lotteryFacility.TupleHelper.toCanonicalString(combination, SEP);
 
 
 	// Output
